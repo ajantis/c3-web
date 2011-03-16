@@ -1,0 +1,13 @@
+.vmtable{
+font: bold 10px Verdana;
+border: 1px solid gray;
+list-style-type: none;
+margin-bottom: 0;
+text-align: center;
+}
+
+.vmtable td{
+border-bottom: 1px solid gray;
+border-left: 1px solid gray;
+border-right: 1px solid gray;
+}
