@@ -1,6 +1,8 @@
 package org.aphreet.c3.model
 
-import net.liftweb.mapper.{HasManyThrough, LongKeyedMetaMapper, IdPK, LongKeyedMapper}
+import net.liftweb.mapper._
+import java.text.SimpleDateFormat
+import java.util.Date
 
 /**
  * Copyright (c) 2011, Dmitry Ivanov
@@ -33,20 +35,34 @@ import net.liftweb.mapper.{HasManyThrough, LongKeyedMetaMapper, IdPK, LongKeyedM
  * POSSIBILITY OF SUCH DAMAGE.
  */
  
+ 
+ 
+class Message extends LongKeyedMapper[Message] with IdPK {
 
-class Group extends LongKeyedMapper[Group] with IdPK {
+   def getSingleton = Message
+   object text extends MappedString(this,256){
+     override def validations = super.validations
+   }
 
-  def getSingleton = Group
+   object author extends MappedLongForeignKey(this,User)
 
+   object dateCreated extends MappedDate(this){
+     override def defaultValue = new Date
+   }
+
+   val df = new SimpleDateFormat("HH:mm dd-MM-yyyy")
+   def dateCreatedFormatted = df.format(this.dateCreated.is)
+
+   def authorName = author.obj.map( user => user.firstName.is + (user.lastName.is match {
+     case null => ""
+     case name => " "+name
+   })
+   ) openOr  "Anonymous"
 
 }
 
-object Group extends Group with LongKeyedMetaMapper[Group] {
-
-  override def dbTableName = "groups"
-
+object Message extends Message with LongKeyedMetaMapper[Message] {
+  override def dbTableName = "messages"
   override def fieldOrder = Nil
-
-  //object users extends HasManyThrough[Group,User,UserGroup,_](this, User, UserGroup, UserGroup.user, UserGroup.group)
 
 }

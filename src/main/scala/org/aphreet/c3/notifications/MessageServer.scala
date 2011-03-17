@@ -1,6 +1,9 @@
-package org.aphreet.c3.model
+package org.aphreet.c3.notifications
 
-import net.liftweb.mapper.{HasManyThrough, LongKeyedMetaMapper, IdPK, LongKeyedMapper}
+import net.liftweb.http.ListenerManager
+import net.liftweb.actor.LiftActor
+import org.aphreet.c3.model.Message
+import net.liftweb.mapper.MaxRows
 
 /**
  * Copyright (c) 2011, Dmitry Ivanov
@@ -33,20 +36,34 @@ import net.liftweb.mapper.{HasManyThrough, LongKeyedMetaMapper, IdPK, LongKeyedM
  * POSSIBILITY OF SUCH DAMAGE.
  */
  
+ 
+ 
+object MessageServer extends LiftActor with ListenerManager {
 
-class Group extends LongKeyedMapper[Group] with IdPK {
+   private val MAX_MESSAGES_ON_PAGE = 10
 
-  def getSingleton = Group
+   // TODO rewrite with Queue!
 
+   private var messages: List[Message] = Message.findAll(MaxRows(MAX_MESSAGES_ON_PAGE)).sortWith(_.dateCreated.is after _.dateCreated.is )
+
+   def createUpdate = messages
+
+   override def lowPriority = {
+     case s: Message => {
+       messages = s :: messages
+       s.save
+       updateListeners()
+
+     }
+     case DeleteAll => {
+       for(message <- Message.findAll){
+         message.delete_!
+       }
+       messages = Nil
+       updateListeners()
+     }
+   }
 
 }
 
-object Group extends Group with LongKeyedMetaMapper[Group] {
-
-  override def dbTableName = "groups"
-
-  override def fieldOrder = Nil
-
-  //object users extends HasManyThrough[Group,User,UserGroup,_](this, User, UserGroup, UserGroup.user, UserGroup.group)
-
-}
+case object DeleteAll

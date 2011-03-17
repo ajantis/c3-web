@@ -34,7 +34,7 @@ class User extends MegaProtoUser[User] {
     override def displayName = "Personal Essay"
   }
 
-  object groups extends HasManyThrough(this, Group, UserGroup, UserGroup.user, UserGroup.group)
+
 
 
 

@@ -32,7 +32,7 @@ class Boot {
 
     // where to search snippet
     LiftRules.addToPackages("org.aphreet.c3")
-    Schemifier.schemify(true, Schemifier.infoF _, User, Group, Category)
+    Schemifier.schemify(true, Schemifier.infoF _, User, Group, Category,Message)
 
     // Build SiteMap
     def sitemap() = SiteMap(

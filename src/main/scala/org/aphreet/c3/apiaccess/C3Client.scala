@@ -1,6 +1,6 @@
-package org.aphreet.c3.model
+package org.aphreet.c3.apiaccess
 
-import net.liftweb.mapper.{HasManyThrough, LongKeyedMetaMapper, IdPK, LongKeyedMapper}
+import net.liftweb.actor.LiftActor
 
 /**
  * Copyright (c) 2011, Dmitry Ivanov
@@ -33,20 +33,13 @@ import net.liftweb.mapper.{HasManyThrough, LongKeyedMetaMapper, IdPK, LongKeyedM
  * POSSIBILITY OF SUCH DAMAGE.
  */
  
+ 
+ 
+class C3Client extends LiftActor {
 
-class Group extends LongKeyedMapper[Group] with IdPK {
+  protected def messageHandler() = {
 
-  def getSingleton = Group
-
-
-}
-
-object Group extends Group with LongKeyedMetaMapper[Group] {
-
-  override def dbTableName = "groups"
-
-  override def fieldOrder = Nil
-
-  //object users extends HasManyThrough[Group,User,UserGroup,_](this, User, UserGroup, UserGroup.user, UserGroup.group)
+    case _ => {}
+  }
 
 }

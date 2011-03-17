@@ -12,7 +12,16 @@
 
     <link rel="stylesheet" type="text/css" href="/css/2leveltab.css" />
     <link rel="stylesheet" type="text/css" href="/css/vmtables.css" />
+    <link rel="stylesheet" type="text/css" href="/css/messenger.css" />
+
     <script type="text/javascript" src="/js/2leveltab.js"/>
+
+    <script>function showDiv(div)
+          {
+             if (document.getElementById(div).style.display=="none")document.getElementById(div).style.display="block";
+             else document.getElementById(div).style.display="none";
+          }
+    </script>
 
 
     <style type="text/css">
@@ -122,16 +131,22 @@
         //initialize tab menu, by passing in ID of UL
         initalizetab("menutab")
         </script>
-      <!--
+
       <div class="column span-6 colborder sidebar">
         <hr class="space" />
-        <span class="lift:Menu.builder" />	
         <div>
           <span class="lift:Msgs?showAll=true"/>
           <hr class="space" />
         </div>
+
+        <!-- C3 embedded messenger  -->
+        <lift:comet type="Messenger"/>
+        <br/>
+
       </div>
-      -->
+
+
+
       <div class="column span-17 last">
         <div id="content" >
 
