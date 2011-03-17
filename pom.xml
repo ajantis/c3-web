@@ -39,6 +39,13 @@
   </pluginRepositories>
 
   <dependencies>
+
+    <dependency>
+             <groupId>commons-httpclient</groupId>
+             <artifactId>commons-httpclient</artifactId>
+             <version>3.1</version>
+    </dependency>
+
     <dependency>
       <groupId>net.liftweb</groupId>
       <artifactId>lift-mapper_2.8.1</artifactId>

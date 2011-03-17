@@ -1,10 +1,4 @@
-package org.aphreet.c3.model
-
-import net.liftweb.mapper._
-import net.liftweb.util.FieldError
-import xml.Text
-import net.liftweb.common.Box
-import net.liftweb.http.SHtml
+package org.aphreet.c3.apiaccess
 
 /**
  * Copyright (c) 2011, Dmitry Ivanov
@@ -37,37 +31,8 @@ import net.liftweb.http.SHtml
  * POSSIBILITY OF SUCH DAMAGE.
  */
  
-
-class Group extends LongKeyedMapper[Group] with IdPK {
-
-  thisgroup =>
-
-  def getSingleton = Group
-
-  object owner extends MappedLongForeignKey(this,User){
-    override def toForm = Box(SHtml.selectObj[User](User.findAll.map(user => (user,user.email.is)),User.currentUser, usr => thisgroup.owner(usr)))
-  }
-
-  object name extends MappedString(this,64){
-
-    def isUnique(s: String): List[FieldError] = {
-      if(!Group.find(By(Group.name,s)).isEmpty) List(FieldError(this,Text("Group with this name already exists")))
-      else Nil
-    }
-
-    override def validations = isUnique _ :: super.validations
-  }
-
-
-}
-
-object Group extends Group with LongKeyedMetaMapper[Group] {
-
-  override def dbTableName = "groups"
-
-  override def fieldOrder = name :: Nil
-
-
-  //object users extends HasManyThrough[Group,User,UserGroup,_](this, User, UserGroup, UserGroup.user, UserGroup.group)
-
+ 
+ 
+case class Path (val is: String) {
+  override def toString = is
 }

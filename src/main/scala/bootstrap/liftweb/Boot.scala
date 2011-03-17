@@ -34,9 +34,17 @@ class Boot {
     LiftRules.addToPackages("org.aphreet.c3")
     Schemifier.schemify(true, Schemifier.infoF _, User, Group, Category,Message)
 
+    val loggedIn = If(() => User.loggedIn_?,
+                  () => RedirectResponse("/user_mgt/login"))
+
     // Build SiteMap
     def sitemap() = SiteMap(
       Menu("Home") / "index" >> User.AddUserMenusAfter, // Simple menu form
+
+      Menu(Loc("Groups", "groups" :: "index" :: Nil, "C3 groups", loggedIn)),
+
+      Menu(Loc("Users", "users" :: "index" :: Nil, "C3 users", loggedIn)),
+
       // Menu with special Link
       Menu(Loc("Static", Link(List("static"), true, "/static/index"), 
 	       "Static Content")))

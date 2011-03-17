@@ -1,10 +1,10 @@
-package org.aphreet.c3.model
+package org.aphreet.c3.snippet
 
-import net.liftweb.mapper._
-import net.liftweb.util.FieldError
-import xml.Text
-import net.liftweb.common.Box
-import net.liftweb.http.SHtml
+import xml.NodeSeq
+import org.aphreet.c3.model.User
+import net.liftweb.util.BindHelpers._
+import org.aphreet.c3.apiaccess.C3Client
+import net.liftweb.http.{SHtml, S}
 
 /**
  * Copyright (c) 2011, Dmitry Ivanov
@@ -37,37 +37,43 @@ import net.liftweb.http.SHtml
  * POSSIBILITY OF SUCH DAMAGE.
  */
  
+ 
+ 
+class UserForm {
 
-class Group extends LongKeyedMapper[Group] with IdPK {
+  def list(html: NodeSeq) : NodeSeq = {
 
-  thisgroup =>
-
-  def getSingleton = Group
-
-  object owner extends MappedLongForeignKey(this,User){
-    override def toForm = Box(SHtml.selectObj[User](User.findAll.map(user => (user,user.email.is)),User.currentUser, usr => thisgroup.owner(usr)))
+    User.findAll.flatMap(user =>
+      bind("user", html, "name" -> {user.firstName+" "+user.lastName})
+    )
   }
 
-  object name extends MappedString(this,64){
+  def add(form: NodeSeq) : NodeSeq = {
+    val invokedAs = S.invokedAs
+    var user = User.create
 
-    def isUnique(s: String): List[FieldError] = {
-      if(!Group.find(By(Group.name,s)).isEmpty) List(FieldError(this,Text("Group with this name already exists")))
-      else Nil
+
+    def newUser(form: NodeSeq): NodeSeq = {
+      def saveMe(): Unit = {
+        user.validate match {
+          case Nil => {
+            user.save
+
+            S.notice("Added user: " + user.firstName+" "+user.lastName); S.redirectTo("/users/")
+          }
+          case xs => S.error(xs) ; S.mapSnippet(invokedAs, newUser)
+
+        }
+      }
+
+      bind("user", form,
+           "firstName" -> user.firstName.toForm,
+           "lastName" -> user.lastName.toForm,
+           "admin" -> user.superUser.toForm,
+           "submit" -> SHtml.submit("add", saveMe))
     }
 
-    override def validations = isUnique _ :: super.validations
+    newUser(form)
   }
-
-
-}
-
-object Group extends Group with LongKeyedMetaMapper[Group] {
-
-  override def dbTableName = "groups"
-
-  override def fieldOrder = name :: Nil
-
-
-  //object users extends HasManyThrough[Group,User,UserGroup,_](this, User, UserGroup, UserGroup.user, UserGroup.group)
 
 }

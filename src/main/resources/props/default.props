@@ -1,1 +1,7 @@
 # Properties in this file will be read when running in dev mode
+
+c3restapi_url=http://c3.aphreet.org:7373/rest/
+c3fsapi_url=http://c3.aphreet.org:7373/rest/fs/
+
+c3_domain_name=c3web
+c3_domain_secret=95b39c16b3b6316a938ea5acbdba24a3
