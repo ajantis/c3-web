@@ -4,12 +4,12 @@ import net.liftweb.util.Props
 import org.apache.commons.httpclient.methods._
 import org.aphreet.c3.model.Group
 import net.liftweb.common.Logger
-import xml.NodeSeq
 import java.text.SimpleDateFormat
 import java.util.Date
 import org.apache.commons.httpclient._
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
+import xml.{XML, NodeSeq}
 
 /**
  * Copyright (c) 2011, Dmitry Ivanov
@@ -41,12 +41,12 @@ import javax.crypto.spec.SecretKeySpec
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
- 
 
+object C3Client {
+  def apply() = new C3Client()
+}
 
-class C3Client
-
-object C3Client  {
+class C3Client  {
 
   val logger = Logger(classOf[C3Client])
 
@@ -98,6 +98,47 @@ object C3Client  {
       )}.toList
 
   }
+
+  def createDir(path: String): Boolean = {
+
+    val createRequest = new PostMethod(C3_FS_API_URL + path)
+
+    addAuthHeader(createRequest, "/rest/fs/" + path)
+
+    createRequest.addRequestHeader("x-c3-nodetype", "directory")
+
+    try{
+      val status = httpClient.executeMethod(createRequest)
+      status match {
+        case HttpStatus.SC_CREATED => {
+           true
+        }
+        case _ => {
+          throw new Exception(("Failed to create directory: "+path+", message: " + createRequest.getResponseBodyAsString))
+          false
+        }
+      }
+    }
+  }
+
+  def listResources(pathToDirectory: String) = {
+
+    val getRequest = new GetMethod(C3_FS_API_URL + pathToDirectory)
+
+    addAuthHeader(getRequest, "/rest/fs/" + pathToDirectory)
+
+    val catalog = {
+      httpClient.executeMethod(getRequest)
+      XML.load(getRequest.getResponseBodyAsStream)
+    }
+
+    val nodes = ((catalog \\ "directory")(0) \\ "nodes")(0) \\ "node"
+
+    nodes
+
+  }
+
+  def createGroup (groupName : String) = createDir(groupName)
 
 
   private val domain = Props.get("c3_domain_name") openOr "anonymous"
@@ -152,5 +193,7 @@ object C3Client  {
 }
 
 sealed abstract class FileType
+
 case class File extends FileType
+
 case class Directory extends FileType

@@ -9,14 +9,14 @@ import _root_.net.liftweb.sitemap.Loc._
 import Helpers._
 import _root_.net.liftweb.mapper.{DB, ConnectionManager, Schemifier, DefaultConnectionIdentifier, StandardDBVendor}
 import _root_.java.sql.{Connection, DriverManager}
-import _root_.org.aphreet.c3.model._
-
+import org.aphreet.c3.model._
 
 /**
  * A class that's instantiated early and run.  It allows the application
  * to modify lift's environment
  */
 class Boot {
+
   def boot {
     if (!DB.jndiJdbcConnAvailable_?) {
       val vendor = 
@@ -41,21 +41,46 @@ class Boot {
     def sitemap() = SiteMap(
       Menu("Home") / "index" >> User.AddUserMenusAfter, // Simple menu form
 
-      Menu(Loc("Groups", "groups" :: "index" :: Nil, "C3 groups", loggedIn)),
+      Menu("Groups") / "groups" >> loggedIn,
 
-      Menu(Loc("Users", "users" :: "index" :: Nil, "C3 users", loggedIn)),
+      Menu("GroupsView") / "viewgroup" >> loggedIn >> Hidden,
+
+      Menu("Users") / "users" >> loggedIn,
+      //Menu(Loc("Groups", "groups" :: _ :: Nil, "C3 groups", loggedIn)),
+
+      //Menu(Loc("GroupView", "groups" :: "view" :: Nil, "C3 group", loggedIn)),
+
+      //Menu(Loc("GroupVdfsfiew", "groups" :: "heh" :: Nil, "C3 grogdsgsdup", loggedIn)),
+
+      //Menu(Loc("Users", "users" :: "index" :: Nil, "C3 users", loggedIn)),
 
       // Menu with special Link
-      Menu(Loc("Static", Link(List("static"), true, "/static/index"), 
-	       "Static Content")))
+      Menu(Loc("Static", Link(List("static"), true, "/static/index"),"Static Content"))
+
+
+    )
 
     LiftRules.setSiteMapFunc(() => User.sitemapMutator(sitemap()))
+
+
+
+    LiftRules.statelessRewrite.prepend(NamedPF("ParticularGroupViewRewrite") {
+        case RewriteRequest(
+            ParsePath("group" :: groupname  :: directory , _, _,_), _, _) =>
+            RewriteResponse(
+                "viewgroup" :: Nil, Map("groupname" -> groupname,"groupdirectory" -> directory.mkString("/"))  // Use webapp/viewgroup.html
+            )
+    })
+
+
 
     /*
      * Show the spinny image when an Ajax call starts
      */
     LiftRules.ajaxStart =
       Full(() => LiftRules.jsArtifacts.show("ajax-loader").cmd)
+
+
 
     /*
      * Make the spinny image go away when it ends

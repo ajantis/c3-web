@@ -5,6 +5,7 @@ import net.liftweb.util.FieldError
 import xml.Text
 import net.liftweb.common.Box
 import net.liftweb.http.SHtml
+import org.aphreet.c3.apiaccess.{File, C3Client}
 
 /**
  * Copyright (c) 2011, Dmitry Ivanov
@@ -56,6 +57,29 @@ class Group extends LongKeyedMapper[Group] with IdPK {
     }
 
     override def validations = isUnique _ :: super.validations
+  }
+
+  def getChilds(): List[C3Resource] = getChilds("")
+  def getChilds(directory: String) : List[C3Resource] = {
+
+    var resources: List[C3Resource] = List()
+
+    for( node <- C3Client().listResources(pathToDirectory = this.name.is+directory)) {
+
+      val resName = (node \ "@name") text
+
+      if( ((node \ "@leaf") text).toBoolean ){
+        // File () ?? // TODO
+        Nil
+      }else{
+        resources = Catalog( name = resName, group = this ) :: resources
+      }
+    }
+    resources
+
+  }
+  def createCatalog (catalogName : String) : Boolean = {
+    C3Client().createDir(this.name.is+"/"+catalogName)
   }
 
 

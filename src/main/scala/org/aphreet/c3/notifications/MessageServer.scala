@@ -44,14 +44,13 @@ object MessageServer extends LiftActor with ListenerManager {
 
    // TODO rewrite with Queue!
 
-   private var messages: List[Message] = Message.findAll(MaxRows(MAX_MESSAGES_ON_PAGE)).sortWith(_.dateCreated.is after _.dateCreated.is )
+   private var messages: List[Message] = Message.findAll(MaxRows(MAX_MESSAGES_ON_PAGE)).sortWith(_.dateCreated.is.getTime > _.dateCreated.is.getTime )
 
    def createUpdate = messages
 
    override def lowPriority = {
      case s: Message => {
-       messages = s :: messages
-       s.save
+       messages = s.saveMe :: messages
        updateListeners()
 
      }

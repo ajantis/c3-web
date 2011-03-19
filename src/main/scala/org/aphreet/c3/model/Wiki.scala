@@ -31,6 +31,6 @@ package org.aphreet.c3.model
  * POSSIBILITY OF SUCH DAMAGE.
  */
  
- 
- 
-class Wiki
+class Wiki {
+
+}

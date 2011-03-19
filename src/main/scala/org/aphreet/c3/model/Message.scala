@@ -2,6 +2,7 @@ package org.aphreet.c3.model
 
 import net.liftweb.mapper._
 import java.text.SimpleDateFormat
+import net.liftweb.util.TimeHelpers.now
 import java.util.Date
 
 /**
@@ -46,7 +47,7 @@ class Message extends LongKeyedMapper[Message] with IdPK {
 
    object author extends MappedLongForeignKey(this,User)
 
-   object dateCreated extends MappedDate(this){
+   object dateCreated extends MappedDateTime(this){
      override def defaultValue = new Date
    }
 

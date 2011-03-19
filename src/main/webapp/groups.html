@@ -1,0 +1,23 @@
+<div class="lift:surround?with=default;at=content">
+  <h2>Groups  <a href="javascript:showDiv('addGroup')"><img src="/images/add_48.png" style="position: relative; top: 8px;" width="32" height="32" align="middle"/></a></h2>
+
+  <div id="addGroup" style="display:none;">
+  <lift:snippet type="GroupForm.add" form="post">
+      <b>Group name: </b> <group:name/> <br/>
+      <b>Owner: </b> <group:owner/>
+      <br/>
+
+      <group:submit/>
+      <br/><br/>
+  </lift:snippet>
+  <hr/>
+  </div>
+
+  <br/>
+  <lift:snippet type="GroupForm.list">
+      <ul>
+          <li><group:name/> - <group:owner/> </li>
+      </ul>
+  </lift:snippet>
+
+</div>

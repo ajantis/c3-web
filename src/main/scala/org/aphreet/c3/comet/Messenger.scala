@@ -41,9 +41,8 @@ import net.liftweb.util.TimeHelpers.now
  
 class Messenger extends CometActor with CometListener {
 
-   val welcomeMsg = Message.create.text("Welcome!").author(ServerUser)
 
-   private var msgs: List[Message] = List(welcomeMsg)
+   private var msgs: List[Message] = List()
 
    def registerWith = MessageServer
 
@@ -65,7 +64,7 @@ class Messenger extends CometActor with CometListener {
       {
         SHtml.text("", s =>
             {
-              val msg = Message.create; msg.text(s).author(User.currentUser openOr Guest).dateCreated(now); MessageServer ! msg
+              val msg = Message.create.text(s).author(User.currentUser openOr Guest).dateCreated(now); MessageServer ! msg
             }
           )
       }
@@ -75,7 +74,8 @@ class Messenger extends CometActor with CometListener {
     </td>
     </tr>
     {
-      msgs.map(m => {<tr style="width: 230px;"><td class="messengerBod" style="width: 230px;" ><p><span class="rightDate">{m.dateCreatedFormatted}</span><br/><b>{m.authorName}</b>:<br/><span style="word-break: break-word;">{m.text.is}</span></p></td></tr>})
+      msgs.map(m => {<tr style="width: 230px;"><td class="messengerBod" style="width: 230px;" ><p>
+        <span class="rightDate">{m.dateCreatedFormatted}</span><br/><b>{m.authorName}</b>:<br/><span style="word-break: break-word;">{m.text.is}</span></p></td></tr>})
     }
     </table>
     {<lift:form>{SHtml.ajaxButton("Clear",{ () => {if(User.loggedIn_?){MessageServer ! DeleteAll }; SetHtml("TODO",{<hr4></hr4>}) }},("class" -> "button"))}</lift:form>}

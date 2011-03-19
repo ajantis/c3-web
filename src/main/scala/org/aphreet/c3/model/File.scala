@@ -1,5 +1,7 @@
 package org.aphreet.c3.model
 
+import org.aphreet.c3.apiaccess.C3Client
+
 /**
  * Copyright (c) 2011, Dmitry Ivanov
  * All rights reserved.
@@ -32,5 +34,19 @@ package org.aphreet.c3.model
  */
  
  
- 
-class File
+
+
+class File(val group : Group, val name : String, parentCatalog : Catalog) extends C3Resource with C3ResourceMapping[File] {
+
+  val resourceType = C3Resource.C3_FILE
+
+  def saveToC3() : Boolean = {
+    false
+    // TODO
+  }
+
+}
+
+object File {
+  def apply(group : Group, name : String, catalog : Catalog) = new File(group,name,catalog)
+}

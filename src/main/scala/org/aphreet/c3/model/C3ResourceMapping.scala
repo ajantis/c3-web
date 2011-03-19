@@ -1,5 +1,7 @@
 package org.aphreet.c3.model
 
+import xml.NodeSeq
+
 /**
  * Copyright (c) 2011, Dmitry Ivanov
  * All rights reserved.
@@ -33,4 +35,10 @@ package org.aphreet.c3.model
  
  
  
-class Link
+trait C3ResourceMapping[T <: C3Resource] {
+
+
+  def saveToC3() : Boolean
+
+
+}

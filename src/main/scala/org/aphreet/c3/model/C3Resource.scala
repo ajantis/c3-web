@@ -1,7 +1,5 @@
 package org.aphreet.c3.model
 
-import net.liftweb.mapper._
-
 /**
  * Copyright (c) 2011, Dmitry Ivanov
  * All rights reserved.
@@ -35,22 +33,11 @@ import net.liftweb.mapper._
  
  
  
-class Category extends LongKeyedMapper[Category] with IdPK {
-
-  def getSingleton = Category
-
-  object group extends MappedLongForeignKey(this,Group)
-
-  object name extends MappedString(this,64)
-
-  //tags
-
-
+abstract class C3Resource {
+  val resourceType : String
 }
 
-object Category extends Category with LongKeyedMetaMapper[Category] {
-
-  override def dbTableName = "categories"
-  override def fieldOrder = Nil
-
+object C3Resource {
+  val C3_DIRECTORY = "directory"
+  val C3_FILE = "file"
 }

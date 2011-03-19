@@ -1,5 +1,9 @@
 package org.aphreet.c3.model
 
+import org.aphreet.c3.apiaccess.C3Client
+import xml.NodeSeq
+
+
 /**
  * Copyright (c) 2011, Dmitry Ivanov
  * All rights reserved.
@@ -33,4 +37,18 @@ package org.aphreet.c3.model
  
  
  
-class Catalog
+class Catalog(val group : Group, val name : String) extends C3Resource with C3ResourceMapping[Catalog] {
+
+  val resourceType = C3Resource.C3_DIRECTORY
+
+  def saveToC3() : Boolean = {
+    C3Client().createDir(group.name+"/"+name)
+  }
+
+
+
+}
+
+object Catalog {
+  def apply(group : Group, name : String) = new Catalog(group,name)
+}

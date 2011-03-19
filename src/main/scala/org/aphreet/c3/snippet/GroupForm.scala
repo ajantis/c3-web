@@ -1,11 +1,12 @@
 package org.aphreet.c3.snippet
 
-import xml.NodeSeq
-import org.aphreet.c3.model.Group
 import org.aphreet.c3.apiaccess.C3Client
 import net.liftweb.http.{SHtml, S}
 import net.liftweb.util.BindHelpers._
-
+import xml.{Text, NodeSeq}
+import net.liftweb.mapper.By
+import org.aphreet.c3.model.{File, C3Resource, Catalog, Group}
+import net.liftweb.common.{Logger, Full, Empty}
 
 /**
  * Copyright (c) 2011, Dmitry Ivanov
@@ -42,12 +43,16 @@ import net.liftweb.util.BindHelpers._
  
 class GroupForm {
 
+
+  val logger = Logger(classOf[GroupForm])
+
   def list(html: NodeSeq) : NodeSeq = {
 
     val groupList = Group.findAll
 
     groupList.flatMap(group =>
-      bind("group", html, "name" -> group.name,"owner" -> group.owner.obj.map(usr => usr.email.is).openOr("<unknown>"))
+      bind("group", html, "name" -> <a href={"/group/"+group.name}>{group.name}</a>,
+        "owner" -> group.owner.obj.map(usr => usr.email.is).openOr("<unknown>"))
     )
 
   }
@@ -63,7 +68,7 @@ class GroupForm {
         group.validate match {
           case Nil => {
             group.save
-            C3Client.createGroupMapping(group)
+            C3Client().createGroupMapping(group)
             S.notice("Added group: " + group.name); S.redirectTo("/groups/")
           }
           case xs => S.error(xs) ; S.mapSnippet(invokedAs, newGroup)
@@ -78,6 +83,63 @@ class GroupForm {
     }
 
     newGroup(form)
+  }
+
+
+  def view(html: NodeSeq) : NodeSeq = {
+
+    val groupdir = "/"+S.param("groupdirectory").openOr("")
+
+
+
+    S.param("groupname") match {
+      case Full(groupname) => {
+        Group.find(By(Group.name,groupname)) match {
+          case Full(group) => {
+            bind("group", html,
+              "name" -> group.name,
+              "owner" -> {group.owner.obj.map(usr => usr.email.is) openOr "unknown"},
+              "linkup" -> {
+                val link = {
+                  if(groupdir!="/") {
+                     "/" + groupdir.split('/').tail.reverse.tail.reverse.mkString("/") match {
+                       case "/" => ""
+                       case s => s
+                     }
+                  }
+                  else ""
+                }
+                //SHtml.link("/group/"+ groupname + link,()=>{},Text("../"))
+                <a href={"/group/"+ groupname + link}>../</a>
+              },
+              "childs" -> {
+
+                 (ns: NodeSeq) => group.getChilds(groupdir).flatMap(child =>
+                   bind("child",ns,
+                      "name" -> {
+                         child.resourceType match {
+                           case C3Resource.C3_DIRECTORY => {
+                             <a href={"/group/"+groupname+groupdir+"/"+child.asInstanceOf[Catalog].name}>{child.asInstanceOf[Catalog].name}</a>
+                           }
+                           case C3Resource.C3_FILE => {
+                             <a href={"/group/"+groupname+groupdir+"/"+child.asInstanceOf[File].name}>{child.asInstanceOf[File].name}</a>
+                           }
+                         }
+                      },
+                      "type" -> child.resourceType
+                  )):NodeSeq
+                }
+              )
+            }
+          case Empty => Text("Group "+groupname+" wasn't found in C3")
+
+        }
+      }
+      case Empty => {
+        Text("No group was choosed")
+      }
+    }
+
   }
 
 }

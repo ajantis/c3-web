@@ -1,0 +1,23 @@
+<div class="lift:surround?with=default;at=content">
+  <h2>Users <a href="javascript:showDiv('addUser')"><img src="/images/add_48.png" style="position: relative; top: 8px;" width="32" height="32" align="middle"/></a></h2>
+
+  <div id="addUser" style="display: none;">
+  <lift:snippet type="UserForm.add" form="post">
+      <b>First name: </b> <user:firstName/> <br/>
+      <b>Last name: </b> <user:lastName/>
+      <br/>
+
+      <user:submit/>
+      <br/><br/>
+  </lift:snippet>
+  <hr/>
+  </div>
+
+  <br/>
+  <lift:snippet type="UserForm.list">
+      <ul>
+          <li><user:name/></li>
+      </ul>
+  </lift:snippet>
+
+</div>
