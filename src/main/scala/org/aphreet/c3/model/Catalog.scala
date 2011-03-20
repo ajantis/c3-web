@@ -41,6 +41,7 @@ class Catalog(val group : Group, val name : String) extends C3Resource with C3Re
 
   val resourceType = C3Resource.C3_DIRECTORY
 
+
   def saveToC3() : Boolean = {
     C3Client().createDir(group.name+"/"+name)
   }

@@ -39,7 +39,7 @@ import org.aphreet.c3.apiaccess.{File, C3Client}
  */
  
 
-class Group extends LongKeyedMapper[Group] with IdPK {
+class Group extends LongKeyedMapper[Group] with IdPK with ManyToMany{
 
   thisgroup =>
 
@@ -48,6 +48,8 @@ class Group extends LongKeyedMapper[Group] with IdPK {
   object owner extends MappedLongForeignKey(this,User){
     override def toForm = Box(SHtml.selectObj[User](User.findAll.map(user => (user,user.email.is)),User.currentUser, usr => thisgroup.owner(usr)))
   }
+
+  object users extends MappedManyToMany(UserGroup, UserGroup.group, UserGroup.user, User)
 
   object name extends MappedString(this,64){
 
@@ -92,6 +94,6 @@ object Group extends Group with LongKeyedMetaMapper[Group] {
   override def fieldOrder = name :: Nil
 
 
-  //object users extends HasManyThrough[Group,User,UserGroup,_](this, User, UserGroup, UserGroup.user, UserGroup.group)
+  //object users extends HasManyThrough(this, User, UserGroup, UserGroup.group, UserGroup.user)
 
 }

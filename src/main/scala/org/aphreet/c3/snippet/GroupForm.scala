@@ -5,8 +5,8 @@ import net.liftweb.http.{SHtml, S}
 import net.liftweb.util.BindHelpers._
 import xml.{Text, NodeSeq}
 import net.liftweb.mapper.By
-import org.aphreet.c3.model.{File, C3Resource, Catalog, Group}
 import net.liftweb.common.{Logger, Full, Empty}
+import org.aphreet.c3.model._
 
 /**
  * Copyright (c) 2011, Dmitry Ivanov
@@ -48,7 +48,7 @@ class GroupForm {
 
   def list(html: NodeSeq) : NodeSeq = {
 
-    val groupList = Group.findAll
+    val groupList = User.currentUser.open_!.groups.toList
 
     groupList.flatMap(group =>
       bind("group", html, "name" -> <a href={"/group/"+group.name}>{group.name}</a>,
@@ -67,9 +67,13 @@ class GroupForm {
       def saveMe(): Unit = {
         group.validate match {
           case Nil => {
+
             group.save
+            UserGroup.join(User.currentUser.open_!,group)
+            if(User.currentUser.open_!.id != group.owner.is) UserGroup.join(group.owner.obj.open_!,group)
+
             C3Client().createGroupMapping(group)
-            S.notice("Added group: " + group.name); S.redirectTo("/groups/")
+            S.notice("Added group: " + group.name); S.redirectTo("/groups")
           }
           case xs => S.error(xs) ; S.mapSnippet(invokedAs, newGroup)
 
@@ -117,14 +121,15 @@ class GroupForm {
                  (ns: NodeSeq) => group.getChilds(groupdir).flatMap(child =>
                    bind("child",ns,
                       "name" -> {
-                         child.resourceType match {
-                           case C3Resource.C3_DIRECTORY => {
+                         <a href={"/group/"+groupname+groupdir+"/"+child.name}>{child.name}</a>
+                         /*child.resourceType match {
+                           /*case C3Resource.C3_DIRECTORY => {
                              <a href={"/group/"+groupname+groupdir+"/"+child.asInstanceOf[Catalog].name}>{child.asInstanceOf[Catalog].name}</a>
                            }
                            case C3Resource.C3_FILE => {
                              <a href={"/group/"+groupname+groupdir+"/"+child.asInstanceOf[File].name}>{child.asInstanceOf[File].name}</a>
-                           }
-                         }
+                           }*/
+                         } */
                       },
                       "type" -> child.resourceType
                   )):NodeSeq

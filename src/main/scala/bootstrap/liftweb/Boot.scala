@@ -32,7 +32,7 @@ class Boot {
 
     // where to search snippet
     LiftRules.addToPackages("org.aphreet.c3")
-    Schemifier.schemify(true, Schemifier.infoF _, User, Group, Category,Message)
+    Schemifier.schemify(true, Schemifier.infoF _, User, Group, Category,Message,UserGroup)
 
     val loggedIn = If(() => User.loggedIn_?,
                   () => RedirectResponse("/user_mgt/login"))
@@ -46,13 +46,7 @@ class Boot {
       Menu("GroupsView") / "viewgroup" >> loggedIn >> Hidden,
 
       Menu("Users") / "users" >> loggedIn,
-      //Menu(Loc("Groups", "groups" :: _ :: Nil, "C3 groups", loggedIn)),
 
-      //Menu(Loc("GroupView", "groups" :: "view" :: Nil, "C3 group", loggedIn)),
-
-      //Menu(Loc("GroupVdfsfiew", "groups" :: "heh" :: Nil, "C3 grogdsgsdup", loggedIn)),
-
-      //Menu(Loc("Users", "users" :: "index" :: Nil, "C3 users", loggedIn)),
 
       // Menu with special Link
       Menu(Loc("Static", Link(List("static"), true, "/static/index"),"Static Content"))

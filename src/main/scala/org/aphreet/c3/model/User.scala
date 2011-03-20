@@ -10,6 +10,8 @@ import _root_.net.liftweb.common._
  */
 object User extends User with MetaMegaProtoUser[User] {
 
+
+
   override def dbTableName = "users" // define the DB table name
   override def screenWrap = Full(<lift:surround with="default" at="content">
 			       <lift:bind /></lift:surround>)
@@ -24,7 +26,7 @@ object User extends User with MetaMegaProtoUser[User] {
 /**
  * An O-R mapped "User" class that includes first name, last name, password and we add a "Personal Essay" to it
  */
-class User extends MegaProtoUser[User] {
+class User extends MegaProtoUser[User] with ManyToMany {
   def getSingleton = User // what's the "meta" server
 
   // define an additional field for a personal essay
@@ -34,7 +36,7 @@ class User extends MegaProtoUser[User] {
     override def displayName = "Personal Essay"
   }
 
-
+  object groups extends MappedManyToMany(UserGroup, UserGroup.user, UserGroup.group, Group)
 
 
 

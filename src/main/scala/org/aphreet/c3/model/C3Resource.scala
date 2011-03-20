@@ -35,6 +35,7 @@ package org.aphreet.c3.model
  
 abstract class C3Resource {
   val resourceType : String
+  val name : String
 }
 
 object C3Resource {
