@@ -172,4 +172,22 @@ class GroupForm {
       }
   }
 
+  def uploadHere(xhtml: NodeSeq): NodeSeq = {
+      if (S.get_?) {
+
+        bind("ul", chooseTemplate("choose", "get", xhtml),
+          "file_upload" -> SHtml.fileUpload(ul => theUpload(Full(ul))),
+          "filename" -> SHtml.text("",(filename: String) => theUploadPath(if(S.uri.contains("/group/")) Full(S.uri.split("/group/").last +"/"+filename) else Empty)),
+          "submitfile" -> SHtml.submit("upload",() => S.redirectTo(S.uri)))
+      }
+      else {
+
+        C3Client().uploadFile( theUploadPath.is.open_!,theUpload.is.map(v => v.file).open_!)
+
+        bind("ul", chooseTemplate("choose", "post", xhtml),
+          "filename" -> theUpload.is.map(v => Text(v.fileName))
+        )
+      }
+  }
+
 }

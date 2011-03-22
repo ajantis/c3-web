@@ -1,5 +1,21 @@
 <div class="lift:surround?with=default;at=content">
 
+
+  <lift:snippet type="GroupForm.uploadHere" form="post" multipart="true">
+     <choose:post>
+        <p>
+            File <ul:filename></ul:filename> successfully uploaded<br/>
+        </p>
+     </choose:post>
+
+    <choose:get>
+        Select a file to upload: <ul:file_upload></ul:file_upload><br/>
+        Choose the name for the file: <ul:filename/>
+        <input type="submit" value="Upload File"/>
+    </choose:get>
+
+  </lift:snippet>
+
   <lift:snippet type="GroupForm.view">
 
       <h2>Group <group:name/> ( owner: <group:owner/> ) </h2>
