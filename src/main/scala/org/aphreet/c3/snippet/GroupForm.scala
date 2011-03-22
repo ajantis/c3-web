@@ -1,16 +1,3 @@
-package org.aphreet.c3.snippet
-
-import org.aphreet.c3.apiaccess.C3Client
-import net.liftweb.util.BindHelpers._
-import xml.{Text, NodeSeq}
-import net.liftweb.mapper.By
-import org.aphreet.c3.model._
-import net.liftweb.common.{Box, Logger, Full, Empty}
-import net.liftweb.http.{FileParamHolder, RequestVar, SHtml, S}
-import net.liftweb.util.SecurityHelpers
-
-
-
 /**
  * Copyright (c) 2011, Dmitry Ivanov
  * All rights reserved.
@@ -41,9 +28,18 @@ import net.liftweb.util.SecurityHelpers
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
- 
- 
- 
+
+package org.aphreet.c3.snippet
+
+import org.aphreet.c3.apiaccess.C3Client
+import net.liftweb.util.BindHelpers._
+import xml.{Text, NodeSeq}
+import net.liftweb.mapper.By
+import org.aphreet.c3.model._
+import net.liftweb.common.{Box, Logger, Full, Empty}
+import net.liftweb.http.{FileParamHolder, RequestVar, SHtml, S}
+import net.liftweb.util.SecurityHelpers
+
 class GroupForm {
 
 
@@ -124,7 +120,16 @@ class GroupForm {
                  (ns: NodeSeq) => group.getChilds(groupdir).flatMap(child =>
                    bind("child",ns,
                       "name" -> {
-                         <a href={"/group/"+groupname+groupdir.tail+"/"+child.name}>{child.name}</a>
+
+                        val url =
+
+                          if(groupdir.tail.isEmpty){
+                            "/group/"+groupname + "/"+ child.name
+                          }else{
+                            "/group/"+groupname + "/" + groupdir.tail + "/"+ child.name
+                          }
+
+                         <a href={url}>{child.name}</a>
 
                       },
                       "type" -> child.resourceType

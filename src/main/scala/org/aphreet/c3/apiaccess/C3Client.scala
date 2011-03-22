@@ -1,20 +1,5 @@
-package org.aphreet.c3.apiaccess
-
-import net.liftweb.util.Props
-import org.apache.commons.httpclient.methods._
-import multipart._
-import org.aphreet.c3.model.Group
-import net.liftweb.common.Logger
-import java.text.SimpleDateFormat
-import java.util.Date
-import org.apache.commons.httpclient._
-import javax.crypto.Mac
-import javax.crypto.spec.SecretKeySpec
-import xml.{XML, NodeSeq}
-import java.io.{ByteArrayInputStream, InputStream}
-
 /**
- * Copyright (c) 2011, Dmitry Ivanov
+ * Copyright (c) 2011, Dmitry Ivanov, Mikhail Malygin
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -44,106 +29,101 @@ import java.io.{ByteArrayInputStream, InputStream}
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-object C3Client {
-  def apply() = new C3Client()
-}
+package org.aphreet.c3.apiaccess
 
-class C3Client  {
+import net.liftweb.util.Props
+import org.apache.commons.httpclient.methods._
+import multipart._
+import org.aphreet.c3.model.Group
+import net.liftweb.common.Logger
+import java.text.SimpleDateFormat
+import java.util.Date
+import org.apache.commons.httpclient._
+import javax.crypto.Mac
+import javax.crypto.spec.SecretKeySpec
+import xml.{XML, NodeSeq}
+import java.io.{ByteArrayInputStream, InputStream}
 
-  val requestUri = "/rest/fs"
-
-  //val url = host + requestUri
-
-  val url = "http://c3.aphreet.org:7373" + requestUri
+class C3Client(val host:String, val contextPath:String,  val domain:String, val secret:String)  {
 
   val logger = Logger(classOf[C3Client])
 
   val httpClient = new HttpClient()
 
-  val C3_FS_API_URL = Props.get("c3fsapi_url") openOr("http://localhost:7373/rest/fs/")
 
-  // Domain
- // c3web   95b39c16b3b6316a938ea5acbdba24a3
-  def createGroupMapping(group: Group): Boolean = {
+  def createGroupMapping(group: Group): Boolean = createDir(group.name.is)
 
-    val createRequest = new PostMethod(C3_FS_API_URL + group.name.is)
-
-    addAuthHeader(createRequest, "/rest/fs/" + group.name.is)
-
-    createRequest.addRequestHeader("x-c3-nodetype", "directory")
-
-    try{
-      val status = httpClient.executeMethod(createRequest)
-      status match {
-        case HttpStatus.SC_CREATED => {
-           true
-        }
-        case _ => {
-          throw new Exception(("Failed to make group-directory mapping, message: " + createRequest.getResponseBodyAsString))
-          false
-        }
-      }
-    }
-  }
   /*
-  def listGroupFiles(group: Group): List[(String, FileType)] = {
-    val getRequest = new GetMethod(C3_FS_API_URL + group.name.is)
+ def listGroupFiles(group: Group): List[(String, FileType)] = {
+   val getRequest = new GetMethod(C3_FS_API_URL + group.name.is)
 
-    val groupCatalog = {
-      httpClient.executeMethod(getRequest)
-      getRequest.getResponseBodyAsString.asInstanceOf[NodeSeq]
-    }
+   val groupCatalog = {
+     httpClient.executeMethod(getRequest)
+     getRequest.getResponseBodyAsString.asInstanceOf[NodeSeq]
+   }
 
-    val nodes = ((groupCatalog \\ "directory")(0) \\ "nodes")(0) \\ "node"
+   val nodes = ((groupCatalog \\ "directory")(0) \\ "nodes")(0) \\ "node"
 
-    {for(node <- nodes) yield (
-      (node \ "@name") text ,
-        if((((node \ "@leaf") text) toBoolean)){
-         File()
-        }else{
-         Directory()
-        }
-      )}.toList
+   {for(node <- nodes) yield (
+     (node \ "@name") text ,
+       if((((node \ "@leaf") text) toBoolean)){
+        File()
+       }else{
+        Directory()
+       }
+     )}.toList
 
-  } */
+ } */
 
   def createDir(path: String): Boolean = {
 
-    val createRequest = new PostMethod(C3_FS_API_URL + path)
-
-    addAuthHeader(createRequest, "/rest/fs/" + path)
+    val createRequest = createPostMethod(path)
 
     createRequest.addRequestHeader("x-c3-nodetype", "directory")
 
     try{
+
       val status = httpClient.executeMethod(createRequest)
+
       status match {
-        case HttpStatus.SC_CREATED => {
-           true
-        }
+        case HttpStatus.SC_CREATED => true
+
         case _ => {
-          throw new Exception(("Failed to create directory: "+path+", message: " + createRequest.getResponseBodyAsString))
-          false
+          logger.debug("Failed to create directory. Message: " + createRequest.getResponseBodyAsString)
+          throw new C3ClientException("Failed to create directory: " + path + ". Status code is " + status)
         }
       }
+    }finally {
+      createRequest.releaseConnection;
     }
   }
 
   def listResources(pathToDirectory: String) = {
 
-    val getRequest = new GetMethod(C3_FS_API_URL + pathToDirectory)
-
-    addAuthHeader(getRequest, "/rest/fs/" + pathToDirectory)
+    val getRequest = createGetMethod(pathToDirectory)
 
     val catalog = {
-      httpClient.executeMethod(getRequest)
-      XML.load(getRequest.getResponseBodyAsStream)
+      try{
+        val status = httpClient.executeMethod(getRequest)
+        status match{
+          case HttpStatus.SC_OK =>
+            if(isXmlResponse(getRequest))
+              XML.load(getRequest.getResponseBodyAsStream)
+            else{
+              throw new C3ClientException("Failed to get resource list. Unexpected content type")
+            }
+
+          case _ => {
+            logger.warn("Failed to get resource, code: " + status + " response: " + getRequest.getResponseBodyAsString)
+            throw new C3ClientException("Failed to get resource")
+          }
+        }
+      }finally {
+        getRequest.releaseConnection
+      }
     }
 
-    val nodes = ((catalog \\ "directory")(0) \\ "nodes")(0) \\ "node"
-
-    nodes
-
+    ((catalog \\ "directory")(0) \\ "nodes")(0) \\ "node"
   }
 
 
@@ -153,23 +133,20 @@ class C3Client  {
   }
 
   private def writeData(path:String, filePart:FilePart, metadata:Map[String, String]) = {
-    val postMethod = new PostMethod(C3_FS_API_URL + path)
-
-    addAuthHeader(postMethod, "/rest/fs/" + path)
+    val postMethod = createPostMethod(path)
 
     val parts:Array[Part] = (filePart ::
-            metadata.map(e => new StringPart(e._1, e._2, "UTF-8")).toList).toArray
+      metadata.map(e => new StringPart(e._1, e._2, "UTF-8")).toList).toArray
 
     postMethod.setRequestEntity(new MultipartRequestEntity(parts, postMethod.getParams))
 
     try{
       val status = httpClient.executeMethod(postMethod)
       status match {
-        case HttpStatus.SC_CREATED => {
-        }
+        case HttpStatus.SC_CREATED =>
         case _ =>
-          println(postMethod.getResponseBodyAsString)
-          throw new Exception(("Filed to post resource "+ path +" , code " + status).asInstanceOf[String])
+          logger.debug("Failed to post resource. Response: " + postMethod.getResponseBodyAsString)
+          throw new C3ClientException(("Filed to post resource "+ path +" , code " + status).asInstanceOf[String])
       }
     }finally {
       postMethod.releaseConnection
@@ -178,9 +155,30 @@ class C3Client  {
 
   def createGroup (groupName : String) = createDir(groupName)
 
+  private def isXmlResponse(method:HttpMethod):Boolean = {
+    val contentTypeHeader = method.getResponseHeader("Content-Type")
 
-  private val domain = Props.get("c3_domain_name") openOr "anonymous"
-  private val secret = Props.get("c3_domain_secret") openOr ""
+    if(contentTypeHeader != null){
+      contentTypeHeader.getValue.startsWith("application/xml")
+    }else{
+      false
+    }
+  }
+
+  private def createPostMethod(relativePath:String):PostMethod = {
+    logger.info(host + contextPath + relativePath)
+    val method = new PostMethod(host + contextPath + relativePath)
+    addAuthHeader(method, contextPath + relativePath)
+    method
+  }
+
+  private def createGetMethod(relativePath:String):GetMethod = {
+    logger.info(host + contextPath + relativePath)
+        
+    val method = new GetMethod(host + contextPath + relativePath)
+    addAuthHeader(method, contextPath + relativePath)
+    method
+  }
 
   private def addAuthHeader(method:HttpMethodBase, resource:String) = {
     if(domain != "anonymous"){
@@ -228,6 +226,20 @@ class C3Client  {
 
 }
 
+object C3Client {
+  def apply() = {
+
+    val host = Props.get("c3_host") openOr("http://localhost:7373")
+
+    val contextPath = Props.get("c3_context_path") openOr("/rest/fs/")
+
+    val domain = Props.get("c3_domain_name") openOr "anonymous"
+
+    val secret = Props.get("c3_domain_secret") openOr ""
+
+    new C3Client(host, contextPath, domain, secret)
+  }
+}
 
 class ByteArrayPartSource(val data:Array[Byte]) extends PartSource {
 

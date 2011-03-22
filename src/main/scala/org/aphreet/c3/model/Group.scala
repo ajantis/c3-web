@@ -62,6 +62,7 @@ class Group extends LongKeyedMapper[Group] with IdPK with ManyToMany{
   }
 
   def getChilds(): List[C3Resource] = getChilds("")
+
   def getChilds(directory: String) : List[C3Resource] = {
 
     var resources: List[C3Resource] = List()

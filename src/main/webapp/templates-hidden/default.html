@@ -1,10 +1,9 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:lift="http://liftweb.net/">
-  <head>
+<head>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-    <meta name="description" content="" />
-    <meta name="keywords" content="" />
     
-		<title>org.aphreet.c3:c3webclient:1.0.0</title>
+    <title>C3 web client</title>
+
     <style class="lift:CSS.blueprint" />
     <style class="lift:CSS.fancyType" />
     <script id="jquery" src="/classpath/jquery.js" type="text/javascript"/>
@@ -17,71 +16,71 @@
     <script type="text/javascript" src="/js/2leveltab.js"/>
 
     <script>function showDiv(div)
-          {
-             if (document.getElementById(div).style.display=="none")document.getElementById(div).style.display="block";
-             else document.getElementById(div).style.display="none";
-          }
+        {
+        if (document.getElementById(div).style.display=="none")document.getElementById(div).style.display="block";
+        else document.getElementById(div).style.display="none";
+        }
     </script>
 
 
     <style type="text/css">
-/* <![CDATA[ */
-.edit_error_class {
-  display: block;
-  color: red;
-}
+        /* <![CDATA[ */
+        .edit_error_class {
+        display: block;
+        color: red;
+        }
 
-.lift_error {
-  color: red;
-}
+        .lift_error {
+        color: red;
+        }
 
-.lift_warning {
-  color: yellow;
-}
+        .lift_warning {
+        color: yellow;
+        }
 
-.lift_notice {
-}
+        .lift_notice {
+        }
 
-.sidebar ul {
-	margin:0;
-	padding:0;
-	border-bottom:1px solid #ccc;
-}
-	 
-
-.sidebar ul li {
-	margin:0;
-	padding:0;
-	list-style:none;
-	border:1px solid #ccc;
-	border-bottom:none;
-}
-
-.sidebar ul li a {
-	display:block;
-	padding:3px;
-	text-indent:30px;
-	text-decoration:none;
-}
-
-.sidebar ul li span {
-	display:block;
-	padding:3px;
-	text-indent:30px;
-	text-decoration:none;
-}
-
-.sidebar ul li a:hover {
-	background-color: #eee;
-}
+        .sidebar ul {
+        margin:0;
+        padding:0;
+        border-bottom:1px solid #ccc;
+        }
 
 
-  /* ]]> */
-  </style>
-  </head>
-  <body>
-    <div class="container">
-      <div class="column span-23 last" style="text-align: center">
+        .sidebar ul li {
+        margin:0;
+        padding:0;
+        list-style:none;
+        border:1px solid #ccc;
+        border-bottom:none;
+        }
+
+        .sidebar ul li a {
+        display:block;
+        padding:3px;
+        text-indent:30px;
+        text-decoration:none;
+        }
+
+        .sidebar ul li span {
+        display:block;
+        padding:3px;
+        text-indent:30px;
+        text-decoration:none;
+        }
+
+        .sidebar ul li a:hover {
+        background-color: #eee;
+        }
+
+
+        /* ]]> */
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="column span-23 last" style="text-align: center">
         <h1 class="alt">C3 Web Client<img alt="" id="ajax-loader" style="display:none; margin-bottom: 0px; margin-left: 5px" src="/images/ajax-loader.gif"/></h1>
 
         <div id="LiftMenuPlace" >
@@ -90,78 +89,75 @@
         </div>
         <br/>
 
-      </div>
+    </div>
 
-      <hr/>
-      <lift:Menu.json/>
-      <script type="text/javascript">
+    <hr/>
+    <lift:Menu.json/>
+    <script type="text/javascript">
 
         var menuplace = document.getElementById("LiftMenuPlace")
         var list=document.getElementById("menutab")
         for(var i=0; i!=lift_menu.menu.length;i++)
         {
-            var node = document.createElement("li")
-            var text = document.createTextNode(lift_menu.menu[i].text)
-            var link = document.createElement("a")
-            link.setAttribute("href",lift_menu.menu[i].uri)
-            if(lift_menu.menu[i].children.length!=0){
+        var node = document.createElement("li")
+        var text = document.createTextNode(lift_menu.menu[i].text)
+        var link = document.createElement("a")
+        link.setAttribute("href",lift_menu.menu[i].uri)
+        if(lift_menu.menu[i].children.length!=0){
 
-                var submenu = document.createElement("div")
-                submenu.setAttribute("id",i)
-                node.setAttribute("rel",i)
-                submenu.setAttribute("class","submenustyle")
+        var submenu = document.createElement("div")
+        submenu.setAttribute("id",i)
+        node.setAttribute("rel",i)
+        submenu.setAttribute("class","submenustyle")
 
-                for(var t=0;t!=lift_menu.menu[i].children.length;t++){
-                    var child_node = lift_menu.menu[i].children[t]
-                    var child_text = document.createTextNode(lift_menu.menu[i].children[t].text)
-                    var child_link = document.createElement("a")
-                    child_link.setAttribute("href",lift_menu.menu[i].children[t].uri)
-                    child_link.appendChild(child_text)
-                    //child_node.appendChild(child_link)
-                    submenu.appendChild(child_link)
-                }
-                menuplace.appendChild(submenu)
-            }
+        for(var t=0;t!=lift_menu.menu[i].children.length;t++){
+        var child_node = lift_menu.menu[i].children[t]
+        var child_text = document.createTextNode(lift_menu.menu[i].children[t].text)
+        var child_link = document.createElement("a")
+        child_link.setAttribute("href",lift_menu.menu[i].children[t].uri)
+        child_link.appendChild(child_text)
+        //child_node.appendChild(child_link)
+        submenu.appendChild(child_link)
+        }
+        menuplace.appendChild(submenu)
+        }
 
-            link.appendChild(text)
-            node.appendChild(link)
-            list.appendChild(node)
+        link.appendChild(text)
+        node.appendChild(link)
+        list.appendChild(node)
         }
 
         //initialize tab menu, by passing in ID of UL
         initalizetab("menutab")
-        </script>
+    </script>
 
-      <div class="column span-6 colborder sidebar">
+    <!-- C3 embedded messenger  -->
+    <!--
+    <div class="column span-6 colborder sidebar">
         <hr class="space" />
+
         <div>
-          <span class="lift:Msgs?showAll=true"/>
-          <hr class="space" />
+            <span class="lift:Msgs?showAll=true"/>
+            <hr class="space" />
         </div>
 
-        <!-- C3 embedded messenger  -->
         <lift:comet type="Messenger"/>
-        <br/>
-
-      </div>
-
-
-
-      <div class="column span-17 last">
-        <div id="content" >
-
-	  <!-- The HTML content will go here -->
-
-	</div>
-      </div>
-
-      <hr />
-      <div class="column span-23 last" style="text-align: center">
-        <h4 class="alt">
-          <a href="http://www.liftweb.net"><i>Lift</i></a> 
-	        is Copyright 2007-2010 WorldWide Conferencing, LLC.  Distributed under an Apache 2.0 License.</h4>
-      </div>
-      
     </div>
-  </body>
+    -->
+
+    <div class="column span-17 last">
+        <div id="content" >
+            <!-- The HTML content will go here -->
+        </div>
+    </div>
+
+    <hr />
+    <div class="column span-23 last" style="text-align: center">
+        <h4 class="alt">
+            <a href="http://www.liftweb.net"><i>Lift</i></a>
+            is Copyright 2007-2010 WorldWide Conferencing, LLC.  Distributed under an Apache 2.0 License.</h4>
+    </div>
+
+</div>
+</body>
 </html>
