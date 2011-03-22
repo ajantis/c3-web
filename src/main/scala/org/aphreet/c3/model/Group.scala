@@ -5,7 +5,7 @@ import net.liftweb.util.FieldError
 import xml.Text
 import net.liftweb.common.Box
 import net.liftweb.http.SHtml
-import org.aphreet.c3.apiaccess.{File, C3Client}
+import org.aphreet.c3.apiaccess.{C3Client}
 
 /**
  * Copyright (c) 2011, Dmitry Ivanov
