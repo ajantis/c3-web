@@ -61,9 +61,9 @@ class Group extends LongKeyedMapper[Group] with IdPK with ManyToMany{
     override def validations = isUnique _ :: super.validations
   }
 
-  def getChilds(): List[C3Resource] = getChilds("")
+  def getChildren(): List[C3Resource] = getChildren("")
 
-  def getChilds(directory: String) : List[C3Resource] = {
+  def getChildren(directory: String) : List[C3Resource] = {
 
     var resources: List[C3Resource] = List()
 

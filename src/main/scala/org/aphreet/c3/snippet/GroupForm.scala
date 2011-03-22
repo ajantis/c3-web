@@ -117,7 +117,7 @@ class GroupForm {
               },
               "childs" -> {
 
-                 (ns: NodeSeq) => group.getChilds(groupdir).flatMap(child =>
+                 (ns: NodeSeq) => group.getChildren(groupdir).flatMap(child =>
                    bind("child",ns,
                       "name" -> {
 
