@@ -1,12 +1,15 @@
 package org.aphreet.c3.snippet
 
 import org.aphreet.c3.apiaccess.C3Client
-import net.liftweb.http.{SHtml, S}
 import net.liftweb.util.BindHelpers._
 import xml.{Text, NodeSeq}
 import net.liftweb.mapper.By
-import net.liftweb.common.{Logger, Full, Empty}
 import org.aphreet.c3.model._
+import net.liftweb.common.{Box, Logger, Full, Empty}
+import net.liftweb.http.{FileParamHolder, RequestVar, SHtml, S}
+import net.liftweb.util.SecurityHelpers
+
+
 
 /**
  * Copyright (c) 2011, Dmitry Ivanov
@@ -121,15 +124,8 @@ class GroupForm {
                  (ns: NodeSeq) => group.getChilds(groupdir).flatMap(child =>
                    bind("child",ns,
                       "name" -> {
-                         <a href={"/group/"+groupname+groupdir+"/"+child.name}>{child.name}</a>
-                         /*child.resourceType match {
-                           /*case C3Resource.C3_DIRECTORY => {
-                             <a href={"/group/"+groupname+groupdir+"/"+child.asInstanceOf[Catalog].name}>{child.asInstanceOf[Catalog].name}</a>
-                           }
-                           case C3Resource.C3_FILE => {
-                             <a href={"/group/"+groupname+groupdir+"/"+child.asInstanceOf[File].name}>{child.asInstanceOf[File].name}</a>
-                           }*/
-                         } */
+                         <a href={"/group/"+groupname+groupdir.tail+"/"+child.name}>{child.name}</a>
+
                       },
                       "type" -> child.resourceType
                   )):NodeSeq
@@ -145,6 +141,35 @@ class GroupForm {
       }
     }
 
+  }
+
+
+
+
+  // the request-local variable that hold the file parameter
+  private object theUpload extends RequestVar[Box[FileParamHolder]](Empty)
+  private object theUploadPath extends RequestVar[Box[String]](Empty)
+
+  /**
+   * Bind the appropriate XHTML to the form
+   */
+  def upload(xhtml: NodeSeq): NodeSeq = {
+
+
+      if (S.get_?) bind("ul", chooseTemplate("choose", "get", xhtml),
+                        "file_upload" -> SHtml.fileUpload(ul => theUpload(Full(ul))),
+                        "file_upload_path" -> SHtml.text("",(path: String) => theUploadPath(Full(path))))
+      else {
+
+        C3Client().uploadFile( theUploadPath.is.open_!,theUpload.is.map(v => v.file).open_!)
+
+        bind("ul", chooseTemplate("choose", "post", xhtml),
+          "file_name" -> theUpload.is.map(v => Text(v.fileName)),
+          "mime_type" -> theUpload.is.map(v => Box.legacyNullTest(v.mimeType).map(Text).openOr(Text("No mime type supplied"))), // Text(v.mimeType)),
+          "length" -> theUpload.is.map(v => Text(v.file.length.toString)),
+          "md5" -> theUpload.is.map(v => Text(SecurityHelpers.hexEncode(SecurityHelpers.md5(v.file))))
+        )
+      }
   }
 
 }

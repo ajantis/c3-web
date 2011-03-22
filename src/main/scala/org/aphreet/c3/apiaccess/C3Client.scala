@@ -2,6 +2,7 @@ package org.aphreet.c3.apiaccess
 
 import net.liftweb.util.Props
 import org.apache.commons.httpclient.methods._
+import multipart._
 import org.aphreet.c3.model.Group
 import net.liftweb.common.Logger
 import java.text.SimpleDateFormat
@@ -10,6 +11,7 @@ import org.apache.commons.httpclient._
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
 import xml.{XML, NodeSeq}
+import java.io.{ByteArrayInputStream, InputStream}
 
 /**
  * Copyright (c) 2011, Dmitry Ivanov
@@ -48,6 +50,12 @@ object C3Client {
 
 class C3Client  {
 
+  val requestUri = "/rest/fs"
+
+  //val url = host + requestUri
+
+  val url = "http://c3.aphreet.org:7373" + requestUri
+
   val logger = Logger(classOf[C3Client])
 
   val httpClient = new HttpClient()
@@ -77,7 +85,7 @@ class C3Client  {
       }
     }
   }
-
+  /*
   def listGroupFiles(group: Group): List[(String, FileType)] = {
     val getRequest = new GetMethod(C3_FS_API_URL + group.name.is)
 
@@ -97,7 +105,7 @@ class C3Client  {
         }
       )}.toList
 
-  }
+  } */
 
   def createDir(path: String): Boolean = {
 
@@ -136,6 +144,36 @@ class C3Client  {
 
     nodes
 
+  }
+
+
+  def uploadFile( path:String, fileByteArray:Array[Byte] ) = {
+    val fileBytePartSource = new ByteArrayPartSource(fileByteArray)
+    writeData(path, new FilePart("data", fileBytePartSource), Map[String, String]())
+  }
+
+  private def writeData(path:String, filePart:FilePart, metadata:Map[String, String]) = {
+    val postMethod = new PostMethod(C3_FS_API_URL + path)
+
+    addAuthHeader(postMethod, "/rest/fs/" + path)
+
+    val parts:Array[Part] = (filePart ::
+            metadata.map(e => new StringPart(e._1, e._2, "UTF-8")).toList).toArray
+
+    postMethod.setRequestEntity(new MultipartRequestEntity(parts, postMethod.getParams))
+
+    try{
+      val status = httpClient.executeMethod(postMethod)
+      status match {
+        case HttpStatus.SC_CREATED => {
+        }
+        case _ =>
+          println(postMethod.getResponseBodyAsString)
+          throw new Exception(("Filed to post resource "+ path +" , code " + status).asInstanceOf[String])
+      }
+    }finally {
+      postMethod.releaseConnection
+    }
   }
 
   def createGroup (groupName : String) = createDir(groupName)
@@ -188,12 +226,18 @@ class C3Client  {
     hexString.toString
   }
 
-
-
 }
 
-sealed abstract class FileType
 
-case class File extends FileType
+class ByteArrayPartSource(val data:Array[Byte]) extends PartSource {
 
-case class Directory extends FileType
+  override def createInputStream:InputStream = {
+    new ByteArrayInputStream(data)
+  }
+
+  override def getFileName:String = {
+    return "array"
+  }
+
+  override def getLength:Long = data.length
+}

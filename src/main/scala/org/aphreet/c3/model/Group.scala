@@ -72,7 +72,7 @@ class Group extends LongKeyedMapper[Group] with IdPK with ManyToMany{
 
       if( ((node \ "@leaf") text).toBoolean ){
         // File () ?? // TODO
-        Nil
+        resources = File(this, resName, Catalog(name = directory, group=this)) :: resources
       }else{
         resources = Catalog( name = resName, group = this ) :: resources
       }

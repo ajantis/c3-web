@@ -47,6 +47,8 @@ class Boot {
 
       Menu("Users") / "users" >> loggedIn,
 
+      Menu("File upload") / "file_upload" >> loggedIn >> Hidden,
+
 
       // Menu with special Link
       Menu(Loc("Static", Link(List("static"), true, "/static/index"),"Static Content"))
