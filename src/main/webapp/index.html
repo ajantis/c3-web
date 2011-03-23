@@ -1,9 +1,40 @@
 <div class="lift:surround?with=default;at=content">
-  <h2>Welcome to C3!</h2>
-  <p>
-    <div class="lift:helloWorld.howdy">
-      Welcome to c3webclient at <span id="time">The current time</span>
-    </div>
-  </p>
+  <link rel="stylesheet" type="text/css" href="/css/main.css" />
+
+  <div id="featured">
+     <lift:snippet type="MainSnippet.featuredGroups">
+         <h3 class="alt">featured groups</h3>
+         <featuredGroups:groups>
+             <li><group:name></group:name></li>
+         </featuredGroups:groups>
+     </lift:snippet>
+  </div>
+
+  <h2 align="center">Welcome to C3!</h2>
+
+  <div id="aboutC3" align="">
+      <p><b>C3</b> is an abbreviation for "<b>Content</b>, <b>Collaboration</b>, <b>Communication</b>".</p>
+      The main goal of the system is to provide access to non-structured information storage
+      and give opportunity to share your knowledge artifacts among others with ease.
+  </div>
+
+  <br/><br/><br/>
+
+  <div id="mygroups">
+    <h3 class="alt"> My groups </h3>
+
+      <lift:snippet type="MainSnippet.myGroupsList">
+          <ul>
+              <myGroupsList:groups>
+                <li>
+                    <group:name></group:name>
+                </li>
+              </myGroupsList:groups>
+          </ul>
+      </lift:snippet>
+   </div>
+
+   <br/><br/><br/>
+
 </div>
 

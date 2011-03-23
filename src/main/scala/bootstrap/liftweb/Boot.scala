@@ -43,7 +43,11 @@ class Boot {
 
       Menu("Groups") / "groups" >> loggedIn,
 
-      Menu("GroupsView") / "viewgroup" >> loggedIn >> Hidden,
+      Menu("GroupOverview") / "groupsection" / "index" >> loggedIn >> Hidden,
+
+      Menu("GroupFiles") / "groupsection" / "files" >> loggedIn >> Hidden,
+
+      Menu("GroupWiki") / "groupsection" / "wiki" >> loggedIn >> Hidden,
 
       Menu("Users") / "users" >> loggedIn,
 
@@ -60,14 +64,27 @@ class Boot {
 
 
 
-    LiftRules.statelessRewrite.prepend(NamedPF("ParticularGroupViewRewrite") {
+    LiftRules.statelessRewrite.prepend(NamedPF("ParticularGroupFilesRewrite") {
         case RewriteRequest(
             ParsePath("group" :: groupname  :: directory , _, _,_), _, _) =>
             RewriteResponse(
-                "viewgroup" :: Nil, Map("groupname" -> groupname,"groupdirectory" -> directory.mkString("/"))  // Use webapp/viewgroup.html
+                "groupsection" :: "files" :: Nil, Map("groupname" -> groupname,"groupdirectory" -> directory.mkString("/"))
             )
     })
-
+    LiftRules.statelessRewrite.prepend(NamedPF("ParticularGroupOverviewRewrite") {
+        case RewriteRequest(
+            ParsePath("group" :: groupname  :: Nil , _, _,_), _, _) =>
+            RewriteResponse(
+                "groupsection" ::  "index" :: Nil, Map("groupname" -> groupname)
+            )
+    })
+    LiftRules.statelessRewrite.prepend(NamedPF("ParticularGroupOverviewRewrite") {
+        case RewriteRequest(
+            ParsePath("group" :: groupname  :: "wiki" :: Nil , _, _,_), _, _) =>
+            RewriteResponse(
+                "groupsection" ::  "wiki" :: Nil, Map("groupname" -> groupname)
+            )
+    })
 
 
     /*

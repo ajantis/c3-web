@@ -1,0 +1,21 @@
+#featured{
+    width:100px;
+    float:right;
+    background-color: #D0D0D0;
+    margin:5px;
+    padding:5px;
+    text-align: center;
+}
+
+#aboutC3 {
+    width: 500px;
+    margin:0 auto;
+    padding:10px;
+    background-color: #F0F0F0;
+}
+
+#mygroups {
+    width: 700px;
+    padding:10px;
+    background-color: #F0F0F0;
+}
