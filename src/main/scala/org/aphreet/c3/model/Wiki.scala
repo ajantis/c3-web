@@ -1,7 +1,5 @@
-package org.aphreet.c3.model
-
 /**
- * Copyright (c) 2011, Dmitry Ivanov
+ * Copyright (c) 2011, Dmitry Ivanov, Mikhail Malygin
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,7 +28,28 @@ package org.aphreet.c3.model
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
- 
-class Wiki {
+
+package org.aphreet.c3.model
+
+import org.aphreet.c3.apiaccess.C3Client
+
+class Wiki(var name:String, var content:String) {
+
+}
+
+object Wiki{
+
+  def getPage(group:String, name:String):Option[Wiki] = {
+    try{
+      val content = C3Client().getResourceAsString(group + "/wiki/" + name)
+      Some(new Wiki(name, content))
+    }catch{
+      case e => None
+    }
+  }
+
+  def createPage(group:String, page:Wiki) = {
+
+  }
 
 }

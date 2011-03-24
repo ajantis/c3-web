@@ -113,7 +113,7 @@ class GroupForm {
                   else ""
                 }
                 //SHtml.link("/group/"+ groupname + link,()=>{},Text("../"))
-                <a href={"/group/"+ groupname + link}>../</a>
+                <a href={"/group/"+ groupname + "/files" + link}>../</a>
               },
               "childs" -> {
 
@@ -124,9 +124,9 @@ class GroupForm {
                         val url =
 
                           if(groupdir.tail.isEmpty){
-                            "/group/"+groupname + "/"+ child.name
+                            "/group/"+groupname + "/files/"+ child.name
                           }else{
-                            "/group/"+groupname + "/" + groupdir.tail + "/"+ child.name
+                            "/group/"+groupname + "/files/" + groupdir.tail + "/"+ child.name
                           }
 
                          <a href={url}>{child.name}</a>

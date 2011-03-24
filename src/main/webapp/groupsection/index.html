@@ -1,37 +1,36 @@
 <div class="lift:surround?with=default;at=content">
 
+    <lift:snippet type="GroupForm.view">
 
-  <lift:snippet type="GroupForm.uploadHere" form="post" multipart="true">
-     <choose:post>
-        <p>
-            File <ul:filename></ul:filename> successfully uploaded<br/>
-        </p>
-     </choose:post>
+        <h2>Group <group:name/> ( owner: <group:owner/> ) </h2>
 
-    <choose:get>
-        Select a file to upload: <ul:file_upload></ul:file_upload><br/>
-        Choose the name for the file: <ul:filename/>
-        <input type="submit" value="Upload File"/>
-    </choose:get>
-
-  </lift:snippet>
-
-  <lift:snippet type="GroupForm.view">
-
-      <h2>Group <group:name/> ( owner: <group:owner/> ) </h2>
-
-      <h3>Contents: </h3>
-      <table>
-          <tr><td><a href="/groups">All groups</a></td></tr>
-          <tr><td><group:linkup/></td><td>UP ^^</td></tr>
-              <group:childs>
-                  <tr>
+        <h3>Contents: </h3>
+        <table>
+            <tr><td><a href="/groups">All groups</a></td></tr>
+            <tr><td><group:linkup/></td><td>UP ^^</td></tr>
+            <group:childs>
+                <tr>
                     <td><child:name/></td>
                     <td><child:type/></td>
-                  </tr>
-              </group:childs>
-      </table>
+                </tr>
+            </group:childs>
+        </table>
 
-  </lift:snippet>
+    </lift:snippet>
+
+    <lift:snippet type="GroupForm.uploadHere" form="post" multipart="true">
+        <choose:post>
+            <p>
+                File <ul:filename></ul:filename> successfully uploaded<br/>
+            </p>
+        </choose:post>
+
+        <choose:get>
+            Select a file to upload: <ul:file_upload></ul:file_upload><br/>
+            Choose the name for the file: <ul:filename/>
+            <input type="submit" value="Upload File"/>
+        </choose:get>
+
+    </lift:snippet>
 
 </div>

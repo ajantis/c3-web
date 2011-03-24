@@ -66,7 +66,7 @@ class Boot {
 
     LiftRules.statelessRewrite.prepend(NamedPF("ParticularGroupFilesRewrite") {
         case RewriteRequest(
-            ParsePath("group" :: groupname  :: directory , _, _,_), _, _) =>
+            ParsePath("group" :: groupname  :: "files" :: directory , _, _,_), _, _) =>
             RewriteResponse(
                 "groupsection" :: "files" :: Nil, Map("groupname" -> groupname,"groupdirectory" -> directory.mkString("/"))
             )
@@ -80,9 +80,9 @@ class Boot {
     })
     LiftRules.statelessRewrite.prepend(NamedPF("ParticularGroupOverviewRewrite") {
         case RewriteRequest(
-            ParsePath("group" :: groupname  :: "wiki" :: Nil , _, _,_), _, _) =>
+            ParsePath("group" :: groupname  :: "wiki" :: pagename :: Nil , _, _,_), _, _) =>
             RewriteResponse(
-                "groupsection" ::  "wiki" :: Nil, Map("groupname" -> groupname)
+                "groupsection" ::  "wiki" :: Nil, Map("groupname" -> groupname, "pagename" -> pagename)
             )
     })
 

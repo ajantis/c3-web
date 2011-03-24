@@ -153,6 +153,22 @@ class C3Client(val host:String, val contextPath:String,  val domain:String, val 
     }
   }
 
+  def getResourceAsString(path:String):String = {
+    val getMethod = createGetMethod(path)
+
+    val status = httpClient.executeMethod(getMethod)
+
+    status match {
+      case HttpStatus.SC_OK => {
+        getMethod.getResponseBodyAsString
+      }
+      case _ => {
+        logger.debug("Failed to get resource. Response: " + getMethod.getResponseBodyAsString)
+        throw new C3ClientException(("Filed to get resource "+ path +" , code " + status).asInstanceOf[String])
+      }
+    }
+  }
+
   def createGroup (groupName : String) = createDir(groupName)
 
   private def isXmlResponse(method:HttpMethod):Boolean = {
