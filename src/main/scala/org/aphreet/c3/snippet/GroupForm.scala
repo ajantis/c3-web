@@ -138,12 +138,13 @@ class GroupForm {
               )
             }
           case Empty => Text("Group "+groupname+" wasn't found in C3")
-
+          case _ => Text("WTF with groupname?")
         }
       }
       case Empty => {
         Text("No group was choosed")
       }
+      case _ => Text("Something bad has happend")
     }
 
   }
