@@ -212,4 +212,20 @@ class GroupForm {
       }
   }
 
+
+  def groupMenu(html: NodeSeq) : NodeSeq = {
+
+     S.param("groupname") match {
+       case Full(name) => {
+         bind("menu", html,
+          "overview" -> <a href={"/group/"+name}>Overview</a>,
+          "files" -> <a href={"/group/"+name+"/files"}>Files</a>,
+          "wiki" -> <a href={"/group/"+name+"/wiki"}>Wiki</a>)
+       }
+       case _ => Text("")
+     }
+
+  }
+
+
 }

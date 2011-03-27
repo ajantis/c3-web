@@ -19,3 +19,31 @@
     padding:10px;
     background-color: #F0F0F0;
 }
+
+
+ul.tabs {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+ul.tabs li {
+  float: left;
+  padding: 0;
+  margin: 0;
+  padding-top: 0;
+  background: url(tab_right.png) no-repeat right top;
+  margin-right: 1px;
+}
+
+ul.tabs li a {
+  display: block;
+  padding: 0px 10px;
+  color: #C0C0C0;
+  text-decoration: none;
+  background: url(tab_left.png) no-repeat left top;
+}
+
+ul.tabs li a:hover {
+  color: #000;
+}
