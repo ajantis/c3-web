@@ -12,6 +12,7 @@
                 <tr>
                     <td><child:name/></td>
                     <td><child:type/></td>
+                    <td><child:delete/></td>
                 </tr>
             </group:childs>
         </table>
@@ -19,24 +20,57 @@
     </lift:snippet>
          <!--  -->
 
-    <h3>Add folder: </h3><a href="javascript:showDiv('fileupload')"><img src="/images/folder_add_48.png" style="position: relative; top: 8px;" width="32" height="32" align="middle"/></a>
-    <div id="fileupload" style="display: none;">
+    <div id="Toolbar menu">
+        <h3>
+            <a href="javascript:showDiv('createdirectory')"><img src="/images/folder_add_48.png" style="position: relative; top: 8px;" width="32" height="32" align="middle"/></a>
+            <a href="javascript:showDiv('fileupload')"><img src="/images/box_download_48.png" style="position: relative; top: 8px;" width="32" height="32" align="middle"/></a>
+            <br/>  <br/>
+        </h3>
+    </div>
+
+
+        <lift:snippet type="GroupForm.createDirectoryHere" form="post" multipart="true">
+            <choose:post>
+               <div id="createdirectory" ul:uploadDirStyle="">
+                <p>
+                    Directory <ul:dirname></ul:dirname> successfully created<br/>
+                </p>
+
+               </div>
+            </choose:post>
+
+            <choose:get>
+              <div id="createdirectory" ul:uploadDirStyle="">
+                Directory name: <ul:dirname/>
+                <input type="submit" value="Create"/>
+
+              </div>
+            </choose:get>
+        </lift:snippet>
+
+
+
         <lift:snippet type="GroupForm.uploadHere" form="post" multipart="true">
             <choose:post>
+               <div id="fileupload" ul:uploadFileStyle="">
                 <p>
                     File <ul:filename></ul:filename> successfully uploaded<br/>
                 </p>
                   <br/> <br/>
+               </div>
             </choose:post>
 
             <choose:get>
-                Select a file to upload: <ul:file_upload></ul:file_upload><br/>
-                File name: <ul:filename/>
-                <input type="submit" value="Upload File"/>
+              <div id="fileupload" ul:uploadFileStyle="">
+                File: <ul:file_upload></ul:file_upload><br/>
+                Name: <ul:filename/>
+                <input type="submit" value="Upload"/>
                   <br/> <br/>
+              </div>
             </choose:get>
         </lift:snippet>
-     </div>
+
+
 
 
 </div>

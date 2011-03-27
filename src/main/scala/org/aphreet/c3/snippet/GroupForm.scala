@@ -39,6 +39,7 @@ import org.aphreet.c3.model._
 import net.liftweb.common.{Box, Logger, Full, Empty}
 import net.liftweb.http.{FileParamHolder, RequestVar, SHtml, S}
 import net.liftweb.util.SecurityHelpers
+import net.liftweb.http.js.JsCmds.Alert
 
 class GroupForm {
 
@@ -95,7 +96,6 @@ class GroupForm {
     val groupdir = "/"+S.param("groupdirectory").openOr("")
 
 
-
     S.param("groupname") match {
       case Full(groupname) => {
         Group.find(By(Group.name,groupname)) match {
@@ -133,7 +133,18 @@ class GroupForm {
                          <a href={url}>{child.name}</a>
 
                       },
-                      "type" -> child.resourceType
+                      "type" -> child.resourceType,
+                      "delete" -> SHtml.ajaxButton("Delete",() => {
+
+                        try {
+                          C3Client().delete(groupname+"/"+groupdir.tail + "/"+ child.name)
+                          Alert("Resource "+ child.name +" deleted.")
+                        }
+                        catch {
+                          case e: Exception => Alert(e.toString)
+                        }
+
+                      } )
                   )):NodeSeq
                 }
               )
@@ -150,51 +161,46 @@ class GroupForm {
 
   }
 
-
-
-
   // the request-local variable that hold the file parameter
   private object theUpload extends RequestVar[Box[FileParamHolder]](Empty)
   private object theUploadPath extends RequestVar[Box[String]](Empty)
+  private object theCreateDirectoryPath extends RequestVar[Box[String]](Empty)
 
-  /**
-   * Bind the appropriate XHTML to the form
-   */
-  def upload(xhtml: NodeSeq): NodeSeq = {
+  def uploadHere(xhtml: NodeSeq): NodeSeq = {
+      if (S.get_? || theUploadPath.isEmpty) {
 
-
-      if (S.get_?) bind("ul", chooseTemplate("choose", "get", xhtml),
-                        "file_upload" -> SHtml.fileUpload(ul => theUpload(Full(ul))),
-                        "file_upload_path" -> SHtml.text("",(path: String) => theUploadPath(Full(path))))
+        bind("ul", chooseTemplate("choose", "get", xhtml),
+          "file_upload" -> SHtml.fileUpload(ul => theUpload(Full(ul))),
+          "filename" -> SHtml.text("",(filename: String) => theUploadPath(if(S.uri.contains("/group/")) Full(S.uri.split("/group/").last.split("/files").mkString +"/"+filename) else Empty)),
+          "submitfile" -> SHtml.submit("Upload",() => { S.redirectTo(S.uri) }),
+          AttrBindParam("uploadFileStyle", Text("display: none;"), "style"))
+      }
       else {
 
         C3Client().uploadFile( theUploadPath.is.open_!,theUpload.is.map(v => v.file).open_!)
 
         bind("ul", chooseTemplate("choose", "post", xhtml),
-          "file_name" -> theUpload.is.map(v => Text(v.fileName)),
-          "mime_type" -> theUpload.is.map(v => Box.legacyNullTest(v.mimeType).map(Text).openOr(Text("No mime type supplied"))), // Text(v.mimeType)),
-          "length" -> theUpload.is.map(v => Text(v.file.length.toString)),
-          "md5" -> theUpload.is.map(v => Text(SecurityHelpers.hexEncode(SecurityHelpers.md5(v.file))))
+          "filename" -> theUpload.is.map(v => Text(v.fileName)),
+          AttrBindParam("uploadFileStyle", Text(""), "style")
         )
       }
   }
 
-
-  import net.liftweb.http.js.JsCmds._
-  def uploadHere(xhtml: NodeSeq): NodeSeq = {
-      if (S.get_?) {
+  def createDirectoryHere(xhtml: NodeSeq): NodeSeq = {
+     if (S.get_? || theCreateDirectoryPath.isEmpty) {
 
         bind("ul", chooseTemplate("choose", "get", xhtml),
-          "file_upload" -> SHtml.fileUpload(ul => theUpload(Full(ul))),
-          "filename" -> SHtml.text("",(filename: String) => theUploadPath(if(S.uri.contains("/group/")) Full(S.uri.split("/group/").last +"/"+filename) else Empty)),
-          "submitfile" -> SHtml.submit("upload",() => { S.redirectTo(S.uri +"/files") }))
+          "dirname" -> SHtml.text("",(dirname: String) => theCreateDirectoryPath(if(S.uri.contains("/group/")) Full(S.uri.split("/group/").last.split("/files").mkString +"/"+dirname) else Empty)),
+          "submitdirectory" -> SHtml.submit("Create",() => { S.redirectTo(S.uri) }),
+          AttrBindParam("uploadDirStyle", Text("display: none;"), "style"))
       }
       else {
 
-        C3Client().uploadFile( theUploadPath.is.open_!,theUpload.is.map(v => v.file).open_!)
+        C3Client().createDir(theCreateDirectoryPath.is.open_!)
 
         bind("ul", chooseTemplate("choose", "post", xhtml),
-          "filename" -> theUpload.is.map(v => Text(v.fileName))
+          "dirname" -> theCreateDirectoryPath.is.map(v => Text(v)),
+          AttrBindParam("uploadDirStyle", Text(""), "style")
         )
       }
   }

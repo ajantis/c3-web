@@ -87,6 +87,24 @@ class Boot {
                 "groupsection" ::  "wiki" :: Nil, Map("groupname" -> groupname, "pagename" -> pagename)
             )
     })
+    /*
+    LiftRules.statelessRewrite.prepend(NamedPF("ParticularGroupOverviewRewrite") {
+        case RewriteRequest(
+            ParsePath("group" :: groupname  :: "download" :: filePath , _, _,_), _, _) => {
+            () =>
+             for {
+               stream <- tryo(new java.io.FileInputStream(
+                MySnippet.fileVar.is.getOrElse( {
+                   println("FILE VAR: "+MySnippet.fileVar.is)
+                   S.notice("No file found!")
+                   redirectTo("/analysis/inprocess")
+                 })))
+               if null ne stream
+             } yield StreamingResponse(stream, () => stream.close,
+                             stream.available, List("Content-Type" -> "text/plain"), Nil,
+      200) }
+    }) */
+
     LiftRules.statelessRewrite.prepend(NamedPF("ParticularUserRewrite") {
         case RewriteRequest(
             ParsePath("user" :: useremail  :: Nil , _, _,_), _, _) =>
@@ -94,7 +112,6 @@ class Boot {
                 "users" ::  "edituser" :: Nil, Map("useremail" -> useremail)
             )
     })
-
 
     /*
      * Show the spinny image when an Ajax call starts

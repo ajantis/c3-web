@@ -53,6 +53,41 @@ class C3Client(val host:String, val contextPath:String,  val domain:String, val 
 
   def createGroupMapping(group: Group): Boolean = createDir(group.name.is)
 
+  def delete(path:String) = {
+    val deleteMethod = createDeleteMethod(path)
+
+    try{
+      val status = httpClient.executeMethod(deleteMethod)
+      status match {
+        case HttpStatus.SC_OK => {
+
+        }
+        case _ =>
+          println(deleteMethod.getResponseBodyAsString)
+          throw new Exception(("Failed to delete file, code " + status).asInstanceOf[String])
+      }
+    }
+  }
+
+  def getNodeData(path:String):Array[Byte] = {
+
+    val getMethod = createGetMethod(path)
+
+    try{
+      val status = httpClient.executeMethod(getMethod)
+      status match {
+        case HttpStatus.SC_OK => {
+         getMethod.getResponseBody
+        }
+        case _ =>
+          println(getMethod.getResponseBodyAsString)
+          throw new Exception(("Failed to get resource, code " + status).asInstanceOf[String])
+      }
+    }finally{
+      getMethod.releaseConnection();
+    }
+  }
+
 
   def createDir(path: String): Boolean = {
 
@@ -171,6 +206,14 @@ class C3Client(val host:String, val contextPath:String,  val domain:String, val 
     logger.info(host + contextPath + relativePath)
         
     val method = new GetMethod(host + contextPath + relativePath)
+    addAuthHeader(method, contextPath + relativePath)
+    method
+  }
+
+  private def createDeleteMethod(relativePath:String):DeleteMethod = {
+    logger.info(host + contextPath + relativePath)
+
+    val method = new DeleteMethod(host + contextPath + relativePath)
     addAuthHeader(method, contextPath + relativePath)
     method
   }
