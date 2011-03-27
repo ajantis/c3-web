@@ -49,7 +49,9 @@ class Boot {
 
       Menu("GroupWiki") / "groupsection" / "wiki" >> loggedIn >> Hidden,
 
-      Menu("Users") / "users" >> loggedIn,
+      Menu("Users") / "users" / "index" >> loggedIn,
+
+      Menu("UserEdit") / "users" / "edituser" >> loggedIn >> Hidden,
 
       Menu("File upload") / "file_upload" >> loggedIn >> Hidden,
 
@@ -83,6 +85,13 @@ class Boot {
             ParsePath("group" :: groupname  :: "wiki" :: pagename :: Nil , _, _,_), _, _) =>
             RewriteResponse(
                 "groupsection" ::  "wiki" :: Nil, Map("groupname" -> groupname, "pagename" -> pagename)
+            )
+    })
+    LiftRules.statelessRewrite.prepend(NamedPF("ParticularUserRewrite") {
+        case RewriteRequest(
+            ParsePath("user" :: useremail  :: Nil , _, _,_), _, _) =>
+            RewriteResponse(
+                "users" ::  "edituser" :: Nil, Map("useremail" -> useremail)
             )
     })
 

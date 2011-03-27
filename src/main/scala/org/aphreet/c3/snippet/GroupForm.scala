@@ -68,8 +68,9 @@ class GroupForm {
           case Nil => {
 
             group.save
-            UserGroup.join(User.currentUser.open_!,group)
-            if(User.currentUser.open_!.id != group.owner.is) UserGroup.join(group.owner.obj.open_!,group)
+
+            // Linking group owner with a new Group in DB
+            UserGroup.join(User.find(By(User.id,group.owner.is)).open_!,group)
 
             C3Client().createGroupMapping(group)
             S.notice("Added group: " + group.name); S.redirectTo("/groups")
@@ -178,13 +179,15 @@ class GroupForm {
       }
   }
 
+
+  import net.liftweb.http.js.JsCmds._
   def uploadHere(xhtml: NodeSeq): NodeSeq = {
       if (S.get_?) {
 
         bind("ul", chooseTemplate("choose", "get", xhtml),
           "file_upload" -> SHtml.fileUpload(ul => theUpload(Full(ul))),
           "filename" -> SHtml.text("",(filename: String) => theUploadPath(if(S.uri.contains("/group/")) Full(S.uri.split("/group/").last +"/"+filename) else Empty)),
-          "submitfile" -> SHtml.submit("upload",() => S.redirectTo(S.uri)))
+          "submitfile" -> SHtml.submit("upload",() => { S.redirectTo(S.uri +"/files") }))
       }
       else {
 

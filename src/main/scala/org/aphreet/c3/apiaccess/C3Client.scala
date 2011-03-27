@@ -41,7 +41,7 @@ import java.util.Date
 import org.apache.commons.httpclient._
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
-import xml.{XML, NodeSeq}
+import xml.XML
 import java.io.{ByteArrayInputStream, InputStream}
 
 class C3Client(val host:String, val contextPath:String,  val domain:String, val secret:String)  {
@@ -53,27 +53,6 @@ class C3Client(val host:String, val contextPath:String,  val domain:String, val 
 
   def createGroupMapping(group: Group): Boolean = createDir(group.name.is)
 
-  /*
- def listGroupFiles(group: Group): List[(String, FileType)] = {
-   val getRequest = new GetMethod(C3_FS_API_URL + group.name.is)
-
-   val groupCatalog = {
-     httpClient.executeMethod(getRequest)
-     getRequest.getResponseBodyAsString.asInstanceOf[NodeSeq]
-   }
-
-   val nodes = ((groupCatalog \\ "directory")(0) \\ "nodes")(0) \\ "node"
-
-   {for(node <- nodes) yield (
-     (node \ "@name") text ,
-       if((((node \ "@leaf") text) toBoolean)){
-        File()
-       }else{
-        Directory()
-       }
-     )}.toList
-
- } */
 
   def createDir(path: String): Boolean = {
 

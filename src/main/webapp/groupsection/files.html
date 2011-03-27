@@ -17,21 +17,26 @@
         </table>
 
     </lift:snippet>
+         <!--  -->
 
-    <lift:snippet type="GroupForm.uploadHere" form="post" multipart="true">
-        <choose:post>
-            <p>
-                File <ul:filename></ul:filename> successfully uploaded<br/>
-            </p>
-        </choose:post>
+    <h3>Add folder: </h3><a href="javascript:showDiv('fileupload')"><img src="/images/folder_add_48.png" style="position: relative; top: 8px;" width="32" height="32" align="middle"/></a>
+    <div id="fileupload" style="display: none;">
+        <lift:snippet type="GroupForm.uploadHere" form="post" multipart="true">
+            <choose:post>
+                <p>
+                    File <ul:filename></ul:filename> successfully uploaded<br/>
+                </p>
+                  <br/> <br/>
+            </choose:post>
 
-        <choose:get>
-            Select a file to upload: <ul:file_upload></ul:file_upload><br/>
-            Choose the name for the file: <ul:filename/>
-            <input type="submit" value="Upload File"/>
-        </choose:get>
-
-    </lift:snippet>
+            <choose:get>
+                Select a file to upload: <ul:file_upload></ul:file_upload><br/>
+                File name: <ul:filename/>
+                <input type="submit" value="Upload File"/>
+                  <br/> <br/>
+            </choose:get>
+        </lift:snippet>
+     </div>
 
 
 </div>

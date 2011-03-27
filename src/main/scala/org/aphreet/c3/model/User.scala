@@ -4,6 +4,8 @@ package model {
 import _root_.net.liftweb.mapper._
 import _root_.net.liftweb.util._
 import _root_.net.liftweb.common._
+import net.liftweb.http.SHtml
+import xml.{NodeSeq, Text}
 
 /**
  * The singleton that has methods for accessing the database
@@ -27,6 +29,9 @@ object User extends User with MetaMegaProtoUser[User] {
  * An O-R mapped "User" class that includes first name, last name, password and we add a "Personal Essay" to it
  */
 class User extends MegaProtoUser[User] with ManyToMany {
+
+  thisuser =>
+
   def getSingleton = User // what's the "meta" server
 
   // define an additional field for a personal essay
@@ -36,7 +41,18 @@ class User extends MegaProtoUser[User] with ManyToMany {
     override def displayName = "Personal Essay"
   }
 
-  object groups extends MappedManyToMany(UserGroup, UserGroup.user, UserGroup.group, Group)
+  object groups extends MappedManyToMany(UserGroup, UserGroup.user, UserGroup.group, Group) {
+
+    def toForm() : NodeSeq = {
+      if(!this.toList.isEmpty) {
+        {<ul>{
+          for(group <- this.toList) yield
+          (<li>{Text(group.name.is).toSeq ++ SHtml.checkbox(true, (selected: Boolean) => if(! selected) UserGroup.find(By(UserGroup.group,group),By(UserGroup.user,thisuser)).open_!.delete_!).toSeq}</li>).flatten
+         }</ul>}.flatten
+      }
+      else Text("No groups.")
+    }
+  }
 
 
 

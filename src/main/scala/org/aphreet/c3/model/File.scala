@@ -36,7 +36,9 @@ import org.aphreet.c3.apiaccess.C3Client
  
 
 
-class File(val group : Group, val name : String, parentCatalog : Catalog) extends C3Resource with C3ResourceMapping[File] {
+class File(val group : Group, val path : String) extends C3Resource with C3ResourceMapping[File] {
+
+  val name = path.split("/").last
 
   val resourceType = C3Resource.C3_FILE
 
@@ -48,5 +50,15 @@ class File(val group : Group, val name : String, parentCatalog : Catalog) extend
 }
 
 object File {
-  def apply(group : Group, name : String, catalog : Catalog) = new File(group,name,catalog)
+  def apply(group : Group, fullpath : String) = new File(group, fullpath)
+
+  /*def getFile(group:String, filePath:String):Option[File] = {
+    try{
+      val content = C3Client().getResourceAsString(group + path)
+      Some(new File(group, filePath, content))
+    }catch{
+      case e => None
+    }
+  }*/
+
 }

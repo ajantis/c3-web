@@ -1,10 +1,12 @@
 package org.aphreet.c3.snippet
 
-import xml.NodeSeq
-import org.aphreet.c3.model.User
 import net.liftweb.util.BindHelpers._
 import org.aphreet.c3.apiaccess.C3Client
 import net.liftweb.http.{SHtml, S}
+import xml.{Text, NodeSeq}
+import net.liftweb.common.Full
+import net.liftweb.mapper.By
+import org.aphreet.c3.model.{Group, User}
 
 /**
  * Copyright (c) 2011, Dmitry Ivanov
@@ -44,7 +46,7 @@ class UserForm {
   def list(html: NodeSeq) : NodeSeq = {
 
     User.findAll.flatMap(user =>
-      bind("user", html, "name" -> {user.firstName+" "+user.lastName})
+      bind("user", html, "name" -> <a href={"/user/"+user.email.is}>{user.firstName+" "+user.lastName}</a> )
     )
   }
 
@@ -74,6 +76,51 @@ class UserForm {
     }
 
     newUser(form)
+  }
+
+  def edit (form: NodeSeq) : NodeSeq = {
+
+    val invokedAs = S.invokedAs
+
+
+    def editUser(form: NodeSeq, user: User) : NodeSeq = {
+      def saveUser (): Unit = {
+        user.validate match {
+          case Nil => {
+            user.save
+            S.notice("User " + user.firstName+" "+user.lastName + " saved."); S.redirectTo("/users/")
+          }
+          case xs => {
+            S.error(xs)
+            S.redirectTo("/user/"+user.email.is)
+          }
+        }
+      }
+
+      bind("user", form,
+                 "firstName" -> user.firstName.toForm,
+                 "lastName" -> user.lastName.toForm,
+                 "email" -> user.email.toForm,
+                 "superUser" -> user.superUser.toForm,
+                 "usergroups" -> user.groups.toForm,
+                 "submit" -> SHtml.submit("Save",saveUser) )
+    }
+
+
+    S.param("useremail") match {
+      case Full(email) => {
+        User.find(By(User.email,email)) match {
+          case Full(user: User) => {
+            editUser(form,user)
+          }
+          case _ => Text("User wasn't found.")
+        }
+      }
+      case _ => {
+        Text("User e-mail is not set.")
+      }
+    }
+
   }
 
 }

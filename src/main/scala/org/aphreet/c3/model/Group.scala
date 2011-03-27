@@ -73,7 +73,7 @@ class Group extends LongKeyedMapper[Group] with IdPK with ManyToMany{
 
       if( ((node \ "@leaf") text).toBoolean ){
         // File () ?? // TODO
-        resources = File(this, resName, Catalog(name = directory, group=this)) :: resources
+        resources = File(group = this, fullpath = directory + "/" + resName) :: resources
       }else{
         resources = Catalog( name = resName, group = this ) :: resources
       }
@@ -93,8 +93,5 @@ object Group extends Group with LongKeyedMetaMapper[Group] {
   override def dbTableName = "groups"
 
   override def fieldOrder = name :: Nil
-
-
-  //object users extends HasManyThrough(this, User, UserGroup, UserGroup.group, UserGroup.user)
 
 }
