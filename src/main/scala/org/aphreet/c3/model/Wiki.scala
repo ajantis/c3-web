@@ -32,12 +32,15 @@
 package org.aphreet.c3.model
 
 import org.aphreet.c3.apiaccess.C3Client
+import net.liftweb.common.Logger
 
 class Wiki(var name:String, var content:String) {
 
 }
 
 object Wiki{
+
+  val logger = Logger(classOf[Wiki])
 
   def getPage(group:String, name:String):Option[Wiki] = {
     try{
@@ -49,7 +52,19 @@ object Wiki{
   }
 
   def createPage(group:String, page:Wiki) = {
+    try{
+      C3Client().uploadFile(group + "/wiki/" + page.name, page.content.getBytes("UTF-8"))
+    }catch{
+      case e => logger.warn("Failed to save resource", e)
+    }
+  }
 
+  def savePage(group:String, page:Wiki) = {
+    try{
+      C3Client().updateResource(group + "/wiki/" + page.name, page.content.getBytes("UTF-8"))
+    }catch{
+      case e => logger.warn("Failed to save resource", e)
+    }
   }
 
 }

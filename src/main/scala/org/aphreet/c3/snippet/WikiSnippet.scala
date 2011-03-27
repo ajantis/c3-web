@@ -33,9 +33,10 @@ package org.aphreet.c3.snippet
 
 import net.liftweb.common.{Logger, Full}
 import xml.NodeSeq
-import net.liftweb.http.S
 import net.liftweb.util.BindHelpers._
 import org.aphreet.c3.model.Wiki
+import net.liftweb.http.{SHtml, S}
+import scala.xml.Text
 
 class WikiSnippet{
 
@@ -57,14 +58,71 @@ class WikiSnippet{
       case Some(page) => {
         bind("wiki", html,
           "name" -> page.name,
-          "content" -> page.content)
+          "content" -> page.content,
+          "actions" -> <a href={"/group/" + groupName + "/wiki/" + pageName + "/edit"}>Edit</a>)
       }
       case None => {
         bind("wiki", html,
           "name" -> pageName,
-          "content" -> "Page not found")
+          "content" -> "Page not found",
+          "actions" -> <a href={"/group/" + groupName + "/wiki/" + pageName + "/edit"}>Create</a>
+        )
       }
     }   
+  }
+
+  def edit(html: NodeSeq) : NodeSeq = {
+
+    var pageContent = ""
+
+    val pageName = S.param("pagename") match {
+      case Full(value) => value
+      case _ => "Main"
+    }
+
+    val groupName = S.param("groupname") match {
+      case Full(value) => value
+      case _ => ""
+    }
+
+    def processWikiEdit() = {
+      Wiki.getPage(groupName, pageName) match {
+        case Some(page) => {
+
+          page.content = pageContent;
+
+          Wiki.savePage(groupName, page)
+          S.redirectTo("/group/" + groupName + "/wiki/" + pageName)
+        }
+
+        case None => {
+
+          val page = new Wiki(pageName, pageContent)
+
+          Wiki.createPage(groupName, page)
+          S.redirectTo("/group/" + groupName + "/wiki/" + pageName)
+        }
+      }
+    }
+
+    Wiki.getPage(groupName, pageName) match {
+      case Some(page) => {
+
+        bind("wiki", html,
+          "name" -> page.name,
+          "content" -> SHtml.textarea(page.content, pageContent = _),
+          "submit" -> SHtml.submit("Save", processWikiEdit)
+        )
+      }
+
+      case None => {
+        bind("wiki", html,
+          "name" -> pageName,
+          "content" -> SHtml.textarea("", pageContent = _),
+          "submit" -> SHtml.submit("Save", processWikiEdit)
+        )
+      }
+    }
   }
 
 }

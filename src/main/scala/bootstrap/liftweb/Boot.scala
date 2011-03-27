@@ -47,7 +47,9 @@ class Boot {
 
       Menu("GroupFiles") / "groupsection" / "files" >> loggedIn >> Hidden,
 
-      Menu("GroupWiki") / "groupsection" / "wiki" >> loggedIn >> Hidden,
+      Menu("GroupWiki") / "groupsection" / "wiki-view" >> loggedIn >> Hidden,
+
+      Menu("GroupWiki") / "groupsection" / "wiki-edit" >> loggedIn >> Hidden,
 
       Menu("Users") / "users" / "index" >> loggedIn,
 
@@ -80,30 +82,22 @@ class Boot {
                 "groupsection" ::  "index" :: Nil, Map("groupname" -> groupname)
             )
     })
-    LiftRules.statelessRewrite.prepend(NamedPF("ParticularGroupOverviewRewrite") {
+
+    LiftRules.statelessRewrite.prepend(NamedPF("ParticularGroupOverviewRewriteWiki") {
         case RewriteRequest(
             ParsePath("group" :: groupname  :: "wiki" :: pagename :: Nil , _, _,_), _, _) =>
             RewriteResponse(
-                "groupsection" ::  "wiki" :: Nil, Map("groupname" -> groupname, "pagename" -> pagename)
+                "groupsection" ::  "wiki-view" :: Nil, Map("groupname" -> groupname, "pagename" -> pagename)
             )
     })
-    /*
-    LiftRules.statelessRewrite.prepend(NamedPF("ParticularGroupOverviewRewrite") {
+
+    LiftRules.statelessRewrite.prepend(NamedPF("ParticularGroupOverviewRewriteWikiMain") {
         case RewriteRequest(
-            ParsePath("group" :: groupname  :: "download" :: filePath , _, _,_), _, _) => {
-            () =>
-             for {
-               stream <- tryo(new java.io.FileInputStream(
-                MySnippet.fileVar.is.getOrElse( {
-                   println("FILE VAR: "+MySnippet.fileVar.is)
-                   S.notice("No file found!")
-                   redirectTo("/analysis/inprocess")
-                 })))
-               if null ne stream
-             } yield StreamingResponse(stream, () => stream.close,
-                             stream.available, List("Content-Type" -> "text/plain"), Nil,
-      200) }
-    }) */
+            ParsePath("group" :: groupname  :: "wiki" :: Nil , _, _,_), _, _) =>
+            RewriteResponse(
+                "groupsection" ::  "wiki-view" :: Nil, Map("groupname" -> groupname, "pagename" -> "Main")
+            )
+    })
 
     LiftRules.statelessRewrite.prepend(NamedPF("ParticularUserRewrite") {
         case RewriteRequest(
@@ -112,6 +106,15 @@ class Boot {
                 "users" ::  "edituser" :: Nil, Map("useremail" -> useremail)
             )
     })
+
+     LiftRules.statelessRewrite.prepend(NamedPF("ParticularGroupOverviewRewriteWikiEdit") {
+        case RewriteRequest(
+            ParsePath("group" :: groupname  :: "wiki" :: pagename :: "edit" :: Nil , _, _,_), _, _) =>
+            RewriteResponse(
+                "groupsection" ::  "wiki-edit" :: Nil, Map("groupname" -> groupname, "pagename" -> pagename)
+            )
+    })
+
 
     /*
      * Show the spinny image when an Ajax call starts

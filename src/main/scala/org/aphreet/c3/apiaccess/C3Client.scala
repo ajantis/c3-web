@@ -146,6 +146,11 @@ class C3Client(val host:String, val contextPath:String,  val domain:String, val 
     writeData(path, new FilePart("data", fileBytePartSource), Map[String, String]())
   }
 
+  def updateResource(path:String, array:Array[Byte]) = {
+    val fileBytePartSource = new ByteArrayPartSource(array)
+    putResource(path, new FilePart("data", fileBytePartSource), Map[String, String]())
+  }
+
   private def writeData(path:String, filePart:FilePart, metadata:Map[String, String]) = {
     val postMethod = createPostMethod(path)
 
@@ -164,6 +169,27 @@ class C3Client(val host:String, val contextPath:String,  val domain:String, val 
       }
     }finally {
       postMethod.releaseConnection
+    }
+  }
+
+  private def putResource(path:String, filePart:FilePart, metadata:Map[String, String]) = {
+    val putMethod = createPutMethod(path)
+
+    val parts:Array[Part] = (filePart ::
+      metadata.map(e => new StringPart(e._1, e._2, "UTF-8")).toList).toArray
+
+    putMethod.setRequestEntity(new MultipartRequestEntity(parts, putMethod.getParams))
+
+    try{
+      val status = httpClient.executeMethod(putMethod)
+      status match {
+        case HttpStatus.SC_OK =>
+        case _ =>
+          logger.debug("Failed to put resource. Response: " + putMethod.getResponseBodyAsString)
+          throw new C3ClientException(("Filed to put resource "+ path +" , code " + status).asInstanceOf[String])
+      }
+    }finally {
+      putMethod.releaseConnection
     }
   }
 
@@ -214,6 +240,14 @@ class C3Client(val host:String, val contextPath:String,  val domain:String, val 
     logger.info(host + contextPath + relativePath)
 
     val method = new DeleteMethod(host + contextPath + relativePath)
+    addAuthHeader(method, contextPath + relativePath)
+    method
+  }
+
+  private def createPutMethod(relativePath:String):PutMethod = {
+    logger.info(host + contextPath + relativePath)
+
+    val method = new PutMethod(host + contextPath + relativePath)
     addAuthHeader(method, contextPath + relativePath)
     method
   }
