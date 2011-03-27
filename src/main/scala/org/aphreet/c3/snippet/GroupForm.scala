@@ -123,13 +123,20 @@ class GroupForm {
                       "name" -> {
 
                         val url =
-
-                          if(groupdir.tail.isEmpty){
-                            "/group/"+groupname + "/files/"+ child.name
-                          }else{
-                            "/group/"+groupname + "/files/" + groupdir.tail + "/"+ child.name
+                          if(child.resourceType=="directory") {
+                            if(groupdir.tail.isEmpty){
+                              "/group/"+groupname + "/files/"+ child.name
+                            }else{
+                              "/group/"+groupname + "/files/" + groupdir.tail + "/"+ child.name
+                            }
                           }
-
+                          else {
+                            if(groupdir.tail.isEmpty){
+                              "/download/"+groupname + "/"+ child.name
+                            }else{
+                              "/download/"+groupname + "/" + groupdir.tail + "/"+ child.name
+                            }
+                          }
                          <a href={url}>{child.name}</a>
 
                       },
@@ -204,5 +211,21 @@ class GroupForm {
         )
       }
   }
+
+
+  def groupMenu(html: NodeSeq) : NodeSeq = {
+
+     S.param("groupname") match {
+       case Full(name) => {
+         bind("menu", html,
+          "overview" -> <a href={"/group/"+name}>Overview</a>,
+          "files" -> <a href={"/group/"+name+"/files"}>Files</a>,
+          "wiki" -> <a href={"/group/"+name+"/wiki"}>Wiki</a>)
+       }
+       case _ => Text("")
+     }
+
+  }
+
 
 }

@@ -10,6 +10,7 @@ import Helpers._
 import _root_.net.liftweb.mapper.{DB, ConnectionManager, Schemifier, DefaultConnectionIdentifier, StandardDBVendor}
 import _root_.java.sql.{Connection, DriverManager}
 import org.aphreet.c3.model._
+import org.aphreet.c3.apiaccess.C3Client
 
 /**
  * A class that's instantiated early and run.  It allows the application
@@ -82,8 +83,7 @@ class Boot {
                 "groupsection" ::  "index" :: Nil, Map("groupname" -> groupname)
             )
     })
-
-    LiftRules.statelessRewrite.prepend(NamedPF("ParticularGroupOverviewRewriteWiki") {
+    LiftRules.statelessRewrite.prepend(NamedPF("ParticularGroupWikiRewrite") {
         case RewriteRequest(
             ParsePath("group" :: groupname  :: "wiki" :: pagename :: Nil , _, _,_), _, _) =>
             RewriteResponse(
@@ -98,6 +98,30 @@ class Boot {
                 "groupsection" ::  "wiki-view" :: Nil, Map("groupname" -> groupname, "pagename" -> "Main")
             )
     })
+
+    LiftRules.dispatch.append {
+     case Req("download" :: groupname :: filePath, _, GetRequest) =>
+            () =>
+             for {
+               stream <- tryo(new java.io.ByteArrayInputStream(
+                 try{
+                   C3Client().getNodeData(groupname + "/" + filePath.mkString("/"))
+                 }
+                 catch {
+                   case e: Exception => {
+                     e.printStackTrace
+                     S.notice("No file found!")
+                     S.redirectTo("/group/"+groupname+"/files/"+filePath.reverse.tail.reverse.mkString("/"))
+                   }
+                 }))
+               if null ne stream
+             } yield StreamingResponse(stream, () => stream.close,
+                          stream.available, List("Content-Type" ->
+                                                  C3Client().getResourseContentType(groupname + "/" + filePath.mkString("/"))),
+                                                    Nil,200)
+    }
+
+
 
     LiftRules.statelessRewrite.prepend(NamedPF("ParticularUserRewrite") {
         case RewriteRequest(
