@@ -123,13 +123,20 @@ class GroupForm {
                       "name" -> {
 
                         val url =
-
-                          if(groupdir.tail.isEmpty){
-                            "/group/"+groupname + "/files/"+ child.name
-                          }else{
-                            "/group/"+groupname + "/files/" + groupdir.tail + "/"+ child.name
+                          if(child.resourceType=="directory") {
+                            if(groupdir.tail.isEmpty){
+                              "/group/"+groupname + "/files/"+ child.name
+                            }else{
+                              "/group/"+groupname + "/files/" + groupdir.tail + "/"+ child.name
+                            }
                           }
-
+                          else {
+                            if(groupdir.tail.isEmpty){
+                              "/download/"+groupname + "/"+ child.name
+                            }else{
+                              "/download/"+groupname + "/" + groupdir.tail + "/"+ child.name
+                            }
+                          }
                          <a href={url}>{child.name}</a>
 
                       },
