@@ -34,12 +34,12 @@ package org.aphreet.c3.snippet
 import org.aphreet.c3.apiaccess.C3Client
 import net.liftweb.util.BindHelpers._
 import xml.{Text, NodeSeq}
-import net.liftweb.mapper.By
 import org.aphreet.c3.model._
 import net.liftweb.common.{Box, Logger, Full, Empty}
 import net.liftweb.http.{FileParamHolder, RequestVar, SHtml, S}
 import net.liftweb.util.SecurityHelpers
 import net.liftweb.http.js.JsCmds.Alert
+import net.liftweb.mapper.By
 
 class GroupForm {
 
@@ -71,7 +71,7 @@ class GroupForm {
             group.save
 
             // Linking group owner with a new Group in DB
-            UserGroup.join(User.find(By(User.id,group.owner.is)).open_!,group)
+            UserGroup.join(User.find(By(User.id,group.owner)).open_!,group)
 
             C3Client().createGroupMapping(group)
             S.notice("Added group: " + group.name); S.redirectTo("/groups")
@@ -220,7 +220,55 @@ class GroupForm {
          bind("menu", html,
           "overview" -> <a href={"/group/"+name}>Overview</a>,
           "files" -> <a href={"/group/"+name+"/files"}>Files</a>,
-          "wiki" -> <a href={"/group/"+name+"/wiki"}>Wiki</a>)
+          "wiki" -> <a href={"/group/"+name+"/wiki"}>Wiki</a>,
+          "admin" -> {
+            Group.find(By(Group.name,name)) match {
+              case Full(group) => {
+                User.currentUser match {
+                  case Full(user) if(user.id.is == group.owner.is) => <a href={"/group/"+name+"/admin"}>Admin</a>
+                  case _ => Text("")
+                }
+              }
+              case _ => Text("")
+            }
+          })
+       }
+       case _ => Text("")
+     }
+
+  }
+
+
+  def adminForm(html: NodeSeq) : NodeSeq = {
+
+
+     S.param("groupname") match {
+       case Full(name) => {
+         Group.find(By(Group.name,name)) match {
+           case Full(group) => {
+             bind("groupadmin", html, "groupname" -> SHtml.text(group.name, group.name(_)),
+              "description" -> group.description.toForm,
+              "users" -> {(ns: NodeSeq) => {
+                    group.users.flatMap(user => bind("groupuser",ns,"username" -> user.email.is,
+                                                     "selectuser" -> SHtml.checkbox(true,
+                                                          (check: Boolean) => if(!check){UserGroup.findAll(By(UserGroup.user,user),
+                                                                                   By(UserGroup.group,group)).foreach(_.delete_!)},
+                                                          // "disable" attribute to disable possibility for user to exclude himself from group
+                                                          if(User.currentUser == user)("disabled" -> "disabled") else ("enabled" -> "enabled") )))
+                }:NodeSeq },
+              "submit" -> SHtml.submit("Save", () => {
+                      group.validate match {
+                        case Nil => {
+                          group.save
+                          S.redirectTo(S.uri)
+                        }
+                        case xs => S.error(xs)
+                      }
+                  })
+             )
+           }
+           case _ => Text("")
+         }
        }
        case _ => Text("")
      }
