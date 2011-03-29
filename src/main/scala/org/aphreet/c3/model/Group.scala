@@ -51,10 +51,16 @@ class Group extends LongKeyedMapper[Group] with IdPK with ManyToMany{
 
   object users extends MappedManyToMany(UserGroup, UserGroup.group, UserGroup.user, User)
 
+  object description extends MappedTextarea(this,2048){
+    override def textareaRows  = 10
+    override def textareaCols = 50
+    override def displayName = "Group description"
+  }
+
   object name extends MappedString(this,64){
 
     def isUnique(s: String): List[FieldError] = {
-      if(!Group.find(By(Group.name,s)).isEmpty) List(FieldError(this,Text("Group with this name already exists")))
+      if(!Group.find(By(Group.name,s),NotBy(Group.id,thisgroup.id)).isEmpty ) List(FieldError(this,Text("Group with this name already exists")))
       else Nil
     }
 
@@ -83,6 +89,13 @@ class Group extends LongKeyedMapper[Group] with IdPK with ManyToMany{
   }
   def createCatalog (catalogName : String) : Boolean = {
     C3Client().createDir(this.name.is+"/"+catalogName)
+  }
+
+  override def delete_! : Boolean = {
+    for(user <- users) {
+      UserGroup.find(By(UserGroup.user,user),By(UserGroup.group,this)).map(_.delete_!).openOr()
+    }
+    super.delete_!
   }
 
 

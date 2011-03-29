@@ -1,7 +1,9 @@
 <div class="lift:surround?with=default;at=content">
 
     <link rel="stylesheet" type="text/css" href="/css/main.css" />
-    <div id="GroupMenu">
+
+    <lift:snippet type="GroupForm.groupMenu"></lift:snippet>
+    <!--<div id="GroupMenu">
         <lift:snippet type="GroupForm.groupMenu">
             <ul class="tabs">
                 <li><menu:overview></menu:overview></li>
@@ -11,6 +13,7 @@
         </lift:snippet>
     </div>
     <br/> <br/>
+    -->
     <lift:snippet type="GroupForm.view">
 
         <h2>Group <group:name/> ( owner: <group:owner/> ) </h2>

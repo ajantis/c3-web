@@ -34,12 +34,13 @@ package org.aphreet.c3.snippet
 import org.aphreet.c3.apiaccess.C3Client
 import net.liftweb.util.BindHelpers._
 import xml.{Text, NodeSeq}
-import net.liftweb.mapper.By
 import org.aphreet.c3.model._
 import net.liftweb.common.{Box, Logger, Full, Empty}
 import net.liftweb.http.{FileParamHolder, RequestVar, SHtml, S}
 import net.liftweb.util.SecurityHelpers
+import net.liftweb.http.js._
 import net.liftweb.http.js.JsCmds.Alert
+import net.liftweb.mapper.By
 
 class GroupForm {
 
@@ -52,7 +53,16 @@ class GroupForm {
 
     groupList.flatMap(group =>
       bind("group", html, "name" -> <a href={"/group/"+group.name}>{group.name}</a>,
-        "owner" -> group.owner.obj.map(usr => usr.email.is).openOr("<unknown>"))
+        "owner" -> group.owner.obj.map(usr => usr.email.is).openOr("<unknown>"),
+        "delete" -> {SHtml.ajaxSubmit("Delete",
+              () => {
+
+                // TODO with Alert + Promt a-la "Are you sure you wanna delete this group??"
+                if(group.delete_!) Alert("Group "+group.name.is+" deleted.")
+                else Alert("Group "+group.name.is+" NOT deleted.")
+                //JE.JsRaw("alert('Group "+group.name.is+" deleted.'); location.reload(true)").cmd
+              }
+           )})
     )
 
   }
@@ -71,7 +81,7 @@ class GroupForm {
             group.save
 
             // Linking group owner with a new Group in DB
-            UserGroup.join(User.find(By(User.id,group.owner.is)).open_!,group)
+            UserGroup.join(User.find(By(User.id,group.owner)).open_!,group)
 
             C3Client().createGroupMapping(group)
             S.notice("Added group: " + group.name); S.redirectTo("/groups")
@@ -212,20 +222,61 @@ class GroupForm {
       }
   }
 
+  /*
+  <div id="GroupMenu">
+        <lift:snippet type="GroupForm.groupMenu">
+            <ul class="tabs">
+                <li><menu:overview></menu:overview></li>
+                <li><menu:files></menu:files></li>
+                <li><menu:wiki></menu:wiki></li>
+                <li><menu:admin></menu:admin></li>
+            </ul>
+        </lift:snippet>
+    </div>
+    <br/><br/><br/>
+   */
+
 
   def groupMenu(html: NodeSeq) : NodeSeq = {
 
      S.param("groupname") match {
        case Full(name) => {
-         bind("menu", html,
+         /*bind("menu", html,
           "overview" -> <a href={"/group/"+name}>Overview</a>,
           "files" -> <a href={"/group/"+name+"/files"}>Files</a>,
-          "wiki" -> <a href={"/group/"+name+"/wiki"}>Wiki</a>)
+          "wiki" -> <a href={"/group/"+name+"/wiki"}>Wiki</a>,
+          "admin" -> {
+            Group.find(By(Group.name,name)) match {
+              case Full(group) => {
+                User.currentUser match {
+                  case Full(user) if(user.id.is == group.owner.is) => <a href={"/group/"+name+"/admin"}>Admin</a>
+                  case _ => Text("")
+                }
+              }
+              case _ => Text("")
+            }
+          })*/
+         <ul class="tabs">
+           <li><a href={"/group/"+name}>Overview</a></li>
+           <li><a href={"/group/"+name+"/files"}>Files</a></li>
+           <li><a href={"/group/"+name+"/wiki"}>Wiki</a></li>
+           {Group.find(By(Group.name,name)) match {
+              case Full(group) => {
+                User.currentUser match {
+                  case Full(user) if(user.id.is == group.owner.is) => <li><a href={"/group/"+name+"/admin"}>Admin</a></li>
+                  case _ => NodeSeq.Empty
+                }
+              }
+              case _ => NodeSeq.Empty
+            }}
+         </ul>
        }
-       case _ => Text("")
+       case _ => NodeSeq.Empty
      }
 
   }
+
+
 
 
 }

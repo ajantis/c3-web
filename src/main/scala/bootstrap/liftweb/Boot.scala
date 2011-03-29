@@ -7,10 +7,10 @@ import _root_.net.liftweb.http.provider._
 import _root_.net.liftweb.sitemap._
 import _root_.net.liftweb.sitemap.Loc._
 import Helpers._
-import _root_.net.liftweb.mapper.{DB, ConnectionManager, Schemifier, DefaultConnectionIdentifier, StandardDBVendor}
 import _root_.java.sql.{Connection, DriverManager}
 import org.aphreet.c3.model._
 import org.aphreet.c3.apiaccess.C3Client
+import net.liftweb.mapper._
 
 /**
  * A class that's instantiated early and run.  It allows the application
@@ -38,6 +38,22 @@ class Boot {
     val loggedIn = If(() => User.loggedIn_?,
                   () => RedirectResponse("/user_mgt/login"))
 
+    val isGroupAdmin = If(() => {
+                            S.param("groupname") match {
+                              case Full(name) => Group.find(By(Group.name,name)) match {
+                                  case Full(group) => {
+                                        User.currentUser match {
+                                          case Full(user) if(user.id.is == group.owner.is) => true
+                                          case _ => false
+                                        }
+                                  }
+                                  case _ => false
+                                }
+                              case _ => false
+                            }
+                   },
+                  () => RedirectResponse("/index"))
+
     // Build SiteMap
     def sitemap() = SiteMap(
       Menu("Home") / "index" >> User.AddUserMenusAfter, // Simple menu form
@@ -51,6 +67,8 @@ class Boot {
       Menu("GroupWiki") / "groupsection" / "wiki-view" >> loggedIn >> Hidden,
 
       Menu("GroupWiki") / "groupsection" / "wiki-edit" >> loggedIn >> Hidden,
+
+      Menu("GroupAdmin") / "groupsection" / "admin" >> loggedIn >> Hidden >> isGroupAdmin,
 
       Menu("Users") / "users" / "index" >> loggedIn,
 
@@ -96,6 +114,14 @@ class Boot {
             ParsePath("group" :: groupname  :: "wiki" :: Nil , _, _,_), _, _) =>
             RewriteResponse(
                 "groupsection" ::  "wiki-view" :: Nil, Map("groupname" -> groupname, "pagename" -> "Main")
+            )
+    })
+
+    LiftRules.statelessRewrite.prepend(NamedPF("ParticularGroupAdminRewrite") {
+        case RewriteRequest(
+            ParsePath("group" :: groupname  :: "admin" :: Nil , _, _,_), _, _) =>
+            RewriteResponse(
+                "groupsection" ::  "admin" :: Nil, Map("groupname" -> groupname)
             )
     })
 
