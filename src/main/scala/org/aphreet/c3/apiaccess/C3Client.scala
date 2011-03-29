@@ -51,7 +51,13 @@ class C3Client(val host:String, val contextPath:String,  val domain:String, val 
   val httpClient = new HttpClient()
 
 
-  def createGroupMapping(group: Group): Boolean = createDir(group.name.is)
+  def createGroupMapping(group: Group): Boolean = {
+    if(createDir(group.name.is)){
+      createDir(group.name.is+"/files")
+      createDir(group.name.is+"/wiki")
+    }
+    else false
+  }
 
   def delete(path:String) = {
     val deleteMethod = createDeleteMethod(path)

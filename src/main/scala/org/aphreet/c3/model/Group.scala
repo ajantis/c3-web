@@ -73,7 +73,7 @@ class Group extends LongKeyedMapper[Group] with IdPK with ManyToMany{
 
     var resources: List[C3Resource] = List()
 
-    for( node <- C3Client().listResources(pathToDirectory = this.name.is+directory)) {
+    for( node <- C3Client().listResources(pathToDirectory = this.name.is+"/files" + directory)) {
 
       val resName = (node \ "@name") text
 
@@ -88,7 +88,7 @@ class Group extends LongKeyedMapper[Group] with IdPK with ManyToMany{
 
   }
   def createCatalog (catalogName : String) : Boolean = {
-    C3Client().createDir(this.name.is+"/"+catalogName)
+    C3Client().createDir(this.name.is+"/files/"+catalogName)
   }
 
   override def delete_! : Boolean = {

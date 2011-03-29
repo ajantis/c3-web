@@ -126,12 +126,18 @@ class Boot {
     })
 
     LiftRules.dispatch.append {
-     case Req("download" :: groupname :: filePath, _, GetRequest) =>
+
+     case Req("download" :: groupname :: filePath, extension, GetRequest) =>
             () =>
              for {
                stream <- tryo(new java.io.ByteArrayInputStream(
                  try{
-                   C3Client().getNodeData(groupname + "/" + filePath.mkString("/"))
+                   C3Client().getNodeData(groupname + "/" + filePath.mkString("/") + {
+                                                                                        extension match {
+                                                                                          case "" => ""
+                                                                                          case ext => "." + ext
+                                                                                        }
+                                                                                     })
                  }
                  catch {
                    case e: Exception => {
@@ -143,7 +149,13 @@ class Boot {
                if null ne stream
              } yield StreamingResponse(stream, () => stream.close,
                           stream.available, List("Content-Type" ->
-                                                  C3Client().getResourseContentType(groupname + "/" + filePath.mkString("/"))),
+                                                  C3Client().getResourseContentType(groupname + "/" + filePath.mkString("/") + {
+                                                                                        extension match {
+                                                                                          case "" => ""
+                                                                                          case ext => "." + ext
+                                                                                        }
+                                                                                     }
+                                                  )),
                                                     Nil,200)
     }
 

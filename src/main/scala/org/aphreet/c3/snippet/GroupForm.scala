@@ -142,9 +142,9 @@ class GroupForm {
                           }
                           else {
                             if(groupdir.tail.isEmpty){
-                              "/download/"+groupname + "/"+ child.name
+                              "/download/"+groupname + "/files/"+ child.name
                             }else{
-                              "/download/"+groupname + "/" + groupdir.tail + "/"+ child.name
+                              "/download/"+groupname + "/files/" + groupdir.tail + "/"+ child.name
                             }
                           }
                          <a href={url}>{child.name}</a>
@@ -188,7 +188,7 @@ class GroupForm {
 
         bind("ul", chooseTemplate("choose", "get", xhtml),
           "file_upload" -> SHtml.fileUpload(ul => theUpload(Full(ul))),
-          "filename" -> SHtml.text("",(filename: String) => theUploadPath(if(S.uri.contains("/group/")) Full(S.uri.split("/group/").last.split("/files").mkString +"/"+filename) else Empty)),
+          "filename" -> SHtml.text("",(filename: String) => theUploadPath(if(S.uri.contains("/group/")) Full(S.uri.split("/group/").last/*.split("/files").mkString*/ +"/"+filename) else Empty)),
           "submitfile" -> SHtml.submit("Upload",() => { S.redirectTo(S.uri) }),
           AttrBindParam("uploadFileStyle", Text("display: none;"), "style"))
       }
@@ -207,7 +207,7 @@ class GroupForm {
      if (S.get_? || theCreateDirectoryPath.isEmpty) {
 
         bind("ul", chooseTemplate("choose", "get", xhtml),
-          "dirname" -> SHtml.text("",(dirname: String) => theCreateDirectoryPath(if(S.uri.contains("/group/")) Full(S.uri.split("/group/").last.split("/files").mkString +"/"+dirname) else Empty)),
+          "dirname" -> SHtml.text("",(dirname: String) => theCreateDirectoryPath(if(S.uri.contains("/group/")) Full(S.uri.split("/group/").last/*.split("/files").mkString*/ +"/"+dirname) else Empty)),
           "submitdirectory" -> SHtml.submit("Create",() => { S.redirectTo(S.uri) }),
           AttrBindParam("uploadDirStyle", Text("display: none;"), "style"))
       }
