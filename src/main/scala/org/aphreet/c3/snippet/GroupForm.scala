@@ -41,6 +41,7 @@ import net.liftweb.util.SecurityHelpers
 import net.liftweb.http.js._
 import net.liftweb.http.js.JsCmds.Alert
 import net.liftweb.mapper.By
+import java.net.URLEncoder
 
 class GroupForm {
 
@@ -188,7 +189,7 @@ class GroupForm {
 
         bind("ul", chooseTemplate("choose", "get", xhtml),
           "file_upload" -> SHtml.fileUpload(ul => theUpload(Full(ul))),
-          "filename" -> SHtml.text("",(filename: String) => theUploadPath(if(S.uri.contains("/group/")) Full(S.uri.split("/group/").last/*.split("/files").mkString*/ +"/"+filename) else Empty)),
+          "filename" -> SHtml.text("",(filename: String) => theUploadPath(if(S.uri.contains("/group/")) Full(S.uri.split("/group/").last/*.split("/files").mkString*/ +"/"+URLEncoder.encode(filename)) else Empty)),
           "submitfile" -> SHtml.submit("Upload",() => { S.redirectTo(S.uri) }),
           AttrBindParam("uploadFileStyle", Text("display: none;"), "style"))
       }

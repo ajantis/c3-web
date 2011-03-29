@@ -11,6 +11,7 @@ import _root_.java.sql.{Connection, DriverManager}
 import org.aphreet.c3.model._
 import org.aphreet.c3.apiaccess.C3Client
 import net.liftweb.mapper._
+import java.net.URLEncoder
 
 /**
  * A class that's instantiated early and run.  It allows the application
@@ -132,7 +133,7 @@ class Boot {
              for {
                stream <- tryo(new java.io.ByteArrayInputStream(
                  try{
-                   C3Client().getNodeData(groupname + "/" + filePath.mkString("/") + {
+                   C3Client().getNodeData(groupname + "/" + filePath.reverse.tail.reverse.mkString("/") + "/" + URLEncoder.encode(filePath.last) + {
                                                                                         extension match {
                                                                                           case "" => ""
                                                                                           case ext => "." + ext
@@ -149,7 +150,7 @@ class Boot {
                if null ne stream
              } yield StreamingResponse(stream, () => stream.close,
                           stream.available, List("Content-Type" ->
-                                                  C3Client().getResourseContentType(groupname + "/" + filePath.mkString("/") + {
+                                                  C3Client().getResourseContentType(groupname + "/" + filePath.reverse.tail.reverse.mkString("/") + "/" + URLEncoder.encode(filePath.last) + {
                                                                                         extension match {
                                                                                           case "" => ""
                                                                                           case ext => "." + ext
