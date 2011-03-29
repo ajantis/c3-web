@@ -32,11 +32,14 @@
 package org.aphreet.c3.snippet
 
 import net.liftweb.common.{Logger, Full}
-import xml.NodeSeq
 import net.liftweb.util.BindHelpers._
 import org.aphreet.c3.model.Wiki
 import net.liftweb.http.{SHtml, S}
-import scala.xml.Text
+import be.devijver.wikipedia.SmartLink.SmartLinkType
+import org.aphreet.c3.lib.wiki.C3HtmlVisitor
+import be.devijver.wikipedia.{SmartLinkResolver, Parser, SmartLink}
+import java.io.StringWriter
+import xml.{XML, NodeSeq}
 
 class WikiSnippet{
 
@@ -58,7 +61,7 @@ class WikiSnippet{
       case Some(page) => {
         bind("wiki", html,
           "name" -> page.name,
-          "content" -> page.content,
+          "content" -> XML.loadString(formatContent(page.content, groupName)),
           "actions" -> <a href={"/group/" + groupName + "/wiki/" + pageName + "/edit"}>Edit</a>)
       }
       case None => {
@@ -70,6 +73,26 @@ class WikiSnippet{
       }
     }   
   }
+
+  def formatContent(content:String, group:String):String = {
+
+    val writer = new StringWriter
+
+    new Parser().withVisitor(content.replaceAll("([^\r])\n", "$1\r\n"), new C3HtmlVisitor(writer, new SmartLinkResolver(){
+
+      override def  resolve(key:String):SmartLink = {
+        resolveSmartLink(key, group)
+      }
+
+    }));
+
+    writer.toString
+  }
+
+  def resolveSmartLink(key:String, group:String):SmartLink = {
+    new SmartLink("/group/" + group + "/wiki/" + key, key, SmartLinkType.A_LINK);
+  }
+
 
   def edit(html: NodeSeq) : NodeSeq = {
 
