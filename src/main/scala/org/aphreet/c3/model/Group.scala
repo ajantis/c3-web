@@ -91,6 +91,13 @@ class Group extends LongKeyedMapper[Group] with IdPK with ManyToMany{
     C3Client().createDir(this.name.is+"/"+catalogName)
   }
 
+  override def delete_! : Boolean = {
+    for(user <- users) {
+      UserGroup.find(By(UserGroup.user,user),By(UserGroup.group,this)).map(_.delete_!).openOr()
+    }
+    super.delete_!
+  }
+
 
 }
 
