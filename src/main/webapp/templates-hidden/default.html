@@ -42,30 +42,34 @@
         }
 
         .sidebar ul {
-        margin:0;
-        padding:0;
+
         border-bottom:1px solid #ccc;
+        display: inline;
+        list-style-type: none;
+
+        font: bold 12px Verdana;
+        color: grey;
+        text-align: center;
         }
 
 
         .sidebar ul li {
-        margin:0;
-        padding:0;
-        list-style:none;
+        padding-right: 15px;
+        padding-left: 15px;
         border:1px solid #ccc;
-        border-bottom:none;
+
+        float: left;
         }
 
         .sidebar ul li a {
-        display:block;
-        padding:3px;
+
+
         text-indent:30px;
         text-decoration:none;
         }
 
         .sidebar ul li span {
-        display:block;
-        padding:3px;
+
         text-indent:30px;
         text-decoration:none;
         }
@@ -80,14 +84,63 @@
 </head>
 <body>
 <div class="container">
+
+    <div class="column span-6 last">
+        <table>
+          <tr>
+            <td>
+                <lift:Menu.item name="Login" a:class="homeLink">
+                         <b>Login</b>
+                </lift:Menu.item>
+            </td>
+            <td>
+                <lift:Menu.item name="CreateUser" a:class="homeLink">
+                         <b>Sign up</b>
+                </lift:Menu.item>
+            </td>
+            <td>
+                <lift:Menu.item name="LostPassword" a:class="homeLink">
+                         <b>lost password?</b>
+                </lift:Menu.item>
+            </td>
+          </tr>
+
+          <tr>
+            <td>
+                <lift:Menu.item name="Logout" a:class="homeLink">
+                         <b>Logout</b>
+                </lift:Menu.item>
+            </td>
+            <td>
+                <lift:Menu.item name="EditUser" a:class="homeLink">
+                         <b>Profile</b>
+                </lift:Menu.item>
+            </td>
+            <td>
+                <lift:Menu.item name="ChangePassword" a:class="homeLink">
+                         <b>Change password</b>
+                </lift:Menu.item>
+            </td>
+          </tr>
+        </table>
+    </div>
+
     <div class="column span-23 last" style="text-align: center">
+
+
         <h1 class="alt">C3 Web Client<img alt="" id="ajax-loader" style="display:none; margin-bottom: 0px; margin-left: 5px" src="/images/ajax-loader.gif"/></h1>
 
-        <div id="LiftMenuPlace" >
-            <ul id="menutab" class="basictab">
-            </ul>
+
+        <div class="column span-14 sidebar">
+           <lift:Menu.group group="mainmenu">
+
+                <li style="padding-right: 15px; padding-left: 15px; border:1px solid #ccc; float: right;display: inline; list-style-type: none;"><menu:bind /></li>
+
+           </lift:Menu.group>
+
+            <!-- <lift:Menu.builder
+                    li_item:onclick= "javascript:alert('Already selected!');"  /> -->
         </div>
-        <br/>
 
     </div>
      <div>
@@ -95,55 +148,6 @@
             <hr class="space" />
      </div>
     <hr/>
-    <lift:Menu.json/>
-    <script type="text/javascript">
-
-        var menuplace = document.getElementById("LiftMenuPlace")
-        var list=document.getElementById("menutab")
-        for(var i=0; i!=lift_menu.menu.length;i++)
-        {
-        var node = document.createElement("li")
-        var text = document.createTextNode(lift_menu.menu[i].text)
-        var link = document.createElement("a")
-        link.setAttribute("href",lift_menu.menu[i].uri)
-        if(lift_menu.menu[i].children.length!=0){
-
-        var submenu = document.createElement("div")
-        submenu.setAttribute("id",i)
-        node.setAttribute("rel",i)
-        submenu.setAttribute("class","submenustyle")
-
-        for(var t=0;t!=lift_menu.menu[i].children.length;t++){
-        var child_node = lift_menu.menu[i].children[t]
-        var child_text = document.createTextNode(lift_menu.menu[i].children[t].text)
-        var child_link = document.createElement("a")
-        child_link.setAttribute("href",lift_menu.menu[i].children[t].uri)
-        child_link.appendChild(child_text)
-        //child_node.appendChild(child_link)
-        submenu.appendChild(child_link)
-        }
-        menuplace.appendChild(submenu)
-        }
-
-        link.appendChild(text)
-        node.appendChild(link)
-        list.appendChild(node)
-        }
-
-        //initialize tab menu, by passing in ID of UL
-        initalizetab("menutab")
-    </script>
-
-    <!-- C3 embedded messenger  -->
-    <!--
-    <div class="column span-6 colborder sidebar">
-        <hr class="space" />
-
-
-
-        <lift:comet type="Messenger"/>
-    </div>
-    -->
 
     <div class="column span-23 last">
         <div id="content">
@@ -155,7 +159,7 @@
     <div class="column span-23 last" style="text-align: center">
         <h4 class="alt">
             <a href="http://c3.aphreet.org"><i>C3 System</i></a>
-            is Copyright 2009-2011 ???.  Distributed under a New BSD License.</h4>
+            is Copyright 2009-2011 The Brotherhood of C3 Developers.  Distributed under a New BSD License.</h4>
     </div>
 
 </div>

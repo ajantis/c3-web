@@ -67,6 +67,14 @@ class Group extends LongKeyedMapper[Group] with IdPK with ManyToMany{
     override def validations = isUnique _ :: super.validations
   }
 
+  object isOpenRegistration extends MappedBoolean(this){
+    override def defaultValue = true
+  }
+
+  object isOpenView extends MappedBoolean(this) {
+    override def defaultValue = true
+  }
+
   def getChildren(): List[C3Resource] = getChildren("")
 
   def getChildren(directory: String) : List[C3Resource] = {

@@ -57,9 +57,9 @@ class Boot {
 
     // Build SiteMap
     def sitemap() = SiteMap(
-      Menu("Home") / "index" >> User.AddUserMenusAfter, // Simple menu form
+      Menu("Home") / "index" >> LocGroup("mainmenu") >> User.AddUserMenusAfter, // Simple menu form
 
-      Menu("Groups") / "groups" >> loggedIn,
+      Menu("My groups") / "groups" >> loggedIn >> LocGroup("mainmenu"),
 
       Menu("GroupOverview") / "groupsection" / "index" >> loggedIn >> Hidden,
 
@@ -71,15 +71,15 @@ class Boot {
 
       Menu("GroupAdmin") / "groupsection" / "admin" >> loggedIn >> Hidden >> isGroupAdmin,
 
-      Menu("Users") / "users" / "index" >> loggedIn,
+      Menu("Users") / "users" / "index" >> loggedIn >> LocGroup("mainmenu"),
 
       Menu("UserEdit") / "users" / "edituser" >> loggedIn >> Hidden,
 
-      Menu("File upload") / "file_upload" >> loggedIn >> Hidden,
+      Menu("File upload") / "file_upload" >> loggedIn >> Hidden
 
 
       // Menu with special Link
-      Menu(Loc("Static", Link(List("static"), true, "/static/index"),"Static Content"))
+      //Menu(Loc("Static", Link(List("static"), true, "/static/index"),"Static Content"))
 
 
     )
