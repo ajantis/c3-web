@@ -12,6 +12,7 @@
     <link rel="stylesheet" type="text/css" href="/css/2leveltab.css" />
     <link rel="stylesheet" type="text/css" href="/css/vmtables.css" />
     <link rel="stylesheet" type="text/css" href="/css/messenger.css" />
+     <link rel="stylesheet" type="text/css" href="/css/main.css" />
 
     <script type="text/javascript" src="/js/2leveltab.js"/>
 
@@ -85,61 +86,48 @@
 <body>
 <div class="container">
 
-    <div class="column span-6 last">
-        <table>
-          <tr>
-            <td>
-                <lift:Menu.item name="Login" a:class="homeLink">
-                         <b>Login</b>
-                </lift:Menu.item>
-            </td>
-            <td>
-                <lift:Menu.item name="CreateUser" a:class="homeLink">
-                         <b>Sign up</b>
-                </lift:Menu.item>
-            </td>
-            <td>
-                <lift:Menu.item name="LostPassword" a:class="homeLink">
-                         <b>lost password?</b>
-                </lift:Menu.item>
-            </td>
-          </tr>
-
-          <tr>
-            <td>
-                <lift:Menu.item name="Logout" a:class="homeLink">
-                         <b>Logout</b>
-                </lift:Menu.item>
-            </td>
-            <td>
-                <lift:Menu.item name="EditUser" a:class="homeLink">
-                         <b>Profile</b>
-                </lift:Menu.item>
-            </td>
-            <td>
-                <lift:Menu.item name="ChangePassword" a:class="homeLink">
-                         <b>Change password</b>
-                </lift:Menu.item>
-            </td>
-          </tr>
-        </table>
-    </div>
-
     <div class="column span-23 last" style="text-align: center">
+       <div class="linkbar">
+        <ul>
+          <li>
+                <lift:Menu.item name="LostPassword" a:class="homeLink">
+                         Lost password?
+                </lift:Menu.item>
+                <lift:Menu.item name="ChangePassword" a:class="homeLink">
+                         Change password
+                </lift:Menu.item>
+          </li>
+          <li>
+                <lift:Menu.item name="CreateUser" a:class="homeLink">
+                         Sign up
+                </lift:Menu.item>
+                <lift:Menu.item name="EditUser" a:class="homeLink">
+                         Profile
+                </lift:Menu.item>
+           </li>
+          <li>
+                <lift:Menu.item name="Login" a:class="homeLink">
+                         Login
+                </lift:Menu.item>
+                <lift:Menu.item name="Logout" a:class="homeLink">
+                         Logout
+                </lift:Menu.item>
+          </li>
 
+        </ul>
+       </div>
 
-        <h1 class="alt">C3 Web Client<img alt="" id="ajax-loader" style="display:none; margin-bottom: 0px; margin-left: 5px" src="/images/ajax-loader.gif"/></h1>
+        <br/>
 
+        <h1 class="alt" align="left"><a href="/index"><img alt="" src="/images/c3_logo.gif" style="float: left;"/></a><img alt="" id="ajax-loader" style="display:none; margin-bottom: 0px; margin-left: 5px" src="/images/ajax-loader.gif"/></h1>
 
-        <div class="column span-14 sidebar">
+        <br/> <br/>
+        <div class="headerMenu">
+           <ul>
            <lift:Menu.group group="mainmenu">
-
-                <li style="padding-right: 15px; padding-left: 15px; border:1px solid #ccc; float: right;display: inline; list-style-type: none;"><menu:bind /></li>
-
+                <li><menu:bind /></li>
            </lift:Menu.group>
-
-            <!-- <lift:Menu.builder
-                    li_item:onclick= "javascript:alert('Already selected!');"  /> -->
+           </ul>
         </div>
 
     </div>
@@ -147,19 +135,33 @@
             <span class="lift:Msgs?showAll=true"/>
             <hr class="space" />
      </div>
+
     <hr/>
 
-    <div class="column span-23 last">
+    <div class="column span-24 last">
         <div id="content">
             <!-- The HTML content will go here -->
         </div>
     </div>
 
     <hr />
-    <div class="column span-23 last" style="text-align: center">
-        <h4 class="alt">
-            <a href="http://c3.aphreet.org"><i>C3 System</i></a>
-            is Copyright 2009-2011 The Brotherhood of C3 Developers.  Distributed under a New BSD License.</h4>
+    <div class="column span-23 last" style="text-align: left">
+        <div class="footerMenu">
+            <ul>
+                <li>
+                    <a href="/about">About</a>
+                </li>
+                <li>
+                    <a href="/faq">FAQ</a>
+                </li>
+                <li>
+                    <a href="/index">Home</a>
+                </li>
+            </ul>
+        </div>
+    <h4 class="alt">
+            <a href="http://c3.aphreet.org"><i>C3</i></a>
+            is Copyright 2009-2011 The Brotherhood of C3.  Distributed under a New BSD License.</h4>
     </div>
 
 </div>

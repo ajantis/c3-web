@@ -1,9 +1,9 @@
 # Properties in this file will be read when running in dev mode
 
-c3_host=http://localhost:7373
+c3_host=http://c3.aphreet.org:7373
 
 #c3_context_path=/rest/fs/
 
 c3_domain_name=c3web
 
-c3_domain_secret=75ec4239d2faaeeefd7ea90687b70c63
+c3_domain_secret=95b39c16b3b6316a938ea5acbdba24a3

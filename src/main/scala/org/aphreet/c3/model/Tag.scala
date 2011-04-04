@@ -1,7 +1,5 @@
 package org.aphreet.c3.model
 
-import net.liftweb.mapper._
-
 /**
  * Copyright (c) 2011, Dmitry Ivanov
  * All rights reserved.
@@ -33,24 +31,23 @@ import net.liftweb.mapper._
  * POSSIBILITY OF SUCH DAMAGE.
  */
  
+
+import net.liftweb.mapper._
  
- 
-class Category extends LongKeyedMapper[Category] with IdPK {
+class Tag extends LongKeyedMapper[Tag] with IdPK {
 
-  def getSingleton = Category
+  def getSingleton = Tag
 
-  object user extends MappedLongForeignKey(this,User)
+  object category extends MappedLongForeignKey(this,Category)
 
-  object name extends MappedString(this,64)
-
-  //tags
+  object name extends MappedString(this, 256)
 
 
 }
 
-object Category extends Category with LongKeyedMetaMapper[Category] {
+object Tag extends Tag with LongKeyedMetaMapper[Tag] {
 
-  override def dbTableName = "categories"
+  override def dbTableName = "tags"
   override def fieldOrder = Nil
 
 }

@@ -39,6 +39,9 @@ class Boot {
     val loggedIn = If(() => User.loggedIn_?,
                   () => RedirectResponse("/user_mgt/login"))
 
+    val isSuperAdmin = If(() => {if(!User.currentUser.isEmpty) User.currentUser.open_!.superUser.is else false},
+                            ()=> RedirectResponse("/user_mgt/login"))
+
     val isGroupAdmin = If(() => {
                             S.param("groupname") match {
                               case Full(name) => Group.find(By(Group.name,name)) match {
@@ -57,9 +60,18 @@ class Boot {
 
     // Build SiteMap
     def sitemap() = SiteMap(
-      Menu("Home") / "index" >> LocGroup("mainmenu") >> User.AddUserMenusAfter, // Simple menu form
 
-      Menu("My groups") / "groups" >> loggedIn >> LocGroup("mainmenu"),
+      Menu("About") / "about" >> LocGroup("footerMenu"),
+
+      Menu("Faq") / "faq" >> LocGroup("footerMenu"),
+
+      Menu("Users") / "users" / "index" >> isSuperAdmin >> LocGroup("mainmenu"),
+
+      Menu("Categories") / "categories" >> loggedIn >> LocGroup("mainmenu"),
+
+      Menu("Groups") / "groups" >> loggedIn >> LocGroup("mainmenu"),
+
+      Menu("Home") / "index" >> LocGroup("footerMenu") >> User.AddUserMenusAfter, // Simple menu form
 
       Menu("GroupOverview") / "groupsection" / "index" >> loggedIn >> Hidden,
 
@@ -70,8 +82,6 @@ class Boot {
       Menu("GroupWiki") / "groupsection" / "wiki-edit" >> loggedIn >> Hidden,
 
       Menu("GroupAdmin") / "groupsection" / "admin" >> loggedIn >> Hidden >> isGroupAdmin,
-
-      Menu("Users") / "users" / "index" >> loggedIn >> LocGroup("mainmenu"),
 
       Menu("UserEdit") / "users" / "edituser" >> loggedIn >> Hidden,
 

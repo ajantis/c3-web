@@ -47,3 +47,124 @@ ul.tabs li a {
 ul.tabs li a:hover {
   color: #000;
 }
+
+
+.linkbar ul {
+
+        border-bottom:1px solid #ccc;
+        display: inline;
+        list-style-type: none;
+
+        font: 10px Verdana;
+        color: grey;
+        text-align: center;
+        }
+
+
+        .linkbar ul li {
+        padding-right: 15px;
+        padding-left: 15px;
+        border-right:1px solid #ccc;
+
+        float: right;
+        }
+
+        .linkbar ul li:first-child {
+            border-right: 0;
+        }
+
+        .linkbar ul li a {
+
+
+        text-indent:30px;
+        text-decoration:none;
+        }
+
+        .linkbar ul li span {
+
+        text-indent:30px;
+        text-decoration:none;
+        }
+
+        .linkbar ul li a:hover {
+        background-color: #eee;
+        }
+
+
+.headerMenu ul {
+
+        border-bottom:1px solid #ccc;
+        display: inline;
+        list-style-type: none;
+
+        font: bold 18px Verdana;
+        color: grey;
+        text-align: center;
+        }
+
+
+        .headerMenu ul li {
+        padding-right: 15px;
+        padding-left: 15px;
+        border-right: 1px;
+        border-right:1px solid #ccc;
+        float: right;
+        }
+
+        .headerMenu ul li:first-child {
+            border-right: 0;
+        }
+
+        .headerMenu ul li a {
+
+
+        text-indent:30px;
+        text-decoration:none;
+        }
+
+        .headerMenu ul li span {
+
+        text-indent:30px;
+        text-decoration:none;
+        }
+
+        .headerMenu ul li a:hover {
+        background-color: #eee;
+        }
+
+.footerMenu ul {
+
+        border-bottom:1px solid #ccc;
+        display: inline;
+        list-style-type: none;
+
+        font: 10px Verdana;
+        color: grey;
+        text-align: center;
+        }
+
+
+        .footerMenu ul li {
+        padding-right: 15px;
+        padding-left: 15px;
+        border: none;
+
+        float: right;
+        }
+
+        .footerMenu ul li a {
+
+
+        text-indent:30px;
+        text-decoration:none;
+        }
+
+        .footerMenu ul li span {
+
+        text-indent:30px;
+        text-decoration:none;
+        }
+
+        .footerMenu ul li a:hover {
+        background-color: #eee;
+        }
