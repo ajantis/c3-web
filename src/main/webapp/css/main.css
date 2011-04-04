@@ -75,7 +75,7 @@ ul.tabs li a:hover {
 
         .linkbar ul li a {
 
-
+        color: grey;
         text-indent:30px;
         text-decoration:none;
         }
@@ -117,7 +117,7 @@ ul.tabs li a:hover {
 
         .headerMenu ul li a {
 
-
+        color: black;
         text-indent:30px;
         text-decoration:none;
         }
@@ -154,7 +154,7 @@ ul.tabs li a:hover {
 
         .footerMenu ul li a {
 
-
+        color: grey;
         text-indent:30px;
         text-decoration:none;
         }

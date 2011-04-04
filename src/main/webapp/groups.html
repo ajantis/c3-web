@@ -1,9 +1,22 @@
 <div class="lift:surround?with=default;at=content">
 
     <div>
-        <a href="/index"><b>Home</b></a> > <a href="/groups"><b>Groups</b></a>
+        <table bgcolor="lightgrey">
+            <tr>
+              <td>
+                <div style="float: left;">
+                    <a href="/index" style="color: black;"><b>Home</b></a> > <a href="/groups" style="color: black;"><b>Groups</b></a>
+                </div>
+              </td>
+              <td>
+                <div class="searchfield">
+                    <input type="text" value="" name="s" id="s" placeholder="Search" /> <input type="image" src="/images/search_48.png" id="searchsubmit" value="Search" class="searchbtn"/>
+                </div>
+              </td>
+            </tr>
+        </table>
     </div>
-    <hr/>
+
 
     <h2>Groups  <a href="javascript:showDiv('addGroup')"><img src="/images/add_48.png" style="position: relative; top: 8px;" width="32" height="32" align="middle"/></a></h2>
 
