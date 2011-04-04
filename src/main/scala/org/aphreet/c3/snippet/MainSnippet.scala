@@ -1,8 +1,10 @@
 package org.aphreet.c3.snippet
 
-import xml.{Text, NodeSeq}
 import org.aphreet.c3.model.{Group, User}
 import net.liftweb.mapper.MaxRows
+import net.liftweb.sitemap.Loc
+import net.liftweb.http.{GetRequest, Req, SHtml, S}
+import xml.{XML, Text, NodeSeq}
 
 /**
  * Copyright (c) 2011, Dmitry Ivanov
@@ -65,6 +67,30 @@ class MainSnippet  {
       "groups" -> {(ns: NodeSeq) => featuredGroups.flatMap( group => bind("group", ns,
         "name" -> <a href={"/group/"+group.name}>{group.name}</a>)):NodeSeq})
     else Text("There are no groups in db currently.")
+
+  }
+
+  def breadCrumbs(html: NodeSeq) : NodeSeq = {
+    val breadcrumbs: List[Loc[_]] =
+      for {
+        currentLoc <- S.location.toList
+        loc <- currentLoc.breadCrumbs
+
+      } yield loc
+
+
+    bind("breadCrumbsMenu", html,
+        "breadCrumbs" -> {(ns: NodeSeq) => {breadcrumbs.flatMap( loc =>
+            if(! loc.createDefaultLink.get.text.contains("index"))
+
+              bind("breadCrumb", ns,
+                "link" -> <a href={loc.createDefaultLink.get}>{loc.title+" >"}</a> //SHtml.link(loc.linkText.toString,() => {}, loc.title)
+              )
+
+            else NodeSeq.Empty
+        ): NodeSeq} }
+    )
+
 
   }
 

@@ -121,7 +121,6 @@
         <br/>
 
         <h1 class="alt" align="left"><a href="/index"><img alt="" src="/images/c3_logo.gif" style="float: left;"/></a><img alt="" id="ajax-loader" style="display:none; margin-bottom: 0px; margin-left: 5px" src="/images/ajax-loader.gif"/></h1>
-
         <br/> <br/>
         <div class="headerMenu">
            <ul>
@@ -138,6 +137,31 @@
      </div>
 
     <!-- <hr/> -->
+
+      <div>
+          <table bgcolor="lightgrey">
+              <tr>
+                <td>
+                  <lift:snippet type="MainSnippet.breadCrumbs">
+                      <div class="breadCrumbMenu">
+                        <ul>
+                          <li><a href="/index">Home ></a></li>
+                        <breadCrumbsMenu:breadCrumbs>
+                            <li><breadCrumb:link></breadCrumb:link></li>
+                        </breadCrumbsMenu:breadCrumbs>
+                        </ul>
+                      </div>
+                    </lift:snippet>
+                </td>
+                <td>
+                  <div class="searchfield">
+                      <input type="text" value="" name="s" id="s" placeholder="Search" /> <input type="image" src="/images/search_48.png" id="searchsubmit" value="Search" class="searchbtn"/>
+                  </div>
+                </td>
+              </tr>
+          </table>
+      </div>
+
 
     <div class="column span-24 last">
         <div id="content">
