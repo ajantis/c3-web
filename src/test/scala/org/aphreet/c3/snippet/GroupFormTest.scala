@@ -34,7 +34,6 @@ package org.aphreet.c3.snippet
 import net.liftweb.util._
 import net.liftweb.common._
 import junit.framework.TestCase
-import xml.NodeSeq
 import net.liftweb.http.{LiftRules, S, LiftSession}
 import net.liftweb.mapper._
 import org.aphreet.c3.model._

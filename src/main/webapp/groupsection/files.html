@@ -1,25 +1,17 @@
 <div class="lift:surround?with=default;at=content">
 
-    <link rel="stylesheet" type="text/css" href="/css/main.css" />
-
-    <lift:snippet type="GroupForm.groupMenu"></lift:snippet>
-    <!--<div id="GroupMenu">
-        <lift:snippet type="GroupForm.groupMenu">
-            <ul class="tabs">
-                <li><menu:overview></menu:overview></li>
-                <li><menu:files></menu:files></li>
-                <li><menu:wiki></menu:wiki></li>
-            </ul>
-        </lift:snippet>
-    </div>
-    <br/> <br/>
-    -->
     <lift:snippet type="GroupForm.view">
 
-        <h2>Group <group:name/> ( owner: <group:owner/> ) </h2>
+    <div class="content-header">
+        <h1>Group <group:name/> file browser</h1>
+        <h2>owner: <group:owner/></h2>
+    </div>
 
-        <h3>Contents: </h3>
-        <table>
+    <div class="content">
+
+          <lift:GroupForm.groupMenu />
+
+          <table>
             <tr><td><a href="/groups">All groups</a></td></tr>
             <tr><td><group:linkup/></td><td>UP ^^</td></tr>
             <group:childs>
@@ -29,62 +21,62 @@
                     <td><child:delete/></td>
                 </tr>
             </group:childs>
-        </table>
+          </table>
 
-    </lift:snippet>
-         <!--  -->
 
-    <div id="Toolbar menu">
-        <h3>
-            <a href="javascript:showDiv('createdirectory')"><img src="/images/folder_add_48.png" style="position: relative; top: 8px;" width="32" height="32" align="middle"/></a>
-            <a href="javascript:showDiv('fileupload')"><img src="/images/box_download_48.png" style="position: relative; top: 8px;" width="32" height="32" align="middle"/></a>
-            <br/>  <br/>
-        </h3>
+
+        <div id="Toolbar menu">
+                <h3>
+                    <a href="javascript:showDiv('createdirectory')"><img src="/images/folder_add_48.png" style="position: relative; top: 8px;" width="32" height="32" align="middle"/></a>
+                    <a href="javascript:showDiv('fileupload')"><img src="/images/box_download_48.png" style="position: relative; top: 8px;" width="32" height="32" align="middle"/></a>
+                    <br/>  <br/>
+                </h3>
+            </div>
+
+
+                <lift:GroupForm.createDirectoryHere form="post" multipart="true">
+                    <choose:post>
+                       <div id="createdirectory" ul:uploadDirStyle="">
+                        <p>
+                            Directory <ul:dirname></ul:dirname> successfully created<br/>
+                        </p>
+
+                       </div>
+                    </choose:post>
+
+                    <choose:get>
+                      <div id="createdirectory" ul:uploadDirStyle="">
+                        Directory name: <ul:dirname/>
+                        <input type="submit" value="Create"/>
+
+                      </div>
+                    </choose:get>
+                </lift:GroupForm.createDirectoryHere>
+
+
+
+                <lift:GroupForm.uploadHere form="post" multipart="true">
+                    <choose:post>
+                       <div id="fileupload" ul:uploadFileStyle="">
+                        <p>
+                            File <ul:filename></ul:filename> successfully uploaded<br/>
+                        </p>
+                          <br/> <br/>
+                       </div>
+                    </choose:post>
+
+                    <choose:get>
+                      <div id="fileupload" ul:uploadFileStyle="">
+                        File: <ul:file_upload></ul:file_upload><br/>
+                        Name: <ul:filename/>
+                        <input type="submit" value="Upload"/>
+                          <br/> <br/>
+                      </div>
+                    </choose:get>
+                </lift:GroupForm.uploadHere>
+
+
     </div>
-
-
-        <lift:snippet type="GroupForm.createDirectoryHere" form="post" multipart="true">
-            <choose:post>
-               <div id="createdirectory" ul:uploadDirStyle="">
-                <p>
-                    Directory <ul:dirname></ul:dirname> successfully created<br/>
-                </p>
-
-               </div>
-            </choose:post>
-
-            <choose:get>
-              <div id="createdirectory" ul:uploadDirStyle="">
-                Directory name: <ul:dirname/>
-                <input type="submit" value="Create"/>
-
-              </div>
-            </choose:get>
-        </lift:snippet>
-
-
-
-        <lift:snippet type="GroupForm.uploadHere" form="post" multipart="true">
-            <choose:post>
-               <div id="fileupload" ul:uploadFileStyle="">
-                <p>
-                    File <ul:filename></ul:filename> successfully uploaded<br/>
-                </p>
-                  <br/> <br/>
-               </div>
-            </choose:post>
-
-            <choose:get>
-              <div id="fileupload" ul:uploadFileStyle="">
-                File: <ul:file_upload></ul:file_upload><br/>
-                Name: <ul:filename/>
-                <input type="submit" value="Upload"/>
-                  <br/> <br/>
-              </div>
-            </choose:get>
-        </lift:snippet>
-
-
-
+    </lift:snippet>
 
 </div>
