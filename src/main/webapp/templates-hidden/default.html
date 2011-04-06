@@ -1,19 +1,14 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:lift="http://liftweb.net/">
 <head>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-    
+
     <title>C3 web client</title>
 
-    <style class="lift:CSS.blueprint" />
-    <style class="lift:CSS.fancyType" />
     <script id="jquery" src="/classpath/jquery.js" type="text/javascript"/>
     <script id="json" src="/classpath/json.js" type="text/javascript"/>
 
-    <link rel="stylesheet" type="text/css" href="/css/2leveltab.css" />
-    <link rel="stylesheet" type="text/css" href="/css/vmtables.css" />
-    <link rel="stylesheet" type="text/css" href="/css/messenger.css" />
+
     <link rel="stylesheet" type="text/css" href="/css/main.css" />
-    <link rel="stylesheet" type="text/css" href="/css/search.css" />
 
     <script type="text/javascript" src="/js/2leveltab.js"/>
 
@@ -85,110 +80,114 @@
     </style>
 </head>
 <body>
-<div class="container">
-
-    <div class="column span-23 last" style="text-align: center">
-       <div class="linkbar">
-        <ul>
-          <li>
-                <lift:Menu.item name="LostPassword" a:class="homeLink">
-                         Lost password?
-                </lift:Menu.item>
-                <lift:Menu.item name="ChangePassword" a:class="homeLink">
-                         Change password
-                </lift:Menu.item>
-          </li>
-          <li>
-                <lift:Menu.item name="CreateUser" a:class="homeLink">
-                         Sign up
-                </lift:Menu.item>
-                <lift:Menu.item name="EditUser" a:class="homeLink">
-                         Profile
-                </lift:Menu.item>
-           </li>
-          <li>
-                <lift:Menu.item name="Login" a:class="homeLink">
-                         Login
-                </lift:Menu.item>
-                <lift:Menu.item name="Logout" a:class="homeLink">
-                         Logout
-                </lift:Menu.item>
-          </li>
-
-        </ul>
-       </div>
-
-        <br/>
-
-        <h1 class="alt" align="left"><a href="/index"><img alt="" src="/images/c3_logo.gif" style="float: left;"/></a><img alt="" id="ajax-loader" style="display:none; margin-bottom: 0px; margin-left: 5px" src="/images/ajax-loader.gif"/></h1>
-        <br/> <br/>
-        <div class="headerMenu">
-           <ul>
-           <lift:Menu.group group="mainmenu">
-                <li><menu:bind /></li>
-           </lift:Menu.group>
-           </ul>
-        </div>
-
-    </div>
-     <div>
-            <span class="lift:Msgs?showAll=true"/>
-            <hr class="space" />
-     </div>
-
-    <!-- <hr/> -->
-
-      <div>
-          <table bgcolor="lightgrey">
-              <tr>
-                <td>
-                  <lift:snippet type="MainSnippet.breadCrumbs">
-                      <div class="breadCrumbMenu">
-                        <ul>
-                          <li><a href="/index">Home ></a></li>
-                        <breadCrumbsMenu:breadCrumbs>
-                            <li><breadCrumb:link></breadCrumb:link></li>
-                        </breadCrumbsMenu:breadCrumbs>
-                        </ul>
-                      </div>
-                    </lift:snippet>
-                </td>
-                <td>
-                  <div class="searchfield">
+<div class="root">
+    <div class="list-menu">
+        <!--
+         <div class="searchfield">
                       <input type="text" value="" name="s" id="s" placeholder="Search" /> <input type="image" src="/images/search_48.png" id="searchsubmit" value="Search" class="searchbtn"/>
                   </div>
-                </td>
-              </tr>
-          </table>
-      </div>
-
-
-    <div class="column span-24 last">
-        <div id="content">
-            <!-- The HTML content will go here -->
-        </div>
+        -->
+				<ul>
+                    <li>
+                        <lift:Menu.item name="Login">
+                                 Login
+                        </lift:Menu.item>
+                        <lift:Menu.item name="Logout">
+                                 Logout
+                        </lift:Menu.item>
+                    </li>
+                    <li>
+                        <lift:Menu.item name="CreateUser">
+                                 Register
+                        </lift:Menu.item>
+                        <lift:Menu.item name="EditUser">
+                                 Profile
+                        </lift:Menu.item>
+                    </li>
+                    <li>
+                        <lift:Menu.item name="LostPassword">
+                                 Lost password?
+                        </lift:Menu.item>
+                        <lift:Menu.item name="ChangePassword">
+                             Change password
+                        </lift:Menu.item>
+                    </li>
+                </ul>
     </div>
+    <div class="wrap">
+				<div class="header">
+					<div class="header-title">
+						<p><a href="/index">C3 Web</a> <img alt="" id="ajax-loader" style="display:none; margin-bottom: 0px; margin-left: 5px" src="/images/ajax-loader.gif"/></p>
+					</div>
+					<div>
+                        <ul>
+                            <lift:Menu.builder group="mainmenu"/>
+                        </ul>
+					</div>
+				</div>
+				<div class="breadcrumb">
+					<p>
+                        <lift:snippet type="MainSnippet.breadCrumbs">
+                        <breadCrumbsMenu:breadCrumbs>
+                            <span><breadCrumb:link></breadCrumb:link></span>
+                            <span>&gt;</span>
+                        </breadCrumbsMenu:breadCrumbs>
+                        </lift:snippet>
+					</p>
+                    <span class="lift:Msgs?showAll=true"/>
+				</div>
+				<div class="content-wrap">
+					<div class="content-header">
+		                <h1>Главная страница wiki</h1>
+                    </div>
+                    <div class="contentplace">
+                        <div id="content">
+                            <!-- The HTML content will go here -->
 
-    <hr />
-    <div class="column span-23 last" style="text-align: left">
-        <div class="footerMenu">
-            <ul>
-                <li>
-                    <a href="/about">About</a>
-                </li>
-                <li>
-                    <a href="/faq">FAQ</a>
-                </li>
-                <li>
-                    <a href="/index">Home</a>
-                </li>
-            </ul>
-        </div>
-    <h4 class="alt">
-            <a href="http://c3.aphreet.org"><i>C3</i></a>
-            is Copyright 2009-2011 The Brotherhood of C3.  Distributed under a New BSD License.</h4>
-    </div>
+                        </div>
+                    </div>
+
+			        <div class="right-panel">
+						<div class="right-panel-content">
+							<div class="right-panel-section right-panel-section-first">
+								<span>Metadata</span>
+								<div>
+									<table>
+										<tr>
+											<td class="metadata-key">Owner:</td>
+											<td>Aphreet</td>
+										</tr>
+										<tr>
+											<td class="metadata-key">Create date:</td>
+											<td>12/12/2012</td>
+										</tr>
+									</table>
+								</div>
+							</div>
+							<div class="right-panel-section">
+								<span>Actions</span>
+								<div>
+									<ul>
+										<li><a href="#">Edit page</a></li>
+										<li><a href="#">Delete page</a></li>
+									</ul>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="list-menu">
+				<ul>
+                    <li style="float: left;"><a href="http://c3.aphreet.org"><i>C3</i></a>
+            is Copyright 2009-2011 The Brotherhood of C3.  Distributed under a New BSD License.</li>
+					<li><a href="/faq">FAQ</a></li>
+					<li><a href="/about">About</a></li>
+				</ul>
+			</div>
 
 </div>
 </body>
 </html>
+

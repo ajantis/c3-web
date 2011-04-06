@@ -79,13 +79,13 @@ class MainSnippet  {
       } yield loc
 
 
-    if(S.param("GroupFilesRewrite").isEmpty) {
+    if(S.param("rewrite").isEmpty) {
       bind("breadCrumbsMenu", html,
           "breadCrumbs" -> {(ns: NodeSeq) => {breadcrumbs.flatMap( loc =>
               if(! loc.createDefaultLink.get.text.contains("index"))
 
                 bind("breadCrumb", ns,
-                  "link" -> <a href={loc.createDefaultLink.get}>{loc.title+" >"}</a> //SHtml.link(loc.linkText.toString,() => {}, loc.title)
+                  "link" -> <a href={loc.createDefaultLink.get}>{loc.title}</a> //SHtml.link(loc.linkText.toString,() => {}, loc.title)
 
 
                 )
@@ -95,24 +95,31 @@ class MainSnippet  {
       )
     }
     else {
-      val groupname = S.param("groupname").open_!
+      S.param("rewrite").open_! match
+      {
+        case "groupFiles" => {
+            val groupname = S.param("groupname").open_!
 
-      // List[(link,name)]
-      val groupDirLst : List[String] = S.param("groupdirectory").open_!.split("/").toList
-      val groupDirLinkLst : List[(String,String)] = groupDirLst.map(dir => ("/group/"+groupname+"/files/" + {groupDirLst.takeWhile(_ != dir).mkString("/") match {
-        case "" => ""
-        case str => str + "/"
-      } } + dir , dir))
+          // List[(link,name)]
+          val groupDirLst : List[String] = S.param("groupdirectory").open_!.split("/").toList
+          val groupDirLinkLst : List[(String,String)] = groupDirLst.map(dir => ("/group/"+groupname+"/files/" + {groupDirLst.takeWhile(_ != dir).mkString("/") match {
+            case "" => ""
+            case str => str + "/"
+          } } + dir , dir))
 
-      val brdCrmbList : List[(String,String)] = Tuple2("/group/"+groupname,groupname) :: Tuple2("/group/"+groupname+"/files", "Files") :: groupDirLinkLst
+          val brdCrmbList : List[(String,String)] = Tuple2("/group/"+groupname,groupname) :: Tuple2("/group/"+groupname+"/files", "Files") :: groupDirLinkLst
 
-      bind("breadCrumbsMenu", html,
-          "breadCrumbs" -> {(ns: NodeSeq) => {brdCrmbList.filter(_._2 != "").flatMap(linkWithName =>
-                bind("breadCrumb", ns,
-                  "link" -> <a href={linkWithName._1}>{linkWithName._2+" >"}</a>
-                )
-          ): NodeSeq} }
-      )
+          bind("breadCrumbsMenu", html,
+              "breadCrumbs" -> {(ns: NodeSeq) => {brdCrmbList.filter(_._2 != "").flatMap(linkWithName =>
+                    bind("breadCrumb", ns,
+                      "link" -> <a href={linkWithName._1}>{linkWithName._2}</a>
+                    )
+              ): NodeSeq} }
+          )
+        }
+        case _ => NodeSeq.Empty // TODO implement
+      }
+
     }
 
 
