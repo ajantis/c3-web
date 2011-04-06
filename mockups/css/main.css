@@ -2,7 +2,6 @@ html,body {
 	background-color: #333333;
 	font-family: sans-serif;
 	font-size: 14px;
-	/*height: 100%;*/
 	margin:0px;
 }
 
@@ -39,6 +38,9 @@ div.wrap{
 	box-shadow: 0px 0px 10px #111;
 }
 
+/*********************************************************
+ * Begin page header part
+ *********************************************************/
 div.header{
 	width: 100%;
 	height: 70px;
@@ -87,7 +89,13 @@ div.header-title{
 .header-title p{
 	margin:0px;
 }
+/*********************************************************
+ * End page header part
+ *********************************************************/
 
+/*********************************************************
+ * Begin menu part
+ *********************************************************/
 div.list-menu{
 	width:100%;
 }
@@ -118,14 +126,54 @@ div.list-menu{
 	color:#FFF;
 	text-decoration:underline;
 }
+/*********************************************************
+ * End menu part
+ *********************************************************/
 
-div.content-wrap{
-	background-color: #FFF;
-	min-height: 500px;
-	padding-left:15px;
-	padding-right:15px;
+/*********************************************************
+ * Begin notification part
+ *********************************************************/
+div#lift__noticesContainer__{
+	margin-left:10px;	
+	margin-right:10px;
 }
 
+#lift__noticesContainer__ ul{
+	margin:0px;
+	text-align:center;
+	padding-top:5px;
+	padding-bottom:5px;
+}
+
+#lift__noticesContainer__ li{
+	list-style:none;
+}
+
+div#lift__noticesContainer___error{
+	background-color:#FFCCCC;
+	border:1px solid;
+	border-color:#F00;
+
+	margin-top:2px;
+	margin-bottom:2px;
+}
+
+div#lift__noticesContainer___notice{
+	background-color:#EEEEEE;
+	border:1px solid;
+	border-color:#CCC;
+
+	margin-top:2px;
+	margin-bottom:2px;
+}
+/*********************************************************
+ * End notification part
+ *********************************************************/
+
+
+/*********************************************************
+ * Begin breadcrumb part
+ *********************************************************/
 div.breadcrumb{
 	width: 100%;
 	background-color: #222;
@@ -159,7 +207,19 @@ div.breadcrumb{
 	color:#FFF;
 	text-decoration:none;
 }
+/*********************************************************
+ * End breadcrumb part
+ *********************************************************/
 
+/*********************************************************
+ * Begin content part
+ *********************************************************/
+div.content-wrap{
+	background-color: #FFF;
+	min-height: 500px;
+	padding-left:15px;
+	padding-right:15px;
+}
 
 div.content-header{
 	width:100%;
@@ -184,7 +244,13 @@ div.content{
 	padding-left:5px;
 	padding-right:10px;
 }
+/*********************************************************
+ * End content part
+ *********************************************************/
 
+/*********************************************************
+ * Begin right panel part
+ *********************************************************/
 div.right-panel{
 	float:right;
 	width:25%;
@@ -238,7 +304,13 @@ td.metadata-key{
 	margin-bottom:0px;
 	margin-top:7px;
 }
+/*********************************************************
+ * End right panel part
+ *********************************************************/
 
+/*********************************************************
+ * Begin file table part
+ *********************************************************/
 table.file-table{
 	width:100%;
 	font-size:12px;
@@ -263,3 +335,6 @@ td.file-table-date td.file-table-owner{
 td.file-table-date{
 	text-align:right;
 }
+/*********************************************************
+ * End file table part
+ *********************************************************/
