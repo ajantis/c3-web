@@ -102,7 +102,7 @@ class Boot {
         case RewriteRequest(
             ParsePath("group" :: groupname  :: "files" :: directory , _, _,_), _, _) =>
             RewriteResponse(
-                "groupsection" :: "files" :: Nil, Map("groupname" -> groupname,"groupdirectory" -> directory.mkString("/"), "GroupFilesRewrite" -> "yes")
+                "groupsection" :: "files" :: Nil, Map("groupname" -> groupname,"groupdirectory" -> directory.mkString("/"), "rewrite" -> "groupFiles")
             )
     })
     LiftRules.statelessRewrite.prepend(NamedPF("ParticularGroupOverviewRewrite") {
