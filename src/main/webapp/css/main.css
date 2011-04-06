@@ -168,3 +168,42 @@ ul.tabs li a:hover {
         .footerMenu ul li a:hover {
         background-color: #eee;
         }
+
+
+
+.breadCrumbMenu ul {
+
+        border-bottom:1px solid #ccc;
+        display: inline;
+        list-style-type: none;
+
+        font: bold 12px Verdana;
+        color: black;
+        text-align: center;
+        }
+
+
+        .breadCrumbMenu ul li {
+        padding-right: 0px;
+        padding-left: 10px;
+        border: none;
+
+        float: left;
+        }
+
+        .breadCrumbMenu ul li a {
+
+        color: black;
+        text-indent:30px;
+        text-decoration:none;
+        }
+
+        .breadCrumbMenu ul li span {
+
+        text-indent:30px;
+        text-decoration:none;
+        }
+
+        .breadCrumbMenu ul li a:hover {
+        background-color: #eee;
+        }

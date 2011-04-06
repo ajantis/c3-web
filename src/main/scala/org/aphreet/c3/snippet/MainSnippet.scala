@@ -1,8 +1,10 @@
 package org.aphreet.c3.snippet
 
-import xml.{Text, NodeSeq}
 import org.aphreet.c3.model.{Group, User}
 import net.liftweb.mapper.MaxRows
+import net.liftweb.sitemap.Loc
+import net.liftweb.http.{GetRequest, Req, SHtml, S}
+import xml.{XML, Text, NodeSeq}
 
 /**
  * Copyright (c) 2011, Dmitry Ivanov
@@ -65,6 +67,54 @@ class MainSnippet  {
       "groups" -> {(ns: NodeSeq) => featuredGroups.flatMap( group => bind("group", ns,
         "name" -> <a href={"/group/"+group.name}>{group.name}</a>)):NodeSeq})
     else Text("There are no groups in db currently.")
+
+  }
+
+  def breadCrumbs(html: NodeSeq) : NodeSeq = {
+    val breadcrumbs: List[Loc[_]] =
+      for {
+        currentLoc <- S.location.toList
+        loc <- currentLoc.breadCrumbs
+
+      } yield loc
+
+
+    if(S.param("GroupFilesRewrite").isEmpty) {
+      bind("breadCrumbsMenu", html,
+          "breadCrumbs" -> {(ns: NodeSeq) => {breadcrumbs.flatMap( loc =>
+              if(! loc.createDefaultLink.get.text.contains("index"))
+
+                bind("breadCrumb", ns,
+                  "link" -> <a href={loc.createDefaultLink.get}>{loc.title+" >"}</a> //SHtml.link(loc.linkText.toString,() => {}, loc.title)
+
+
+                )
+
+              else NodeSeq.Empty
+          ): NodeSeq} }
+      )
+    }
+    else {
+      val groupname = S.param("groupname").open_!
+
+      // List[(link,name)]
+      val groupDirLst : List[String] = S.param("groupdirectory").open_!.split("/").toList
+      val groupDirLinkLst : List[(String,String)] = groupDirLst.map(dir => ("/group/"+groupname+"/files/" + {groupDirLst.takeWhile(_ != dir).mkString("/") match {
+        case "" => ""
+        case str => str + "/"
+      } } + dir , dir))
+
+      val brdCrmbList : List[(String,String)] = Tuple2("/group/"+groupname,groupname) :: Tuple2("/group/"+groupname+"/files", "Files") :: groupDirLinkLst
+
+      bind("breadCrumbsMenu", html,
+          "breadCrumbs" -> {(ns: NodeSeq) => {brdCrmbList.filter(_._2 != "").flatMap(linkWithName =>
+                bind("breadCrumb", ns,
+                  "link" -> <a href={linkWithName._1}>{linkWithName._2+" >"}</a>
+                )
+          ): NodeSeq} }
+      )
+    }
+
 
   }
 
