@@ -1,10 +1,11 @@
-<div class="lift:surround?with=default;at=content">
+<lift:surround with="default">
+
+  <lift:bind-at name="content">
 
     <lift:snippet type="GroupForm.view">
 
     <div class="content-header">
-        <h1>Group <group:name/> file browser</h1>
-        <h2>owner: <group:owner/></h2>
+        <h1><group:name/>'s Files</h1>
     </div>
 
     <div class="content">
@@ -79,4 +80,44 @@
     </div>
     </lift:snippet>
 
-</div>
+    </lift:bind-at>
+
+
+    <lift:bind-at name="right-panel-content">
+        <div class="right-panel-section right-panel-section-first">
+            <lift:snippet type="GroupForm.groupMenu">
+                <span><group:name></group:name></span>
+				<div>
+                    <ul>
+                        <li><group:overviewLink></group:overviewLink></li>
+                        <li><group:filesLink></group:filesLink></li>
+                        <li><group:wikiLink></group:wikiLink></li>
+                        <li><group:adminLink></group:adminLink></li>
+                    </ul>
+                </div>
+            </lift:snippet>
+        </div>
+        <div class="right-panel-section">
+            <lift:snippet type="GroupForm.resourceProperties">
+            <span>Metadata</span>
+            <div>
+                <table>
+                    <tr>
+                        <td class="metadata-key">ResName:</td>
+                        <td><currentResource:name></currentResource:name></td>
+                    </tr>
+                    <tr>
+                        <td class="metadata-key">Owner:</td>
+                        <td><currentResource:owner></currentResource:owner></td>
+                    </tr>
+                    <tr>
+                        <td class="metadata-key">Create date:</td>
+                        <td><currentResource:created></currentResource:created></td>
+                    </tr>
+                </table>
+            </div>
+            </lift:snippet>
+        </div>
+    </lift:bind-at>
+
+</lift:surround>

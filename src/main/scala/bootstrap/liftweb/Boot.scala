@@ -102,6 +102,7 @@ class Boot {
         case RewriteRequest(
             ParsePath("group" :: groupname  :: "files" :: directory , _, _,_), _, _) =>
             RewriteResponse(
+                //C3Client().getNodeMetadata()      // TODO !!
                 "groupsection" :: "files" :: Nil, Map("groupname" -> groupname,"groupdirectory" -> directory.mkString("/"), "rewrite" -> "groupFiles")
             )
     })

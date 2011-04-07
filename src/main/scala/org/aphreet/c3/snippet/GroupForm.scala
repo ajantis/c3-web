@@ -33,15 +33,15 @@ package org.aphreet.c3.snippet
 
 import org.aphreet.c3.apiaccess.C3Client
 import net.liftweb.util.BindHelpers._
-import xml.{Text, NodeSeq}
 import org.aphreet.c3.model._
 import net.liftweb.common.{Box, Logger, Full, Empty}
 import net.liftweb.http.{FileParamHolder, RequestVar, SHtml, S}
-import net.liftweb.util.SecurityHelpers
 import net.liftweb.http.js._
 import net.liftweb.http.js.JsCmds.Alert
 import net.liftweb.mapper.By
 import java.net.URLEncoder
+import net.liftweb.util.{TimeHelpers, SecurityHelpers}
+import xml.{Node, Text, NodeSeq}
 
 class GroupForm {
 
@@ -223,40 +223,12 @@ class GroupForm {
       }
   }
 
-  /*
-  <div id="GroupMenu">
-        <lift:snippet type="GroupForm.groupMenu">
-            <ul class="tabs">
-                <li><menu:overview></menu:overview></li>
-                <li><menu:files></menu:files></li>
-                <li><menu:wiki></menu:wiki></li>
-                <li><menu:admin></menu:admin></li>
-            </ul>
-        </lift:snippet>
-    </div>
-    <br/><br/><br/>
-   */
-
 
   def groupMenu(html: NodeSeq) : NodeSeq = {
 
      S.param("groupname") match {
        case Full(name) => {
-         /*bind("menu", html,
-          "overview" -> <a href={"/group/"+name}>Overview</a>,
-          "files" -> <a href={"/group/"+name+"/files"}>Files</a>,
-          "wiki" -> <a href={"/group/"+name+"/wiki"}>Wiki</a>,
-          "admin" -> {
-            Group.find(By(Group.name,name)) match {
-              case Full(group) => {
-                User.currentUser match {
-                  case Full(user) if(user.id.is == group.owner.is) => <a href={"/group/"+name+"/admin"}>Admin</a>
-                  case _ => Text("")
-                }
-              }
-              case _ => Text("")
-            }
-          })*/
+         /*
          <ul class="tabs">
            <li><a href={"/group/"+name}>Overview</a></li>
            <li><a href={"/group/"+name+"/files"}>Files</a></li>
@@ -270,14 +242,92 @@ class GroupForm {
               }
               case _ => NodeSeq.Empty
             }}
-         </ul>
+         </ul> */
+         bind("group",html,
+         "name" -> name,
+         "overviewLink" -> <a href={"/group/"+name}>Overview</a>,
+         "filesLink" -> <a href={"/group/"+name+"/files"}>Files</a>,
+         "wikiLink" -> <a href={"/group/"+name+"/wiki"}>Wiki</a>,
+         "adminLink" -> {Group.find(By(Group.name,name)) match {
+              case Full(group) => {
+                User.currentUser match {
+                  case Full(user) if(user.id.is == group.owner.is) => <a href={"/group/"+name+"/admin"}>Admin</a>
+                  case _ => NodeSeq.Empty
+                }
+              }
+              case _ => NodeSeq.Empty
+            } }
+         )
        }
        case _ => NodeSeq.Empty
      }
 
   }
 
+  def resourceProperties(html: NodeSeq) : NodeSeq = {
 
+      S.param("groupdirectory") match {
+        case Full(groupDirName) if(!S.param("groupname").isEmpty) =>
+          try {
+            val md = C3Client().getNodeMetadata(S.param("groupname").open_! + "/files/" + groupDirName)
+            val createDate = ((md \\ "resource")(0) \ "@createDate").text
+            val tags =
+              ((md \\ "metadata")(0) \\ "element").toList.filter( (node: Node) => {(node \ "@key").text == "tags" }) match {
+                case List() => ""
+                case tagsElems => (tagsElems(0) \ "value").text
+              }
 
+            bind("currentResource", html,
+              "name" -> groupDirName,
+              "owner" -> "owner1",
+              "created" -> createDate,                                            // TODO List(tags) is a STUB for tag display test
+              "tags_list" -> {(ns: NodeSeq) => List("tag1","tag2","tag3").flatMap( tag =>
+                bind("tag", ns, "name" -> tag)) : NodeSeq
+              }
+
+            )
+          }
+          catch {
+            case e: Exception => {
+              S.error(e.toString)
+              NodeSeq.Empty
+            }
+          }
+
+        case _ =>  // Directory name is not defined as parameter at the request
+            S.param("groupfile") match {
+
+                    case Full(groupFileName) if(!S.param("groupname").isEmpty) => {
+                      try {
+                        val md = C3Client().getNodeMetadata(S.param("groupname").open_! + "/files/" + groupFileName)
+                        val createDate = ((md \\ "resource")(0) \ "@createDate").text
+
+                        val tags =
+                        ((md \\ "metadata")(0) \\ "element").toList.filter( (node: Node) => {(node \ "@key").text == "tags" }) match {
+                          case List() => ""
+                          case tagsElems => (tagsElems(0) \ "value").text
+                        }
+
+                        bind("currentResource", html,
+                          "name" -> groupFileName,
+                          "owner" -> "owner2",
+                          "created" -> TimeHelpers.now.toString,             // TODO List(tags) is a STUB for tag display test
+                          "tags_list" -> {(ns: NodeSeq) => List("tag11","tag223","tag323").flatMap( tag =>
+                            bind("tag", ns, "name" -> tag)) : NodeSeq
+                          }
+
+                        )
+                      }
+                      catch {
+                        case e: Exception => {
+                          S.error(e.toString)
+                          NodeSeq.Empty
+                        }
+                      }
+                    }
+                    case _ => NodeSeq.Empty   // File name is not defined as parameter at the request
+            }
+      }
+  }
 
 }

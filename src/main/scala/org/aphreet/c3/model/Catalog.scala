@@ -2,6 +2,8 @@ package org.aphreet.c3.model
 
 import org.aphreet.c3.apiaccess.C3Client
 import xml.NodeSeq
+import java.util.Date
+import net.liftweb.util.TimeHelpers
 
 
 /**
@@ -41,6 +43,11 @@ class Catalog(val group : Group, val name : String) extends C3Resource with C3Re
 
   val resourceType = C3Resource.C3_DIRECTORY
 
+  var owner = ""
+
+  var created : Date = TimeHelpers.now
+
+  var tags : List[String] = List()
 
   def saveToC3() : Boolean = {
     C3Client().createDir(group.name+"/"+name)

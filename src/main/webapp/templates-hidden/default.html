@@ -139,13 +139,18 @@
                     <span class="lift:Msgs?showAll=true"/>
 				</div>
 				<div class="content-wrap">
-                    <div id="content">
+                    <div>
+                        <lift:bind name="content" />
                          <!-- The HTML content will go here -->
                     </div>
 
-			        <div class="right-panel">
+			        <div class="right-panel" id="right-panel">
+
 						<div class="right-panel-content">
-							<div class="right-panel-section right-panel-section-first">
+
+                            <lift:bind name="right-panel-content" />
+							<!--
+                            <div class="right-panel-section right-panel-section-first">
 								<span>Metadata</span>
 								<div>
 									<table>
@@ -168,7 +173,7 @@
 										<li><a href="#">Delete page</a></li>
 									</ul>
 								</div>
-							</div>
+							</div> -->
 						</div>
 					</div>
 				</div>

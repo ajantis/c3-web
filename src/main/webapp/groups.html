@@ -1,4 +1,6 @@
-<div class="lift:surround?with=default;at=content">
+<lift:surround with="default">
+
+ <lift:bind-at name="content">
     <div class="content-header">
             <h1>My groups</h1>
     </div>
@@ -24,5 +26,21 @@
             <li><group:name/> - <group:owner/> - <group:delete/></li>
         </ul>
     </lift:snippet>
+ </lift:bind-at>
 
-</div>
+ <lift:bind-at name="right-panel-content">
+
+    <div class="right-panel-section right-panel-section-first">
+        <span></span>
+        <div>
+            <ul>
+            </ul>
+        </div>
+    </div>
+    <div class="right-panel-section">
+
+    </div>
+
+ </lift:bind-at>
+
+</lift:surround>
