@@ -44,7 +44,9 @@ import javax.crypto.spec.SecretKeySpec
 import java.io.{ByteArrayInputStream, InputStream}
 import xml.{NodeSeq, XML}
 
-class C3Client(val host:String, val contextPath:String,  val domain:String, val secret:String)  {
+import org.apache.commons.httpclient.util.URIUtil
+
+class C3Client(val host:String, val contextPath:String, val contextSearchPath:String,  val domain:String, val secret:String)  {
 
   val logger = Logger(classOf[C3Client])
 
@@ -273,6 +275,35 @@ class C3Client(val host:String, val contextPath:String,  val domain:String, val 
     }
   }
 
+  def doSearch(target : String) = {
+
+    val getRequest = createGetSearchMethod(target)
+
+    val resultSet = {
+      try{
+        val status = httpClient.executeMethod(getRequest)
+        status match{
+          case HttpStatus.SC_OK =>
+            if(isXmlResponse(getRequest))
+              XML.load(getRequest.getResponseBodyAsStream)
+            else{
+              throw new C3ClientException("Failed to get search result set. Unexpected content type")
+            }
+
+          case _ => {
+            logger.warn("Failed to get search result set, code: " + status + " response: " + getRequest.getResponseBodyAsString)
+            throw new C3ClientException("Failed to do search")
+          }
+        }
+      }finally {
+        getRequest.releaseConnection
+      }
+    }
+
+    (resultSet \\ "searchResults")(0)
+  }
+
+
   private def createPostMethod(relativePath:String):PostMethod = {
     logger.info(host + contextPath + relativePath)
     val method = new PostMethod(host + contextPath + relativePath)
@@ -285,6 +316,14 @@ class C3Client(val host:String, val contextPath:String,  val domain:String, val 
         
     val method = new GetMethod(host + contextPath + relativePath)
     addAuthHeader(method, contextPath + relativePath.split("\\?metadata").head)
+    method
+  }
+
+  private def createGetSearchMethod(searchString : String):GetMethod = {
+    logger.info(host + contextSearchPath + searchString)
+
+    val method = new GetMethod(host + contextSearchPath + URIUtil.encodeAll(searchString))
+    addAuthHeader(method, contextPath + searchString)
     method
   }
 
@@ -357,11 +396,13 @@ object C3Client {
 
     val contextPath = Props.get("c3_context_path") openOr("/rest/fs/")
 
+    val contextSearchPath = Props.get("c3_context_search_path") openOr("/rest/search/")
+
     val domain = Props.get("c3_domain_name") openOr "anonymous"
 
     val secret = Props.get("c3_domain_secret") openOr ""
 
-    new C3Client(host, contextPath, domain, secret)
+    new C3Client(host, contextPath, contextSearchPath , domain, secret)
   }
 }
 

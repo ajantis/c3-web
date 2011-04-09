@@ -339,3 +339,40 @@ td.file-table-date{
 /*********************************************************
  * End file table part
  *********************************************************/
+
+/*********************************************************
+ * Begin user menus part (login, lostpassword forms, etc...)
+ *********************************************************/
+
+div.usermenu {
+
+    width: auto;
+    font-size: 14px;
+    font-weight: bold;
+    color: #FFF;
+    background-color: #AAA;
+
+    margin: 40px 20px 20px 20px;
+
+	border-top-right-radius: 15px;
+	border-top-left-radius: 15px;
+	border-bottom-left-radius: 15px;
+	border-bottom-right-radius: 15px;
+
+	-moz-border-radius-topleft: 15px;
+	-moz-border-radius-topright: 15px;
+    -moz-border-radius-bottomleft: 15px;
+	-moz-border-radius-bottomright: 15px;
+
+	-moz-box-shadow: 0px 0px 10px #111;
+	-webkit-box-shadow: 0px 0px 10px #111;
+	box-shadow: 0px 0px 10px #111;
+
+	padding: 10px 10px 10px 10px;
+}
+.usermenu a:visited{
+	color:#FFF;
+}
+/*********************************************************
+ * End user menus part
+ *********************************************************/

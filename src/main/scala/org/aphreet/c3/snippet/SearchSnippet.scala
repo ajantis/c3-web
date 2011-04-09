@@ -1,6 +1,8 @@
 package org.aphreet.c3.snippet
 
 import xml.NodeSeq
+import org.aphreet.c3.apiaccess.C3Client
+import net.liftweb.http.{StatefulSnippet, SHtml}
 
 /**
  * Copyright (c) 2011, Dmitry Ivanov
@@ -33,12 +35,30 @@ import xml.NodeSeq
  * POSSIBILITY OF SUCH DAMAGE.
  */
  
- 
- 
-class SearchSnippet {
 
-  def doSearch(html: NodeSeq) = {
-     NodeSeq.Empty
+import net.liftweb.util.BindHelpers._
+ 
+class SearchSnippet extends StatefulSnippet {
+
+  var dispatch : DispatchIt = {
+    case "search" => searchForm _
   }
 
+  var searchString = ""
+  var resultSet = NodeSeq.Empty
+
+  def searchForm(html: NodeSeq) = {
+
+     bind("search", html,
+      "query" -> SHtml.text(searchString, searchString = _ ),
+      "resultSet" -> { (ns : NodeSeq) =>
+        (resultSet \\ "entry").flatMap( entry =>
+          bind("entry", ns, "content" ->  { (entry \ "@address").text } )
+        )
+      },
+      "submit" -> SHtml.submit("Go", () => {
+        resultSet = C3Client().doSearch(searchString)
+      })
+     )
+  }
 }

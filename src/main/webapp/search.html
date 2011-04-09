@@ -1,0 +1,65 @@
+<lift:surround with="default">
+
+  <lift:bind-at name="content">
+
+      <div class="content-header">
+            <h1>Search</h1>
+      </div>
+
+      <div class="content">
+        <lift:snippet type="SearchSnippet.search" form="post">
+
+            <search:query></search:query> <search:submit></search:submit>  <br/>
+
+            <br/>
+            <ul>
+            <search:resultSet>
+                <li><entry:content></entry:content></li>
+            </search:resultSet>
+            </ul>
+
+        </lift:snippet>
+      </div>
+
+ </lift:bind-at>
+
+<lift:bind-at name="right-panel-content">
+
+    <div class="right-panel-section right-panel-section-first">
+         <span>Pick a category or tag</span>
+         <div>
+             <ul>
+                 <li>Programming
+                     <ul>
+                         <li>Scala</li>
+                         <li>Java</li>
+                         <li>Objective C</li>
+                     </ul>
+                 </li>
+                 <li>Performance
+                     <ul>
+                         <li>Measurements</li>
+                         <li>Metodology</li>
+                         <li>Team</li>
+                     </ul>
+                 </li>
+             </ul>
+         </div>
+    </div>
+    <div class="right-panel-section">
+        <span>Actions</span>
+        <!--
+        <div>
+            <ul>
+                <li><a href="#">Edit page</a></li>
+                <li><a href="#">Delete page</a></li>
+            </ul>
+        </div> -->
+    </div>
+
+</lift:bind-at>
+
+</lift:surround>
+
+
+

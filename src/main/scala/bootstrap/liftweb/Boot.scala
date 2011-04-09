@@ -85,7 +85,9 @@ class Boot {
 
       Menu("UserEdit") / "users" / "edituser" >> loggedIn >> Hidden,
 
-      Menu("File upload") / "file_upload" >> loggedIn >> Hidden
+      Menu("File upload") / "file_upload" >> loggedIn >> Hidden,
+
+      Menu("Search") / "search" >> loggedIn >> Hidden
 
 
       // Menu with special Link
