@@ -39,18 +39,15 @@ import net.liftweb.util.TimeHelpers
  
  
  
-class Catalog(val group : Group, val name : String) extends C3Resource with C3ResourceMapping[Catalog] {
+class Catalog(val group : Group, val name : String,val create : Date , val tags : List[String]) extends C3Resource with C3ResourceMapping[Catalog] {
 
   val resourceType = C3Resource.C3_DIRECTORY
 
   var owner = ""
 
-  var created : Date = TimeHelpers.now
-
-  var tags : List[String] = List()
 
   def saveToC3() : Boolean = {
-    C3Client().createDir(group.name+"/"+name)
+    C3Client().createDir(group.name+"/files/"+name)
   }
 
 
@@ -58,5 +55,5 @@ class Catalog(val group : Group, val name : String) extends C3Resource with C3Re
 }
 
 object Catalog {
-  def apply(group : Group, name : String) = new Catalog(group,name)
+  def apply(group : Group, name : String, createDate : Date = TimeHelpers.now, tags : List[String] = List()) = new Catalog(group = group,name = name, create = createDate, tags = tags)
 }

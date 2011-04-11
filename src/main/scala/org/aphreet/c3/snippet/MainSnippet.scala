@@ -5,6 +5,7 @@ import net.liftweb.mapper.MaxRows
 import net.liftweb.sitemap.Loc
 import net.liftweb.http.{GetRequest, Req, SHtml, S}
 import xml.{XML, Text, NodeSeq}
+import net.liftweb.common.Full
 
 /**
  * Copyright (c) 2011, Dmitry Ivanov
@@ -41,6 +42,18 @@ import net.liftweb.util.BindHelpers._
  
  
 class MainSnippet  {
+
+  def currentUser(html: NodeSeq) : NodeSeq = {
+    User.currentUser match {
+      case Full(user) => {
+        bind("user", html,
+          "email" -> user.email.is
+        )
+      }
+      case _ => NodeSeq.Empty
+    }
+  }
+
   def myGroupsList(html: NodeSeq) : NodeSeq = {
 
      if(User.loggedIn_?) {

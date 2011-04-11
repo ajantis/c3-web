@@ -109,6 +109,9 @@ div.list-menu{
     padding-left:5px;
     padding-right:5px;
 }
+.list-menu li.currentUser {
+    float: left;
+}
 
 .list-menu ul{
 	text-align:right;

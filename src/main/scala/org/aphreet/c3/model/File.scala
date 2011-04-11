@@ -1,6 +1,8 @@
 package org.aphreet.c3.model
 
 import org.aphreet.c3.apiaccess.C3Client
+import net.liftweb.util.TimeHelpers
+import java.util.Date
 
 /**
  * Copyright (c) 2011, Dmitry Ivanov
@@ -36,7 +38,7 @@ import org.aphreet.c3.apiaccess.C3Client
  
 
 
-class File(val group : Group, val path : String) extends C3Resource with C3ResourceMapping[File] {
+class File(val group : Group, val path : String, val fileType : String ,val created : Date , val tags : List[String] ) extends C3Resource with C3ResourceMapping[File] {
 
   val name = path.split("/").last
 
@@ -50,7 +52,9 @@ class File(val group : Group, val path : String) extends C3Resource with C3Resou
 }
 
 object File {
-  def apply(group : Group, fullpath : String) = new File(group, fullpath)
+
+
+  def apply(group : Group, fullpath : String, fileType: String = "application/octet-stream", create : Date = TimeHelpers.now, tags : List[String] = List() ) = new File(group = group, path = fullpath, fileType = fileType, created = create,tags = tags)
 
   /*def getFile(group:String, filePath:String):Option[File] = {
     try{

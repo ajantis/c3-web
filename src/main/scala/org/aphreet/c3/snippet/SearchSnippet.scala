@@ -53,7 +53,7 @@ class SearchSnippet extends StatefulSnippet {
       "query" -> SHtml.text(searchString, searchString = _ ),
       "resultSet" -> { (ns : NodeSeq) =>
         (resultSet \\ "entry").flatMap( entry =>
-          bind("entry", ns, "content" ->  { (entry \ "@address").text } )
+          bind("entry", ns, "content" ->   { (entry \ "@address").text } )
         )
       },
       "submit" -> SHtml.submit("Go", () => {

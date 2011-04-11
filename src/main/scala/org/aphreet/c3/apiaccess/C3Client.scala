@@ -77,6 +77,10 @@ class C3Client(val host:String, val contextPath:String, val contextSearchPath:St
     }
   }
 
+  // TODO addRequestHeader(new Header("x-c3-extmeta", "c3.ext.fs.path"))
+
+
+
   def getNodeMetadata(path:String): NodeSeq = {
     val getMethod = createGetMethod(path + "?metadata")
 
@@ -318,6 +322,8 @@ class C3Client(val host:String, val contextPath:String, val contextSearchPath:St
     addAuthHeader(method, contextPath + relativePath.split("\\?metadata").head)
     method
   }
+
+
 
   private def createGetSearchMethod(searchString : String):GetMethod = {
     logger.info(host + contextSearchPath + searchString)

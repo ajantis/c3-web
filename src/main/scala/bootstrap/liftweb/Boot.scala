@@ -87,7 +87,9 @@ class Boot {
 
       Menu("File upload") / "file_upload" >> loggedIn >> Hidden,
 
-      Menu("Search") / "search" >> loggedIn >> Hidden
+      Menu("Search") / "search" >> loggedIn >> Hidden,
+
+      Menu("Not found") / "404" >>  Hidden
 
 
       // Menu with special Link
@@ -102,11 +104,26 @@ class Boot {
 
     LiftRules.statelessRewrite.prepend(NamedPF("ParticularGroupFilesRewrite") {
         case RewriteRequest(
-            ParsePath("group" :: groupname  :: "files" :: directory , _, _,_), _, _) =>
-            RewriteResponse(
-                //C3Client().getNodeMetadata()      // TODO !!
-                "groupsection" :: "files" :: Nil, Map("groupname" -> groupname,"groupdirectory" -> directory.mkString("/"), "rewrite" -> "groupFiles")
-            )
+            ParsePath("group" :: groupname  :: "files" :: directory , extension, _,_), _, _) => {
+
+                      // TODO !!
+                val dotExt = extension match {
+                  case "" => ""
+                  case str => "."+str
+                }
+                Group.find(By(Group.name,groupname)) match {
+                  case Full(group) => {
+                    C3Resource.get(group,directory.mkString("/")+dotExt) match {
+                      case Some(resource) if(resource.isInstanceOf[File]) => RewriteResponse("download" :: groupname :: "files" :: (directory.mkString("/")+dotExt).split("/").toList)
+                      case Some(resource) => RewriteResponse("groupsection" :: "files" :: Nil, Map("groupname" -> groupname,"groupdirectory" -> directory.mkString("/"), "rewrite" -> "groupFiles"))
+                      case _ => RewriteResponse("404" :: Nil)
+                    }
+                  }
+                  case _ => RewriteResponse("404" :: Nil)
+                }
+
+
+        }
     })
     LiftRules.statelessRewrite.prepend(NamedPF("ParticularGroupOverviewRewrite") {
         case RewriteRequest(

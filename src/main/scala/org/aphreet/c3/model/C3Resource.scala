@@ -1,5 +1,11 @@
 package org.aphreet.c3.model
 
+import org.aphreet.c3.apiaccess.C3Client
+import net.liftweb.util.TimeHelpers
+import java.util.Date
+import java.text.SimpleDateFormat
+import net.liftweb.common.Logger
+
 /**
  * Copyright (c) 2011, Dmitry Ivanov
  * All rights reserved.
@@ -41,4 +47,50 @@ abstract class C3Resource {
 object C3Resource {
   val C3_DIRECTORY = "directory"
   val C3_FILE = "file"
+  val logger = Logger(classOf[C3Resource])
+
+  def get(group : Group, relativePath: String ) : Option[C3Resource] = {
+
+      try {
+        val fileMD = C3Client().getNodeMetadata(group.name.is+"/files/"+relativePath)
+        if(! (fileMD \\ "metadata").isEmpty ) {
+
+          val createDate : Date = (fileMD \\ "resource")(0).attribute("created") match {
+            case Some(dateStr) => {
+              val fmt = new SimpleDateFormat("YYYY-MM-DDThh:mm:ss.SSSz")
+              fmt.parse(dateStr.toString)
+            }
+            case None => TimeHelpers.now
+          }
+
+          ((fileMD \\ "metadata")(0) \\ "element").find( _.attribute("key").getOrElse("").toString == "content.type" ) match {
+              case Some(element) => (element \\ "value").text  match {
+
+                  case "application/x-c3-directory" => Some(Catalog(group = group, name = relativePath.split("/").last, createDate =  createDate))
+
+                  case fileType => Some(File(group = group, fullpath = relativePath, fileType = fileType,create = createDate ))
+
+              }
+              case None => {
+                  throw new Exception("Content.TYPE of "+relativePath+" is empty!"+ ((fileMD \\ "metadata")(0) \\ "element").toString)
+                  //None
+              }
+          }
+        }
+        else {
+          throw new Exception("Metadata of "+relativePath+" is empty!")
+          //None
+        }
+      }
+      catch {
+        case e: Exception => {
+          logger error e.getMessage
+          None
+        }
+      }
+
+
+
+  }
+
 }
