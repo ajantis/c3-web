@@ -46,12 +46,13 @@ import xml.{NodeSeq, XML}
 
 import org.apache.commons.httpclient.util.URIUtil
 
-class C3Client(val host:String, val contextPath:String, val contextSearchPath:String,  val domain:String, val secret:String)  {
+class C3Client(val host:String, val contextPath:String, val contextRestPath:String,  val domain:String, val secret:String)  {
 
   val logger = Logger(classOf[C3Client])
 
   val httpClient = new HttpClient()
 
+  val contextRestSearchPath = "/rest/search/" //contextRestPath + "search/"
 
   def createGroupMapping(group: Group): Boolean = {
     if(createDir(group.name.is)){
@@ -77,8 +78,50 @@ class C3Client(val host:String, val contextPath:String, val contextSearchPath:St
     }
   }
 
-  // TODO addRequestHeader(new Header("x-c3-extmeta", "c3.ext.fs.path"))
+  def getResourceMetadataWithFSPath(resourceId : String): NodeSeq = {
+    val getMethod = createGetRestMethod(resourceId + "?metadata")
+    getMethod.addRequestHeader(new Header("x-c3-extmeta", "c3.ext.fs.path"))
 
+    try {
+      val status = httpClient.executeMethod(getMethod)
+
+      status match {
+        case HttpStatus.SC_OK => {
+          XML.load(getMethod.getResponseBodyAsStream)
+        }
+        case _ => {
+          throw new Exception(("Failed to get resource metadata, code "+ status).asInstanceOf[String])
+        }
+      }
+
+    }
+    finally  {
+      getMethod.releaseConnection()
+    }
+  }
+
+
+  def getResourceMetadata(resourceId : String): NodeSeq = {
+    val getMethod = createGetRestMethod(resourceId)
+
+    try {
+      val status = httpClient.executeMethod(getMethod)
+
+      status match {
+        case HttpStatus.SC_OK => {
+          XML.load(getMethod.getResponseBodyAsStream)
+        }
+        case _ => {
+          //XML.load(getMethod.getResponseBodyAsStream)
+          throw new Exception(("Failed to get resource metadata, code "+ status).asInstanceOf[String])
+        }
+      }
+
+    }
+    finally  {
+      getMethod.releaseConnection()
+    }
+  }
 
 
   def getNodeMetadata(path:String): NodeSeq = {
@@ -90,12 +133,13 @@ class C3Client(val host:String, val contextPath:String, val contextSearchPath:St
         case HttpStatus.SC_OK => {
          XML.load(getMethod.getResponseBodyAsStream)
         }
-        case _ =>
+        case _ => {
           XML.load(getMethod.getResponseBodyAsStream)
           throw new Exception(("Failed to get resource, code " + status).asInstanceOf[String])
+        }
       }
     }finally{
-      getMethod.releaseConnection();
+      getMethod.releaseConnection()
     }
   }
 
@@ -203,11 +247,37 @@ class C3Client(val host:String, val contextPath:String, val contextSearchPath:St
     val fileBytePartSource = new ByteArrayPartSource(fileByteArray)
     writeData(path, new FilePart("data", fileBytePartSource), Map[String, String]())
   }
+  def uploadFileRest( fileByteArray:Array[Byte] ) = {
+    val fileBytePartSource = new ByteArrayPartSource(fileByteArray)
+    writeDataRest(new FilePart("data", fileBytePartSource), Map[String, String]())
+  }
 
   def updateResource(path:String, array:Array[Byte]) = {
     val fileBytePartSource = new ByteArrayPartSource(array)
     putResource(path, new FilePart("data", fileBytePartSource), Map[String, String]())
   }
+
+  private def writeDataRest(filePart:FilePart, metadata:Map[String, String]) = {
+    val postMethod = createPostMethodRest()
+
+    val parts:Array[Part] = (filePart ::
+      metadata.map(e => new StringPart(e._1, e._2, "UTF-8")).toList).toArray
+
+    postMethod.setRequestEntity(new MultipartRequestEntity(parts, postMethod.getParams))
+
+    try{
+      val status = httpClient.executeMethod(postMethod)
+      status match {
+        case HttpStatus.SC_CREATED => postMethod.getResponseBodyAsString()
+        case _ =>
+          logger.debug("Failed to post resource. Response: " + postMethod.getResponseBodyAsString)
+          throw new C3ClientException(("Filed to post resource via RestApi, code " + status).asInstanceOf[String])
+      }
+    }finally {
+      postMethod.releaseConnection
+    }
+  }
+
 
   private def writeData(path:String, filePart:FilePart, metadata:Map[String, String]) = {
     val postMethod = createPostMethod(path)
@@ -229,6 +299,35 @@ class C3Client(val host:String, val contextPath:String, val contextSearchPath:St
       postMethod.releaseConnection
     }
   }
+
+  private def putResourceRest(path:String, filePart:FilePart, metadata:Map[String, String]) = {
+    val putMethod = createPutMethodREST()
+
+    val parts:Array[Part] = (filePart ::
+      metadata.map(e => new StringPart(e._1, e._2, "UTF-8")).toList).toArray
+
+    putMethod.setRequestEntity(new MultipartRequestEntity(parts, putMethod.getParams))
+
+    try{
+      val status = httpClient.executeMethod(putMethod)
+      status match {
+        case HttpStatus.SC_OK => putMethod.getResponseBodyAsString
+        case _ =>
+          logger.debug("Failed to put resource. Response: " + putMethod.getResponseBodyAsString)
+          throw new C3ClientException(("Filed to put resource "+ path +" , code " + status).asInstanceOf[String])
+      }
+    }finally {
+      putMethod.releaseConnection
+    }
+  }
+  private def createPutMethodREST():PutMethod = {
+    logger.info(host + contextRestPath + "resource/")
+
+    val method = new PutMethod(host + contextRestPath + "resource/")
+    addAuthHeader(method, contextRestPath + "resource/")
+    method
+  }
+
 
   private def putResource(path:String, filePart:FilePart, metadata:Map[String, String]) = {
     val putMethod = createPutMethod(path)
@@ -307,6 +406,13 @@ class C3Client(val host:String, val contextPath:String, val contextSearchPath:St
     (resultSet \\ "searchResults")(0)
   }
 
+   private def createPostMethodRest():PostMethod = {
+    logger.info(host + contextRestPath + "resource/")
+    val method = new PostMethod(host + contextRestPath + "resource/")
+    addAuthHeader(method, contextRestPath + "resource/")
+    method
+  }
+
 
   private def createPostMethod(relativePath:String):PostMethod = {
     logger.info(host + contextPath + relativePath)
@@ -324,12 +430,23 @@ class C3Client(val host:String, val contextPath:String, val contextSearchPath:St
   }
 
 
+  private def createGetRestMethod(relativePath : String): GetMethod = {
+    logger.info(host + contextRestPath+"resource/" + relativePath)
+
+    val method = new GetMethod(host + contextRestPath + relativePath)
+    addAuthHeader(method, contextRestPath + relativePath)
+    method
+
+  }
+
+
+
 
   private def createGetSearchMethod(searchString : String):GetMethod = {
-    logger.info(host + contextSearchPath + searchString)
-
-    val method = new GetMethod(host + contextSearchPath + URIUtil.encodeAll(searchString))
-    addAuthHeader(method, contextPath + searchString)
+    logger.info(host + contextRestSearchPath  + searchString)
+                                                              //URIUtil.encodeAll(searchString)
+    val method = new GetMethod(host + contextRestSearchPath + searchString)
+    addAuthHeader(method, contextRestSearchPath + searchString)
     method
   }
 
@@ -402,13 +519,13 @@ object C3Client {
 
     val contextPath = Props.get("c3_context_path") openOr("/rest/fs/")
 
-    val contextSearchPath = Props.get("c3_context_search_path") openOr("/rest/search/")
+    val contextRestPath = Props.get("c3_context_rest_path") openOr("/rest/")
 
     val domain = Props.get("c3_domain_name") openOr "anonymous"
 
     val secret = Props.get("c3_domain_secret") openOr ""
 
-    new C3Client(host, contextPath, contextSearchPath , domain, secret)
+    new C3Client(host, contextPath, contextRestPath , domain, secret)
   }
 }
 

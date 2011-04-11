@@ -132,6 +132,8 @@
 				</div>
 				<div class="breadcrumb">
 					<p>
+                        <!-- <lift:SearchSnippet.miniSearch form="post"> -->
+
                         <span><a href="/index">Home</a></span>
                         <span>&gt;</span>
                         <lift:snippet type="MainSnippet.breadCrumbs">
@@ -140,10 +142,16 @@
                             <span>&gt;</span>
                         </breadCrumbsMenu:breadCrumbs>
                         </lift:snippet>
+
+                        <!--<span style="float: right;"><search:query/> <search:submit/></span>
+                        </lift:SearchSnippet.miniSearch>-->
+
 					</p>
-                    <span class="lift:Msgs?showAll=true"/>
 				</div>
 				<div class="content-wrap">
+                    <div id="lift__noticesContainer__">
+                        <lift:Msgs showAll="true" />
+                    </div>
                     <div>
                         <lift:bind name="content" />
                          <!-- The HTML content will go here -->

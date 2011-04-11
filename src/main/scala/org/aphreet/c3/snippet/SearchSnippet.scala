@@ -1,8 +1,9 @@
 package org.aphreet.c3.snippet
 
-import xml.NodeSeq
 import org.aphreet.c3.apiaccess.C3Client
-import net.liftweb.http.{StatefulSnippet, SHtml}
+import xml.{Text, NodeSeq}
+import net.liftweb.http.{S, StatefulSnippet, SHtml}
+import net.liftweb.common.Full
 
 /**
  * Copyright (c) 2011, Dmitry Ivanov
@@ -41,24 +42,55 @@ import net.liftweb.util.BindHelpers._
 class SearchSnippet extends StatefulSnippet {
 
   var dispatch : DispatchIt = {
-    case "search" => searchForm _
+
+        case "search" => searchForm _
   }
 
   var searchString = ""
   var resultSet = NodeSeq.Empty
 
-  def searchForm(html: NodeSeq) = {
+  def resultPage (html: NodeSeq) = {
+
+     resultSet = C3Client().doSearch(searchString)
 
      bind("search", html,
-      "query" -> SHtml.text(searchString, searchString = _ ),
+      "query" -> SHtml.text(searchString, processQuery _ ,"placeholder" -> "Search" ),
       "resultSet" -> { (ns : NodeSeq) =>
         (resultSet \\ "entry").flatMap( entry =>
-          bind("entry", ns, "content" ->   { (entry \ "@address").text } )
+          bind("entry", ns, "content" ->   { (entry \ "@address").text } ,
+            "metadata" -> C3Client().getResourceMetadata( (entry \ "@address").text )
+          )
         )
       },
-      "submit" -> SHtml.submit("Go", () => {
-        resultSet = C3Client().doSearch(searchString)
-      })
+      "submit" -> SHtml.submit("Go", () => {}  )
+       )
+  }
+
+  def searchForm (html: NodeSeq) = {
+
+     bind("search", html,
+      "query" -> SHtml.text(searchString, processQuery _ , "placeholder" -> "Search"),
+      "resultSet" -> "",
+      "submit" -> SHtml.submit("Go", () => {} )
      )
   }
+
+  def processQuery(query : String){
+    searchString = query
+
+    if(searchString != ""){
+
+      dispatch = {
+        case "search" => resultPage _
+
+      }
+    }
+    else {
+      S.error("Please, enter a text to search for")
+      dispatch = {
+        case "search" => searchForm _
+      }
+    }
+  }
+
 }

@@ -197,6 +197,7 @@ class GroupForm {
 
         C3Client().uploadFile( theUploadPath.is.open_!,theUpload.is.map(v => v.file).open_!)
 
+
         bind("ul", chooseTemplate("choose", "post", xhtml),
           "filename" -> theUpload.is.map(v => Text(v.fileName)),
           AttrBindParam("uploadFileStyle", Text(""), "style")

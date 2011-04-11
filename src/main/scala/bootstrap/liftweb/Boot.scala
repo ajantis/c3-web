@@ -106,7 +106,6 @@ class Boot {
         case RewriteRequest(
             ParsePath("group" :: groupname  :: "files" :: directory , extension, _,_), _, _) => {
 
-                      // TODO !!
                 val dotExt = extension match {
                   case "" => ""
                   case str => "."+str
@@ -163,12 +162,13 @@ class Boot {
              for {
                stream <- tryo(new java.io.ByteArrayInputStream(
                  try{
-                   C3Client().getNodeData(groupname + "/" + filePath.reverse.tail.reverse.mkString("/") + "/" + URLEncoder.encode(filePath.last) + {
-                                                                                        extension match {
-                                                                                          case "" => ""
-                                                                                          case ext => "." + ext
-                                                                                        }
-                                                                                     })
+                   C3Client().getNodeData(groupname + "/" + filePath.reverse.tail.reverse.mkString("/") + "/" +
+                                                                          URLEncoder.encode(filePath.last) + {
+                                                                            extension match {
+                                                                              case "" => ""
+                                                                              case ext => "." + ext
+                                                                            }
+                                                                          })
                  }
                  catch {
                    case e: Exception => {
@@ -180,7 +180,9 @@ class Boot {
                if null ne stream
              } yield StreamingResponse(stream, () => stream.close,
                           stream.available, List("Content-Type" ->
-                                                  C3Client().getResourseContentType(groupname + "/" + filePath.reverse.tail.reverse.mkString("/") + "/" + URLEncoder.encode(filePath.last) + {
+                                                  C3Client().getResourseContentType(groupname +
+                                                    "/" + filePath.reverse.tail.reverse.mkString("/") + "/" +
+                                                    URLEncoder.encode(filePath.last) + {
                                                                                         extension match {
                                                                                           case "" => ""
                                                                                           case ext => "." + ext
