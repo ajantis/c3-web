@@ -117,8 +117,12 @@ class C3HtmlVisitor(val writer:Writer, val resolver:SmartLinkResolver)
     }
   }
 
+  override def startDocument = {
+
+  }
+
   override def endDocument = {
-    output.append("</div>")
+    //output.append("</div>")
     output.flush
     output.finished
   }

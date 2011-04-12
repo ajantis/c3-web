@@ -1,27 +1,49 @@
-<div class="lift:surround?with=default;at=content">
-    <link rel="stylesheet" type="text/css" href="/css/main.css" />
-    <div id="GroupMenu">
-        <lift:snippet type="GroupForm.groupMenu">
-            <ul class="tabs">
-                <li><menu:overview></menu:overview></li>
-                <li><menu:files></menu:files></li>
-                <li><menu:wiki></menu:wiki></li>
-            </ul>
-        </lift:snippet>
-    </div>
-    <br/>
+<lift:surround with="default">
 
     <lift:snippet type="WikiSnippet.view">
-    <div>
-        <h2><wiki:name/></h2>
 
-        <hr/>
+        <lift:bind-at name="content-header">
+            <wiki:name/>
+        </lift:bind-at>
 
-        <wiki:actions/>
+        <lift:bind-at name="content">
+            <div>
+                <wiki:content/>
+            </div>
+        </lift:bind-at>
 
-        <wiki:content/>
-        
-    </div>
+        <lift:bind-at name="right-panel-content">
+
+            <div class="right-panel-section  right-panel-section-first">
+                <span><wiki:groupname/></span>
+                <div>
+                    <wiki:groupnav/>
+                </div>
+            </div>
+            <div class="right-panel-section">
+                <span>Metadata</span>
+                <div>
+                    <table>
+                        <wiki:metadata>
+                            <tr>
+                                <td class="metadata-key"><md:key/>:</td>
+                                <td><md:value/></td>
+                            </tr>
+                        </wiki:metadata>
+                    </table>
+                </div>
+            </div>
+            <div class="right-panel-section">
+                <span>Actions</span>
+                <div>
+                    <ul>
+                        <li><wiki:actions/></li>
+                    </ul>
+                </div>
+            </div>
+            
+        </lift:bind-at>
+
     </lift:snippet>
 
-</div>
+</lift:surround>

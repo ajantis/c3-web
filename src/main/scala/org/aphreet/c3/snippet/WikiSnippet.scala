@@ -5,8 +5,8 @@
  * Redistribution and use in source and binary forms, with or without 
  * modification, are permitted provided that the following conditions
  * are met:
- * 
- 
+ *
+
  * 1. Redistributions of source code must retain the above copyright 
  * notice, this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above 
@@ -39,7 +39,8 @@ import be.devijver.wikipedia.SmartLink.SmartLinkType
 import org.aphreet.c3.lib.wiki.C3HtmlVisitor
 import be.devijver.wikipedia.{SmartLinkResolver, Parser, SmartLink}
 import java.io.StringWriter
-import xml.{XML, NodeSeq}
+import org.aphreet.c3.view.GroupNavigationUtil
+import xml.{Node, XML, NodeSeq}
 
 class WikiSnippet{
 
@@ -60,18 +61,31 @@ class WikiSnippet{
     Wiki.getPage(groupName, pageName) match {
       case Some(page) => {
         bind("wiki", html,
+          "groupname" -> groupName,
+          "groupnav" -> GroupNavigationUtil.createNavigation(groupName),
+
           "name" -> page.name,
           "content" -> XML.loadString(formatContent(page.content, groupName)),
-          "actions" -> <a href={"/group/" + groupName + "/wiki/" + pageName + "/edit"}>Edit</a>)
-      }
-      case None => {
-        bind("wiki", html,
-          "name" -> pageName,
-          "content" -> "Page not found",
-          "actions" -> <a href={"/group/" + groupName + "/wiki/" + pageName + "/edit"}>Create</a>
+          "actions" -> <a href={"/group/" + groupName + "/wiki/" + pageName + "/edit"}>Edit</a>,
+          "metadata" -> {(ns:NodeSeq) =>
+            (1 to 10).flatMap(i => bind("md", ns, "key" --> i, "value" --> i)):NodeSeq}
         )
       }
-    }   
+
+
+      case None => {
+        bind("wiki", html,
+          "groupname" -> groupName,
+          "groupnav" -> GroupNavigationUtil.createNavigation(groupName),
+
+          "name" -> pageName,
+          "content" -> "Page not found",
+          "actions" -> <a href={"/group/" + groupName + "/wiki/" + pageName + "/edit"}>Create</a>,
+          "metadata" -> {(ns:NodeSeq) =>
+            (1 to 10).flatMap(i => bind("md", ns, "key" --> i, "value" --> i)):NodeSeq}
+        )
+      }
+    }
   }
 
   def formatContent(content:String, group:String):String = {
@@ -95,6 +109,29 @@ class WikiSnippet{
 
 
   def edit(html: NodeSeq) : NodeSeq = {
+
+    val pageName = S.param("pagename") match {
+      case Full(value) => value
+      case _ => "Main"
+    }
+
+    val groupName = S.param("groupname") match {
+      case Full(value) => value
+      case _ => ""
+    }
+
+    bind("wiki", html,
+      "groupname" -> groupName,
+      "groupnav" -> GroupNavigationUtil.createNavigation(groupName),
+      "name" -> pageName,
+      "actions" -> <a href={"/group/" + groupName + "/wiki/" + pageName}>Cancel</a>,
+      "metadata" -> {(ns:NodeSeq) =>
+        (1 to 10).flatMap(i => bind("md", ns, "key" --> i, "value" --> i)):NodeSeq}
+    )
+
+  }
+
+  def form(html: NodeSeq) : NodeSeq = {
 
     var pageContent = ""
 
@@ -128,24 +165,16 @@ class WikiSnippet{
       }
     }
 
-    Wiki.getPage(groupName, pageName) match {
-      case Some(page) => {
-
-        bind("wiki", html,
-          "name" -> page.name,
-          "content" -> SHtml.textarea(page.content, pageContent = _),
-          "submit" -> SHtml.submit("Save", processWikiEdit)
-        )
-      }
-
-      case None => {
-        bind("wiki", html,
-          "name" -> pageName,
-          "content" -> SHtml.textarea("", pageContent = _),
-          "submit" -> SHtml.submit("Save", processWikiEdit)
-        )
-      }
+    val pageString = Wiki.getPage(groupName, pageName) match {
+      case Some(page) => page.content
+      case None => ""
     }
+
+    bind("wiki-form", html,
+      "content" -> SHtml.textarea(pageString, pageContent = _),
+      "submit" -> SHtml.submit("Save", processWikiEdit)
+    )
+
   }
 
 }

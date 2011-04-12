@@ -1,16 +1,52 @@
-<div class="lift:surround?with=default;at=content">
+<lift:surround with="default">
 
-    <lift:snippet type="WikiSnippet.edit" form="POST">
+    <lift:WikiSnippet.edit>
 
-        <h2>Editing <wiki:name/></h2>
+        <lift:bind-at name="content-header">
+            <wiki:name/>
+        </lift:bind-at>
 
-        <hr/>
+        <lift:bind-at name="content">
+            <div>
+                <lift:WikiSnippet.form form="POST">
+                    <wiki-form:content/>
+                    <wiki-form:submit/>
+                </lift:WikiSnippet.form>
+            </div>
+        </lift:bind-at>
 
-        <div>
-            <wiki:content/>
-            <wiki:submit/>
-        </div>
+        <lift:bind-at name="right-panel-content">
 
-    </lift:snippet>
+            <div class="right-panel-section  right-panel-section-first">
+                <span><wiki:groupname/></span>
+                <div>
+                    <wiki:groupnav/>
+                </div>
+            </div>
+            <div class="right-panel-section">
+                <span>Metadata</span>
+                <div>
+                    <table>
+                        <wiki:metadata>
+                            <tr>
+                                <td class="metadata-key"><md:key/>:</td>
+                                <td><md:value/></td>
+                            </tr>
+                        </wiki:metadata>
+                    </table>
+                </div>
+            </div>
+            <div class="right-panel-section">
+                <span>Actions</span>
+                <div>
+                    <ul>
+                        <li><wiki:actions/></li>
+                    </ul>
+                </div>
+            </div>
 
-</div>
+        </lift:bind-at>
+
+    </lift:WikiSnippet.edit>
+
+</lift:surround>
