@@ -88,11 +88,9 @@
                   </div>
         -->
 				<ul>
-                    <lift:snippet type="MainSnippet.currentUser">
-                    <li class="currentUser">
-                            <user:email></user:email>
-                    </li>
-                    </lift:snippet>
+
+                    <!-- <li class="currentUser"/> -->
+
                     <li>
                         <lift:Menu.item name="Login">
                                  Login
@@ -106,7 +104,9 @@
                                  Register
                         </lift:Menu.item>
                         <lift:Menu.item name="EditUser">
-                                 Profile
+                            <lift:snippet type="MainSnippet.currentUser">
+                                 <user:email></user:email>
+                            </lift:snippet>
                         </lift:Menu.item>
                     </li>
                     <li>
