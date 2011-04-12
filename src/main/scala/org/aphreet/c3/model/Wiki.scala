@@ -33,6 +33,7 @@ package org.aphreet.c3.model
 
 import org.aphreet.c3.apiaccess.C3Client
 import net.liftweb.common.Logger
+import xml.NodeSeq
 
 class Wiki(var name:String, var content:String) {
 
@@ -65,6 +66,12 @@ object Wiki{
     }catch{
       case e => logger.warn("Failed to save resource", e)
     }
+  }
+
+  def getMetadata(group:String, name:String):Map[String, String] = {
+    val metadata = C3Client().getNodeMetadata(group + "/wiki/" + name)
+
+    Map[String, String]() ++ ((metadata \\ "metadata")(0) \\ "element").map(elem => ((elem \\ "@key")(0).text, (elem \\ "value")(0).text))
   }
 
 }

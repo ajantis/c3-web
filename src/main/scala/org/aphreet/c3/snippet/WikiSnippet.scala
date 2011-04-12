@@ -60,6 +60,11 @@ class WikiSnippet{
 
     Wiki.getPage(groupName, pageName) match {
       case Some(page) => {
+        
+        val map = Wiki.getMetadata(groupName, pageName)
+
+        println(map)
+
         bind("wiki", html,
           "groupname" -> groupName,
           "groupnav" -> GroupNavigationUtil.createNavigation(groupName),
@@ -68,7 +73,7 @@ class WikiSnippet{
           "content" -> XML.loadString(formatContent(page.content, groupName)),
           "actions" -> <a href={"/group/" + groupName + "/wiki/" + pageName + "/edit"}>Edit</a>,
           "metadata" -> {(ns:NodeSeq) =>
-            (1 to 10).flatMap(i => bind("md", ns, "key" --> i, "value" --> i)):NodeSeq}
+            (1 to 10).flatMap(el => bind("md", ns, "key" --> el, "value" --> el)):NodeSeq}
         )
       }
 
