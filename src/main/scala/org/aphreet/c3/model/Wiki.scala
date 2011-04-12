@@ -69,9 +69,13 @@ object Wiki{
   }
 
   def getMetadata(group:String, name:String):Map[String, String] = {
-    val metadata = C3Client().getNodeMetadata(group + "/wiki/" + name)
+    try{
+      val metadata = C3Client().getNodeMetadata(group + "/wiki/" + name)
 
-    Map[String, String]() ++ ((metadata \\ "metadata")(0) \\ "element").map(elem => ((elem \\ "@key")(0).text, (elem \\ "value")(0).text))
+      Map[String, String]() ++ ((metadata \\ "metadata")(0) \ "element").map(elem => ((elem \ "@key")(0).text, (elem \\ "value")(0).text))
+    }catch{
+      case e => Map()
+    }
   }
 
 }

@@ -61,9 +61,7 @@ class WikiSnippet{
     Wiki.getPage(groupName, pageName) match {
       case Some(page) => {
         
-        val map = Wiki.getMetadata(groupName, pageName)
-
-        println(map)
+        val metadata = Wiki.getMetadata(groupName, pageName)
 
         bind("wiki", html,
           "groupname" -> groupName,
@@ -73,11 +71,10 @@ class WikiSnippet{
           "content" -> XML.loadString(formatContent(page.content, groupName)),
           "actions" -> <a href={"/group/" + groupName + "/wiki/" + pageName + "/edit"}>Edit</a>,
           "metadata" -> {(ns:NodeSeq) =>
-            (1 to 10).flatMap(el => bind("md", ns, "key" --> el, "value" --> el)):NodeSeq}
+            metadata.flatMap(el => bind("md", ns, "key" --> el._1, "value" --> el._2)).toSeq:NodeSeq}
         )
       }
-
-
+        
       case None => {
         bind("wiki", html,
           "groupname" -> groupName,
@@ -87,7 +84,7 @@ class WikiSnippet{
           "content" -> "Page not found",
           "actions" -> <a href={"/group/" + groupName + "/wiki/" + pageName + "/edit"}>Create</a>,
           "metadata" -> {(ns:NodeSeq) =>
-            (1 to 10).flatMap(i => bind("md", ns, "key" --> i, "value" --> i)):NodeSeq}
+            Map[String, String]().flatMap(el => bind("md", ns, "key" --> el._1, "value" --> el._2)).toSeq:NodeSeq}
         )
       }
     }
@@ -131,7 +128,7 @@ class WikiSnippet{
       "name" -> pageName,
       "actions" -> <a href={"/group/" + groupName + "/wiki/" + pageName}>Cancel</a>,
       "metadata" -> {(ns:NodeSeq) =>
-        (1 to 10).flatMap(i => bind("md", ns, "key" --> i, "value" --> i)):NodeSeq}
+        Wiki.getMetadata(groupName, pageName).flatMap(i => bind("md", ns, "key" --> i._1, "value" --> i._2)).toSeq:NodeSeq}
     )
 
   }
@@ -157,6 +154,7 @@ class WikiSnippet{
           page.content = pageContent;
 
           Wiki.savePage(groupName, page)
+          S.notice("Page saved")
           S.redirectTo("/group/" + groupName + "/wiki/" + pageName)
         }
 
@@ -165,6 +163,7 @@ class WikiSnippet{
           val page = new Wiki(pageName, pageContent)
 
           Wiki.createPage(groupName, page)
+          S.notice("Page created")
           S.redirectTo("/group/" + groupName + "/wiki/" + pageName)
         }
       }
