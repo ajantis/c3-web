@@ -5,7 +5,7 @@ import _root_.net.liftweb.mapper._
 import _root_.net.liftweb.util._
 import _root_.net.liftweb.common._
 import net.liftweb.http.SHtml
-import xml.{NodeSeq, Text}
+import xml.{XML, NodeSeq, Text}
 
 /**
  * The singleton that has methods for accessing the database
@@ -35,6 +35,13 @@ object User extends User with MetaMegaProtoUser[User] {
         </div>
     </lift:surround>
   )
+  override def edit = {
+    super.edit ++
+    <br/>
+    <lift:Menu.item name="ChangePassword">
+      Change password
+    </lift:Menu.item>.toList
+  } : NodeSeq
 
 }
 
