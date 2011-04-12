@@ -278,10 +278,11 @@ class GroupForm {
                 case tagsElems => (tagsElems(0) \ "value").text
               }
 
+
             bind("currentResource", html,
               "name" -> groupDirName,
               "owner" -> "owner1",
-              "created" -> createDate,                                            // TODO List(tags) is a STUB for tag display test
+              "created" -> createDate,                                               // TODO List(tags) is a STUB for tag display test
               "tags_list" -> {(ns: NodeSeq) => List("tag1","tag2","tag3").flatMap( tag =>
                 bind("tag", ns, "name" -> tag)) : NodeSeq
               }

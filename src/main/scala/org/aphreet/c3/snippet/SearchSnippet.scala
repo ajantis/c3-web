@@ -64,21 +64,36 @@ class SearchSnippet extends StatefulSnippet {
 
           val mdParser = MetadataParser(metadata)
 
-          val name: NodeSeq = mdParser.getAttributeValue("element","key","c3.fs.nodename")
+          val name: String = mdParser.getNodeWithAttributeValue("element","key","c3.fs.nodename") match {
+            case NodeSeq.Empty => ""
+            case xs => (xs \\ "value")(0) text
+          }
 
-          val path = mdParser.getAttributeValue("element","key","c3.ext.fs.path")
+          val path: String = mdParser.getNodeWithAttributeValue("element","key","c3.ext.fs.path") match {
+            case NodeSeq.Empty => ""
+            case xs => (xs \\ "value")(0) text
+          }
 
           //(metadata \\ "element").toList.filter((element:NodeSeq) => (element \ "@key").toString == "c3.fs.nodetype")
-          val resourceType = mdParser.getAttributeValue("element","key","c3.fs.nodetype")
-
-
-
-          bind("entry", ns,
-            "address" ->   { (entry \ "@address").text } ,
-            "name" -> name,
-            "path" -> path,
-            "type" -> resourceType
-          )
+          val resourceType: String = mdParser.getNodeWithAttributeValue("element","key","c3.fs.nodetype") match {
+            case NodeSeq.Empty => ""
+            case xs => (xs \\ "value")(0) text
+          }
+          if(name != "")
+            bind("entry", ns,
+              "address" ->   { (entry \ "@address").text } ,
+              "name" -> name,
+              "path" -> { path.split("/").toList.tail match {
+                case Nil => NodeSeq.Empty
+                case lst => SHtml.link("/group/" + lst.mkString("/"), () => {}, Text(name))
+              }},
+              "toFolder" -> { path.split("/").toList.tail match {
+                case Nil => NodeSeq.Empty
+                case lst => SHtml.link("/group/" + lst.reverse.tail.reverse.mkString("/"), () => {}, Text("Folder"))
+              }},
+              "type" -> resourceType
+            )
+          else NodeSeq.Empty
         })
       },
       "submit" -> SHtml.submit("Go", () => {}  )

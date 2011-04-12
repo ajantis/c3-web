@@ -37,7 +37,7 @@ class MetadataParser(val metadata : NodeSeq) {
 
    def getNodes(nodeName : String): NodeSeq = metadata \\ nodeName
 
-   def getAttributeValue(nodeName : String, attribute : String, attributeValue: String) =
+   def getNodeWithAttributeValue(nodeName : String, attribute : String, attributeValue: String) =
      getNodes(nodeName).toList.filter((element:NodeSeq) => (element \ ("@"+attribute) ).toString == attributeValue )
 
 }
