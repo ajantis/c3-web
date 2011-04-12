@@ -9,12 +9,19 @@
       <div class="content">
         <lift:snippet type="SearchSnippet.search" form="post">
 
-            <search:query></search:query> <search:submit></search:submit>  <br/>
+            <search:query></search:query> <search:submit/>  <br/>
 
             <br/>
             <ul>
             <search:resultSet>
-                <li><entry:content></entry:content></li>
+                <li>
+                    <ul>
+                        <li><entry:address/></li>
+                        <li><entry:name/></li>
+                        <li><entry:path/></li>
+                        <li><entry:type/></li>
+                    </ul>
+                </li>
             </search:resultSet>
             </ul>
 
@@ -48,13 +55,6 @@
     </div>
     <div class="right-panel-section">
         <span>Actions</span>
-        <!--
-        <div>
-            <ul>
-                <li><a href="#">Edit page</a></li>
-                <li><a href="#">Delete page</a></li>
-            </ul>
-        </div> -->
     </div>
 
 </lift:bind-at>

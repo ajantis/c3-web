@@ -222,6 +222,7 @@ div.content-wrap{
 	min-height: 500px;
 	padding-left:15px;
 	padding-right:15px;
+	overflow: auto;
 }
 
 div.content-header{

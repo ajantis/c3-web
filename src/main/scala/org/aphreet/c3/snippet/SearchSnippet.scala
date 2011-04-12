@@ -4,6 +4,7 @@ import org.aphreet.c3.apiaccess.C3Client
 import xml.{Text, NodeSeq}
 import net.liftweb.http.{S, StatefulSnippet, SHtml}
 import net.liftweb.common.Full
+import org.aphreet.c3.helpers.MetadataParser
 
 /**
  * Copyright (c) 2011, Dmitry Ivanov
@@ -56,11 +57,29 @@ class SearchSnippet extends StatefulSnippet {
      bind("search", html,
       "query" -> SHtml.text(searchString, processQuery _ ,"placeholder" -> "Search" ),
       "resultSet" -> { (ns : NodeSeq) =>
-        (resultSet \\ "entry").flatMap( entry =>
-          bind("entry", ns, "content" ->   { (entry \ "@address").text } ,
-            "metadata" -> C3Client().getResourceMetadata( (entry \ "@address").text )
+        (resultSet \\ "entry").flatMap( entry => {
+
+
+          val metadata = C3Client().getResourceMetadataWithFSPath( (entry \ "@address").text )
+
+          val mdParser = MetadataParser(metadata)
+
+          val name: NodeSeq = mdParser.getAttributeValue("element","key","c3.fs.nodename")
+
+          val path = mdParser.getAttributeValue("element","key","c3.ext.fs.path")
+
+          //(metadata \\ "element").toList.filter((element:NodeSeq) => (element \ "@key").toString == "c3.fs.nodetype")
+          val resourceType = mdParser.getAttributeValue("element","key","c3.fs.nodetype")
+
+
+
+          bind("entry", ns,
+            "address" ->   { (entry \ "@address").text } ,
+            "name" -> name,
+            "path" -> path,
+            "type" -> resourceType
           )
-        )
+        })
       },
       "submit" -> SHtml.submit("Go", () => {}  )
        )

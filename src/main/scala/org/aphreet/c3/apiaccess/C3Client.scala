@@ -102,7 +102,7 @@ class C3Client(val host:String, val contextPath:String, val contextRestPath:Stri
 
 
   def getResourceMetadata(resourceId : String): NodeSeq = {
-    val getMethod = createGetRestMethod(resourceId)
+    val getMethod = createGetRestMethod(resourceId + "?metadata")
 
     try {
       val status = httpClient.executeMethod(getMethod)
@@ -112,6 +112,7 @@ class C3Client(val host:String, val contextPath:String, val contextRestPath:Stri
           XML.load(getMethod.getResponseBodyAsStream)
         }
         case _ => {
+          logger info getMethod.getResponseBodyAsString
           //XML.load(getMethod.getResponseBodyAsStream)
           throw new Exception(("Failed to get resource metadata, code "+ status).asInstanceOf[String])
         }
@@ -433,8 +434,8 @@ class C3Client(val host:String, val contextPath:String, val contextRestPath:Stri
   private def createGetRestMethod(relativePath : String): GetMethod = {
     logger.info(host + contextRestPath+"resource/" + relativePath)
 
-    val method = new GetMethod(host + contextRestPath + relativePath)
-    addAuthHeader(method, contextRestPath + relativePath)
+    val method = new GetMethod(host + contextRestPath + "resource/" + relativePath)
+    addAuthHeader(method, contextRestPath + "resource/" + relativePath.split("\\?metadata").head)
     method
 
   }
