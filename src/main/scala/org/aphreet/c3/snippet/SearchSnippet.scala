@@ -2,9 +2,9 @@ package org.aphreet.c3.snippet
 
 import org.aphreet.c3.apiaccess.C3Client
 import xml.{Text, NodeSeq}
-import net.liftweb.http.{S, StatefulSnippet, SHtml}
-import net.liftweb.common.Full
 import org.aphreet.c3.helpers.MetadataParser
+import net.liftweb.common.{Box, Empty, Full}
+import net.liftweb.http.{RequestVar, S, StatefulSnippet, SHtml}
 
 /**
  * Copyright (c) 2011, Dmitry Ivanov
@@ -42,17 +42,24 @@ import net.liftweb.util.BindHelpers._
  
 class SearchSnippet extends StatefulSnippet {
 
-  var dispatch : DispatchIt = {
+  var dispatch : DispatchIt = if(stringToSearch.isEmpty) {
 
-        case "search" => searchForm _
+          case "search" => searchForm _
+          case "miniSearch" => miniSearchForm _
   }
+  else {
+          case "search" => resultPage _
+          case "miniSearch" => miniSearchForm _
+  }
+
 
   var searchString = ""
   var resultSet = NodeSeq.Empty
 
   def resultPage (html: NodeSeq) = {
 
-     resultSet = C3Client().doSearch(searchString)
+     if (! stringToSearch.isEmpty ) searchString = stringToSearch.open_!
+     if(searchString!="") resultSet = C3Client().doSearch(searchString)
 
      bind("search", html,
       "query" -> SHtml.text(searchString, processQuery _ ,"placeholder" -> "Search" ),
@@ -102,11 +109,28 @@ class SearchSnippet extends StatefulSnippet {
 
   def searchForm (html: NodeSeq) = {
 
+
      bind("search", html,
       "query" -> SHtml.text(searchString, processQuery _ , "placeholder" -> "Search"),
       "resultSet" -> "",
-      "submit" -> SHtml.submit("Go", () => {} )
+      "submit" -> SHtml.submit("Go", () => {
+        dispatch = {
+            case "search" => resultPage _
+            case "miniSearch" => miniSearchForm _
+        }
+      })
      )
+  }
+
+  // we store a string entered in an input box of mini search form
+  object stringToSearch extends RequestVar[Box[String]](Empty)
+
+  def miniSearchForm (html : NodeSeq) = {
+    var searchParam = ""
+    bind("miniSearch", html,
+      "search_string" -> SHtml.text("",searchParam = _ , "placeholder" -> "Search"),
+      "submit" -> SHtml.submit("Go", () => S.redirectTo("/search",() => if(searchParam != "") stringToSearch(Full(searchParam))))
+    )
   }
 
   def processQuery(query : String){
@@ -116,6 +140,7 @@ class SearchSnippet extends StatefulSnippet {
 
       dispatch = {
         case "search" => resultPage _
+        case "miniSearch" => miniSearchForm _
 
       }
     }
@@ -123,6 +148,7 @@ class SearchSnippet extends StatefulSnippet {
       S.error("Please, enter a text to search for")
       dispatch = {
         case "search" => searchForm _
+        case "miniSearch" => miniSearchForm _
       }
     }
   }

@@ -45,6 +45,7 @@ import java.io.{ByteArrayInputStream, InputStream}
 import xml.{NodeSeq, XML}
 
 import org.apache.commons.httpclient.util.URIUtil
+import java.net.URLEncoder
 
 class C3Client(val host:String, val contextPath:String, val contextRestPath:String,  val domain:String, val secret:String)  {
 
@@ -381,7 +382,8 @@ class C3Client(val host:String, val contextPath:String, val contextRestPath:Stri
 
   def doSearch(target : String) = {
 
-    val getRequest = createGetSearchMethod(target)
+
+    val getRequest = createGetSearchMethod(URLEncoder.encode(target))
 
     val resultSet = {
       try{
