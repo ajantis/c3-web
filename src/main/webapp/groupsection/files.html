@@ -1,56 +1,56 @@
 <lift:surround with="default">
 
-  <lift:bind-at name="content">
+    <lift:bind-at name="content">
 
-    <lift:snippet type="GroupForm.view">
+        <lift:snippet type="GroupForm.view">
 
-    <div class="content-header">
-        <h1><group:name/>'s Files</h1>
-    </div>
-
-    <div class="content">
-
-          <lift:GroupForm.groupMenu />
-
-          <table>
-            <tr><td><a href="/groups">All groups</a></td></tr>
-            <tr><td><group:linkup/></td><td>UP ^^</td></tr>
-            <group:childs>
-                <tr>
-                    <td><child:name/></td>
-                    <td><child:type/></td>
-                    <td><child:delete/></td>
-                </tr>
-            </group:childs>
-          </table>
-
-
-
-        <div id="Toolbar menu">
-                <h3>
-                    <a href="javascript:showDiv('createdirectory')"><img src="/images/folder_add_48.png" style="position: relative; top: 8px;" width="32" height="32" align="middle"/></a>
-                    <a href="javascript:showDiv('fileupload')"><img src="/images/box_download_48.png" style="position: relative; top: 8px;" width="32" height="32" align="middle"/></a>
-                    <br/>  <br/>
-                </h3>
+            <div class="content-header">
+                <h1><group:name/>'s Files</h1>
             </div>
+
+            <div class="content">
+
+                <lift:GroupForm.groupMenu />
+
+                <table>
+                    <tr><td><a href="/groups">All groups</a></td></tr>
+                    <tr><td><group:linkup/></td><td>UP ^^</td></tr>
+                    <group:childs>
+                        <tr>
+                            <td><child:name/></td>
+                            <td><child:type/></td>
+                            <td><child:delete/></td>
+                        </tr>
+                    </group:childs>
+                </table>
+
+
+
+                <div id="Toolbar menu">
+                    <h3>
+                        <a href="javascript:showDiv('createdirectory')"><img src="/images/folder_add_48.png" style="position: relative; top: 8px;" width="32" height="32" align="middle"/></a>
+                        <a href="javascript:showDiv('fileupload')"><img src="/images/box_download_48.png" style="position: relative; top: 8px;" width="32" height="32" align="middle"/></a>
+                        <br/>  <br/>
+                    </h3>
+                </div>
 
 
                 <lift:GroupForm.createDirectoryHere form="post" multipart="true">
                     <choose:post>
-                       <div id="createdirectory" ul:uploadDirStyle="">
-                        <p>
-                            Directory <ul:dirname></ul:dirname> successfully created<br/>
-                        </p>
+                        <div id="createdirectory" ul:uploadDirStyle="">
+                            <p>
+                                Directory <ul:dirname></ul:dirname> successfully created<br/>
+                            </p>
 
-                       </div>
+                        </div>
                     </choose:post>
 
                     <choose:get>
-                      <div id="createdirectory" ul:uploadDirStyle="">
-                        Directory name: <ul:dirname/>
-                        <input type="submit" value="Create"/>
+                        <div id="createdirectory" ul:uploadDirStyle="">
+                            Directory name: <ul:dirname/>
+                            <input type="submit" value="Create"/>
 
-                      </div>
+                        </div>
                     </choose:get>
                 </lift:GroupForm.createDirectoryHere>
 
@@ -58,65 +58,67 @@
 
                 <lift:GroupForm.uploadHere form="post" multipart="true">
                     <choose:post>
-                       <div id="fileupload" ul:uploadFileStyle="">
-                        <p>
-                            File <ul:filename></ul:filename> successfully uploaded<br/>
-                        </p>
-                          <br/> <br/>
-                       </div>
+                        <div id="fileupload" ul:uploadFileStyle="">
+                            <p>
+                                File <ul:filename></ul:filename> successfully uploaded<br/>
+                            </p>
+                            <br/> <br/>
+                        </div>
                     </choose:post>
 
                     <choose:get>
-                      <div id="fileupload" ul:uploadFileStyle="">
-                        File: <ul:file_upload></ul:file_upload><br/>
-                        Name: <ul:filename/>
-                        <input type="submit" value="Upload"/>
-                          <br/> <br/>
-                      </div>
+                        <div id="fileupload" ul:uploadFileStyle="">
+                            File: <ul:file_upload></ul:file_upload><br/>
+                            Name: <ul:filename/>
+                            <input type="submit" value="Upload"/>
+                            <br/> <br/>
+                        </div>
                     </choose:get>
                 </lift:GroupForm.uploadHere>
 
 
-    </div>
-    </lift:snippet>
+            </div>
+        </lift:snippet>
 
     </lift:bind-at>
 
 
     <lift:bind-at name="right-panel-content">
-        <div class="right-panel-section right-panel-section-first">
-            <lift:snippet type="GroupForm.groupMenu">
-                <span><group:name></group:name></span>
-				<div>
-                    <ul>
-                        <li><group:overviewLink></group:overviewLink></li>
-                        <li><group:filesLink></group:filesLink></li>
-                        <li><group:wikiLink></group:wikiLink></li>
-                        <li><group:adminLink></group:adminLink></li>
-                    </ul>
-                </div>
-            </lift:snippet>
-        </div>
-        <div class="right-panel-section">
-            <lift:snippet type="GroupForm.resourceProperties">
-            <span>Metadata</span>
-            <div>
-                <table>
-                    <tr>
-                        <td class="metadata-key">ResName:</td>
-                        <td><currentResource:name></currentResource:name></td>
-                    </tr>
-                    <tr>
-                        <td class="metadata-key">Owner:</td>
-                        <td><currentResource:owner></currentResource:owner></td>
-                    </tr>
-                    <tr>
-                        <td class="metadata-key">Create date:</td>
-                        <td><currentResource:created></currentResource:created></td>
-                    </tr>
-                </table>
+        <div class="right-panel-content">
+            <div class="right-panel-section right-panel-section-first">
+                <lift:snippet type="GroupForm.groupMenu">
+                    <span><group:name></group:name></span>
+                    <div>
+                        <ul>
+                            <li><group:overviewLink></group:overviewLink></li>
+                            <li><group:filesLink></group:filesLink></li>
+                            <li><group:wikiLink></group:wikiLink></li>
+                            <li><group:adminLink></group:adminLink></li>
+                        </ul>
+                    </div>
+                </lift:snippet>
             </div>
-            </lift:snippet>
+            <div class="right-panel-section">
+                <lift:snippet type="GroupForm.resourceProperties">
+                    <span>Metadata</span>
+                    <div>
+                        <table>
+                            <tr>
+                                <td class="metadata-key">ResName:</td>
+                                <td><currentResource:name></currentResource:name></td>
+                            </tr>
+                            <tr>
+                                <td class="metadata-key">Owner:</td>
+                                <td><currentResource:owner></currentResource:owner></td>
+                            </tr>
+                            <tr>
+                                <td class="metadata-key">Create date:</td>
+                                <td><currentResource:created></currentResource:created></td>
+                            </tr>
+                        </table>
+                    </div>
+                </lift:snippet>
+            </div>
         </div>
     </lift:bind-at>
 

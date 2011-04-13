@@ -87,91 +87,91 @@
                       <input type="text" value="" name="s" id="s" placeholder="Search" /> <input type="image" src="/images/search_48.png" id="searchsubmit" value="Search" class="searchbtn"/>
                   </div>
         -->
-				<ul>
-                    <!--<li class="currentUser"> -->
-                    <li>
-                        <lift:Menu.item name="Login">
-                                 Sign in
-                        </lift:Menu.item>
-                    </li>
-                    <li>
-                        <lift:Menu.item name="CreateUser">
-                                 Register
-                        </lift:Menu.item>
-                        <lift:Menu.item name="EditUser">
-                            <lift:snippet type="MainSnippet.currentUser">
-                                 <user:email></user:email>
-                            </lift:snippet>
-                        </lift:Menu.item>
-                    </li>
-                    <li>
-                        <lift:Menu.item name="Logout">
-                                 Sign out
-                        </lift:Menu.item>
-                    </li>
-                </ul>
+        <ul>
+            <!--<li class="currentUser"> -->
+            <li>
+                <lift:Menu.item name="Login">
+                    Sign in
+                </lift:Menu.item>
+            </li>
+            <li>
+                <lift:Menu.item name="CreateUser">
+                    Register
+                </lift:Menu.item>
+                <lift:Menu.item name="EditUser">
+                    <lift:snippet type="MainSnippet.currentUser">
+                        <user:email></user:email>
+                    </lift:snippet>
+                </lift:Menu.item>
+            </li>
+            <li>
+                <lift:Menu.item name="Logout">
+                    Sign out
+                </lift:Menu.item>
+            </li>
+        </ul>
     </div>
     <div class="wrap">
-				<div class="header">
-					<div class="header-title">
-						<p><a href="/index">C3 Web</a> <img alt="" id="ajax-loader" style="display:none; margin-bottom: 0px; margin-left: 5px" src="/images/ajax-loader.gif"/></p>
-					</div>
-					<div>
-                        <ul>
-                            <lift:Menu.builder group="mainmenu"/>
-                        </ul>
-					</div>
-				</div>
-				<div class="breadcrumb">
-					<p>
-                        <!-- <lift:SearchSnippet.miniSearch form="post"> -->
+        <div class="header">
+            <div class="header-title">
+                <p><a href="/index">C3 Web</a> <img alt="" id="ajax-loader" style="display:none; margin-bottom: 0px; margin-left: 5px" src="/images/ajax-loader.gif"/></p>
+            </div>
+            <div>
+                <ul>
+                    <lift:Menu.builder group="mainmenu"/>
+                </ul>
+            </div>
+        </div>
+        <div class="breadcrumb">
+            <p>
+                <!-- <lift:SearchSnippet.miniSearch form="post"> -->
 
-                        <span><a href="/index">Home</a></span>
+                <span><a href="/index">Home</a></span>
+                <span>&gt;</span>
+                <lift:snippet type="MainSnippet.breadCrumbs">
+                    <breadCrumbsMenu:breadCrumbs>
+                        <span><breadCrumb:link></breadCrumb:link></span>
                         <span>&gt;</span>
-                        <lift:snippet type="MainSnippet.breadCrumbs">
-                        <breadCrumbsMenu:breadCrumbs>
-                            <span><breadCrumb:link></breadCrumb:link></span>
-                            <span>&gt;</span>
-                        </breadCrumbsMenu:breadCrumbs>
-                        </lift:snippet>
+                    </breadCrumbsMenu:breadCrumbs>
+                </lift:snippet>
 
-                        <!--<span style="float: right;"><search:query/> <search:submit/></span>
-                        </lift:SearchSnippet.miniSearch>-->
+                <!--<span style="float: right;"><search:query/> <search:submit/></span>
+                </lift:SearchSnippet.miniSearch>-->
 
-					</p>
-				</div>
-				<div class="content-wrap">
+            </p>
+        </div>
+        <div class="content-wrap">
 
-                    <lift:Msgs showAll="true" />
+            <lift:Msgs showAll="true" />
 
-                    <div class="content-header">
-						<h1><lift:bind name="content-header"/></h1>
-					</div>
+            <div class="content-header">
+                <h1><lift:bind name="content-header"/></h1>
+            </div>
 
-                    <div class="content-page">
-                        <lift:bind name="content" />
-                         <!-- The HTML content will go here -->
-                    </div>
+            <div class="content-page">
+                <lift:bind name="content" />
+                <!-- The HTML content will go here -->
+            </div>
 
-			        <div class="right-panel" id="right-panel">
+            <div class="right-panel" id="right-panel">
 
-						<div class="right-panel-content">
 
-                            <lift:bind name="right-panel-content" />
 
-						</div>
-					</div>
-				</div>
-			</div>
+                <lift:bind name="right-panel-content" />
 
-			<div class="list-menu">
-				<ul>
-                    <li style="float: left;"><a href="http://c3.aphreet.org"><i>C3</i></a>
-            is Copyright 2009-2011 The Brotherhood of C3.  Distributed under a New BSD License.</li>
-					<li><a href="/faq">FAQ</a></li>
-					<li><a href="/about">About</a></li>
-				</ul>
-			</div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="list-menu">
+        <ul>
+            <li style="float: left;"><a href="http://c3.aphreet.org"><i>C3</i></a>
+                is Copyright 2009-2011 The Brotherhood of C3.  Distributed under a New BSD License.</li>
+            <li><a href="/faq">FAQ</a></li>
+            <li><a href="/about">About</a></li>
+        </ul>
+    </div>
 
 </div>
 </body>
