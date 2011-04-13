@@ -168,6 +168,8 @@ class User extends MegaProtoUser[User] with ManyToMany {
     }
   }
 
+  def categories: List[Category] = Category.findAll(By(Category.user,this))
+
 
 
 }

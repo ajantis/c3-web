@@ -5,6 +5,7 @@ import xml.{Text, NodeSeq}
 import org.aphreet.c3.helpers.MetadataParser
 import net.liftweb.common.{Box, Empty, Full}
 import net.liftweb.http.{RequestVar, S, StatefulSnippet, SHtml}
+import org.aphreet.c3.model.{Tag, Category, User}
 
 /**
  * Copyright (c) 2011, Dmitry Ivanov
@@ -103,7 +104,19 @@ class SearchSnippet extends StatefulSnippet {
           else NodeSeq.Empty
         })
       },
-      "submit" -> SHtml.submit("Go", () => {}  )
+      "submit" -> SHtml.submit("Go", () => {}  ),
+      "user_categories" -> {(ns: NodeSeq ) => User.currentUser.open_!.categories.flatMap(
+        (category: Category) =>
+          bind("category",ns,
+            "name" -> category.name.is,
+            "tags" -> { (nss: NodeSeq) => category.tags.flatMap(
+              (tag:Tag) =>
+                bind("tag",nss,
+                  "name" -> tag.name.is
+                )
+            ):NodeSeq }
+          )
+      ):NodeSeq}
        )
   }
 
@@ -118,7 +131,19 @@ class SearchSnippet extends StatefulSnippet {
             case "search" => resultPage _
             case "miniSearch" => miniSearchForm _
         }
-      })
+      }),
+      "user_categories" -> {(ns: NodeSeq ) => User.currentUser.open_!.categories.flatMap(
+        (category: Category) =>
+          bind("category",ns,
+            "name" -> category.name.is,
+            "tags" -> { (nss: NodeSeq) => category.tags.flatMap(
+              (tag:Tag) =>
+                bind("tag",nss,
+                  "name" -> tag.name.is
+                )
+            ):NodeSeq}
+          )
+      ):NodeSeq}
      )
   }
 

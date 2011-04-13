@@ -1,13 +1,13 @@
 <lift:surround with="default">
 
   <lift:bind-at name="content">
-
+    <lift:SearchSnippet.search form="post">
       <div class="content-header">
             <h1>Search</h1>
       </div>
 
       <div class="content">
-        <lift:snippet type="SearchSnippet.search" form="post">
+
 
             <search:query></search:query> <search:submit/>  <br/>
 
@@ -20,9 +20,9 @@
             </search:resultSet>
             </ul>
 
-        </lift:snippet>
-      </div>
 
+      </div>
+    </lift:SearchSnippet.search>
  </lift:bind-at>
 
 <lift:bind-at name="right-panel-content">
@@ -31,22 +31,19 @@
 
          <span>Pick a category or tag</span>
          <div>
+             <lift:SearchSnippet.search form="post">
              <ul>
-                 <li>Programming
+                 <search:user_categories>
+                 <li><a href="#"><category:name/></a>
                      <ul>
-                         <li>Scala</li>
-                         <li>Java</li>
-                         <li>Objective C</li>
+                         <category:tags>
+                            <li><a href="#"><tag:name/></a></li>
+                         </category:tags>
                      </ul>
                  </li>
-                 <li>Performance
-                     <ul>
-                         <li>Measurements</li>
-                         <li>Metodology</li>
-                         <li>Team</li>
-                     </ul>
-                 </li>
+                 </search:user_categories>
              </ul>
+             </lift:SearchSnippet.search>
          </div>
     </div>
     <div class="right-panel-section">
@@ -55,6 +52,8 @@
     </div>
 
 </lift:bind-at>
+
+
 
 </lift:surround>
 
