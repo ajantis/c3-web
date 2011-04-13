@@ -105,7 +105,7 @@ object User extends User with MetaMegaProtoUser[User] {
   override def editXhtml(user: TheUserType) = {
     (<div>
       <h1>{S.??("edit")}</h1>
-      <div>
+      <div class="user-form-content">
         <form method="post" action={S.uri}>
           <table>
             {localForm(user, true, editFields)}
