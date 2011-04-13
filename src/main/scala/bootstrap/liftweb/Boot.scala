@@ -2,7 +2,6 @@ package bootstrap.liftweb
 
 import _root_.net.liftweb.util._
 import _root_.net.liftweb.common._
-import _root_.net.liftweb.http._
 import _root_.net.liftweb.http.provider._
 import _root_.net.liftweb.sitemap._
 import _root_.net.liftweb.sitemap.Loc._
@@ -12,6 +11,7 @@ import org.aphreet.c3.model._
 import org.aphreet.c3.apiaccess.C3Client
 import net.liftweb.mapper._
 import java.net.URLEncoder
+import net.liftweb.http._
 
 /**
  * A class that's instantiated early and run.  It allows the application
@@ -21,42 +21,44 @@ class Boot {
 
   def boot {
     if (!DB.jndiJdbcConnAvailable_?) {
-      val vendor = 
-	new StandardDBVendor(Props.get("db.driver") openOr "org.h2.Driver",
-			     Props.get("db.url") openOr 
-			     "jdbc:h2:lift_proto.db;AUTO_SERVER=TRUE",
-			     Props.get("db.user"), Props.get("db.password"))
+      val vendor =
+        new StandardDBVendor(Props.get("db.driver") openOr "org.h2.Driver",
+          Props.get("db.url") openOr
+            "jdbc:h2:lift_proto.db;AUTO_SERVER=TRUE",
+          Props.get("db.user"), Props.get("db.password"))
 
       LiftRules.unloadHooks.append(vendor.closeAllConnections_! _)
 
       DB.defineConnectionManager(DefaultConnectionIdentifier, vendor)
     }
 
+    LiftRules.resourceNames = "i18n/lift-core" :: LiftRules.resourceNames
+
     // where to search snippet
     LiftRules.addToPackages("org.aphreet.c3")
     Schemifier.schemify(true, Schemifier.infoF _, User, Group, Category,Message,UserGroup)
 
     val loggedIn = If(() => User.loggedIn_?,
-                  () => RedirectResponse("/user_mgt/login"))
+      () => RedirectResponse("/user_mgt/login"))
 
     val isSuperAdmin = If(() => {if(!User.currentUser.isEmpty) User.currentUser.open_!.superUser.is else false},
-                            ()=> RedirectResponse("/user_mgt/login"))
+      ()=> RedirectResponse("/user_mgt/login"))
 
     val isGroupAdmin = If(() => {
-                            S.param("groupname") match {
-                              case Full(name) => Group.find(By(Group.name,name)) match {
-                                  case Full(group) => {
-                                        User.currentUser match {
-                                          case Full(user) if(user.id.is == group.owner.is) => true
-                                          case _ => false
-                                        }
-                                  }
-                                  case _ => false
-                                }
-                              case _ => false
-                            }
-                   },
-                  () => RedirectResponse("/index"))
+      S.param("groupname") match {
+        case Full(name) => Group.find(By(Group.name,name)) match {
+          case Full(group) => {
+            User.currentUser match {
+              case Full(user) if(user.id.is == group.owner.is) => true
+              case _ => false
+            }
+          }
+          case _ => false
+        }
+        case _ => false
+      }
+    },
+      () => RedirectResponse("/index"))
 
     // Build SiteMap
     def sitemap() = SiteMap(
@@ -103,111 +105,111 @@ class Boot {
 
 
     LiftRules.statelessRewrite.prepend(NamedPF("ParticularGroupFilesRewrite") {
-        case RewriteRequest(
-            ParsePath("group" :: groupname  :: "files" :: directory , extension, _,_), _, _) => {
+      case RewriteRequest(
+      ParsePath("group" :: groupname  :: "files" :: directory , extension, _,_), _, _) => {
 
-                val dotExt = extension match {
-                  case "" => ""
-                  case str => "."+str
-                }
-                Group.find(By(Group.name,groupname)) match {
-                  case Full(group) => {
-                    C3Resource.get(group,directory.mkString("/")+dotExt) match {
-                      case Some(resource) if(resource.isInstanceOf[File]) => RewriteResponse("download" :: groupname :: "files" :: (directory.mkString("/")+dotExt).split("/").toList)
-                      case Some(resource) => RewriteResponse("groupsection" :: "files" :: Nil, Map("groupname" -> groupname,"groupdirectory" -> directory.mkString("/"), "rewrite" -> "groupFiles"))
-                      case _ => RewriteResponse("404" :: Nil)
-                    }
-                  }
-                  case _ => RewriteResponse("404" :: Nil)
-                }
-
-
+        val dotExt = extension match {
+          case "" => ""
+          case str => "."+str
         }
+        Group.find(By(Group.name,groupname)) match {
+          case Full(group) => {
+            C3Resource.get(group,directory.mkString("/")+dotExt) match {
+              case Some(resource) if(resource.isInstanceOf[File]) => RewriteResponse("download" :: groupname :: "files" :: (directory.mkString("/")+dotExt).split("/").toList)
+              case Some(resource) => RewriteResponse("groupsection" :: "files" :: Nil, Map("groupname" -> groupname,"groupdirectory" -> directory.mkString("/"), "rewrite" -> "groupFiles"))
+              case _ => RewriteResponse("404" :: Nil)
+            }
+          }
+          case _ => RewriteResponse("404" :: Nil)
+        }
+
+
+      }
     })
     LiftRules.statelessRewrite.prepend(NamedPF("ParticularGroupOverviewRewrite") {
-        case RewriteRequest(
-            ParsePath("group" :: groupname  :: Nil , _, _,_), _, _) =>
-            RewriteResponse(
-                "groupsection" ::  "index" :: Nil, Map("groupname" -> groupname)
-            )
+      case RewriteRequest(
+      ParsePath("group" :: groupname  :: Nil , _, _,_), _, _) =>
+        RewriteResponse(
+          "groupsection" ::  "index" :: Nil, Map("groupname" -> groupname)
+        )
     })
     LiftRules.statelessRewrite.prepend(NamedPF("ParticularGroupWikiRewrite") {
-        case RewriteRequest(
-            ParsePath("group" :: groupname  :: "wiki" :: pagename :: Nil , _, _,_), _, _) =>
-            RewriteResponse(
-                "groupsection" ::  "wiki-view" :: Nil, Map("groupname" -> groupname, "pagename" -> pagename)
-            )
+      case RewriteRequest(
+      ParsePath("group" :: groupname  :: "wiki" :: pagename :: Nil , _, _,_), _, _) =>
+        RewriteResponse(
+          "groupsection" ::  "wiki-view" :: Nil, Map("groupname" -> groupname, "pagename" -> pagename)
+        )
     })
 
     LiftRules.statelessRewrite.prepend(NamedPF("ParticularGroupOverviewRewriteWikiMain") {
-        case RewriteRequest(
-            ParsePath("group" :: groupname  :: "wiki" :: Nil , _, _,_), _, _) =>
-            RewriteResponse(
-                "groupsection" ::  "wiki-view" :: Nil, Map("groupname" -> groupname, "pagename" -> "Main")
-            )
+      case RewriteRequest(
+      ParsePath("group" :: groupname  :: "wiki" :: Nil , _, _,_), _, _) =>
+        RewriteResponse(
+          "groupsection" ::  "wiki-view" :: Nil, Map("groupname" -> groupname, "pagename" -> "Main")
+        )
     })
 
     LiftRules.statelessRewrite.prepend(NamedPF("ParticularGroupAdminRewrite") {
-        case RewriteRequest(
-            ParsePath("group" :: groupname  :: "admin" :: Nil , _, _,_), _, _) =>
-            RewriteResponse(
-                "groupsection" ::  "admin" :: Nil, Map("groupname" -> groupname)
-            )
+      case RewriteRequest(
+      ParsePath("group" :: groupname  :: "admin" :: Nil , _, _,_), _, _) =>
+        RewriteResponse(
+          "groupsection" ::  "admin" :: Nil, Map("groupname" -> groupname)
+        )
     })
 
     LiftRules.dispatch.append {
 
-     case Req("download" :: groupname :: filePath, extension, GetRequest) =>
-            () =>
-             for {
-               stream <- tryo(new java.io.ByteArrayInputStream(
-                 try{
-                   C3Client().getNodeData(groupname + "/" + filePath.reverse.tail.reverse.mkString("/") + "/" +
-                                                                          URLEncoder.encode(filePath.last) + {
-                                                                            extension match {
-                                                                              case "" => ""
-                                                                              case ext => "." + ext
-                                                                            }
-                                                                          })
-                 }
-                 catch {
-                   case e: Exception => {
-                     e.printStackTrace
-                     S.notice("No file found!")
-                     S.redirectTo("/group/"+groupname+"/files/"+filePath.reverse.tail.reverse.mkString("/"))
-                   }
-                 }))
-               if null ne stream
-             } yield StreamingResponse(stream, () => stream.close,
-                          stream.available, List("Content-Type" ->
-                                                  C3Client().getResourseContentType(groupname +
-                                                    "/" + filePath.reverse.tail.reverse.mkString("/") + "/" +
-                                                    URLEncoder.encode(filePath.last) + {
-                                                                                        extension match {
-                                                                                          case "" => ""
-                                                                                          case ext => "." + ext
-                                                                                        }
-                                                                                     }
-                                                  )),
-                                                    Nil,200)
+      case Req("download" :: groupname :: filePath, extension, GetRequest) =>
+        () =>
+          for {
+            stream <- tryo(new java.io.ByteArrayInputStream(
+              try{
+                C3Client().getNodeData(groupname + "/" + filePath.reverse.tail.reverse.mkString("/") + "/" +
+                  URLEncoder.encode(filePath.last) + {
+                  extension match {
+                    case "" => ""
+                    case ext => "." + ext
+                  }
+                })
+              }
+              catch {
+                case e: Exception => {
+                  e.printStackTrace
+                  S.notice("No file found!")
+                  S.redirectTo("/group/"+groupname+"/files/"+filePath.reverse.tail.reverse.mkString("/"))
+                }
+              }))
+            if null ne stream
+          } yield StreamingResponse(stream, () => stream.close,
+            stream.available, List("Content-Type" ->
+              C3Client().getResourseContentType(groupname +
+                "/" + filePath.reverse.tail.reverse.mkString("/") + "/" +
+                URLEncoder.encode(filePath.last) + {
+                extension match {
+                  case "" => ""
+                  case ext => "." + ext
+                }
+              }
+              )),
+            Nil,200)
     }
 
 
 
     LiftRules.statelessRewrite.prepend(NamedPF("ParticularUserRewrite") {
-        case RewriteRequest(
-            ParsePath("user" :: useremail  :: Nil , _, _,_), _, _) =>
-            RewriteResponse(
-                "users" ::  "edituser" :: Nil, Map("useremail" -> useremail)
-            )
+      case RewriteRequest(
+      ParsePath("user" :: useremail  :: Nil , _, _,_), _, _) =>
+        RewriteResponse(
+          "users" ::  "edituser" :: Nil, Map("useremail" -> useremail)
+        )
     })
 
-     LiftRules.statelessRewrite.prepend(NamedPF("ParticularGroupOverviewRewriteWikiEdit") {
-        case RewriteRequest(
-            ParsePath("group" :: groupname  :: "wiki" :: pagename :: "edit" :: Nil , _, _,_), _, _) =>
-            RewriteResponse(
-                "groupsection" ::  "wiki-edit" :: Nil, Map("groupname" -> groupname, "pagename" -> pagename)
-            )
+    LiftRules.statelessRewrite.prepend(NamedPF("ParticularGroupOverviewRewriteWikiEdit") {
+      case RewriteRequest(
+      ParsePath("group" :: groupname  :: "wiki" :: pagename :: "edit" :: Nil , _, _,_), _, _) =>
+        RewriteResponse(
+          "groupsection" ::  "wiki-edit" :: Nil, Map("groupname" -> groupname, "pagename" -> pagename)
+        )
     })
 
 
