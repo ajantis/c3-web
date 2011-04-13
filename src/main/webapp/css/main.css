@@ -414,6 +414,11 @@ div.wiki-content{
     margin-top:0px;
 }
 
+.wiki-content textarea{
+    width:100%;
+    min-height:300px;
+}
+
 /*********************************************************
 * End wiki part
 *********************************************************/
