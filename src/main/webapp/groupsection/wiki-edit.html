@@ -7,9 +7,12 @@
         </lift:bind-at>
 
         <lift:bind-at name="content">
-            <div class="wiki-content">
+            <div class="wiki-form">
                 <lift:WikiSnippet.form form="POST">
                     <wiki-form:content/>
+                    <wiki-form:preview/>
+
+                    <wiki-form:submit-preview/>
                     <wiki-form:submit/>
                 </lift:WikiSnippet.form>
             </div>

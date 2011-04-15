@@ -31,16 +31,16 @@
 
 package org.aphreet.c3.snippet
 
-import net.liftweb.common.{Logger, Full}
 import net.liftweb.util.BindHelpers._
 import org.aphreet.c3.model.Wiki
-import net.liftweb.http.{SHtml, S}
 import be.devijver.wikipedia.SmartLink.SmartLinkType
 import org.aphreet.c3.lib.wiki.C3HtmlVisitor
 import be.devijver.wikipedia.{SmartLinkResolver, Parser, SmartLink}
 import java.io.StringWriter
 import org.aphreet.c3.view.GroupNavigationUtil
 import xml.{Node, XML, NodeSeq}
+import net.liftweb.http._
+import net.liftweb.common.{Box, Empty, Logger, Full}
 
 class WikiSnippet{
 
@@ -133,9 +133,12 @@ class WikiSnippet{
 
   }
 
+  private object pagePreview extends RequestVar[Box[String]](Empty)
+  private object pageContent extends RequestVar[Box[String]](Empty)
+
   def form(html: NodeSeq) : NodeSeq = {
 
-    var pageContent = ""
+    var submittedContent:String = null
 
     val pageName = S.param("pagename") match {
       case Full(value) => value
@@ -151,7 +154,7 @@ class WikiSnippet{
       Wiki.getPage(groupName, pageName) match {
         case Some(page) => {
 
-          page.content = pageContent;
+          page.content = submittedContent;
 
           Wiki.savePage(groupName, page)
           S.notice("Page saved")
@@ -160,7 +163,7 @@ class WikiSnippet{
 
         case None => {
 
-          val page = new Wiki(pageName, pageContent)
+          val page = new Wiki(pageName, submittedContent)
 
           Wiki.createPage(groupName, page)
           S.notice("Page created")
@@ -169,14 +172,37 @@ class WikiSnippet{
       }
     }
 
+    def processPreview() = {
+
+      try{
+        val formattedContent = formatContent(submittedContent, groupName)
+        pagePreview.set(Full(formattedContent))
+        pageContent.set(Full(submittedContent))
+      }catch{
+        case e => S.error("Failed to parse page: " + e.getMessage)
+      }
+    }
+
     val pageString = Wiki.getPage(groupName, pageName) match {
       case Some(page) => page.content
       case None => ""
     }
 
+    val previewXml = pagePreview.get match{
+      case Full(value) => XML.loadString(value)
+      case _ => <span/>
+    }
+
+    val editablePageContent = pageContent.get match{
+      case Full(value) => value
+      case _ => pageString
+    }
+    
     bind("wiki-form", html,
-      "content" -> SHtml.textarea(pageString, pageContent = _),
-      "submit" -> SHtml.submit("Save", processWikiEdit)
+      "content" -> SHtml.textarea(editablePageContent, submittedContent = _),
+      "preview" -> previewXml,
+      "submit" -> SHtml.submit("Save", processWikiEdit),
+      "submit-preview" -> SHtml.submit("Preview", processPreview)
     )
 
   }

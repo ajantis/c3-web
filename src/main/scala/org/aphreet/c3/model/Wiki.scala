@@ -34,6 +34,8 @@ package org.aphreet.c3.model
 import org.aphreet.c3.apiaccess.C3Client
 import net.liftweb.common.Logger
 import xml.NodeSeq
+import org.apache.commons.codec.net.URLCodec
+import org.apache.commons.httpclient.util.URIUtil
 
 class Wiki(var name:String, var content:String) {
 
@@ -43,9 +45,17 @@ object Wiki{
 
   val logger = Logger(classOf[Wiki])
 
+  private def encodeName(name:String):String = {
+    URIUtil.encodeQuery(name, "UTF-8")
+  }
+
+  private def pageLocation(group:String, name:String) = {
+    group + "/wiki/" + encodeName(name)
+  }
+
   def getPage(group:String, name:String):Option[Wiki] = {
     try{
-      val content = C3Client().getResourceAsString(group + "/wiki/" + name)
+      val content = C3Client().getResourceAsString(pageLocation(group, name))
       Some(new Wiki(name, content))
     }catch{
       case e => None
@@ -54,7 +64,9 @@ object Wiki{
 
   def createPage(group:String, page:Wiki) = {
     try{
-      C3Client().uploadFile(group + "/wiki/" + page.name, page.content.getBytes("UTF-8"))
+      C3Client().uploadFile(pageLocation(group, page.name), page.content.getBytes("UTF-8"), Map(
+      "content.type" -> "application/x-c3-wiki"
+      ))
     }catch{
       case e => logger.warn("Failed to save resource", e)
     }
@@ -62,7 +74,7 @@ object Wiki{
 
   def savePage(group:String, page:Wiki) = {
     try{
-      C3Client().updateResource(group + "/wiki/" + page.name, page.content.getBytes("UTF-8"))
+      C3Client().updateResource(pageLocation(group, page.name), page.content.getBytes("UTF-8"))
     }catch{
       case e => logger.warn("Failed to save resource", e)
     }
@@ -70,7 +82,7 @@ object Wiki{
 
   def getMetadata(group:String, name:String):Map[String, String] = {
     try{
-      val metadata = C3Client().getNodeMetadata(group + "/wiki/" + name)
+      val metadata = C3Client().getNodeMetadata(pageLocation(group, name))
 
       Map[String, String]() ++ ((metadata \\ "metadata")(0) \ "element").map(elem => ((elem \ "@key")(0).text, (elem \\ "value")(0).text))
     }catch{

@@ -244,13 +244,13 @@ class C3Client(val host:String, val contextPath:String, val contextRestPath:Stri
   }
 
 
-  def uploadFile( path:String, fileByteArray:Array[Byte] ) = {
+  def uploadFile( path:String, fileByteArray:Array[Byte], metadata:Map[String, String] = Map()) = {
     val fileBytePartSource = new ByteArrayPartSource(fileByteArray)
-    writeData(path, new FilePart("data", fileBytePartSource), Map[String, String]())
+    writeData(path, new FilePart("data", fileBytePartSource), metadata)
   }
-  def uploadFileRest( fileByteArray:Array[Byte] ) = {
+  def uploadFileRest( fileByteArray:Array[Byte], metadata:Map[String, String] = Map()) = {
     val fileBytePartSource = new ByteArrayPartSource(fileByteArray)
-    writeDataRest(new FilePart("data", fileBytePartSource), Map[String, String]())
+    writeDataRest(new FilePart("data", fileBytePartSource), metadata)
   }
 
   def updateResource(path:String, array:Array[Byte]) = {
@@ -358,7 +358,7 @@ class C3Client(val host:String, val contextPath:String, val contextRestPath:Stri
 
     status match {
       case HttpStatus.SC_OK => {
-        getMethod.getResponseBodyAsString
+        new String(getMethod.getResponseBody, "UTF-8")
       }
       case _ => {
         logger.debug("Failed to get resource. Response: " + getMethod.getResponseBodyAsString)
