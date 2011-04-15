@@ -1,60 +1,107 @@
 <lift:surround with="default">
 
   <lift:bind-at name="content">
-
+    <lift:SearchSnippet.search form="post">
       <div class="content-header">
             <h1>Search</h1>
       </div>
 
       <div class="content">
-        <lift:snippet type="SearchSnippet.search" form="post">
 
             <search:query></search:query> <search:submit/>  <br/>
 
             <br/>
-            <ul>
-            <search:resultSet>
-                <li>
-                        <entry:path/> --- <entry:type/> --- <entry:toFolder/>
-                </li>
-            </search:resultSet>
-            </ul>
 
-        </lift:snippet>
+          <!--
+           <div>
+							<table class="file-table">
+								<thead>
+									<tr>
+										<td></td>
+										<td class="file-table-name">Name</td>
+										<td class="file-table-owner">Owner</td>
+										<td class="file-table-date">Modify date</td>
+									</tr>
+								</thead>
+								<tbody>
+                                <group:childs>
+									<tr>
+										<td><child:icon/></td>
+										<td><a href="#"><child:name/></a></td>
+										<td><a href="#">Aphreet</a></td>
+										<td class="file-table-date">10/10/2010</td>
+									</tr>
+                                </group:childs>
+
+
+								</tbody>
+							</table>
+						</div>
+          -->
+
+            <div>
+                <table class="file-table">
+                                    <thead>
+                                        <tr>
+                                            <td></td>
+                                            <td class="file-table-name">Name</td>
+                                            <td class="file-table-owner">To folder</td>
+                                            <td class="file-table-date">Modify date</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <search:resultSet>
+                                         <tr>
+
+                                             <td>
+                                                 <img src="/images/icons/folder.gif"/>
+                                             </td>
+                                             <td>
+                                                <entry:path/>(<entry:type/>)(<entry:created/>)
+                                             </td>
+                                             <td>
+                                                 <entry:toFolder/>
+                                             </td>
+                                             <td class="file-table-date">
+                                                10/10/2010
+                                             </td>
+                                         </tr>
+                                         </search:resultSet>
+                                    </tbody>
+                </table>
+            </div>
+
+
       </div>
-
+    </lift:SearchSnippet.search>
  </lift:bind-at>
 
-<lift:bind-at name="right-panel-content">
-
+ <lift:bind-at name="right-panel-content">
+   <div class="right-panel-content">
     <div class="right-panel-section right-panel-section-first">
+
          <span>Pick a category or tag</span>
          <div>
+             <lift:SearchSnippet.search form="post">
              <ul>
-                 <li>Programming
+                 <search:user_categories>
+                 <li><a href="#"><category:name/></a>
                      <ul>
-                         <li>Scala</li>
-                         <li>Java</li>
-                         <li>Objective C</li>
+                         <category:tags>
+                            <li><a href="#"><tag:name/></a></li>
+                         </category:tags>
                      </ul>
                  </li>
-                 <li>Performance
-                     <ul>
-                         <li>Measurements</li>
-                         <li>Metodology</li>
-                         <li>Team</li>
-                     </ul>
-                 </li>
+                 </search:user_categories>
              </ul>
+             </lift:SearchSnippet.search>
          </div>
     </div>
     <div class="right-panel-section">
         <span>Actions</span>
     </div>
+    </div>
 
 </lift:bind-at>
 
 </lift:surround>
-
-
-

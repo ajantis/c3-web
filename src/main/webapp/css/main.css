@@ -321,7 +321,7 @@ td.metadata-key{
 /*********************************************************
  * Begin file table part
  *********************************************************/
-table.file-table{
+table.file-table {
 	width:100%;
 	font-size:12px;
 	border-collapse:collapse;
@@ -344,6 +344,13 @@ td.file-table-date td.file-table-owner{
 
 td.file-table-date{
 	text-align:right;
+}
+
+div.toolbar_menu {
+    width: 40%;
+    /*background-color: #EEE;*/
+    padding: 2px 2px 2px 2px;
+    margin:5px;
 }
 /*********************************************************
  * End file table part

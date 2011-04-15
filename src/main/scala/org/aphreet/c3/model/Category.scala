@@ -43,7 +43,7 @@ class Category extends LongKeyedMapper[Category] with IdPK {
 
   object name extends MappedString(this,64)
 
-  //tags
+  def tags : List[Tag] = Tag.findAll(By(Tag.category, this))
 
 
 }

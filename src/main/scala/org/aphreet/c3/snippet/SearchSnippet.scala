@@ -1,11 +1,3 @@
-package org.aphreet.c3.snippet
-
-import org.aphreet.c3.apiaccess.C3Client
-import xml.{Text, NodeSeq}
-import net.liftweb.http.{S, StatefulSnippet, SHtml}
-import net.liftweb.common.Full
-import org.aphreet.c3.helpers.MetadataParser
-
 /**
  * Copyright (c) 2011, Dmitry Ivanov
  * All rights reserved.
@@ -14,7 +6,6 @@ import org.aphreet.c3.helpers.MetadataParser
  * modification, are permitted provided that the following conditions
  * are met:
  *
-
  * 1. Redistributions of source code must retain the above copyright
  * notice, this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above
@@ -36,23 +27,44 @@ import org.aphreet.c3.helpers.MetadataParser
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
- 
 
+
+package org.aphreet.c3.snippet
+
+import org.aphreet.c3.apiaccess.C3Client
+import xml.{Text, NodeSeq}
+import org.aphreet.c3.helpers.MetadataParser
+import net.liftweb.http.{RequestVar, S, StatefulSnippet, SHtml}
+import org.aphreet.c3.model.{Tag, Category, User}
 import net.liftweb.util.BindHelpers._
- 
+import java.util.Date
+import java.text.{SimpleDateFormat}
+import net.liftweb.util.TimeHelpers
+import net.liftweb.common.{Logger, Box, Empty, Full}
+import org.apache.commons.lang.time.DateUtils
+
 class SearchSnippet extends StatefulSnippet {
 
-  var dispatch : DispatchIt = {
+  val logger = Logger(classOf[SearchSnippet])
 
-        case "search" => searchForm _
+  var dispatch : DispatchIt = if(stringToSearch.isEmpty) {
+
+          case "search" => searchForm _
+          case "miniSearch" => miniSearchForm _
   }
+  else {
+          case "search" => resultPage _
+          case "miniSearch" => miniSearchForm _
+  }
+
 
   var searchString = ""
   var resultSet = NodeSeq.Empty
 
   def resultPage (html: NodeSeq) = {
 
-     resultSet = C3Client().doSearch(searchString)
+     if (! stringToSearch.isEmpty ) searchString = stringToSearch.open_!
+     if(searchString!="") resultSet = C3Client().doSearch(searchString)
 
      bind("search", html,
       "query" -> SHtml.text(searchString, processQuery _ ,"placeholder" -> "Search" ),
@@ -79,34 +91,91 @@ class SearchSnippet extends StatefulSnippet {
             case NodeSeq.Empty => ""
             case xs => (xs \\ "value")(0) text
           }
-          if(name != "")
-            bind("entry", ns,
-              "address" ->   { (entry \ "@address").text } ,
-              "name" -> name,
-              "path" -> { path.split("/").toList.tail match {
-                case Nil => NodeSeq.Empty
-                case lst => SHtml.link("/group/" + lst.mkString("/"), () => {}, Text(name))
-              }},
-              "toFolder" -> { path.split("/").toList.tail match {
-                case Nil => NodeSeq.Empty
-                case lst => SHtml.link("/group/" + lst.reverse.tail.reverse.mkString("/"), () => {}, Text("Folder"))
-              }},
-              "type" -> resourceType
-            )
-          else NodeSeq.Empty
+
+
+          //NOTE: ZZ on end is not compatible with jdk, but allows for formatting
+          //dates like so (note the : 3rd from last spot, which is iso8601 standard):
+          //date=2008-10-03T10:29:40.046-04:00
+          val DATE_FORMAT_8601 = "yyyy-MM-dd'T'HH:mm:ss"
+          logger error ((metadata \\ "resource")(0) \\ "@createDate")
+          val format: SimpleDateFormat = new SimpleDateFormat("dd/MM/yyyy")
+
+          val created: Date = ((metadata \\ "resource")(0) \\ "@createDate").text match {
+            case "" => TimeHelpers.now
+            case str => DateUtils.parseDate(str.split('.').head, Array(DATE_FORMAT_8601))
+          }
+
+            if(name != "")
+              bind("entry", ns,
+                "address" ->   { (entry \ "@address").text } ,
+                "name" -> name,
+                "created" -> format.format(created),
+                "path" -> { path.split("/").toList.tail match {
+                  case Nil => NodeSeq.Empty
+                  case lst => SHtml.link("/group/" + lst.mkString("/"), () => {}, Text(name))
+                }},
+                "toFolder" -> { path.split("/").toList.tail match {
+                  case Nil => NodeSeq.Empty
+                  case lst => SHtml.link("/group/" + lst.reverse.tail.reverse.mkString("/"), () => {}, Text("Folder"))
+                }},
+                "type" -> resourceType
+              )
+            else NodeSeq.Empty
+
         })
       },
-      "submit" -> SHtml.submit("Go", () => {}  )
+      "submit" -> SHtml.submit("Go", () => {}  ),
+      "user_categories" -> {(ns: NodeSeq ) => User.currentUser.open_!.categories.flatMap(
+        (category: Category) =>
+          bind("category",ns,
+            "name" -> category.name.is,
+            "tags" -> { (nss: NodeSeq) => category.tags.flatMap(
+              (tag:Tag) =>
+                bind("tag",nss,
+                  "name" -> tag.name.is
+                )
+            ):NodeSeq }
+          )
+      ):NodeSeq}
        )
   }
 
   def searchForm (html: NodeSeq) = {
 
+
      bind("search", html,
       "query" -> SHtml.text(searchString, processQuery _ , "placeholder" -> "Search"),
       "resultSet" -> "",
-      "submit" -> SHtml.submit("Go", () => {} )
+      "submit" -> SHtml.submit("Go", () => {
+        dispatch = {
+            case "search" => resultPage _
+            case "miniSearch" => miniSearchForm _
+        }
+      }),
+      "user_categories" -> {(ns: NodeSeq ) => User.currentUser.open_!.categories.flatMap(
+        (category: Category) =>
+          bind("category",ns,
+            "name" -> category.name.is,
+            "tags" -> { (nss: NodeSeq) => category.tags.flatMap(
+              (tag:Tag) =>
+                bind("tag",nss,
+                  "name" -> tag.name.is
+                )
+            ):NodeSeq}
+          )
+      ):NodeSeq}
      )
+  }
+
+  // we store a string entered in an input box of mini search form
+  object stringToSearch extends RequestVar[Box[String]](Empty)
+
+  def miniSearchForm (html : NodeSeq) = {
+    var searchParam = ""
+    bind("miniSearch", html,
+      "search_string" -> SHtml.text("",searchParam = _ , "placeholder" -> "Search"),
+      "submit" -> SHtml.submit("Go", () => S.redirectTo("/search",() => if(searchParam != "") stringToSearch(Full(searchParam))))
+    )
   }
 
   def processQuery(query : String){
@@ -116,6 +185,7 @@ class SearchSnippet extends StatefulSnippet {
 
       dispatch = {
         case "search" => resultPage _
+        case "miniSearch" => miniSearchForm _
 
       }
     }
@@ -123,6 +193,7 @@ class SearchSnippet extends StatefulSnippet {
       S.error("Please, enter a text to search for")
       dispatch = {
         case "search" => searchForm _
+        case "miniSearch" => miniSearchForm _
       }
     }
   }

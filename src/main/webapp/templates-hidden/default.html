@@ -82,11 +82,8 @@
 <body>
 <div class="root">
     <div class="list-menu">
-        <!--
-         <div class="searchfield">
-                      <input type="text" value="" name="s" id="s" placeholder="Search" /> <input type="image" src="/images/search_48.png" id="searchsubmit" value="Search" class="searchbtn"/>
-                  </div>
-        -->
+
+
         <ul>
             <!--<li class="currentUser"> -->
             <li>
@@ -122,24 +119,32 @@
                 </ul>
             </div>
         </div>
-        <div class="breadcrumb">
-            <p>
-                <!-- <lift:SearchSnippet.miniSearch form="post"> -->
 
+        <div class="breadcrumb">
+           <lift:SearchSnippet.miniSearch form="post">
+            <table width="100%">
+                <tr>
+                <td style="padding-left: 20px;">
                 <span><a href="/index">Home</a></span>
                 <span>&gt;</span>
-                <lift:snippet type="MainSnippet.breadCrumbs">
+                <lift:MainSnippet.breadCrumbs>
                     <breadCrumbsMenu:breadCrumbs>
                         <span><breadCrumb:link></breadCrumb:link></span>
                         <span>&gt;</span>
                     </breadCrumbsMenu:breadCrumbs>
-                </lift:snippet>
-
-                <!--<span style="float: right;"><search:query/> <search:submit/></span>
-                </lift:SearchSnippet.miniSearch>-->
-
-            </p>
+                </lift:MainSnippet.breadCrumbs>
+                </td>
+                <td align="right">
+                <span >
+                    <miniSearch:search_string/>
+                    <miniSearch:submit/>
+                </span>
+                </td>
+                </tr>
+            </table>
+           </lift:SearchSnippet.miniSearch>
         </div>
+
         <div class="content-wrap">
 
             <lift:Msgs showAll="true" />
@@ -154,8 +159,6 @@
             </div>
 
             <div class="right-panel" id="right-panel">
-
-
 
                 <lift:bind name="right-panel-content" />
 
