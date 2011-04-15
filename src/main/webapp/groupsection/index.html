@@ -1,25 +1,48 @@
-<div class="lift:surround?with=default;at=content">
+<lift:surround with="default">
 
-    <link rel="stylesheet" type="text/css" href="/css/main.css" />
+    <lift:bind-at name="content">
 
-    <lift:snippet type="GroupForm.groupMenu"></lift:snippet>
-    <br/>
-    <!--
-    <div id="GroupMenu">
-        <lift:snippet type="GroupForm.groupMenu">
-            <ul class="tabs">
-                <li><menu:overview></menu:overview></li>
-                <li><menu:files></menu:files></li>
-                <li><menu:wiki></menu:wiki></li>
-                <li><menu:admin></menu:admin></li>
-            </ul>
-        </lift:snippet>
-    </div>
-    <br/> <br/><br/>
-    -->
-    <h3>Here a space for ABOUT section :) </h3>
+            <lift:GroupForm.groupMenu>
+            <div class="content-header">
+                <h2><group:name/></h2>
+            </div>
+            </lift:GroupForm.groupMenu>
 
-    <br/>
+            <div class="content">
+            <div>
 
-    <h3>Here a space for TAGS section :) </h3>
-</div>
+            </div>
+
+            </div>
+               
+
+    </lift:bind-at>
+
+
+    <lift:bind-at name="right-panel-content">
+        <div class="right-panel-content">
+            <div class="right-panel-section right-panel-section-first">
+                <lift:GroupForm.groupMenu>
+                    <span><group:name></group:name></span>
+                    <div>
+                        <ul>
+                            <li><group:overviewLink></group:overviewLink></li>
+                            <li><group:filesLink></group:filesLink></li>
+                            <li><group:wikiLink></group:wikiLink></li>
+                            <li><group:adminLink></group:adminLink></li>
+                        </ul>
+                    </div>
+                </lift:GroupForm.groupMenu>
+            </div>
+            <div class="right-panel-section">
+                
+                    <span>Metadata</span>
+                    <div>
+                       
+                    </div>
+               
+            </div>
+        </div>
+    </lift:bind-at>
+
+</lift:surround>

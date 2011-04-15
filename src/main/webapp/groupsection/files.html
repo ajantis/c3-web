@@ -5,34 +5,40 @@
         <lift:snippet type="GroupForm.view">
 
             <div class="content-header">
-                <h1><group:name/>'s Files</h1>
+                <h2><group:name/>'s files</h2>
             </div>
 
             <div class="content">
+                        <div>
+							<table class="file-table">
+								<thead>
+									<tr>
+										<td></td>
+										<td class="file-table-name">Name</td>
+										<td class="file-table-owner">Owner</td>
+										<td class="file-table-date">Modify date</td>
+									</tr>
+								</thead>
+								<tbody>
+                                <group:childs>
+									<tr>
+										<td><child:icon/></td>
+										<td><a href="#"><child:name/></a></td>
+										<td><a href="#">Aphreet</a></td>
+										<td class="file-table-date"><child:created/></td>
+									</tr>
+                                </group:childs>
 
-                <lift:GroupForm.groupMenu />
 
-                <table>
-                    <tr><td><a href="/groups">All groups</a></td></tr>
-                    <tr><td><group:linkup/></td><td>UP ^^</td></tr>
-                    <group:childs>
-                        <tr>
-                            <td><child:name/></td>
-                            <td><child:type/></td>
-                            <td><child:delete/></td>
-                        </tr>
-                    </group:childs>
-                </table>
+								</tbody>
+							</table>
+						</div>
 
 
+                <div id="Toolbar menu" class="toolbar_menu">
 
-                <div id="Toolbar menu">
-                    <h3>
-                        <a href="javascript:showDiv('createdirectory')"><img src="/images/folder_add_48.png" style="position: relative; top: 8px;" width="32" height="32" align="middle"/></a>
-                        <a href="javascript:showDiv('fileupload')"><img src="/images/box_download_48.png" style="position: relative; top: 8px;" width="32" height="32" align="middle"/></a>
-                        <br/>  <br/>
-                    </h3>
-                </div>
+                        <a href="javascript:showDiv('createdirectory')"><img src="/images/folder_add_48.png" width="24" height="24" align="middle"/></a>
+                        <a href="javascript:showDiv('fileupload')"><img src="/images/box_download_48.png" width="24" height="24" align="middle"/></a>
 
 
                 <lift:GroupForm.createDirectoryHere form="post" multipart="true">
@@ -75,7 +81,7 @@
                         </div>
                     </choose:get>
                 </lift:GroupForm.uploadHere>
-
+                </div>
 
             </div>
         </lift:snippet>

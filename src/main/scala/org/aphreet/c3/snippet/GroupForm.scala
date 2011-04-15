@@ -42,6 +42,9 @@ import net.liftweb.mapper.By
 import java.net.URLEncoder
 import net.liftweb.util.{TimeHelpers, SecurityHelpers}
 import xml.{Node, Text, NodeSeq}
+import org.apache.commons.lang.time.DateUtils
+import java.util.Date
+import java.text.SimpleDateFormat
 
 class GroupForm {
 
@@ -129,7 +132,22 @@ class GroupForm {
               },
               "childs" -> {
 
-                 (ns: NodeSeq) => group.getChildren(groupdir).flatMap(child =>
+                 (ns: NodeSeq) => group.getChildren(groupdir).flatMap(child => {
+
+                   val childMetadata = C3Client().getNodeMetadata(groupname+"/files/"+ {groupdir.tail match {
+                     case "" => ""
+                     case str => str + "/"
+                   } } +  child.name)
+
+                   val DATE_FORMAT_8601 = "yyyy-MM-dd'T'HH:mm:ss"
+
+                   val format: SimpleDateFormat = new SimpleDateFormat("dd/MM/yyyy")
+
+                   val created: Date = ((childMetadata \\ "resource")(0) \\ "@createDate").text match {
+                     case "" => TimeHelpers.now
+                     case str => DateUtils.parseDate(str.split('.').head, Array(DATE_FORMAT_8601))
+                   }
+
                    bind("child",ns,
                       "name" -> {
 
@@ -152,6 +170,11 @@ class GroupForm {
 
                       },
                       "type" -> child.resourceType,
+                      "icon" -> { child.resourceType match {
+                        case C3Resource.C3_FILE => <img src="/images/icons/document.gif"/>
+                        case _ => <img src="/images/icons/folder.gif"/>
+                      }},
+                      "created" -> format.format(created),
                       "delete" -> SHtml.ajaxButton("Delete",() => {
 
                         try {
@@ -163,7 +186,9 @@ class GroupForm {
                         }
 
                       } )
-                  )):NodeSeq
+                  ) }
+                 ):NodeSeq
+
                 }
               )
             }

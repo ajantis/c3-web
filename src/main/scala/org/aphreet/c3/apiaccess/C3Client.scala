@@ -382,7 +382,7 @@ class C3Client(val host:String, val contextPath:String, val contextRestPath:Stri
 
   def doSearch(target : String) = {
 
-
+                      //  TODO URIUtil.encodeQuery(name, "UTF-8")
     val getRequest = createGetSearchMethod(URLEncoder.encode(target))
 
     val resultSet = {
