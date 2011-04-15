@@ -1,22 +1,16 @@
 <lift:surround with="default">
 
-    <lift:bind-at name="content">
+    <lift:GroupForm.groupMenu>
 
-            <lift:GroupForm.groupMenu>
-            <div class="content-header">
-                <h2><group:name/></h2>
-            </div>
-            </lift:GroupForm.groupMenu>
 
-            <div class="content">
-            <div>
+        <lift:bind-at name="content-header">
+            <group:name/>
+        </lift:bind-at>
 
-            </div>
+        <lift:bind-at name="content">
+        </lift:bind-at>
 
-            </div>
-               
-
-    </lift:bind-at>
+    </lift:GroupForm.groupMenu>
 
 
     <lift:bind-at name="right-panel-content">
@@ -33,14 +27,6 @@
                         </ul>
                     </div>
                 </lift:GroupForm.groupMenu>
-            </div>
-            <div class="right-panel-section">
-                
-                    <span>Metadata</span>
-                    <div>
-                       
-                    </div>
-               
             </div>
         </div>
     </lift:bind-at>
