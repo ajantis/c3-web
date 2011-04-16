@@ -1,12 +1,15 @@
 <lift:surround with="default">
 
+    <lift:GroupForm.view>
+
+    <lift:bind-at name="content-header">
+         <group:name/>'s files
+    </lift:bind-at>
+
+
     <lift:bind-at name="content">
 
-        <lift:snippet type="GroupForm.view">
 
-            <div class="content-header">
-                <h2><group:name/>'s files</h2>
-            </div>
 
             <div class="content">
                         <div>
@@ -84,9 +87,11 @@
                 </div>
 
             </div>
-        </lift:snippet>
+
 
     </lift:bind-at>
+
+    </lift:GroupForm.view>
 
 
     <lift:bind-at name="right-panel-content">

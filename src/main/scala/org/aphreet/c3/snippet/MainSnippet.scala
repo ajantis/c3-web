@@ -111,7 +111,7 @@ class MainSnippet  {
       S.param("rewrite").open_! match
       {
         case "groupFiles" => {
-            val groupname = S.param("groupname").open_!
+          val groupname = S.param("groupname").open_!
 
           // List[(link,name)]
           val groupDirLst : List[String] = S.param("groupdirectory").open_!.split("/").toList
@@ -129,6 +129,18 @@ class MainSnippet  {
                     )
               ): NodeSeq} }
           )
+        }
+        case "groupOverview" => {
+           val groupname = S.param("groupname").open_!
+           val brdCrmbList : List[(String,String)] = Tuple2("/group/"+groupname,groupname) :: Nil
+
+           bind("breadCrumbsMenu", html,
+              "breadCrumbs" -> {(ns: NodeSeq) => {brdCrmbList.filter(_._2 != "").flatMap(linkWithName =>
+                    bind("breadCrumb", ns,
+                      "link" -> <a href={linkWithName._1}>{linkWithName._2}</a>
+                    )
+              ): NodeSeq} }
+           )
         }
         case _ => NodeSeq.Empty // TODO implement
       }

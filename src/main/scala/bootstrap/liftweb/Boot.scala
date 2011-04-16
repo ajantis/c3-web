@@ -130,22 +130,22 @@ class Boot {
       case RewriteRequest(
       ParsePath("group" :: groupname  :: Nil , _, _,_), _, _) =>
         RewriteResponse(
-          "groupsection" ::  "index" :: Nil, Map("groupname" -> groupname)
+          "groupsection" ::  "index" :: Nil, Map("groupname" -> groupname, "rewrite" -> "groupOverview")
         )
     })
     LiftRules.statelessRewrite.prepend(NamedPF("ParticularGroupWikiRewrite") {
       case RewriteRequest(
       ParsePath("group" :: groupname  :: "wiki" :: pagename :: Nil , _, _,_), _, _) =>
         RewriteResponse(
-          "groupsection" ::  "wiki-view" :: Nil, Map("groupname" -> groupname, "pagename" -> pagename)
+          "groupsection" ::  "wiki-view" :: Nil, Map("groupname" -> groupname, "pagename" -> pagename,"rewrite" -> "groupWiki")
         )
     })
 
-    LiftRules.statelessRewrite.prepend(NamedPF("ParticularGroupOverviewRewriteWikiMain") {
+    LiftRules.statelessRewrite.prepend(NamedPF("ParticularGroupRewriteWikiMain") {
       case RewriteRequest(
       ParsePath("group" :: groupname  :: "wiki" :: Nil , _, _,_), _, _) =>
         RewriteResponse(
-          "groupsection" ::  "wiki-view" :: Nil, Map("groupname" -> groupname, "pagename" -> "Main")
+          "groupsection" ::  "wiki-view" :: Nil, Map("groupname" -> groupname, "pagename" -> "Main", "rewrite" -> "groupWikiMain")
         )
     })
 

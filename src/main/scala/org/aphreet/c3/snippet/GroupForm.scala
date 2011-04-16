@@ -290,6 +290,32 @@ class GroupForm {
 
   }
 
+  def groupOverview(html: NodeSeq) : NodeSeq = {
+    S.param("groupname") match {
+       case Full(name) => {
+          Group.find(By(Group.name, name)) match {
+            case Full(group) => {
+              bind("group", html,
+                "name" -> group.name,
+                "description" -> group.description,
+                "owner" -> {group.owner.obj.map(_.email.is).getOrElse("UNKNOWN")},
+                "users" -> { (ns: NodeSeq) => group.users.flatMap(
+                (user: User) =>
+                  bind("user",ns,
+                    "email"-> user.email
+                  )
+                ):NodeSeq }
+
+              )
+            }
+            case _ => NodeSeq.Empty
+          }
+       }
+       case _ => NodeSeq.Empty
+     }
+  }
+
+
   def resourceProperties(html: NodeSeq) : NodeSeq = {
 
       S.param("groupdirectory") match {
