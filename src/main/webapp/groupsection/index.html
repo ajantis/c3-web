@@ -1,17 +1,34 @@
 <lift:surround with="default">
+   <lift:GroupForm.groupOverview>
+    <lift:bind-at name="content-header">
+       <group:name/>
+    </lift:bind-at>
 
-    <lift:GroupForm.groupMenu>
+    <lift:bind-at name="content">
+
+            <div>
 
 
-        <lift:bind-at name="content-header">
-            <group:name/>
-        </lift:bind-at>
+                    <p><b>Description:</b> </p>
+                    <group:description/> <br/>
 
-        <lift:bind-at name="content">
-        </lift:bind-at>
+                    <p><b>Owner:</b> </p>
+                    <group:owner/> <br/>
 
-    </lift:GroupForm.groupMenu>
+                    <p><b>Members:</b> </p>
+                    <ul>
+                    <group:users>
+                        <li><user:email/></li>
+                    </group:users>
+                    </ul>
 
+
+
+            </div>
+
+
+    </lift:bind-at>
+  </lift:GroupForm.groupOverview>
 
     <lift:bind-at name="right-panel-content">
         <div class="right-panel-content">
@@ -27,6 +44,14 @@
                         </ul>
                     </div>
                 </lift:GroupForm.groupMenu>
+            </div>
+            <div class="right-panel-section">
+                
+                    <span>Metadata</span>
+                    <div>
+                       
+                    </div>
+               
             </div>
         </div>
     </lift:bind-at>
