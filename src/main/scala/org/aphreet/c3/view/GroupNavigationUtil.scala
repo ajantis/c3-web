@@ -40,6 +40,7 @@ object GroupNavigationUtil{
       <li><a href={"/group/" + groupName}>Overview</a></li>
       <li><a href={"/group/" + groupName + "/files"}>Files</a></li>
       <li><a href={"/group/" + groupName + "/wiki"}>Wiki</a></li>
+      <li><a href={"/group/" + groupName + "/admin"}>Admin</a></li>
     </ul>
   }
 

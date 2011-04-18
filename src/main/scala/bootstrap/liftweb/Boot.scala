@@ -114,6 +114,7 @@ class Boot {
         }
         Group.find(By(Group.name,groupname)) match {
           case Full(group) => {
+            // TODO if resource instance is FIle ==>> rewrite request to file page
             C3Resource.get(group,directory.mkString("/")+dotExt) match {
               case Some(resource) if(resource.isInstanceOf[File]) => RewriteResponse("download" :: groupname :: "files" :: (directory.mkString("/")+dotExt).split("/").toList)
               case Some(resource) => RewriteResponse("groupsection" :: "files" :: Nil, Map("groupname" -> groupname,"groupdirectory" -> directory.mkString("/"), "rewrite" -> "groupFiles"))

@@ -36,15 +36,16 @@ import net.liftweb.util.BindHelpers._
 import org.aphreet.c3.model._
 import net.liftweb.common.{Box, Logger, Full, Empty}
 import net.liftweb.http.{FileParamHolder, RequestVar, SHtml, S}
-import net.liftweb.http.js._
 import net.liftweb.http.js.JsCmds.Alert
 import net.liftweb.mapper.By
 import java.net.URLEncoder
-import net.liftweb.util.{TimeHelpers, SecurityHelpers}
+import net.liftweb.util.TimeHelpers
 import xml.{Node, Text, NodeSeq}
 import org.apache.commons.lang.time.DateUtils
 import java.util.Date
 import java.text.SimpleDateFormat
+
+import javax.activation.MimetypesFileTypeMap
 
 class GroupForm {
 
@@ -210,7 +211,7 @@ class GroupForm {
   private object theCreateDirectoryPath extends RequestVar[Box[String]](Empty)
 
   def uploadHere(xhtml: NodeSeq): NodeSeq = {
-      if (S.get_? || theUploadPath.isEmpty) {
+      if (S.get_? || theUploadPath.isEmpty || theUpload.isEmpty) {
 
         bind("ul", chooseTemplate("choose", "get", xhtml),
           "file_upload" -> SHtml.fileUpload(ul => theUpload(Full(ul))),
@@ -220,8 +221,14 @@ class GroupForm {
       }
       else {
 
-        C3Client().uploadFile( theUploadPath.is.open_!,theUpload.is.map(v => v.file).open_!)
+        // this simple tecknique helps to predict uploaded file's type by it's name
+        val mimeType: String = new MimetypesFileTypeMap().getContentType(theUpload.is.open_!.fileName)
 
+        C3Client().uploadFile( theUploadPath.is.open_!,theUpload.is.map(v => v.file).open_!, Map("content.type" -> mimeType))
+
+        /*C3Client().uploadFile(pageLocation(group, page.name), page.content.getBytes("UTF-8"), Map(
+      "content.type" -> "application/x-c3-wiki"
+      )) */
 
         bind("ul", chooseTemplate("choose", "post", xhtml),
           "filename" -> theUpload.is.map(v => Text(v.fileName)),
@@ -254,21 +261,7 @@ class GroupForm {
 
      S.param("groupname") match {
        case Full(name) => {
-         /*
-         <ul class="tabs">
-           <li><a href={"/group/"+name}>Overview</a></li>
-           <li><a href={"/group/"+name+"/files"}>Files</a></li>
-           <li><a href={"/group/"+name+"/wiki"}>Wiki</a></li>
-           {Group.find(By(Group.name,name)) match {
-              case Full(group) => {
-                User.currentUser match {
-                  case Full(user) if(user.id.is == group.owner.is) => <li><a href={"/group/"+name+"/admin"}>Admin</a></li>
-                  case _ => NodeSeq.Empty
-                }
-              }
-              case _ => NodeSeq.Empty
-            }}
-         </ul> */
+
          bind("group",html,
          "name" -> name,
          "overviewLink" -> <a href={"/group/"+name}>Overview</a>,

@@ -42,6 +42,7 @@ import java.text.{SimpleDateFormat}
 import net.liftweb.util.TimeHelpers
 import net.liftweb.common.{Logger, Box, Empty, Full}
 import org.apache.commons.lang.time.DateUtils
+import org.apache.commons.httpclient.util.URIUtil
 
 class SearchSnippet extends StatefulSnippet {
 
@@ -108,7 +109,7 @@ class SearchSnippet extends StatefulSnippet {
             if(name != "")
               bind("entry", ns,
                 "address" ->   { (entry \ "@address").text } ,
-                "name" -> name,
+                "name" -> URIUtil.decode(name, "UTF-8"),
                 "created" -> format.format(created),
                 "path" -> { path.split("/").toList.tail match {
                   case Nil => NodeSeq.Empty
