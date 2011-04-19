@@ -166,7 +166,7 @@ class Boot {
             stream <- tryo(new java.io.ByteArrayInputStream(
               try{
                 C3Client().getNodeData(groupname + "/" + filePath.reverse.tail.reverse.mkString("/") + "/" +
-                  URLEncoder.encode(filePath.last) + {
+                  filePath.last + {
                   extension match {
                     case "" => ""
                     case ext => "." + ext
@@ -185,7 +185,7 @@ class Boot {
             stream.available, List("Content-Type" ->
               C3Client().getResourseContentType(groupname +
                 "/" + filePath.reverse.tail.reverse.mkString("/") + "/" +
-                URLEncoder.encode(filePath.last) + {
+                filePath.last + {
                 extension match {
                   case "" => ""
                   case ext => "." + ext

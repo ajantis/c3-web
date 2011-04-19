@@ -127,7 +127,7 @@ class C3Client(val host:String, val contextPath:String, val contextRestPath:Stri
 
 
   def getNodeMetadata(path:String): NodeSeq = {
-    val getMethod = createGetMethod(path + "?metadata")
+    val getMethod = createGetMethod(URIUtil.encodeQuery(path,"UTF-8") + "?metadata")
 
     try{
       val status = httpClient.executeMethod(getMethod)
@@ -153,29 +153,10 @@ class C3Client(val host:String, val contextPath:String, val contextRestPath:Stri
     "text/plain" // assumed by default if no content type was found
   }
 
-  def getNodeDataWithType(path:String): (String,Array[Byte])  = {
-
-    val getMethod = createGetMethod(path)
-
-    try{
-      val status = httpClient.executeMethod(getMethod)
-      status match {
-        case HttpStatus.SC_OK => {
-         ("text/plain",getMethod.getResponseBody)
-        }
-        case _ =>
-          ("text/plain", println(getMethod.getResponseBodyAsString))
-          throw new Exception(("Failed to get resource, code " + status).asInstanceOf[String])
-      }
-    }finally{
-      getMethod.releaseConnection();
-    }
-  }
-
 
   def getNodeData(path:String):Array[Byte] = {
 
-    val getMethod = createGetMethod(path)
+    val getMethod = createGetMethod(URIUtil.encodeQuery(path,"UTF-8"))
 
     try{
       val status = httpClient.executeMethod(getMethod)
