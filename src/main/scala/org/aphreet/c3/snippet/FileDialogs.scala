@@ -79,7 +79,7 @@ class FileUploadDialog extends AbstractFormDialog {
 
   private def uploadFile(): JsCmd = {
 
-    theFileUpload.is match {
+    theFileName.is match {
       case Full(some) => Alert("Stub for file upload!")
       case _ => Alert("File is empty :(") & Unblock
     }
