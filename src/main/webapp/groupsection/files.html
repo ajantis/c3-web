@@ -11,6 +11,54 @@
 
     <lift:bind-at name="content">
 
+                <div id="Toolbar menu" class="toolbar_menu">
+                  <!--
+                        <a href="javascript:showDiv('createdirectory')"><img src="/images/folder_add_48.png" width="24" height="24" align="middle"/></a>
+                        <a href="javascript:showDiv('fileupload')"><img src="/images/box_download_48.png" width="24" height="24" align="middle"/></a>
+                   -->
+                <!--
+                <lift:GroupForm.createDirectoryHere form="post" multipart="true">
+                    <choose:post>
+                        <div id="createdirectory" ul:uploadDirStyle="">
+                            <p>
+                                Directory <ul:dirname></ul:dirname> successfully created<br/>
+                            </p>
+
+                        </div>
+                    </choose:post>
+
+                    <choose:get>
+                        <div id="createdirectory" ul:uploadDirStyle="">
+                            Directory name: <ul:dirname/>
+                            <input type="submit" value="Create"/>
+
+                        </div>
+                    </choose:get>
+                </lift:GroupForm.createDirectoryHere>
+
+                -->
+
+                <lift:GroupForm.uploadHere form="post" multipart="true">
+                  <!--  <choose:post>
+                        <div id="fileupload" ul:uploadFileStyle="">
+                            <p>
+                                File <ul:filename></ul:filename> successfully uploaded<br/>
+                            </p>
+                            <ul:refresh>Refresh</ul:refresh>
+                        </div>
+                    </choose:post> -->
+
+                    <choose:get>
+                        <div id="fileupload" ul:uploadFileStyle="">
+                            File: <ul:file_upload></ul:file_upload>
+                            Name: <ul:filename/>
+                            <input type="submit" value="Upload"/>
+                            <br/> <br/>
+                        </div>
+                    </choose:get>
+                </lift:GroupForm.uploadHere>
+
+                </div>
 
                         <div>
 							<table class="file-table">
@@ -37,56 +85,6 @@
 							</table>
 						</div>
 
-
-                <!--
-                <div id="Toolbar menu" class="toolbar_menu">
-
-                        <a href="javascript:showDiv('createdirectory')"><img src="/images/folder_add_48.png" width="24" height="24" align="middle"/></a>
-                        <a href="javascript:showDiv('fileupload')"><img src="/images/box_download_48.png" width="24" height="24" align="middle"/></a>
-
-                <lift:GroupForm.createDirectoryHere form="post" multipart="true">
-                    <choose:post>
-                        <div id="createdirectory" ul:uploadDirStyle="">
-                            <p>
-                                Directory <ul:dirname></ul:dirname> successfully created<br/>
-                            </p>
-
-                        </div>
-                    </choose:post>
-
-                    <choose:get>
-                        <div id="createdirectory" ul:uploadDirStyle="">
-                            Directory name: <ul:dirname/>
-                            <input type="submit" value="Create"/>
-
-                        </div>
-                    </choose:get>
-                </lift:GroupForm.createDirectoryHere>
-
-
-
-                <lift:GroupForm.uploadHere form="post" multipart="true">
-                    <choose:post>
-                        <div id="fileupload" ul:uploadFileStyle="">
-                            <p>
-                                File <ul:filename></ul:filename> successfully uploaded<br/>
-                            </p>
-                            <br/> <br/>
-                        </div>
-                    </choose:post>
-
-                    <choose:get>
-                        <div id="fileupload" ul:uploadFileStyle="">
-                            File: <ul:file_upload></ul:file_upload><br/>
-                            Name: <ul:filename/>
-                            <input type="submit" value="Upload"/>
-                            <br/> <br/>
-                        </div>
-                    </choose:get>
-                </lift:GroupForm.uploadHere>
-
-                </div>
-                -->
 
 
     </lift:bind-at>
@@ -133,8 +131,11 @@
                 <span>Toolbar</span>
                 <div>
                     <ul>
+
                         <li><group:create_dir>Create directory</group:create_dir></li>
+
                         <li><group:upload_file>Upload file</group:upload_file></li>
+
                     </ul>
                 </div>
             </div>

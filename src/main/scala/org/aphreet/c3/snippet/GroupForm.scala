@@ -31,7 +31,6 @@
 
 package org.aphreet.c3.snippet
 
-import org.aphreet.c3.apiaccess.C3Client
 import net.liftweb.util.BindHelpers._
 import org.aphreet.c3.model._
 import net.liftweb.common.{Box, Logger, Full, Empty}
@@ -46,6 +45,8 @@ import java.util.Date
 import java.text.SimpleDateFormat
 
 import javax.activation.MimetypesFileTypeMap
+import net.liftweb.http.js.JsCmds
+import org.aphreet.c3.apiaccess.{C3ClientException, C3Client}
 
 class GroupForm {
 
@@ -119,7 +120,7 @@ class GroupForm {
               "name" -> group.name,
               "owner" -> {group.owner.obj.map(usr => usr.email.is) openOr "unknown"},
               "create_dir" -> ( (ns: NodeSeq) => new CreateDirectoryDialog().button(ns , (if(S.uri.contains("/group/")) Full(S.uri.split("/group/").last+"/") else Empty) ) ),
-              "upload_file" -> ( (ns: NodeSeq) => new FileUploadDialog().button(ns , (if(S.uri.contains("/group/")) Full(S.uri.split("/group/").last+"/") else Empty) ) ),
+              "upload_file" -> ( (ns: NodeSeq) => new FileUploadDialog().button(ns)), // temp fix  // , (if(S.uri.contains("/group/")) Full(S.uri.split("/group/").last+"/") else Empty) ) ),
               "linkup" -> {
                 val link = {
                   if(groupdir!="/") {
@@ -226,12 +227,25 @@ class GroupForm {
         // this simple technique helps to predict uploaded file's type by it's name
         val mimeType: String = new MimetypesFileTypeMap().getContentType(theUpload.is.open_!.fileName)
 
-        C3Client().uploadFile( theUploadPath.is.open_!,theUpload.is.map(v => v.file).open_!, Map("content.type" -> mimeType))
+        try {
+          C3Client().uploadFile( theUploadPath.is.open_!,theUpload.is.map(v => v.file).open_!, Map("content.type" -> mimeType))
 
+          S.notice(
+            <p>File {theUpload.is.map(v => v.fileName).open_!} successfully uploaded</p>
+             ++ SHtml.ajaxButton("Refresh", () => JsCmds.RedirectTo(""))
+          )
+        }
+        catch {
+          case e: C3ClientException => S.error(e.toString)
+        }
+
+        NodeSeq.Empty
+        /*
         bind("ul", chooseTemplate("choose", "post", xhtml),
           "filename" -> theUpload.is.map(v => Text(v.fileName)),
+          "refresh" -> ((ns: NodeSeq) => SHtml.ajaxButton(ns.text, () => JsCmds.RedirectTo(""))),
           AttrBindParam("uploadFileStyle", Text(""), "style")
-        )
+        ) */
       }
   }
 

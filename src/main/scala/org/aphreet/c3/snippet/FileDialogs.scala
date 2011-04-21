@@ -77,6 +77,14 @@ class FileUploadDialog extends AbstractFormDialog {
   private object theFileName extends RequestVar[Box[String]](Empty)
   private object theFileUpload extends RequestVar[Box[FileParamHolder]](Empty)
 
+  // temporary we wil use another button function that will display file upload box (without ajax because it doesn't work correctly here)
+  def button(in: NodeSeq) =
+    SHtml.ajaxButton(in,
+      () => {
+        JsCmds.Run("showDiv('fileupload')")
+      }
+    )
+
   private def uploadFile(): JsCmd = {
 
     theFileName.is match {
