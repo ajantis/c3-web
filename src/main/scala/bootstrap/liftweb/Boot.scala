@@ -13,6 +13,10 @@ import net.liftweb.mapper._
 import java.net.URLEncoder
 import net.liftweb.http._
 
+import net.liftweb.widgets.logchanger._
+
+import org.aphreet.c3.logging.LogLevel
+
 /**
  * A class that's instantiated early and run.  It allows the application
  * to modify lift's environment
@@ -91,7 +95,10 @@ class Boot {
 
       Menu("Search") / "search" >> loggedIn >> Hidden,
 
-      Menu("Not found") / "404" >>  Hidden
+      Menu("Not found") / "404" >>  Hidden,
+
+      LogLevel.menu // default log level menu is located at /loglevel/change
+
 
 
       // Menu with special Link
@@ -231,6 +238,11 @@ class Boot {
     LiftRules.early.append(makeUtf8)
 
     LiftRules.loggedInTest = Full(() => User.loggedIn_?)
+
+
+    // Log Changer widget inittialization is required for setting setup
+    // default location for log changer is {webapproot}/loglevel/change
+    LogLevelChanger.init()
 
     S.addAround(DB.buildLoanWrapper)
   }

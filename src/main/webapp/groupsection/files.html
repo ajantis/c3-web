@@ -4,6 +4,8 @@
 
     <lift:bind-at name="content-header">
          <group:name/>'s files
+
+
     </lift:bind-at>
 
 
@@ -36,11 +38,11 @@
 						</div>
 
 
+                <!--
                 <div id="Toolbar menu" class="toolbar_menu">
 
                         <a href="javascript:showDiv('createdirectory')"><img src="/images/folder_add_48.png" width="24" height="24" align="middle"/></a>
                         <a href="javascript:showDiv('fileupload')"><img src="/images/box_download_48.png" width="24" height="24" align="middle"/></a>
-
 
                 <lift:GroupForm.createDirectoryHere form="post" multipart="true">
                     <choose:post>
@@ -82,13 +84,13 @@
                         </div>
                     </choose:get>
                 </lift:GroupForm.uploadHere>
-                </div>
 
+                </div>
+                -->
 
 
     </lift:bind-at>
 
-    </lift:GroupForm.view>
 
 
     <lift:bind-at name="right-panel-content">
@@ -127,7 +129,18 @@
                     </div>
                 </lift:snippet>
             </div>
+            <div class="right-panel-section">
+                <span>Toolbar</span>
+                <div>
+                    <ul>
+                        <li><group:create_dir>Create directory</group:create_dir></li>
+                        <li><group:upload_file>Upload file</group:upload_file></li>
+                    </ul>
+                </div>
+            </div>
         </div>
     </lift:bind-at>
+
+    </lift:GroupForm.view>
 
 </lift:surround>

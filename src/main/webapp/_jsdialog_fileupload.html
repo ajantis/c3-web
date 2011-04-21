@@ -1,0 +1,19 @@
+ <div style="padding: 15px;">
+  <h4>Select the file to upload</h4>
+
+  <lift:FileUploadDialog.form form="post" multipart="true">
+
+     File: <file:file_upload/> <br/>
+     Name: <file:name/> <br/>
+
+     <file:submit>Upload</file:submit>
+
+  </lift:FileUploadDialog.form>
+     <br/>
+
+  <lift:FileUploadDialog.unblockForm>
+        <form:close>Close</form:close>
+  </lift:FileUploadDialog.unblockForm>
+
+</div>
+
