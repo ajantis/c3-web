@@ -47,99 +47,9 @@ import java.net.URLEncoder
 import org.aphreet.c3.apiaccess.{C3ClientException, C3Client}
 import xml.{Node, Text, NodeSeq}
 
-trait AbstractFormDialog {
+trait C3ResourceMetadataForms {
 
-  val templateName: String
-  protected  object theCurrentPath extends SessionVar[Box[String]](Empty)
-
-  def unblockForm(xhtml: NodeSeq) =
-    bind("form",xhtml,
-      "close" -> ((b: NodeSeq) => <button onclick={Unblock.toJsCmd}>{b}</button>))
-
-  def button(in: NodeSeq, path: Box[String]) =
-      SHtml.ajaxButton(in,
-               () => {
-                 theCurrentPath.set(path)
-                 S.runTemplate(List(templateName)).
-                   map(ns => ModalDialog(ns)) openOr
-                   Alert("Couldn't find "+templateName+" template")
-               })
-
-  def form(xhtml: NodeSeq): NodeSeq
-
-}
-
-class FileUploadDialog extends AbstractFormDialog {
-
-  val templateName = "_jsdialog_fileupload"
-
-
-  private object theFileName extends RequestVar[Box[String]](Empty)
-  private object theFileUpload extends RequestVar[Box[FileParamHolder]](Empty)
-
-  // temporary we wil use another button function that will display file upload box (without ajax because it doesn't work correctly here)
-  def button(in: NodeSeq) =
-    SHtml.ajaxButton(in,
-      () => {
-        JsCmds.Run("showDiv('fileupload')")
-      }
-    )
-
-  private def uploadFile(): JsCmd = {
-
-    theFileName.is match {
-      case Full(some) => Alert("Stub for file upload!")
-      case _ => Alert("File is empty :(") & Unblock
-    }
-
-  }
-
-  override def form(xhtml: NodeSeq) = {
-
-    SHtml.ajaxForm(
-      bind("file", xhtml,
-        "name" -> SHtml. text("", (name: String) => if(name != "") theFileName.set(Full(name)) ),
-        "file_upload" -> SHtml.fileUpload(ul => theFileUpload.set(Full(ul))),
-        "submit" ->((ns: NodeSeq) => SHtml.hidden(uploadFile _) ++ SHtml.submit(ns.text, () => {} ))
-      )
-    )
-  }
-
-
-}
-
-class CreateDirectoryDialog extends AbstractFormDialog {
-
-  val templateName = "_jsdialog_createdirectory"
-
-
-  private object theDirectoryName extends RequestVar[Box[String]](Empty)
-
-
-  private def createDirectory(): JsCmd = {
-      if(!theCurrentPath.isEmpty)
-        theDirectoryName.is match {
-          case Full(name) => {
-
-            try {
-              C3Client().createDir(
-                theCurrentPath.get.open_! + "/" + theDirectoryName.get.open_!
-              ) match {
-                  case true => Unblock & Alert("Directory created.") & RedirectTo("")
-                  case _ => Unblock & Alert("Ooops. Directory wasn't created!")
-              }
-            }
-            catch {
-              case e: C3ClientException => Alert(e.toString)
-            }
-
-          }
-          case _ => Alert("Please, enter directory name.")
-        }
-      else Unblock & Alert("Internal error: unknown current path.")
-  }
-
-  private object tags extends RequestVar[scala.collection.mutable.Set[String]] (scala.collection.mutable.Set()) {
+  protected object tags extends RequestVar[scala.collection.mutable.Set[String]] (scala.collection.mutable.Set()) {
 
     val divTagsName: String = S.attr("id_tags_name") openOr "tags_id"
 
@@ -170,15 +80,12 @@ class CreateDirectoryDialog extends AbstractFormDialog {
 
     }
 
-
   }
 
 
-  private object metadata extends RequestVar[scala.collection.mutable.Map[String,String]] (scala.collection.mutable.Map()) {
+  protected  object metadata extends RequestVar[scala.collection.mutable.Map[String,String]] (scala.collection.mutable.Map()) {
 
     val divMDName: String = S.attr("id_md_name") openOr "md_id"
-
-
 
     def toXML(xml: NodeSeq): NodeSeq = {
 
@@ -206,14 +113,7 @@ class CreateDirectoryDialog extends AbstractFormDialog {
     def toForm(xml: NodeSeq): NodeSeq = {
 
       def addMDNode(): JsCmd = {
-        /*
-        if(mdNode._1 != str){
-                    metadata.get += (str -> mdNode._2)
-                    metadata.get.remove(mdNode._1)
-        }
-        if(mdNode._2 != str){
-                    metadata.get += (mdNode._1 -> str)
-        } */
+
         metadata += ( ("", "") )
         //full reload
         SetHtml(divMDName, toForm(xml = xml))
@@ -230,6 +130,109 @@ class CreateDirectoryDialog extends AbstractFormDialog {
     }
 
   }
+
+}
+
+trait AbstractFormDialog {
+
+  val templateName: String
+  protected  object theCurrentPath extends SessionVar[Box[String]](Empty)
+
+  def unblockForm(xhtml: NodeSeq) =
+    bind("form",xhtml,
+      "close" -> ((b: NodeSeq) => <button onclick={Unblock.toJsCmd}>{b}</button>))
+
+  def button(in: NodeSeq, path: Box[String]) =
+      SHtml.ajaxButton(in,
+               () => {
+                 theCurrentPath.set(path)
+                 S.runTemplate(List(templateName)).
+                   map(ns => ModalDialog(ns)) openOr
+                   Alert("Couldn't find "+templateName+" template")
+               })
+
+  def form(xhtml: NodeSeq): NodeSeq
+
+}
+
+class FileUploadDialog extends AbstractFormDialog with C3ResourceMetadataForms {
+
+  val templateName = "_jsdialog_fileupload"
+
+
+  private object theFileName extends RequestVar[Box[String]](Empty)
+  private object theFileUpload extends RequestVar[Box[FileParamHolder]](Empty)
+
+  // temporary we wil use another button function that will display file upload box (without ajax because it doesn't work correctly here)
+
+  def button(in: NodeSeq) =
+    SHtml.ajaxButton(in,
+      () => {
+        JsCmds.Run("showDiv('fileupload')")
+      }
+    )
+
+  private def uploadFile(): JsCmd = {
+
+    theFileName.is match {
+      case Full(some) => Alert("Stub for file upload!")
+      case _ => Alert("File is empty :(") & Unblock
+    }
+
+  }
+
+  override def form(xhtml: NodeSeq) = {
+
+    SHtml.ajaxForm(
+      bind("file", xhtml,
+        "name" -> SHtml. text("", (name: String) => if(name != "") theFileName.set(Full(name)) ),
+        "file_upload" -> SHtml.fileUpload(ul => theFileUpload.set(Full(ul))),
+        "metadata" -> ( (ns: NodeSeq) =>
+          metadata.toForm(ns)
+        ),
+        "tags" -> ( (ns: NodeSeq) =>
+          tags.toForm(ns)
+        ),
+        "submit" ->((ns: NodeSeq) => SHtml.hidden(uploadFile _) ++ SHtml.submit(ns.text, () => {} ))
+      )
+    )
+  }
+
+
+}
+
+class CreateDirectoryDialog extends AbstractFormDialog with C3ResourceMetadataForms {
+
+  val templateName = "_jsdialog_createdirectory"
+
+
+  private object theDirectoryName extends RequestVar[Box[String]](Empty)
+
+
+  private def createDirectory(): JsCmd = {
+      if(!theCurrentPath.isEmpty)
+        theDirectoryName.is match {
+          case Full(name) => {
+
+            try {
+              C3Client().createDir(
+                theCurrentPath.get.open_! + "/" + theDirectoryName.get.open_!
+              ) match {
+                  case true => Unblock & Alert("Directory created.") & RedirectTo("")
+                  case _ => Unblock & Alert("Ooops. Directory wasn't created!")
+              }
+            }
+            catch {
+              case e: C3ClientException => Alert(e.toString)
+            }
+
+          }
+          case _ => Alert("Please, enter directory name.")
+        }
+      else Unblock & Alert("Internal error: unknown current path.")
+  }
+
+
 
   override def form(xhtml: NodeSeq): NodeSeq = {
 

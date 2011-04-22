@@ -120,7 +120,7 @@ class GroupForm {
               "name" -> group.name,
               "owner" -> {group.owner.obj.map(usr => usr.email.is) openOr "unknown"},
               "create_dir" -> ( (ns: NodeSeq) => new CreateDirectoryDialog().button(ns , (if(S.uri.contains("/group/")) Full(S.uri.split("/group/").last+"/") else Empty) ) ),
-              "upload_file" -> ( (ns: NodeSeq) => new FileUploadDialog().button(ns)), // temp fix  // , (if(S.uri.contains("/group/")) Full(S.uri.split("/group/").last+"/") else Empty) ) ),
+              "upload_file" -> ( (ns: NodeSeq) => new FileUploadDialog().button(ns )),/*  temp fix  , (if(S.uri.contains("/group/")) Full(S.uri.split("/group/").last+"/") else Empty) ) ), */
               "linkup" -> {
                 val link = {
                   if(groupdir!="/") {

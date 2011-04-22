@@ -6,6 +6,34 @@
      File: <file:file_upload/> <br/>
      Name: <file:name/> <br/>
 
+                <div>
+                    <file:metadata>
+                        <div id="md_id">
+                            <ul style="list-style: none; list-style-type: none;">
+                                <list:md_list>
+                                    <li><md_node:name/> - <md_node:value/></li>
+                                </list:md_list>
+                            </ul>
+                            <list:add_md_node>Add MD</list:add_md_node>
+                        </div>
+                    </file:metadata>
+
+                </div>
+
+                <div>
+                    <file:tags>
+                        <div id="tags_id">
+                            <ul style="display: inline;list-style: none;list-style-type: none;">
+                                <list:tags_list>
+                                    <li><tag:text/></li>
+                                </list:tags_list>
+                            </ul>
+                            <list:add_tag>Add tag</list:add_tag>
+                        </div>
+
+                    </file:tags>
+                </div>
+
      <file:submit>Upload</file:submit>
 
   </lift:FileUploadDialog.form>
