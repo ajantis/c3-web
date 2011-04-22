@@ -1,5 +1,3 @@
-package org.aphreet.c3.snippet
-
 /**
  * Copyright (c) 2011, Dmitry Ivanov
  * All rights reserved.
@@ -30,7 +28,9 @@ package org.aphreet.c3.snippet
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
- 
+
+
+package org.aphreet.c3.snippet
 
 import _root_.net.liftweb._
 import http._
@@ -43,9 +43,9 @@ import common._
 import util._
 import Helpers._
 import javax.activation.MimetypesFileTypeMap
-import xml.{Text, NodeSeq}
 import java.net.URLEncoder
 import org.aphreet.c3.apiaccess.{C3ClientException, C3Client}
+import xml.{Node, Text, NodeSeq}
 
 trait AbstractFormDialog {
 
@@ -139,15 +139,126 @@ class CreateDirectoryDialog extends AbstractFormDialog {
       else Unblock & Alert("Internal error: unknown current path.")
   }
 
+  private object tags extends RequestVar[scala.collection.mutable.Set[String]] (scala.collection.mutable.Set()) {
 
-  override def form(xhtml: NodeSeq) = {
+    val divTagsName: String = S.attr("id_tags_name") openOr "tags_id"
+
+    def toXML(xml: NodeSeq): NodeSeq = {
+      tags.get.toList.flatMap(
+        tag =>
+          bind("tag", xml,
+          "text" -> SHtml.text(tag, (str) => { tags.get += str }, "placeholder" -> "e.g. IT" ))
+      ): NodeSeq
+    }
+
+    def toForm(xml: NodeSeq): NodeSeq = {
+
+      def addTag(): JsCmd = {
+        tags += ""
+        //full reload
+        SetHtml(divTagsName, toForm(xml = xml))
+      }
+      SHtml.ajaxForm(
+        bind("list",xml,
+          "tags_list" -> ( (ns: NodeSeq) => tags.toXML(ns) ),
+          "add_tag" -> ( (ns: NodeSeq) => SHtml.hidden(addTag _) ++
+              SHtml.submit(ns.text, () => {
+              })
+          )
+        )
+      )
+
+    }
+
+
+  }
+
+
+  private object metadata extends RequestVar[scala.collection.mutable.Map[String,String]] (scala.collection.mutable.Map()) {
+
+    val divMDName: String = S.attr("id_md_name") openOr "md_id"
+
+
+
+    def toXML(xml: NodeSeq): NodeSeq = {
+
+        metadata.get.toList.flatMap(
+           mdNode => {
+
+              var tmpMDName = mdNode._1
+              var tmpMDValue = mdNode._2
+
+              bind("md_node",xml,
+                "name" -> SHtml.text(mdNode._1, tmpMDName = _ , "placeholder" -> "e.g. author" ),
+                "value" -> SHtml.text(mdNode._2,tmpMDValue = _ , "placeholder" -> "e.g. Jack Jones" )
+              ) ++ SHtml.hidden( () => {
+                    if(tmpMDName != mdNode._1) {
+                      metadata -= mdNode._1
+                    }
+                    metadata+=(tmpMDName -> tmpMDValue)
+                  })
+           }
+        ) : NodeSeq
+
+    }
+
+
+    def toForm(xml: NodeSeq): NodeSeq = {
+
+      def addMDNode(): JsCmd = {
+        /*
+        if(mdNode._1 != str){
+                    metadata.get += (str -> mdNode._2)
+                    metadata.get.remove(mdNode._1)
+        }
+        if(mdNode._2 != str){
+                    metadata.get += (mdNode._1 -> str)
+        } */
+        metadata += ( ("", "") )
+        //full reload
+        SetHtml(divMDName, toForm(xml = xml))
+      }
+
+      SHtml.ajaxForm(
+        bind("list",xml,
+              "md_list" ->( (ns: NodeSeq) => metadata.toXML(ns) ),
+              "add_md_node" -> ((ns: NodeSeq) => SHtml.hidden(addMDNode _) ++
+                SHtml.submit(ns.text, () => {
+
+                }) )
+            ))
+    }
+
+  }
+
+  override def form(xhtml: NodeSeq): NodeSeq = {
+
 
     SHtml.ajaxForm(
       bind("dir", xhtml,
         "name" -> SHtml.text("", (name: String) => if(name != "") theDirectoryName.set(Full(name)) ),
+        "metadata" -> ( (ns: NodeSeq) =>
+          metadata.toForm(ns)
+        ),
+        "tags" -> ( (ns: NodeSeq) =>
+          tags.toForm(ns)
+        ),
         "submit" ->((ns: NodeSeq) => SHtml.hidden(createDirectory _) ++ SHtml.submit(ns.text, () => {} ))
       )
     )
   }
+
+
+
+  // little xml helpers :)
+  private def attributeIDEqualsValue(value: String)(node: Node) =
+      (node.attribute("id").map(_.text).getOrElse("") == value)
+
+
+  private def getNodeWithID(id: String, ns: NodeSeq): NodeSeq = {
+     (ns \\ "div").filter( attributeIDEqualsValue(id) _ )
+  }
+
+
 
 }

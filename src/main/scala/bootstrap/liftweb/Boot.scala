@@ -42,6 +42,8 @@ class Boot {
     LiftRules.addToPackages("org.aphreet.c3")
     Schemifier.schemify(true, Schemifier.infoF _, User, Group, Category,Message,UserGroup)
 
+    val isIE = Test( req => req.isIE )
+
     val loggedIn = If(() => User.loggedIn_?,
       () => RedirectResponse("/user_mgt/login"))
 
@@ -66,6 +68,8 @@ class Boot {
 
     // Build SiteMap
     def sitemap() = SiteMap(
+
+      Menu("IEDisclaimer") / "ie_disclaimer" >> isIE >> Hidden,
 
       Menu("About") / "about" >> LocGroup("footerMenu"),
 
@@ -217,6 +221,23 @@ class Boot {
       ParsePath("group" :: groupname  :: "wiki" :: pagename :: "edit" :: Nil , _, _,_), _, _) =>
         RewriteResponse(
           "groupsection" ::  "wiki-edit" :: Nil, Map("groupname" -> groupname, "pagename" -> pagename)
+        )
+    })
+
+    LiftRules.statelessRewrite.prepend(NamedPF("IENotSupportedDisclaimerIndexRewrite") {
+      case RewriteRequest(
+      ParsePath("index" :: Nil , _, _,_), _, req)  if( req.userAgent.map(_.contains("MSIE")) openOr(false) ) =>
+        RewriteResponse(
+          "ie_disclaimer" :: Nil
+        )
+    })
+
+
+    LiftRules.statelessRewrite.prepend(NamedPF("IENotSupportedDisclaimerLoginRewrite") {
+      case RewriteRequest(
+      ParsePath("user_mgt" :: _ :: Nil , _, _,_), _, req)  if( req.userAgent.map(_.contains("MSIE")) openOr(false) ) =>
+        RewriteResponse(
+          "ie_disclaimer" :: Nil
         )
     })
 
