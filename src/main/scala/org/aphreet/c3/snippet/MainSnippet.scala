@@ -69,6 +69,7 @@ class MainSnippet  {
      }
   }
 
+
   def featuredGroups(html: NodeSeq) : NodeSeq = {
 
     val MAX_FEATURED_GROUPS_ON_PAGE = 5

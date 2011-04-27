@@ -46,6 +46,8 @@
 
     <dependencies>
 
+
+
         <dependency>
             <groupId>javax.activation</groupId>
             <artifactId>activation</artifactId>
@@ -131,6 +133,33 @@
         <sourceDirectory>src/main/scala</sourceDirectory>
         <testSourceDirectory>src/test/scala</testSourceDirectory>
         <plugins>
+
+            <plugin>
+                <groupId>org.zeroturnaround</groupId>
+                <artifactId>jrebel-maven-plugin</artifactId>
+
+                <configuration>
+                    <!--
+                        root is 2 directories up from the jar/war modules
+                    -->
+                    <relativePath>../../</relativePath> -->
+                    <!--
+                        use a custom property for specifing root directory (note the double $)
+                        set the property in JRebel configuration or as -Dmyproject.root=c:/projects/
+                    -->
+                    <rootPath>/Users/ajantis/</rootPath>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>generate-rebel-xml</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
             <plugin>
                 <groupId>org.scala-tools</groupId>
                 <artifactId>maven-scala-plugin</artifactId>
@@ -183,6 +212,7 @@
                 <artifactId>maven-jetty-plugin</artifactId>
                 <version>6.1.25</version>
                 <configuration>
+                    <reload>manual</reload>
                     <contextPath>/</contextPath>
                     <scanIntervalSeconds>5</scanIntervalSeconds>
                 </configuration>

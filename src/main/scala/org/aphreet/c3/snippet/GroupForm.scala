@@ -47,6 +47,7 @@ import java.text.SimpleDateFormat
 import javax.activation.MimetypesFileTypeMap
 import net.liftweb.http.js.JsCmds
 import org.aphreet.c3.apiaccess.{C3ClientException, C3Client}
+import org.apache.commons.httpclient.util.URIUtil
 
 class GroupForm {
 
@@ -218,7 +219,7 @@ class GroupForm {
 
         bind("ul", chooseTemplate("choose", "get", xhtml),
           "file_upload" -> SHtml.fileUpload(ul => theUpload(Full(ul))),
-          "filename" -> SHtml.text("",(filename: String) => theUploadPath(if(S.uri.contains("/group/")) Full(S.uri.split("/group/").last/*.split("/files").mkString*/ +"/"+URLEncoder.encode(filename)) else Empty)),
+          "filename" -> SHtml.text("",(filename: String) => theUploadPath(if(S.uri.contains("/group/")) Full(S.uri.split("/group/").last+"/" + filename) else Empty)),
           "submitfile" -> SHtml.submit("Upload",() => { S.redirectTo(S.uri) }),
           AttrBindParam("uploadFileStyle", Text("display: none;"), "style"))
       }
@@ -228,7 +229,7 @@ class GroupForm {
         val mimeType: String = new MimetypesFileTypeMap().getContentType(theUpload.is.open_!.fileName)
 
         try {
-          C3Client().uploadFile( theUploadPath.is.open_!,theUpload.is.map(v => v.file).open_!, Map("content.type" -> mimeType))
+          C3Client().uploadFile( URIUtil.decode(theUploadPath.is.open_!),theUpload.is.map(v => v.file).open_!, Map("content.type" -> mimeType))
 
           S.notice(
             <p>File {theUpload.is.map(v => v.fileName).open_!} successfully uploaded</p>
