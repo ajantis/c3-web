@@ -1,0 +1,14 @@
+# Properties in this file will be read when running in production mode
+
+c3_host=http://c3.aphreet.org:7373
+
+c3_domain_name=c3web
+
+c3_domain_secret=95b39c16b3b6316a938ea5acbdba24a3
+
+
+### setting up database ###
+db.driver=org.postgresql.Driver
+db.url=jdbc:postgresql:c3web
+db.user=c3web
+db.password=j0k1ngly

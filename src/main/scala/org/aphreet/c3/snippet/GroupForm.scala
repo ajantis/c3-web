@@ -293,7 +293,6 @@ class GroupForm {
        }
        case _ => NodeSeq.Empty
      }
-
   }
 
   def groupOverview(html: NodeSeq) : NodeSeq = {
