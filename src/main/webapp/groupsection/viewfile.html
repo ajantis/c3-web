@@ -11,66 +11,6 @@
 
     <lift:bind-at name="content">
 
-                <div id="Toolbar menu" class="toolbar_menu">
-
-                <lift:GroupForm.uploadHere form="post" multipart="true">
-                    <!--
-                    <choose:post>
-                        <ul:uploadBar/>
-
-                        <div id="fileupload" ul:uploadFileStyle="">
-                            <p>
-                                File <ul:filename></ul:filename> successfully uploaded<br/>
-                            </p>
-                            <ul:refresh>Refresh</ul:refresh>
-                        </div>
-                    </choose:post> -->
-
-                    <choose:get>
-                        <div id="fileupload" ul:uploadFileStyle="">
-                            File: <ul:file_upload></ul:file_upload>
-                            Name: <ul:filename/>
-                            <input type="submit" value="Upload"/>
-                        </div>
-                    </choose:get>
-                </lift:GroupForm.uploadHere>
-
-                </div>
-
-                        <div>
-
-							<table class="file-table">
-								<thead>
-									<tr>
-										<td></td>
-										<td class="file-table-name"><b>Name</b></td>
-										<td class="file-table-owner"><b>Owner</b></td>
-										<td class="file-table-date"><b>Modify date</b></td>
-                                        <td><input type="checkbox" value="false" /></td>
-									</tr>
-								</thead>
-								<tbody>
-                                <group:childs>
-									<tr>
-										<td><child:icon/></td>
-										<td><a href="#"><child:name/></a></td>
-										<td><a href="#">Aphreet</a></td>
-										<td class="file-table-date"><child:created/></td>
-                                        <td><child:select/></td>
-									</tr>
-                                </group:childs>
-
-
-								</tbody>
-							</table>
-
-                            <br/>
-                            <group:selectAction/> <group:doAction>Go</group:doAction>
-
-
-						</div>
-
-
 
     </lift:bind-at>
     <lift:bind-at name="right-panel-content">
@@ -113,8 +53,7 @@
                 <span>Toolbar</span>
                 <div>
                     <ul>
-                        <li><group:create_dir>Create directory</group:create_dir></li>
-                        <li><group:upload_file>Upload file</group:upload_file></li>
+
                     </ul>
                 </div>
             </div>

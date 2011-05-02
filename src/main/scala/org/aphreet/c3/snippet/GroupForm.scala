@@ -34,7 +34,6 @@ package org.aphreet.c3.snippet
 import net.liftweb.util.BindHelpers._
 import org.aphreet.c3.model._
 import net.liftweb.common.{Box, Logger, Full, Empty}
-import net.liftweb.http.{FileParamHolder, RequestVar, SHtml, S}
 import net.liftweb.http.js.JsCmds.Alert
 import net.liftweb.mapper.By
 import java.net.URLEncoder
@@ -45,9 +44,11 @@ import java.util.Date
 import java.text.SimpleDateFormat
 
 import javax.activation.MimetypesFileTypeMap
-import net.liftweb.http.js.JsCmds
 import org.aphreet.c3.apiaccess.{C3ClientException, C3Client}
 import org.apache.commons.httpclient.util.URIUtil
+import net.liftweb.widgets.uploadprogress.UploadProgress
+import net.liftweb.http.js.{JsCmd, JsCmds}
+import net.liftweb.http._
 
 class GroupForm {
 
@@ -108,16 +109,41 @@ class GroupForm {
   }
 
 
+  object selectedResources extends RequestVar[scala.collection.mutable.Set[String]](scala.collection.mutable.Set())
+  object actionCommand extends RequestVar[Command](DeleteSelectedResources)
+
   def view(html: NodeSeq) : NodeSeq = {
 
     val groupdir = "/"+S.param("groupdirectory").openOr("")
-
 
     S.param("groupname") match {
       case Full(groupname) => {
         Group.find(By(Group.name,groupname)) match {
           case Full(group) => {
+
+            def doCommand(cmd: Command): JsCmd = {
+              cmd match {
+                case DeleteSelectedResources => deleteSelected
+                case _ => Alert("Error: unknown action.")
+              }
+            }
+
+            def deleteSelected: JsCmd = {
+              for (resName <- selectedResources){
+                try {
+                  C3Client().delete(groupname+"/files/"+groupdir.tail + "/"+ resName)
+                }
+                catch {
+                  case e: Exception => Alert(e.toString) & JsCmds.RedirectTo("")
+                }
+              }
+              Alert("Selected resources were deleted: "+selectedResources.mkString(",")) & JsCmds.RedirectTo("")
+            }
+
             bind("group", html,
+              "selectAction" -> SHtml.ajaxSelectObj[Command]( List((DeleteSelectedResources,"Delete selected")), Full(DeleteSelectedResources), (cmd: Command) =>
+                 { actionCommand.set(cmd); JsCmds.Noop }
+              ),
               "name" -> group.name,
               "owner" -> {group.owner.obj.map(usr => usr.email.is) openOr "unknown"},
               "create_dir" -> ( (ns: NodeSeq) => new CreateDirectoryDialog().button(ns , (if(S.uri.contains("/group/")) Full(S.uri.split("/group/").last+"/") else Empty) ) ),
@@ -135,9 +161,10 @@ class GroupForm {
                 //SHtml.link("/group/"+ groupname + link,()=>{},Text("../"))
                 <a href={"/group/"+ groupname + "/files" + link}>../</a>
               },
+              "doAction" -> ( (ns: NodeSeq) => SHtml.ajaxButton(ns.text, () => doCommand(actionCommand.is) ) ),
               "childs" -> {
 
-                 (ns: NodeSeq) => group.getChildren(groupdir).flatMap(child => {
+                 (ns: NodeSeq) => group.getChildren(groupdir).sortWith(_.resourceType <= _.resourceType).flatMap(child => {
 
                    val childMetadata = C3Client().getNodeMetadata(groupname+"/files/"+ {groupdir.tail match {
                      case "" => ""
@@ -183,14 +210,21 @@ class GroupForm {
                       "delete" -> SHtml.ajaxButton("Delete",() => {
 
                         try {
-                          C3Client().delete(groupname+"/"+groupdir.tail + "/"+ child.name)
+                          C3Client().delete(groupname+"/files/"+groupdir.tail + "/"+ child.name)
                           Alert("Resource "+ child.name +" deleted.")
                         }
                         catch {
                           case e: Exception => Alert(e.toString)
                         }
 
-                      } )
+                      } ),
+                      "select" -> SHtml.ajaxCheckbox(false, { checked =>
+                        if(checked)
+                          selectedResources += child.name
+                        else
+                          selectedResources -= child.name
+                        JsCmds.Noop
+                      })
                   ) }
                  ):NodeSeq
 
@@ -220,6 +254,7 @@ class GroupForm {
         bind("ul", chooseTemplate("choose", "get", xhtml),
           "file_upload" -> SHtml.fileUpload(ul => theUpload(Full(ul))),
           "filename" -> SHtml.text("",(filename: String) => theUploadPath(if(S.uri.contains("/group/")) Full(S.uri.split("/group/").last+"/" + filename) else Empty)),
+          //"uploadBar" -> ( (ns: NodeSeq) => UploadProgress.head(ns) ),
           "submitfile" -> SHtml.submit("Upload",() => { S.redirectTo(S.uri) }),
           AttrBindParam("uploadFileStyle", Text("display: none;"), "style"))
       }
@@ -233,7 +268,7 @@ class GroupForm {
 
           S.notice(
             <p>File {theUpload.is.map(v => v.fileName).open_!} successfully uploaded</p>
-             ++ SHtml.ajaxButton("Refresh", () => JsCmds.RedirectTo(""))
+             ++ SHtml.ajaxButton("Refresh", () => JsCmds.RedirectTo("")) //++ bind("ul",chooseTemplate("choose", "post", xhtml), "uploadBar" -> ( (ns: NodeSeq) => UploadProgress.head(ns) ) )
           )
         }
         catch {
@@ -250,24 +285,7 @@ class GroupForm {
       }
   }
 
-  def createDirectoryHere(xhtml: NodeSeq): NodeSeq = {
-     if (S.get_? || theCreateDirectoryPath.isEmpty) {
 
-        bind("ul", chooseTemplate("choose", "get", xhtml),
-          "dirname" -> SHtml.text("",(dirname: String) => theCreateDirectoryPath(if(S.uri.contains("/group/")) Full(S.uri.split("/group/").last/*.split("/files").mkString*/ +"/"+dirname) else Empty)),
-          "submitdirectory" -> SHtml.submit("Create",() => { S.redirectTo(S.uri) }),
-          AttrBindParam("uploadDirStyle", Text("display: none;"), "style"))
-      }
-      else {
-
-        C3Client().createDir(theCreateDirectoryPath.is.open_!)
-
-        bind("ul", chooseTemplate("choose", "post", xhtml),
-          "dirname" -> theCreateDirectoryPath.is.map(v => Text(v)),
-          AttrBindParam("uploadDirStyle", Text(""), "style")
-        )
-      }
-  }
 
 
   def groupMenu(html: NodeSeq) : NodeSeq = {
@@ -389,3 +407,6 @@ class GroupForm {
   }
 
 }
+
+abstract class Command
+case object DeleteSelectedResources extends Command

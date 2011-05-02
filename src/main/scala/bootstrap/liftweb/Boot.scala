@@ -14,6 +14,7 @@ import java.net.URLEncoder
 import net.liftweb.http._
 
 import net.liftweb.widgets.logchanger._
+import net.liftweb.widgets.uploadprogress._
 
 import org.aphreet.c3.logging.LogLevel
 
@@ -37,6 +38,7 @@ class Boot {
     }
 
     LiftRules.resourceNames = "i18n/lift-core" :: LiftRules.resourceNames
+
 
     // where to search snippet
     LiftRules.addToPackages("org.aphreet.c3")
@@ -256,6 +258,9 @@ class Boot {
     LiftRules.ajaxEnd =
       Full(() => LiftRules.jsArtifacts.hide("ajax-loader").cmd)
 
+    // 1 hour timeout for long requests
+    LiftRules.ajaxPostTimeout = 3600000
+
     LiftRules.early.append(makeUtf8)
 
     LiftRules.loggedInTest = Full(() => User.loggedIn_?)
@@ -264,6 +269,16 @@ class Boot {
     // Log Changer widget inittialization is required for setting setup
     // default location for log changer is {webapproot}/loglevel/change
     LogLevelChanger.init()
+
+    // Initialization for upload progress widget
+    UploadProgress.init
+
+    LiftSession.onSetupSession = ((session: LiftSession) => {
+      session.progressListener = Full((chunk, total, index) => {
+         Thread.sleep(100)
+         println(index + " read " + chunk + " out of " + total + " " + Thread.currentThread)
+      })
+    }) :: Nil
 
     S.addAround(DB.buildLoanWrapper)
   }
