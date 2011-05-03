@@ -46,11 +46,20 @@ class Boot {
 
     val isIE = Test( req => req.isIE )
 
-    val loggedIn = If(() => User.loggedIn_?,
-      () => RedirectResponse("/user_mgt/login"))
+    lazy val loginUrl = "/user_mgt/login"
+
+    // stateful redirect after login
+    def loginAndComeBack = {
+      val uri = S.uriAndQueryString
+      RedirectWithState ( loginUrl, RedirectState( () => User.loginRedirect.set(uri) , "Not logged in" -> NoticeType.Notice ) )
+    }
+
+    val loggedIn = If(() => User.loggedIn_?, loginAndComeBack _ )
+
 
     val isSuperAdmin = If(() => {if(!User.currentUser.isEmpty) User.currentUser.open_!.superUser.is else false},
-      ()=> RedirectResponse("/user_mgt/login"))
+      () => RedirectWithState("/index", RedirectState( () => {} ,"Not a super user" -> NoticeType.Notice ) )
+    )
 
     val isGroupAdmin = If(() => {
       S.param("groupname") match {
@@ -66,7 +75,7 @@ class Boot {
         case _ => false
       }
     },
-      () => RedirectResponse("/index"))
+    () => RedirectWithState("/index", RedirectState( () => {} ,"Not a group admin" -> NoticeType.Notice ) ) )
 
     // Build SiteMap
     def sitemap() = SiteMap(
@@ -275,7 +284,7 @@ class Boot {
 
     LiftSession.onSetupSession = ((session: LiftSession) => {
       session.progressListener = Full((chunk, total, index) => {
-         Thread.sleep(100)
+         //Thread.sleep(100)
          println(index + " read " + chunk + " out of " + total + " " + Thread.currentThread)
       })
     }) :: Nil

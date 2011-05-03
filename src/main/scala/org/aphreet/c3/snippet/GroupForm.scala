@@ -264,6 +264,12 @@ class GroupForm {
         val mimeType: String = new MimetypesFileTypeMap().getContentType(theUpload.is.open_!.fileName)
 
         try {
+
+          theUpload.is.open_! match {
+            case file: OnDiskFileParamHolder => logger error("File: " + file.localFile.getAbsolutePath() )
+            case _ => {}
+          }
+
           C3Client().uploadFile( URIUtil.decode(theUploadPath.is.open_!),theUpload.is.map(v => v.file).open_!, Map("content.type" -> mimeType))
 
           S.notice(

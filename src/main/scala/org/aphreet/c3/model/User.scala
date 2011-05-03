@@ -13,7 +13,14 @@ import net.liftweb.http.S._
  */
 object User extends User with MetaMegaProtoUser[User] {
 
-
+  // for stateful redirects on login (depends on where user wanted to go)
+  override def logUserIn(who: User, postLogin: () => Nothing) : Nothing = {
+    val currentRedirect : Box[String] = loginRedirect
+    super.logUserIn(who, () => {
+        loginRedirect(currentRedirect)
+        postLogin()
+    })
+  }
 
   override def dbTableName = "users" // define the DB table name
 
