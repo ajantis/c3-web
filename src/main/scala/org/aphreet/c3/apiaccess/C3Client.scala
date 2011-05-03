@@ -176,7 +176,7 @@ class C3Client(val host:String, val contextPath:String, val contextRestPath:Stri
 
   def createDir(path: String): Boolean = {
 
-    val createRequest = createPostMethod(path)
+    val createRequest = createPostMethod(URIUtil.encodeQuery(path,"UTF-8"))
 
     createRequest.addRequestHeader("x-c3-nodetype", "directory")
 
@@ -199,7 +199,7 @@ class C3Client(val host:String, val contextPath:String, val contextRestPath:Stri
 
   def listResources(pathToDirectory: String) = {
 
-    val getRequest = createGetMethod(pathToDirectory)
+    val getRequest = createGetMethod(URIUtil.encodeQuery(pathToDirectory,"UTF-8"))
 
     val catalog = {
       try{

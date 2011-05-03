@@ -54,10 +54,17 @@ trait C3ResourceMetadataForms {
     val divTagsName: String = S.attr("id_tags_name") openOr "tags_id"
 
     def toXML(xml: NodeSeq): NodeSeq = {
-      tags.get.toList.flatMap(
+      tags.get.toList.sortWith(_ > _).flatMap(
         tag =>
           bind("tag", xml,
-          "text" -> SHtml.text(tag, (str) => { tags.get += str }, "placeholder" -> "e.g. IT" ))
+          "text" -> ( SHtml.text(tag, (str) => { tags.get += str }, "placeholder" -> "e.g. IT" ) /*,
+            tag match {
+              case "" => AttrBindParam()
+              case _ => AttrBindParam()
+            }*/
+           )
+
+          )
       ): NodeSeq
     }
 
@@ -89,7 +96,7 @@ trait C3ResourceMetadataForms {
 
     def toXML(xml: NodeSeq): NodeSeq = {
 
-        metadata.get.toList.flatMap(
+        metadata.get.toList.sortWith(_._1 > _._1).flatMap(
            mdNode => {
 
               var tmpMDName = mdNode._1
