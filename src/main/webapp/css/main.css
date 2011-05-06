@@ -248,10 +248,13 @@ div.content-page{
 }
 
 .content-page div{
-	margin:5px;
-	padding-top:6px;
-	padding-left:5px;
-	padding-right:10px;
+
+    /*
+        margin:5px;
+        padding-top:6px;
+        padding-left:5px;
+        padding-right:10px;
+    */
 }
 
 /*********************************************************

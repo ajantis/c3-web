@@ -13,10 +13,14 @@ import net.liftweb.mapper._
 import java.net.URLEncoder
 import net.liftweb.http._
 
+import js.jquery.JQuery14Artifacts
+
 import net.liftweb.widgets.logchanger._
 import net.liftweb.widgets.uploadprogress._
 
 import org.aphreet.c3.logging.LogLevel
+import net.liftweb.widgets.autocomplete.AutoComplete
+
 
 /**
  * A class that's instantiated early and run.  It allows the application
@@ -39,6 +43,7 @@ class Boot {
 
     LiftRules.resourceNames = "i18n/lift-core" :: LiftRules.resourceNames
 
+    LiftRules.jsArtifacts = JQuery14Artifacts
 
     // where to search snippet
     LiftRules.addToPackages("org.aphreet.c3")
@@ -105,8 +110,6 @@ class Boot {
       Menu("GroupAdmin") / "groupsection" / "admin" >> loggedIn >> Hidden >> isGroupAdmin,
 
       Menu("UserEdit") / "users" / "edituser" >> loggedIn >> Hidden,
-
-      Menu("File upload") / "file_upload" >> loggedIn >> Hidden,
 
       Menu("Search") / "search" >> loggedIn >> Hidden,
 
@@ -217,6 +220,10 @@ class Boot {
             Nil,200)
     }
 
+    // for ajax file upload
+    import org.aphreet.c3.lib.FileUpload
+    LiftRules.dispatch.append(FileUpload)
+
 
 
     LiftRules.statelessRewrite.prepend(NamedPF("ParticularUserRewrite") {
@@ -282,12 +289,28 @@ class Boot {
     // Initialization for upload progress widget
     UploadProgress.init
 
-    LiftSession.onSetupSession = ((session: LiftSession) => {
-      session.progressListener = Full((chunk, total, index) => {
-         //Thread.sleep(100)
-         println(index + " read " + chunk + " out of " + total + " " + Thread.currentThread)
-      })
-    }) :: Nil
+    //Make sure we don't put stuff in memory for uploads
+	  LiftRules.handleMimeFile = OnDiskFileParamHolder.apply
+
+    // Initialization for auto complete widget
+    AutoComplete.init
+
+    // for ajax file upload
+    LiftRules.progressListener = {
+      val opl = LiftRules.progressListener
+      val ret: (Long, Long, Int) => Unit =
+        (a, b, c) => {
+          // println("progress listener "+a+" plus "+b+" "+c)
+          // Thread.sleep(100) -- demonstrate slow uploads
+          opl(a,b,c)
+        }
+      ret
+    }
+
+    /*
+    // Use HTML5 for rendering
+    LiftRules.htmlProperties.default.set((r: Req) =>
+      new Html5Properties(r.userAgent)) */
 
     S.addAround(DB.buildLoanWrapper)
   }
@@ -299,3 +322,5 @@ class Boot {
     req.setCharacterEncoding("UTF-8")
   }
 }
+
+

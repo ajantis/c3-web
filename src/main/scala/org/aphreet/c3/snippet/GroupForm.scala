@@ -242,7 +242,7 @@ class GroupForm {
     }
 
   }
-
+  /*
   // the request-local variable that hold the file parameter
   private object theUpload extends RequestVar[Box[FileParamHolder]](Empty)
   private object theUploadPath extends RequestVar[Box[String]](Empty)
@@ -289,7 +289,7 @@ class GroupForm {
           AttrBindParam("uploadFileStyle", Text(""), "style")
         ) */
       }
-  }
+  }*/
 
 
 

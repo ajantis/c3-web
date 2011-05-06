@@ -6,6 +6,7 @@ import net.liftweb.sitemap.Loc
 import net.liftweb.http.{GetRequest, Req, SHtml, S}
 import xml.{XML, Text, NodeSeq}
 import net.liftweb.common.Full
+import net.liftweb.widgets.autocomplete.AutoComplete
 
 /**
  * Copyright (c) 2011, Dmitry Ivanov
@@ -150,5 +151,19 @@ class MainSnippet  {
 
 
   }
+
+
+
+  private val data = List(
+    "Timothy","Derek","Ross","Tyler",
+    "Indrajit","Harry","Greg","Debby")
+
+  def sample(xhtml: NodeSeq): NodeSeq =
+    bind("f", xhtml,
+      "find_name" -> AutoComplete("", (current,limit) =>
+        data.filter(_.toLowerCase.startsWith(current.toLowerCase)),
+        value => println("Submitted: " + value))
+    )
+
 
 }

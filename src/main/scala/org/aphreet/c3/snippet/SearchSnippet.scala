@@ -43,6 +43,7 @@ import net.liftweb.util.TimeHelpers
 import net.liftweb.common.{Logger, Box, Empty, Full}
 import org.apache.commons.lang.time.DateUtils
 import org.apache.commons.httpclient.util.URIUtil
+import net.liftweb.widgets.autocomplete.AutoComplete
 
 class SearchSnippet extends StatefulSnippet {
 
@@ -69,6 +70,12 @@ class SearchSnippet extends StatefulSnippet {
 
      bind("search", html,
       "query" -> SHtml.text(searchString, processQuery _ ,"placeholder" -> "Search" ),
+      // doesn't work
+      /*"query" -> AutoComplete(searchString, (current: String,limit: Int) =>
+        User.currentSearchRequests.filter(_.toLowerCase.startsWith(current.toLowerCase)),
+        value => processQuery(value),
+        attrs = ("placeholder","Search")
+      ),*/
       "resultSet" -> { (ns : NodeSeq) =>
         (resultSet \\ "entry").flatMap( entry => {
 
@@ -146,6 +153,12 @@ class SearchSnippet extends StatefulSnippet {
 
      bind("search", html,
       "query" -> SHtml.text(searchString, processQuery _ , "placeholder" -> "Search"),
+      // doesn't work
+      /*"query" -> AutoComplete(searchString, (current: String,limit: Int) =>
+        User.currentSearchRequests.filter(_.toLowerCase.startsWith(current.toLowerCase)),
+        value => processQuery(value),
+        attrs = ("placeholder","Search")
+      ),*/
       "resultSet" -> "",
       "submit" -> SHtml.submit("Go", () => {
         dispatch = {
@@ -175,7 +188,16 @@ class SearchSnippet extends StatefulSnippet {
     var searchParam = ""
     bind("miniSearch", html,
       "search_string" -> SHtml.text("",searchParam = _ , "placeholder" -> "Search"),
-      "submit" -> SHtml.submit("Go", () => S.redirectTo("/search",() => if(searchParam != "") stringToSearch(Full(searchParam))))
+      // doesn't work
+      /*"search_string" -> AutoComplete("", (current: String,limit: Int) =>
+        User.currentSearchRequests.filter(_.toLowerCase.startsWith(current.toLowerCase)),
+        value => searchParam = value,
+        attrs = ("placeholder","Search")
+      ),*/
+      "submit" -> SHtml.submit("Go", () => S.redirectTo("/search",() => {
+          if(searchParam != "") stringToSearch(Full(searchParam))
+          User.addSearchRequest( searchParam )
+        }))
     )
   }
 
@@ -183,6 +205,8 @@ class SearchSnippet extends StatefulSnippet {
     searchString = query
 
     if(searchString != ""){
+
+      User.addSearchRequest( searchString )
 
       dispatch = {
         case "search" => resultPage _

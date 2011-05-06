@@ -11,33 +11,14 @@
 
     <lift:bind-at name="content">
 
+
                 <div id="Toolbar menu" class="toolbar_menu">
 
-                <lift:GroupForm.uploadHere form="post" multipart="true">
-                    <!--
-                    <choose:post>
-                        <ul:uploadBar/>
-
-                        <div id="fileupload" ul:uploadFileStyle="">
-                            <p>
-                                File <ul:filename></ul:filename> successfully uploaded<br/>
-                            </p>
-                            <ul:refresh>Refresh</ul:refresh>
-                        </div>
-                    </choose:post> -->
-
-                    <choose:get>
-                        <div id="fileupload" ul:uploadFileStyle="">
-                            File: <ul:file_upload></ul:file_upload>
-                            Name: <ul:filename/>
-                            <input type="submit" value="Upload"/>
-                        </div>
-                    </choose:get>
-                </lift:GroupForm.uploadHere>
+                <table id="files"></table>
 
                 </div>
 
-                        <div>
+                <div style="padding-bottom: 10px;">
 
 							<table class="file-table">
 								<thead>
@@ -64,8 +45,6 @@
 								</tbody>
 							</table>
 
-                            <br/>
-                            <group:selectAction/> <group:doAction>Go</group:doAction>
 
 
 						</div>
@@ -111,16 +90,59 @@
             </div>
             <div class="right-panel-section">
                 <span>Toolbar</span>
+                <br/>
                 <div>
+
                     <ul>
-                        <li><group:create_dir>Create directory</group:create_dir></li>
-                        <li><group:upload_file>Upload file</group:upload_file></li>
+                        <li>
+                            <group:selectAction/> <group:doAction>Go</group:doAction>
+                        </li>
                     </ul>
+                        <li>
+                            <table>
+                                <tr>
+                                    <td><group:create_dir><img src="/images/folder_add_48.png"/></group:create_dir></td>
+                                    <td>
+                                    <form id="file_upload" action="/upload/thing" method="POST" enctype="multipart/form-data">
+                                       <input type="file" name="file" multiple="true" class="lift:UploadFileAjax" style="margin: 0px;"/>
+                                        <button>Upload</button>
+
+                                            <div class="js" style="margin: 0px;"><button class="uplButton"><img src="/images/box_upload_48.png"/></button></div>
+                                    </form>
+                                    <tail>
+                                        <script>
+                                            // <![CDATA[
+                                            $(function () {
+                                                $('#file_upload').fileUploadUI({
+                                                    uploadTable: $('#files'),
+                                                    buildUploadRow: function (files, index) {
+                                                        return $('<tr><td>' + files[index].name + '<\/td>' +
+                                                                '<td class="file_upload_progress"><div><\/div><\/td>' +
+                                                                '<td class="file_upload_cancel">' +
+                                                                '<button class="ui-state-default ui-corner-all" title="Cancel">' +
+                                                                '<span class="ui-icon ui-icon-cancel">Cancel<\/span>' +
+                                                                '<\/button><\/td><\/tr>');
+                                                    },
+                                                    buildDownloadRow: function (file) {
+                                                        return $('<tr><td>Uploaded:</td><td> ' + file.name + '<\/td><\/tr>');
+                                                    }
+                                                });
+                                            });
+                                            // ]]>
+                                        </script>
+                                    </tail>
+                                    </td>
+                                </tr>
+                            </table>
+                        </li>
                 </div>
             </div>
         </div>
     </lift:bind-at>
 
     </lift:GroupForm.view>
+
+
+
 
 </lift:surround>

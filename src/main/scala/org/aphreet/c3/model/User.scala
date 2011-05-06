@@ -5,13 +5,21 @@ import _root_.net.liftweb.mapper._
 import _root_.net.liftweb.util._
 import _root_.net.liftweb.common._
 import xml.{XML, NodeSeq, Text}
-import net.liftweb.http.{S, SHtml}
 import net.liftweb.http.S._
+import net.liftweb.http.{SessionVar, S, SHtml}
 
 /**
  * The singleton that has methods for accessing the database
  */
 object User extends User with MetaMegaProtoUser[User] {
+
+  def currentSearchRequests: List[String] = User.currentUser.map(_.searchRequests.get).openOr(Nil)
+  def addSearchRequest(req : String) = {
+    User.currentUser match {
+      case Full(user) => user.searchRequests.set(req :: user.searchRequests.get)
+      case _ => {}
+    }
+  }
 
   // for stateful redirects on login (depends on where user wanted to go)
   override def logUserIn(who: User, postLogin: () => Nothing) : Nothing = {
@@ -151,6 +159,7 @@ object User extends User with MetaMegaProtoUser[User] {
  */
 class User extends MegaProtoUser[User] with ManyToMany {
 
+
   thisuser =>
 
   def getSingleton = User // what's the "meta" server
@@ -177,7 +186,7 @@ class User extends MegaProtoUser[User] with ManyToMany {
 
   def categories: List[Category] = Category.findAll(By(Category.user,this))
 
-
+  object searchRequests extends SessionVar[List[String]](Nil)
 
 }
 

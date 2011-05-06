@@ -45,25 +45,29 @@ import Helpers._
 import javax.activation.MimetypesFileTypeMap
 import java.net.URLEncoder
 import org.aphreet.c3.apiaccess.{C3ClientException, C3Client}
+import widgets.autocomplete.AutoComplete
 import xml.{Node, Text, NodeSeq}
 
 trait C3ResourceMetadataForms {
 
+
+
   protected object tags extends RequestVar[scala.collection.mutable.Set[String]] (scala.collection.mutable.Set()) {
+
+    private val data = List(
+      "History","IT","Programming","Music","Politics","Entertainment","Testing","Performance")
 
     val divTagsName: String = S.attr("id_tags_name") openOr "tags_id"
 
     def toXML(xml: NodeSeq): NodeSeq = {
       tags.get.toList.sortWith(_ > _).flatMap(
-        tag =>
+        (tag: String) =>
           bind("tag", xml,
-          "text" -> ( SHtml.text(tag, (str) => { tags.get += str }, "placeholder" -> "e.g. IT" ) /*,
-            tag match {
-              case "" => AttrBindParam()
-              case _ => AttrBindParam()
-            }*/
-           )
-
+            "text" -> ( SHtml.text(tag, (str) => { tags.get += str }, "placeholder" -> "e.g. IT" ) )
+            /*"text" -> AutoComplete(tag, (current: String,limit: Int) =>
+              data.filter(_.toLowerCase.startsWith(current.toLowerCase)),
+              (value:String) => { tags.get += value },
+              attrs = ("placeholder", "e.g. IT") ) */
           )
       ): NodeSeq
     }
