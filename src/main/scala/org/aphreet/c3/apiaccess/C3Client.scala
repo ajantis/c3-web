@@ -91,7 +91,7 @@ class C3Client(val host:String, val contextPath:String, val contextRestPath:Stri
           XML.load(getMethod.getResponseBodyAsStream)
         }
         case _ => {
-          throw new Exception(("Failed to get resource metadata, code "+ status).asInstanceOf[String])
+          throw new C3ClientException(("Failed to get resource metadata, code "+ status).asInstanceOf[String])
         }
       }
 

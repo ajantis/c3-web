@@ -31,7 +31,6 @@
 
 package org.aphreet.c3.snippet
 
-import org.aphreet.c3.apiaccess.C3Client
 import xml.{Text, NodeSeq}
 import org.aphreet.c3.helpers.MetadataParser
 import org.aphreet.c3.model.{Tag, Category, User}
@@ -44,6 +43,7 @@ import org.apache.commons.lang.time.DateUtils
 import org.apache.commons.httpclient.util.URIUtil
 import net.liftweb.widgets.autocomplete.AutoComplete
 import net.liftweb.http._
+import org.aphreet.c3.apiaccess.{C3ClientException, C3Client}
 
 class SearchSnippet extends StatefulSnippet {
 
@@ -79,56 +79,92 @@ class SearchSnippet extends StatefulSnippet {
       "resultSet" -> { (ns : NodeSeq) =>
         (resultSet \\ "entry").flatMap( entry => {
 
+          try {
+            val metadata = C3Client().getResourceMetadataWithFSPath( (entry \ "@address").text )
 
-          val metadata = C3Client().getResourceMetadataWithFSPath( (entry \ "@address").text )
+            val mdParser = MetadataParser(metadata)
 
-          val mdParser = MetadataParser(metadata)
+            val name: String = mdParser.getNodeWithAttributeValue("element","key","c3.fs.nodename") match {
+              case NodeSeq.Empty => ""
+              case xs => (xs \\ "value")(0) text
+            }
 
-          val name: String = mdParser.getNodeWithAttributeValue("element","key","c3.fs.nodename") match {
-            case NodeSeq.Empty => ""
-            case xs => (xs \\ "value")(0) text
-          }
+            val path: String = mdParser.getNodeWithAttributeValue("element","key","c3.ext.fs.path") match {
+              case NodeSeq.Empty => ""
+              case xs => (xs \\ "value")(0) text
+            }
 
-          val path: String = mdParser.getNodeWithAttributeValue("element","key","c3.ext.fs.path") match {
-            case NodeSeq.Empty => ""
-            case xs => (xs \\ "value")(0) text
-          }
-
-          //(metadata \\ "element").toList.filter((element:NodeSeq) => (element \ "@key").toString == "c3.fs.nodetype")
-          val resourceType: String = mdParser.getNodeWithAttributeValue("element","key","c3.fs.nodetype") match {
-            case NodeSeq.Empty => ""
-            case xs => (xs \\ "value")(0) text
-          }
+            //(metadata \\ "element").toList.filter((element:NodeSeq) => (element \ "@key").toString == "c3.fs.nodetype")
+            val resourceType: String = mdParser.getNodeWithAttributeValue("element","key","c3.fs.nodetype") match {
+              case NodeSeq.Empty => ""
+              case xs => (xs \\ "value")(0) text
+            }
 
 
-          //NOTE: ZZ on end is not compatible with jdk, but allows for formatting
-          //dates like so (note the : 3rd from last spot, which is iso8601 standard):
-          //date=2008-10-03T10:29:40.046-04:00
-          val DATE_FORMAT_8601 = "yyyy-MM-dd'T'HH:mm:ss"
-          logger error ((metadata \\ "resource")(0) \\ "@createDate")
-          val format: SimpleDateFormat = new SimpleDateFormat("dd/MM/yyyy")
+            //NOTE: ZZ on end is not compatible with jdk, but allows for formatting
+            //dates like so (note the : 3rd from last spot, which is iso8601 standard):
+            //date=2008-10-03T10:29:40.046-04:00
+            val DATE_FORMAT_8601 = "yyyy-MM-dd'T'HH:mm:ss"
+            logger error ((metadata \\ "resource")(0) \\ "@createDate")
+            val format: SimpleDateFormat = new SimpleDateFormat("dd/MM/yyyy")
 
-          val created: Date = ((metadata \\ "resource")(0) \\ "@createDate").text match {
-            case "" => TimeHelpers.now
-            case str => DateUtils.parseDate(str.split('.').head, Array(DATE_FORMAT_8601))
-          }
+            val created: Date = ((metadata \\ "resource")(0) \\ "@createDate").text match {
+              case "" => TimeHelpers.now
+              case str => DateUtils.parseDate(str.split('.').head, Array(DATE_FORMAT_8601))
+            }
+
+            def parseToFolderPath(path: String): NodeSeq = {
+              path.split("/").toList.tail match {
+                case Nil => NodeSeq.Empty
+                case lst => {
+                  SHtml.link("/group/" + lst.reverse.tail.reverse.mkString("/"), () => {}, Text("Folder"))
+                }
+              }
+            }
 
             if(name != "")
-              bind("entry", ns,
-                "address" ->   { (entry \ "@address").text } ,
-                "name" -> URIUtil.decode(name, "UTF-8"),
-                "created" -> format.format(created),
-                "path" -> { path.split("/").toList.tail match {
-                  case Nil => NodeSeq.Empty
-                  case lst => SHtml.link("/group/" + lst.mkString("/"), () => {}, Text(name))
-                }},
-                "toFolder" -> { path.split("/").toList.tail match {
-                  case Nil => NodeSeq.Empty
-                  case lst => SHtml.link("/group/" + lst.reverse.tail.reverse.mkString("/"), () => {}, Text("Folder"))
-                }},
-                "type" -> resourceType
-              )
+                bind("entry", ns,
+                  "address" ->   { (entry \ "@address").text } ,
+                  "name" -> URIUtil.decode(name, "UTF-8"),
+                  "created" -> format.format(created),
+                  "resource_path" -> { path.split("/").toList.tail match {
+                    case Nil => NodeSeq.Empty
+                    case lst => SHtml.link("/group/" + lst.mkString("/"), () => {}, Text(name))
+                  }},
+                  "full_path" -> { path.split("/").toList.tail match {
+                    case Nil => NodeSeq.Empty
+                    case fullPath @ (group :: "files" :: filePath) => {
+                      (SHtml.link("/group/" + group + "/files" , () => {}, Text(group)):NodeSeq) ++
+                      (
+                        filePath.reverse match {
+                          case file :: path =>
+                            path.reverse.flatMap( i =>
+                                (( Text("/") ++ SHtml.link("/group/"+group+"/files/"+filePath.takeWhile(_ != i).mkString("/") + i , () => {}, Text(i)) ):NodeSeq)
+                            ): NodeSeq
+                          case _ => NodeSeq.Empty
+                        }
+
+                      )
+                    }: NodeSeq
+                    case fullPath @ (group :: "wiki" :: _) => {
+                      ((SHtml.link("/group/" + group + "/wiki" , () => {}, Text(group))):NodeSeq)
+                    }
+                    case _ => Text("<unknown>")
+                  }},
+                  "to_folder" -> parseToFolderPath(path),
+                  "type" -> { resourceType match {
+                    case "folder" => <img src="/images/icons/folder.gif"/>
+                    case _ => <img src="/images/icons/document.gif" />
+                  }}
+                )
             else NodeSeq.Empty
+          }
+          catch {
+            case e: C3ClientException => {
+              logger error e.toString()
+              NodeSeq.Empty
+            }
+          }
 
         })
       },
