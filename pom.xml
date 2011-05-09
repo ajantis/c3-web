@@ -47,6 +47,12 @@
     <dependencies>
 
         <dependency>
+            <groupId>net.liftweb</groupId>
+            <artifactId>lift-openid_2.8.0</artifactId>
+            <version>2.2</version>
+        </dependency>
+
+        <dependency>
             <groupId>postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <version>9.0-801.jdbc4</version>

@@ -7,16 +7,25 @@ import _root_.net.liftweb.common._
 import xml.{XML, NodeSeq, Text}
 import net.liftweb.http.S._
 import net.liftweb.http.{SessionVar, S, SHtml}
+import net.liftweb.openid.{OpenIDProtoUser, MetaOpenIDProtoUser}
 
 /**
  * The singleton that has methods for accessing the database
  */
-object User extends User with MetaMegaProtoUser[User] {
+object User extends User with MetaMegaProtoUser[User]{
+
+  /*
+  import org.aphreet.c3.openid.OpenIDVendor
+  def openIDVendor = OpenIDVendor
+  override def homePage = if (loggedIn_?) "/dashboard" else "/" */
 
   def currentSearchRequests: List[String] = User.currentUser.map(_.searchRequests.get).openOr(Nil)
+
   def addSearchRequest(req : String) = {
     User.currentUser match {
-      case Full(user) => user.searchRequests.set(req :: user.searchRequests.get)
+      case Full(user) => {
+        if( req !="" )user.searchRequests.set(req :: user.searchRequests.get.filter(_ != req))
+      }
       case _ => {}
     }
   }
@@ -157,7 +166,7 @@ object User extends User with MetaMegaProtoUser[User] {
 /**
  * An O-R mapped "User" class that includes first name, last name, password and we add a "Personal Essay" to it
  */
-class User extends MegaProtoUser[User] with ManyToMany {
+class User extends MegaProtoUser[User] with ManyToMany   {
 
 
   thisuser =>
@@ -186,7 +195,7 @@ class User extends MegaProtoUser[User] with ManyToMany {
 
   def categories: List[Category] = Category.findAll(By(Category.user,this))
 
-  object searchRequests extends SessionVar[List[String]](Nil)
+  object searchRequests extends SessionVar[List[String]] ( "scala" :: "java" :: "performance" :: "c3" :: Nil )
 
 }
 

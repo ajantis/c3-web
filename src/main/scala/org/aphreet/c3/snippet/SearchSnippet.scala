@@ -34,7 +34,6 @@ package org.aphreet.c3.snippet
 import org.aphreet.c3.apiaccess.C3Client
 import xml.{Text, NodeSeq}
 import org.aphreet.c3.helpers.MetadataParser
-import net.liftweb.http.{RequestVar, S, StatefulSnippet, SHtml}
 import org.aphreet.c3.model.{Tag, Category, User}
 import net.liftweb.util.BindHelpers._
 import java.util.Date
@@ -44,6 +43,7 @@ import net.liftweb.common.{Logger, Box, Empty, Full}
 import org.apache.commons.lang.time.DateUtils
 import org.apache.commons.httpclient.util.URIUtil
 import net.liftweb.widgets.autocomplete.AutoComplete
+import net.liftweb.http._
 
 class SearchSnippet extends StatefulSnippet {
 
@@ -182,7 +182,7 @@ class SearchSnippet extends StatefulSnippet {
   }
 
   // we store a string entered in an input box of mini search form
-  object stringToSearch extends RequestVar[Box[String]](Empty)
+  object stringToSearch extends SessionVar[Box[String]](Empty)
 
   def miniSearchForm (html : NodeSeq) = {
     var searchParam = ""
@@ -191,18 +191,20 @@ class SearchSnippet extends StatefulSnippet {
       // doesn't work
       /*"search_string" -> AutoComplete("", (current: String,limit: Int) =>
         User.currentSearchRequests.filter(_.toLowerCase.startsWith(current.toLowerCase)),
-        value => searchParam = value,
+        searchParam = _,
         attrs = ("placeholder","Search")
-      ),*/
+      ), */
       "submit" -> SHtml.submit("Go", () => S.redirectTo("/search",() => {
-          if(searchParam != "") stringToSearch(Full(searchParam))
-          User.addSearchRequest( searchParam )
-        }))
+
+        stringToSearch.set(Full(searchParam))
+        User.addSearchRequest( searchParam )
+      }))
     )
   }
 
   def processQuery(query : String){
     searchString = query
+    stringToSearch(Full(query))
 
     if(searchString != ""){
 

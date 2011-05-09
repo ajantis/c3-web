@@ -224,7 +224,11 @@ class Boot {
     import org.aphreet.c3.lib.FileUpload
     LiftRules.dispatch.append(FileUpload)
 
+    import org.aphreet.c3.openid.OpenIDVendor
 
+    // dispatches for open ID support login
+    LiftRules.dispatch.append(OpenIDVendor.dispatchPF)
+    LiftRules.snippets.append(OpenIDVendor.snippetPF)
 
     LiftRules.statelessRewrite.prepend(NamedPF("ParticularUserRewrite") {
       case RewriteRequest(

@@ -50,8 +50,6 @@ import xml.{Node, Text, NodeSeq}
 
 trait C3ResourceMetadataForms {
 
-
-
   protected object tags extends RequestVar[scala.collection.mutable.Set[String]] (scala.collection.mutable.Set()) {
 
     private val data = List(
@@ -63,7 +61,7 @@ trait C3ResourceMetadataForms {
       tags.get.toList.sortWith(_ > _).flatMap(
         (tag: String) =>
           bind("tag", xml,
-            "text" -> ( SHtml.text(tag, (str) => { tags.get += str }, "placeholder" -> "e.g. IT" ) )
+            "text" -> ( SHtml.text(tag, (str) => { tags.get += str }, "placeholder" -> "e.g. IT","size"-> "8" ) )
             /*"text" -> AutoComplete(tag, (current: String,limit: Int) =>
               data.filter(_.toLowerCase.startsWith(current.toLowerCase)),
               (value:String) => { tags.get += value },
@@ -107,8 +105,8 @@ trait C3ResourceMetadataForms {
               var tmpMDValue = mdNode._2
 
               bind("md_node",xml,
-                "name" -> SHtml.text(mdNode._1, tmpMDName = _ , "placeholder" -> "e.g. author" ),
-                "value" -> SHtml.text(mdNode._2,tmpMDValue = _ , "placeholder" -> "e.g. Jack Jones" )
+                "name" -> SHtml.text(mdNode._1, tmpMDName = _ , "placeholder" -> "e.g. author","size"-> "8" ),
+                "value" -> SHtml.text(mdNode._2,tmpMDValue = _ , "placeholder" -> "e.g. Jack Jones","size"-> "8" )
               ) ++ SHtml.hidden( () => {
                     if(tmpMDName != mdNode._1) {
                       metadata -= mdNode._1

@@ -1,4 +1,4 @@
-package org.aphreet.c3.snippet
+package org.aphreet.c3.openid
 
 /**
  * Copyright (c) 2011, Dmitry Ivanov
@@ -31,60 +31,21 @@ package org.aphreet.c3.snippet
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-import net.liftweb._
-import common.{Logger, Full, Empty, Box}
-import http._
-import util._
-import Helpers._
-import javax.activation.MimetypesFileTypeMap
-import org.aphreet.c3.apiaccess.{C3ClientException, C3Client}
-import org.apache.commons.httpclient.util.URIUtil
+import org.openid4java.discovery.DiscoveryInformation
+import org.openid4java.message.AuthRequest
+import net.liftweb.common.Full
+import net.liftweb.openid.{OpenIDConsumer, WellKnownEndpoints, WellKnownAttributes, SimpleOpenIDVendor}
 
-/**
- * Attach a function to the uploaded file.
- */
-
-
-class UploadFileAjax {
-
-  val logger = Logger(classOf[UploadFileAjax])
-
-  // the request-local variable that hold the upload path (in c3) file parameter
-  private object theUploadPath extends SessionVar[Box[String]](Empty)
-
-  private def uploadFile(fph: FileParamHolder) = {
-
-    println("Got a file "+fph.fileName)
-
-    // this simple technique helps to predict uploaded file's type by it's name
-    val mimeType: String = new MimetypesFileTypeMap().getContentType(fph.fileName)
-    theUploadPath.is match {
-      case Full(path) => {
-        try {
-
-            C3Client().uploadFile( URIUtil.decode(path,"UTF-8") + fph.fileName , fph.file, Map("content.type" -> mimeType))
-        }
-        catch {
-            case e: C3ClientException => {
-              S.error(e.toString)
-            }
-        }
-      }
-      case _ => {
-        println("Unknown upload c3 path for "+fph.fileName)
+object OpenIDVendor extends SimpleOpenIDVendor  {
+  def ext(di: DiscoveryInformation, authReq: AuthRequest): Unit = {
+    import WellKnownAttributes._
+    WellKnownEndpoints.findEndpoint(di) map {ep =>
+      ep.makeAttributeExtension(List(Email, FullName, FirstName, LastName)) foreach {ex =>
+        authReq.addExtension(ex)
       }
     }
-
-
   }
-
-  def render = "type=file [name]" #> {
-
-    theUploadPath(if(S.uri.contains("/group/")) Full(S.uri.split("/group/").last+"/") else Empty)
-    println(theUploadPath.is.openOr(""))
-
-    SHtml.fileUpload(fph => {
-      uploadFile(fph)
-    }).attribute("name").get
+  override def createAConsumer = new OpenIDConsumer[UserType] {
+    beforeAuth = Full(ext _)
   }
 }

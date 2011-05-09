@@ -45,7 +45,7 @@ import java.io.{ByteArrayInputStream, InputStream}
 import xml.{NodeSeq, XML}
 
 import org.apache.commons.httpclient.util.URIUtil
-import java.net.URLEncoder
+
 
 class C3Client(val host:String, val contextPath:String, val contextRestPath:String,  val domain:String, val secret:String)  {
 
@@ -228,7 +228,7 @@ class C3Client(val host:String, val contextPath:String, val contextRestPath:Stri
 
   def uploadFile( path:String, fileByteArray:Array[Byte], metadata:Map[String, String] = Map()) = {
     val fileBytePartSource = new ByteArrayPartSource(fileByteArray)
-    writeData(path, new FilePart("data", fileBytePartSource), metadata)
+    writeData(path , new FilePart("data", fileBytePartSource), metadata)
   }
   def uploadFileRest( fileByteArray:Array[Byte], metadata:Map[String, String] = Map()) = {
     val fileBytePartSource = new ByteArrayPartSource(fileByteArray)
@@ -263,7 +263,7 @@ class C3Client(val host:String, val contextPath:String, val contextRestPath:Stri
 
 
   private def writeData(path:String, filePart:FilePart, metadata:Map[String, String]) = {
-    val postMethod = createPostMethod(path)
+    val postMethod = createPostMethod(URIUtil.encodeQuery(path,"UTF-8"))
 
     val parts:Array[Part] = (filePart ::
       metadata.map(e => new StringPart(e._1, e._2, "UTF-8")).toList).toArray
@@ -364,7 +364,7 @@ class C3Client(val host:String, val contextPath:String, val contextRestPath:Stri
   def doSearch(target : String) = {
 
                       //  TODO URIUtil.encodeQuery(name, "UTF-8")
-    val getRequest = createGetSearchMethod(URLEncoder.encode(target))
+    val getRequest = createGetSearchMethod(URIUtil.encodeQuery(target,"UTF-8"))
 
     val resultSet = {
       try{
