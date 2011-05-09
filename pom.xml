@@ -46,6 +46,21 @@
 
     <dependencies>
 
+
+        <dependency>
+             <groupId>dom4j</groupId>
+             <artifactId>dom4j</artifactId>
+             <version>1.6.1</version>
+         </dependency>
+
+         <dependency>
+            <groupId>org.jvnet.hudson</groupId>
+            <artifactId>vijava</artifactId>
+            <version>2120100824</version>
+
+         </dependency>
+
+
         <dependency>
             <groupId>net.liftweb</groupId>
             <artifactId>lift-openid_2.8.0</artifactId>

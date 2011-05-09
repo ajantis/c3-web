@@ -193,9 +193,9 @@ class GroupForm {
                           }
                           else {
                             if(groupdir.tail.isEmpty){
-                              "/download/"+groupname + "/files/"+ child.name
+                              "/group/"+groupname + "/files/"+ child.name
                             }else{
-                              "/download/"+groupname + "/files/" + groupdir.tail + "/"+ child.name
+                              "/group/"+groupname + "/files/" + groupdir.tail + "/"+ child.name
                             }
                           }
                          <a href={url}>{child.name}</a>

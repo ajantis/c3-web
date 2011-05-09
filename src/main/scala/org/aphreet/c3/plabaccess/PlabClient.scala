@@ -1,4 +1,4 @@
-package org.aphreet.c3.lib
+package org.aphreet.c3.plabaccess
 
 /**
  * Copyright (c) 2011, Dmitry Ivanov
@@ -30,35 +30,31 @@ package org.aphreet.c3.lib
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
- 
- 
 
-import net.liftweb.http.rest._
-import net.liftweb.json._
-import JsonDSL._
-import net.liftweb.http.{S, InMemoryResponse, JsonResponse}
-import net.liftweb.json.JsonAST.JValue
-import net.liftweb.common.Box
+import com.vmware.vim25.mo._
+import net.liftweb.common.Logger
+import java.net.URL
+import net.liftweb.util.Props
 
-// for ajax file upload
-object FileUpload extends RestHelper {
-  serve {
-    case "upload" :: "file" :: Nil Post req => {
-      println("uploaded "+req.uploadedFiles)
-      val ojv: Box[JValue] =
-        req.uploadedFiles.map(fph => ("name" -> fph.fileName) ~
-                              ("type" -> fph.mimeType) ~
-                              ("size" -> fph.file.length)).headOption
 
-      val ajv = ("name" -> "n/a") ~ ("type" -> "n/a") ~ ("size" -> 0L) ~ ("yak" -> "brrrr")
+class PlabClient
 
-      val ret = ojv openOr ajv
+object PlabClient {
 
-      // This is a tad bit of a hack, but we need to return text/plain, not JSON
-      val jr = JsonResponse(ret).toResponse.asInstanceOf[InMemoryResponse]
-      InMemoryResponse(jr.data, ("Content-Length", jr.data.length.toString) ::
-                       ("Content-Type", "text/plain") :: S.getHeaders(Nil),
-                       S.responseCookies, 200)
+ val logger = Logger(classOf[PlabClient])
+
+ val si = new ServiceInstance(new URL(Props.get("plab_api_url").openOr("https://localhost/sdk")),
+   Props.get("admin_username").openOr(""),Props.get("admin_password").openOr(""), true)
+
+ val rootFolder = si.getRootFolder
+
+
+ def getVMs(): List[VirtualMachine] =
+    new InventoryNavigator(rootFolder).searchManagedEntities("VirtualMachine") match {
+      case null =>
+        logger.error("searchManagedEntities returned null")
+        List[VirtualMachine]()
+      case vms => vms map(_.asInstanceOf[VirtualMachine]) toList
     }
-  }
+
 }

@@ -180,6 +180,10 @@ class User extends MegaProtoUser[User] with ManyToMany   {
     override def displayName = "Personal Essay"
   }
 
+  object plabAdmin extends MappedBoolean(this) {
+    override def defaultValue = false
+  }
+
   object groups extends MappedManyToMany(UserGroup, UserGroup.user, UserGroup.group, Group) {
 
     def toForm() : NodeSeq = {
@@ -196,6 +200,7 @@ class User extends MegaProtoUser[User] with ManyToMany   {
   def categories: List[Category] = Category.findAll(By(Category.user,this))
 
   object searchRequests extends SessionVar[List[String]] ( "scala" :: "java" :: "performance" :: "c3" :: Nil )
+
 
 }
 

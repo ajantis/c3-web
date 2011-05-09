@@ -64,7 +64,7 @@ class C3Client(val host:String, val contextPath:String, val contextRestPath:Stri
   }
 
   def delete(path:String) = {
-    val deleteMethod = createDeleteMethod(path)
+    val deleteMethod = createDeleteMethod(URIUtil.encodeQuery(path,"UTF-8"))
 
     try{
       val status = httpClient.executeMethod(deleteMethod)
@@ -226,10 +226,18 @@ class C3Client(val host:String, val contextPath:String, val contextRestPath:Stri
   }
 
 
-  def uploadFile( path:String, fileByteArray:Array[Byte], metadata:Map[String, String] = Map()) = {
+  def uploadFile( path:String, fileByteArray:Array[Byte], metadata:Map[String, String] = Map()): Unit = {
     val fileBytePartSource = new ByteArrayPartSource(fileByteArray)
     writeData(path , new FilePart("data", fileBytePartSource), metadata)
   }
+  def uploadFileToPath(path:String)(fileByteArray:Array[Byte], metadata:Map[String, String] = Map()): Unit =
+    uploadFile(path, fileByteArray,metadata)
+
+  def updateFile( path:String )( fileByteArray:Array[Byte], metadata:Map[String, String] = Map()) = {
+    val fileBytePartSource = new ByteArrayPartSource(fileByteArray)
+    updateData(path , new FilePart("data", fileBytePartSource), metadata)
+  }
+
   def uploadFileRest( fileByteArray:Array[Byte], metadata:Map[String, String] = Map()) = {
     val fileBytePartSource = new ByteArrayPartSource(fileByteArray)
     writeDataRest(new FilePart("data", fileBytePartSource), metadata)
@@ -280,6 +288,27 @@ class C3Client(val host:String, val contextPath:String, val contextRestPath:Stri
       }
     }finally {
       postMethod.releaseConnection
+    }
+  }
+
+  private def updateData(path:String, filePart:FilePart, metadata:Map[String, String]) = {
+    val updateMethod = createPutMethod(URIUtil.encodeQuery(path,"UTF-8"))
+
+    val parts:Array[Part] = (filePart ::
+      metadata.map(e => new StringPart(e._1, e._2, "UTF-8")).toList).toArray
+
+    updateMethod.setRequestEntity(new MultipartRequestEntity(parts, updateMethod.getParams))
+
+    try{
+      val status = httpClient.executeMethod(updateMethod)
+      status match {
+        case HttpStatus.SC_OK =>
+        case _ =>
+          logger.debug("Failed to update resource. Response: " + updateMethod.getResponseBodyAsString)
+          throw new C3ClientException(("Filed to update resource "+ path +" , code " + status).asInstanceOf[String])
+      }
+    }finally {
+      updateMethod.releaseConnection
     }
   }
 
@@ -422,8 +451,6 @@ class C3Client(val host:String, val contextPath:String, val contextRestPath:Stri
     method
 
   }
-
-
 
 
   private def createGetSearchMethod(searchString : String):GetMethod = {

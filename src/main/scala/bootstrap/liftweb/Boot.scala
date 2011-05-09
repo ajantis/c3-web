@@ -20,6 +20,7 @@ import net.liftweb.widgets.uploadprogress._
 
 import org.aphreet.c3.logging.LogLevel
 import net.liftweb.widgets.autocomplete.AutoComplete
+import org.apache.commons.httpclient.util.URIUtil
 
 
 /**
@@ -103,6 +104,8 @@ class Boot {
 
       Menu("GroupFiles") / "groupsection" / "files" >> loggedIn >> Hidden,
 
+      Menu("GroupFiles") / "groupsection" / "file" >> loggedIn >> Hidden,
+
       Menu("GroupWiki") / "groupsection" / "wiki-view" >> loggedIn >> Hidden,
 
       Menu("GroupWiki") / "groupsection" / "wiki-edit" >> loggedIn >> Hidden,
@@ -141,7 +144,10 @@ class Boot {
           case Full(group) => {
             // TODO if resource instance is FIle ==>> rewrite request to file page
             C3Resource.get(group,directory.mkString("/")+dotExt) match {
-              case Some(resource) if(resource.isInstanceOf[File]) => RewriteResponse("download" :: groupname :: "files" :: (directory.mkString("/")+dotExt).split("/").toList)
+              case Some(resource) if(resource.isInstanceOf[File]) => {
+                //RewriteResponse("download" :: groupname :: "files" :: (directory.mkString("/")+dotExt).split("/").toList)
+                RewriteResponse("groupsection" :: "file" :: Nil, Map("groupname" -> URIUtil.decode(groupname,"UTF-8"),"groupdirectory" -> (directory.mkString("/") + dotExt),"filepath" -> (directory.mkString("/") + dotExt), "rewrite" -> "groupFiles"))
+              }
               case Some(resource) => RewriteResponse("groupsection" :: "files" :: Nil, Map("groupname" -> groupname,"groupdirectory" -> directory.mkString("/"), "rewrite" -> "groupFiles"))
               case _ => RewriteResponse("404" :: Nil)
             }
@@ -152,6 +158,7 @@ class Boot {
 
       }
     })
+
     LiftRules.statelessRewrite.prepend(NamedPF("ParticularGroupOverviewRewrite") {
       case RewriteRequest(
       ParsePath("group" :: groupname  :: Nil , _, _,_), _, _) =>

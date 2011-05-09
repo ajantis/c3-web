@@ -52,7 +52,7 @@ class UploadFileAjax {
   // the request-local variable that hold the upload path (in c3) file parameter
   private object theUploadPath extends SessionVar[Box[String]](Empty)
 
-  private def uploadFile(fph: FileParamHolder) = {
+  private def uploadFile(fph: FileParamHolder, uploadMethod: (Array[Byte], Map[String,String]) => Unit ) = {
 
     println("Got a file "+fph.fileName)
 
@@ -62,7 +62,8 @@ class UploadFileAjax {
       case Full(path) => {
         try {
 
-            C3Client().uploadFile( URIUtil.decode(path,"UTF-8") + fph.fileName , fph.file, Map("content.type" -> mimeType))
+          uploadMethod(fph.file, Map("content.type" -> mimeType))
+
         }
         catch {
             case e: C3ClientException => {
@@ -81,10 +82,20 @@ class UploadFileAjax {
   def render = "type=file [name]" #> {
 
     theUploadPath(if(S.uri.contains("/group/")) Full(S.uri.split("/group/").last+"/") else Empty)
-    println(theUploadPath.is.openOr(""))
 
     SHtml.fileUpload(fph => {
-      uploadFile(fph)
+      uploadFile(fph,C3Client().uploadFileToPath(URIUtil.decode(theUploadPath.open_!,"UTF-8")+fph.fileName) )
     }).attribute("name").get
   }
+
+  def update = "type=file [name]" #> {
+
+    theUploadPath(if(S.uri.contains("/group/")) Full(S.uri.split("/group/").last) else Empty)
+
+    SHtml.fileUpload(fph => {
+      uploadFile(fph,C3Client().updateFile(URIUtil.decode(theUploadPath.open_!,"UTF-8")) )
+    }).attribute("name").get
+  }
+
+
 }

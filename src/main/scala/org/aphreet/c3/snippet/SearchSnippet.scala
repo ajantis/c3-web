@@ -69,7 +69,7 @@ class SearchSnippet extends StatefulSnippet {
      if(searchString!="") resultSet = C3Client().doSearch(searchString)
 
      bind("search", html,
-      "query" -> SHtml.text(searchString, processQuery _ ,"placeholder" -> "Search" ),
+      "query" -> SHtml.text(searchString, processQuery _ ,"placeholder" -> "Search","size" -> "60" ),
       // doesn't work
       /*"query" -> AutoComplete(searchString, (current: String,limit: Int) =>
         User.currentSearchRequests.filter(_.toLowerCase.startsWith(current.toLowerCase)),
@@ -188,7 +188,7 @@ class SearchSnippet extends StatefulSnippet {
 
 
      bind("search", html,
-      "query" -> SHtml.text(searchString, processQuery _ , "placeholder" -> "Search"),
+      "query" -> SHtml.text(searchString, processQuery _ , "placeholder" -> "Search","size" -> "60"),
       // doesn't work
       /*"query" -> AutoComplete(searchString, (current: String,limit: Int) =>
         User.currentSearchRequests.filter(_.toLowerCase.startsWith(current.toLowerCase)),
