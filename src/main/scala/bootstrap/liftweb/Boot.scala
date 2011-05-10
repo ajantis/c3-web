@@ -19,8 +19,9 @@ import net.liftweb.widgets.logchanger._
 import net.liftweb.widgets.uploadprogress._
 
 import org.aphreet.c3.logging.LogLevel
-import net.liftweb.widgets.autocomplete.AutoComplete
+import net.liftweb.widgets.tablesorter.TableSorter
 import org.apache.commons.httpclient.util.URIUtil
+import net.liftweb.widgets.autocomplete.AutoComplete
 
 
 /**
@@ -118,12 +119,13 @@ class Boot {
 
       Menu("Not found") / "404" >>  Hidden,
 
+
+      // VM service's menu parts
+      Menu("VM Service") / "vmservice" / "index" >> loggedIn >> Hidden,
+      Menu("VMS vm's overview") / "vmservice" / "view_vm" >> loggedIn >> Hidden,
+
+
       LogLevel.menu // default log level menu is located at /loglevel/change
-
-
-
-      // Menu with special Link
-      //Menu(Loc("Static", Link(List("static"), true, "/static/index"),"Static Content"))
 
 
     )
@@ -270,6 +272,15 @@ class Boot {
         )
     })
 
+    // VM service rewrites
+    LiftRules.statelessRewrite.prepend(NamedPF("VMServiceViewVMRewrite") {
+      case RewriteRequest(
+      ParsePath("vmservice" :: "vm" :: vmName :: Nil , _, _,_), _, _) =>
+        RewriteResponse(
+          "vmservice" :: "view_vm" :: Nil, Map("vmName" -> vmName)
+        )
+    })
+
 
     /*
      * Show the spinny image when an Ajax call starts
@@ -305,6 +316,9 @@ class Boot {
 
     // Initialization for auto complete widget
     AutoComplete.init
+
+    // Initilization for table sorter widget
+    TableSorter.init
 
     // for ajax file upload
     LiftRules.progressListener = {

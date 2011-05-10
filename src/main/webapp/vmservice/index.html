@@ -1,0 +1,84 @@
+<lift:surround with="default">
+
+    <lift:VMServiceSnippet.viewVMs>
+
+    <lift:bind-at name="content-header">
+      <a href="/vmservice/" class="vm_link">Plab VM Service</a>
+    </lift:bind-at>
+
+
+    <lift:bind-at name="content">
+       <div>
+          <lift:TableSorters.defaultTableSorter />
+
+
+
+
+          <table id="sorted_table" class="tablesorter">
+            <thead>
+                <tr>
+                    <th>VM name</th>
+                    <th>Uptime</th>
+                    <th>Memory usage</th>
+                    <th>Power state</th>
+                    <th><input type="checkbox" value="false" /> All</th>
+                </tr>
+            </thead>
+            <tbody>
+            <vms:list>
+                <tr>
+                    <td><vm:name/></td>
+                    <td><vm:uptime/></td>
+                    <td><vm:memory_usage/></td>
+                    <td ><vm:power_state/></td>
+                    <td><vm:select></vm:select></td>
+                </tr>
+            </vms:list>
+            </tbody>
+          </table>
+
+       </div>
+
+
+    </lift:bind-at>
+
+    <lift:bind-at name="right-panel-content">
+        <div class="right-panel-content">
+            <div class="right-panel-section right-panel-section-first">
+                <lift:VMServiceSnippet.hostInfo>
+                <span><host:name></host:name></span>
+                <ul>
+                    <li>Memory: <host:memory_available></host:memory_available> Mb</li>
+                    <li>Model: <host:server_model></host:server_model></li>
+                    <li>Vendor: <host:vendor></host:vendor></li>
+                    <li>CPU:
+                        <host:cpu_info>
+                        <ul>
+                            <li>Cores: <cpu:cores></cpu:cores></li>
+                            <li>Hz: <cpu:hz></cpu:hz></li>
+                            <li>Threads: <cpu:threads></cpu:threads></li>
+                        </ul>
+                        </host:cpu_info>
+                    </li>
+                </ul>
+                </lift:VMServiceSnippet.hostInfo>
+            </div>
+            <div class="right-panel-section">
+                <span>Access management</span>
+                <ul>
+                    <li><a href="#">groups</a></li>
+                    <li><a href="#">users</a></li>
+                </ul>
+            </div>
+            <div class="right-panel-section">
+                <span>Toolbar</span>
+                <div>
+                  <vms:select_action></vms:select_action> <vms:do_action>Go</vms:do_action>
+
+                </div>
+            </div>
+        </div>
+    </lift:bind-at>
+    </lift:VMServiceSnippet.viewVMs>
+
+</lift:surround>

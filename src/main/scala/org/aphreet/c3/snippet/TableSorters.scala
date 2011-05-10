@@ -1,4 +1,8 @@
-package org.aphreet.c3.plabaccess
+package org.aphreet.c3.snippet
+
+import xml.NodeSeq
+import net.liftweb.widgets.tablesorter.TableSorter
+import net.liftweb.http.S
 
 /**
  * Copyright (c) 2011, Dmitry Ivanov
@@ -30,38 +34,13 @@ package org.aphreet.c3.plabaccess
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+ 
+ 
+ 
+class TableSorters {
 
-import com.vmware.vim25.mo._
-import java.net.URL
-import net.liftweb.util.Props
-import net.liftweb.common.{Full, Empty, Box, Logger}
-
-class PlabClient
-
-object PlabClient {
-
- val logger = Logger(classOf[PlabClient])
- val hostname = Props.get("plab_esx_hostname").openOr("plab.cs.ifmo.ru")
-
- val si = new ServiceInstance(new URL(Props.get("plab_api_url").openOr("https://localhost/sdk")),
-   Props.get("admin_username").openOr(""),Props.get("admin_password").openOr(""), true)
-
- val rootFolder = si.getRootFolder
-
-
- def getVMs(): List[VirtualMachine] =
-    new InventoryNavigator(rootFolder).searchManagedEntities("VirtualMachine") match {
-      case null =>
-        logger.error("searchManagedEntities returned null")
-        List[VirtualMachine]()
-      case vms => vms map(_.asInstanceOf[VirtualMachine]) toList
-    }
-
- def getHost(): Box[HostSystem] = {
-    new InventoryNavigator(rootFolder).searchManagedEntity("HostSystem", hostname) match {
-      case null => Empty
-      case host => Full(host.asInstanceOf[HostSystem])
-    }
- }
+  def defaultTableSorter(xml : NodeSeq) : NodeSeq = {
+    TableSorter("#"+S.attr("table_id").openOr("sorted_table"))
+  }
 
 }
