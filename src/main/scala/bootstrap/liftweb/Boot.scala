@@ -10,7 +10,6 @@ import _root_.java.sql.{Connection, DriverManager}
 import org.aphreet.c3.model._
 import org.aphreet.c3.apiaccess.C3Client
 import net.liftweb.mapper._
-import java.net.URLEncoder
 import net.liftweb.http._
 
 import js.jquery.JQuery14Artifacts
@@ -22,6 +21,7 @@ import org.aphreet.c3.logging.LogLevel
 import net.liftweb.widgets.tablesorter.TableSorter
 import org.apache.commons.httpclient.util.URIUtil
 import net.liftweb.widgets.autocomplete.AutoComplete
+import net.liftweb.widgets.flot.Flot
 
 
 /**
@@ -277,7 +277,7 @@ class Boot {
       case RewriteRequest(
       ParsePath("vmservice" :: "vm" :: vmName :: Nil , _, _,_), _, _) =>
         RewriteResponse(
-          "vmservice" :: "view_vm" :: Nil, Map("vmName" -> vmName)
+          "vmservice" :: "view_vm" :: Nil, Map("vmName" -> URIUtil.decode(vmName,"UTF-8"),"rewrite" -> "vmOverview" )
         )
     })
 
@@ -319,6 +319,9 @@ class Boot {
 
     // Initilization for table sorter widget
     TableSorter.init
+
+    // Initialization for flot (charting) widget
+    Flot.init
 
     // for ajax file upload
     LiftRules.progressListener = {

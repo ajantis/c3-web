@@ -14,23 +14,23 @@
 
 
 
-          <table id="sorted_table" class="tablesorter">
+          <table id="sorted_table" class="tablesorter" style="width: 60%;">
             <thead>
                 <tr>
+                    <th style="width: 5%;">Power state</th>
                     <th>VM name</th>
                     <th>Uptime</th>
                     <th>Memory usage</th>
-                    <th>Power state</th>
                     <th><input type="checkbox" value="false" /> All</th>
                 </tr>
             </thead>
             <tbody>
             <vms:list>
                 <tr>
+                    <td><vm:power_state/></td>
                     <td><vm:name/></td>
                     <td><vm:uptime/></td>
                     <td><vm:memory_usage/></td>
-                    <td ><vm:power_state/></td>
                     <td><vm:select></vm:select></td>
                 </tr>
             </vms:list>

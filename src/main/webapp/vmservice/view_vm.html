@@ -1,14 +1,41 @@
 <lift:surround with="default">
 
+    <lift:VMServiceSnippet.vmOverview>
 
     <lift:bind-at name="content-header">
-          VM overview
+          <vm:name></vm:name>: overview
     </lift:bind-at>
 
 
     <lift:bind-at name="content">
        <div>
+           <span><b>Stats</b></span>
+           <table>
+            <thead>
+                <tr>
+                    <th>Uptime</th>
+                    <th>Memory usage</th>
+                    <th>VMware tools</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                       <vm:uptime></vm:uptime>
+                    </td>
+                    <td>
+                        <vm:memory_usage></vm:memory_usage>
+                    </td>
+                    <td>
+                        <vm:vmware_tools></vm:vmware_tools>
+                    </td>
+                    <td>
 
+                    </td>
+                </tr>
+            </tbody>
+           </table>
 
        </div>
 
@@ -30,6 +57,8 @@
             </div>
         </div>
     </lift:bind-at>
+
+    </lift:VMServiceSnippet.vmOverview>
 
 
 </lift:surround>

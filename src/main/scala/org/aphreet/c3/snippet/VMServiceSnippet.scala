@@ -39,6 +39,8 @@ import net.liftweb.http.js.{JsCmds, JsCmd}
 import net.liftweb.common.{Full, Empty, Box}
 import net.liftweb.http.{S, RequestVar, SHtml}
 import com.vmware.vim25.mo.{HostSystem, VirtualMachine}
+import net.liftweb.util.TimeHelpers
+import org.apache.commons.httpclient.util.URIUtil
 
 class VMServiceSnippet {
 
@@ -98,7 +100,8 @@ class VMServiceSnippet {
 
     bind("vms", html,
       "list" -> ( (ns: NodeSeq) =>
-         PlabClient.getVMs() flatMap( vm => bind("vm",ns, "name" -> vm.getName,
+         PlabClient().getVMs() flatMap( vm => bind("vm",ns,
+           "name" -> <a href={"/vmservice/vm/"+ URIUtil.encodeQuery(vm.getName,"UTF-8")}>{vm.getName}</a>,
            "uptime" -> Box[Integer](vm.getSummary.quickStats.getUptimeSeconds).map(i => i.toString).openOr("unknown"),
            "vmware_tools" -> ( vm.getGuest.getToolsRunningStatus match {
              case _ => <img src="/images/icons/" /> // TODO
@@ -132,7 +135,7 @@ class VMServiceSnippet {
 
   def hostInfo(html: NodeSeq): NodeSeq = {
 
-    PlabClient.getHost match {
+    PlabClient().getHost match {
       case Full(host: HostSystem) => {
         bind("host", html,
           "name" -> host.getName,
@@ -149,11 +152,57 @@ class VMServiceSnippet {
         )
       }
       case _ => {
-        S error "Host "+ PlabClient.hostname+" wasn't found"
+        S error "Host "+ PlabClient().hostname+" wasn't found"
         NodeSeq.Empty
       }
     }
 
+  }
+
+  def vmOverview(html: NodeSeq): NodeSeq = {
+    S.param("vmName") match {
+      case Full(vmName: String) => {
+        PlabClient().getVMByName(vmName) match {
+          case Some(vm) => {
+            bind("vm",html,
+               "name" -> vm.getName,
+               "uptime" -> {
+                 val bootTime = vm.getSummary.getRuntime.getBootTime
+                 bootTime match {
+                   case null => 0
+                   case bt => (TimeHelpers.now.getTime - bt.getTimeInMillis) / 1000 / 60 / 60  // in hours
+                 }
+               },
+               //Box[Integer](vm.getSummary.quickStats.getUptimeSeconds).map(i => i.toString).openOr("unknown"),
+               "vmware_tools" -> ( vm.getGuest.getToolsRunningStatus match {
+                 case "guestToolsRunning" => <img src="/images/accepted_48.png" width="24" height="24"/> // TODO
+                 case _ => <img src="/images/cancel_48.png" width="24" height="24"/>
+               } ),
+               "memory_usage" -> {
+                 vm.getSummary.getQuickStats.getGuestMemoryUsage match {
+                   case null => "0"
+                   case mu => mu.toString
+                 }
+               },
+               "power_state" -> ( vm.getRuntime.getPowerState.name match {
+                 case "poweredOn" => <img src="/images/icons/circle_green.png" width="24" height="24" />
+                 case "poweredOff" => <img src="/images/icons/circle_red.png" width="24" height="24" />
+                 case _ => <img src="/images/icons/circle_orange.png" width="24" height="24" />
+               } ),
+               "reboot" -> SHtml.link("/index",() => vm.rebootGuest,Text("reboot"))
+            )
+          }
+          case _ => {
+            S error "VM is not found"
+            NodeSeq.Empty
+          }
+        }
+      }
+      case _ => {
+        S error "VM is not defined"
+        NodeSeq.Empty
+      }
+    }
   }
 
 
