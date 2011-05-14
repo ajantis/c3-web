@@ -34,13 +34,13 @@ package org.aphreet.c3.snippet
 import net.liftweb.util.Helpers._
 import xml.{Text, NodeSeq}
 import org.aphreet.c3.plabaccess.PlabClient
-import net.liftweb.http.js.JsCmds.Alert
 import net.liftweb.http.js.{JsCmds, JsCmd}
 import net.liftweb.common.{Full, Empty, Box}
 import net.liftweb.http.{S, RequestVar, SHtml}
 import com.vmware.vim25.mo.{HostSystem, VirtualMachine}
 import net.liftweb.util.TimeHelpers
 import org.apache.commons.httpclient.util.URIUtil
+import net.liftweb.http.js.JsCmds.{SetHtml, SetValById, Alert}
 
 class VMServiceSnippet {
 
@@ -160,6 +160,14 @@ class VMServiceSnippet {
   }
 
   def vmOverview(html: NodeSeq): NodeSeq = {
+
+    def renderVMPowerStatus(vm: VirtualMachine):NodeSeq =
+      ( vm.getRuntime.getPowerState.name match {
+                 case "poweredOn" => <img src="/images/icons/circle_green.png" width="24" height="24" />
+                 case "poweredOff" => <img src="/images/icons/circle_red.png" width="24" height="24" />
+                 case _ => <img src="/images/icons/circle_orange.png" width="24" height="24" />
+      })
+
     S.param("vmName") match {
       case Full(vmName: String) => {
         PlabClient().getVMByName(vmName) match {
@@ -167,13 +175,14 @@ class VMServiceSnippet {
             bind("vm",html,
                "name" -> vm.getName,
                "uptime" -> {
-                 val bootTime = vm.getSummary.getRuntime.getBootTime
-                 bootTime match {
+                 val upTime = vm.getSummary.getQuickStats.getUptimeSeconds
+                 upTime match {
                    case null => 0
-                   case bt => (TimeHelpers.now.getTime - bt.getTimeInMillis) / 1000 / 60 / 60  // in hours
+                   case time => time.intValue / 60 / 60  // in hours
                  }
                },
-               //Box[Integer](vm.getSummary.quickStats.getUptimeSeconds).map(i => i.toString).openOr("unknown"),
+               "num_cpu" -> vm.getSummary.getConfig.getNumCpu.toString,
+               "memory" -> vm.getSummary.getConfig.getMemorySizeMB.toString,
                "vmware_tools" -> ( vm.getGuest.getToolsRunningStatus match {
                  case "guestToolsRunning" => <img src="/images/accepted_48.png" width="24" height="24"/> // TODO
                  case _ => <img src="/images/cancel_48.png" width="24" height="24"/>
@@ -184,12 +193,39 @@ class VMServiceSnippet {
                    case mu => mu.toString
                  }
                },
-               "power_state" -> ( vm.getRuntime.getPowerState.name match {
-                 case "poweredOn" => <img src="/images/icons/circle_green.png" width="24" height="24" />
-                 case "poweredOff" => <img src="/images/icons/circle_red.png" width="24" height="24" />
-                 case _ => <img src="/images/icons/circle_orange.png" width="24" height="24" />
-               } ),
-               "reboot" -> SHtml.link("/index",() => vm.rebootGuest,Text("reboot"))
+               "power_state" -> renderVMPowerStatus(vm),
+               "reboot_button" -> ( (ns: NodeSeq) =>
+                 if(vm.getRuntime.getPowerState.name=="poweredOn")
+                   SHtml.ajaxButton(ns, () => {
+                    vm.rebootGuest
+                    Thread.sleep(10 seconds)
+                    SetHtml("vm_powerstate",renderVMPowerStatus(vm))
+                   })
+                 else ns
+               ),
+               "change_power_state" -> ( (ns: NodeSeq) =>
+                 vm.getRuntime.getPowerState.name match {
+                   case "poweredOn" => SHtml.ajaxButton(ns, () => {
+                      vm.powerOffVM_Task()
+                      Thread.sleep(10 seconds)
+                      SetHtml("vm_powerstate",renderVMPowerStatus(vm))
+                     })
+                   case _ => SHtml.ajaxButton(ns, () => {
+                      vm.powerOnVM_Task(null)
+                      Thread.sleep(10 seconds)
+                      SetHtml("vm_powerstate",renderVMPowerStatus(vm))
+                     })
+                 }
+               ),
+               "suspend_button" -> ( (ns: NodeSeq) =>
+                 if(vm.getRuntime.getPowerState.name != "poweredOn" && vm.getRuntime.getPowerState.name != "poweredOff")
+                   SHtml.ajaxButton(ns, () => {
+                      vm.suspendVM_Task
+                      Thread.sleep(10 seconds)
+                      SetHtml("vm_powerstate",renderVMPowerStatus(vm))
+                     })
+                 else ns
+               )
             )
           }
           case _ => {

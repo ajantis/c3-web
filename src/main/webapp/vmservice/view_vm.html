@@ -31,11 +31,16 @@
                         <vm:vmware_tools></vm:vmware_tools>
                     </td>
                     <td>
-
+                        <vm:num_cpu></vm:num_cpu> <br/>
+                        <vm:memory></vm:memory>
                     </td>
                 </tr>
             </tbody>
            </table>
+
+           <div id="flot_area" style="width:600px;height:400px;"></div>
+           <lift:FlotBuilder></lift:FlotBuilder>
+           <!--<lift:FlotBuilder.vmPieMemory></lift:FlotBuilder.vmPieMemory> -->
 
        </div>
 
@@ -48,12 +53,14 @@
 
             </div>
             <div class="right-panel-section">
-
+                <div id="vm_powerstate">
+                     <vm:power_state></vm:power_state>
+                </div>
 
             </div>
             <div class="right-panel-section">
-                <span>Toolbar</span>
-
+                <span>Toolbar</span> <br/>
+                <vm:rebootButton><img src="/images/refresh_48.png"/></vm:rebootButton> <vm:change_power_state>Change</vm:change_power_state> <vm:suspend_vm>Suspend</vm:suspend_vm>
             </div>
         </div>
     </lift:bind-at>
