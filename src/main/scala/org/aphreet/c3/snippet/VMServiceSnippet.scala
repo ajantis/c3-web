@@ -195,22 +195,21 @@ class VMServiceSnippet {
                },
                "power_state" -> renderVMPowerStatus(vm),
                "reboot_button" -> ( (ns: NodeSeq) =>
-                 if(vm.getRuntime.getPowerState.name=="poweredOn")
                    SHtml.ajaxButton(ns, () => {
-                    vm.rebootGuest
-                    Thread.sleep(10 seconds)
-                    SetHtml("vm_powerstate",renderVMPowerStatus(vm))
-                   })
-                 else ns
+                      vm.rebootGuest
+                      Thread.sleep(10 seconds)
+                      SetHtml("vm_powerstate",renderVMPowerStatus(vm))
+                    },
+                   (if(vm.getRuntime.getPowerState.name!="poweredOn") ("disabled" -> "disabled") else ("enabled" -> "enabled")))
                ),
                "change_power_state" -> ( (ns: NodeSeq) =>
                  vm.getRuntime.getPowerState.name match {
-                   case "poweredOn" => SHtml.ajaxButton(ns, () => {
+                   case "poweredOn" => SHtml.ajaxButton(<img src="/images/stop_48.png" width="24" height="24"/>, () => {
                       vm.powerOffVM_Task()
                       Thread.sleep(10 seconds)
                       SetHtml("vm_powerstate",renderVMPowerStatus(vm))
                      })
-                   case _ => SHtml.ajaxButton(ns, () => {
+                   case _ => SHtml.ajaxButton(<img src="/images/play_48.png" width="24" height="24"/>, () => {
                       vm.powerOnVM_Task(null)
                       Thread.sleep(10 seconds)
                       SetHtml("vm_powerstate",renderVMPowerStatus(vm))
@@ -218,14 +217,13 @@ class VMServiceSnippet {
                  }
                ),
                "suspend_button" -> ( (ns: NodeSeq) =>
-                 if(vm.getRuntime.getPowerState.name != "poweredOn" && vm.getRuntime.getPowerState.name != "poweredOff")
                    SHtml.ajaxButton(ns, () => {
                       vm.suspendVM_Task
                       Thread.sleep(10 seconds)
                       SetHtml("vm_powerstate",renderVMPowerStatus(vm))
-                     })
-                 else ns
-               )
+                     },
+                   (if(vm.getRuntime.getPowerState.name != "poweredOn") ("disabled" -> "disabled") else ("enabled" -> "enabled") )
+               ))
             )
           }
           case _ => {

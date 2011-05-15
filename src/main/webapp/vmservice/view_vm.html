@@ -60,7 +60,24 @@
             </div>
             <div class="right-panel-section">
                 <span>Toolbar</span> <br/>
-                <vm:rebootButton><img src="/images/refresh_48.png"/></vm:rebootButton> <vm:change_power_state>Change</vm:change_power_state> <vm:suspend_vm>Suspend</vm:suspend_vm>
+                <ul style="list-style: none;">
+                    <li width="24" height="24" style="display: inline;">
+                        <vm:reboot_button>
+                            <img src="/images/refresh_48.png" width="24" height="24"/>
+                        </vm:reboot_button>
+                    </li>
+                    <li width="24" height="24" style="display: inline;">
+                        <vm:change_power_state>
+
+                        </vm:change_power_state>
+                    </li>
+                    <li width="24" height="24" style="display: inline;">
+                        <vm:suspend_button>
+                            <img src="/images/pause_48.png" width="24" height="24"/>
+                        </vm:suspend_button>
+                    </li>
+                </ul>
+
             </div>
         </div>
     </lift:bind-at>
