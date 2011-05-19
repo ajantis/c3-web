@@ -10,34 +10,10 @@
     <lift:bind-at name="content">
        <div>
            <span><b>Stats</b></span>
-           <table>
-            <thead>
-                <tr>
-                    <th>Uptime</th>
-                    <th>Memory usage</th>
-                    <th>VMware tools</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>
-                       <vm:uptime></vm:uptime>
-                    </td>
-                    <td>
-                        <vm:memory_usage></vm:memory_usage>
-                    </td>
-                    <td>
-                        <vm:vmware_tools></vm:vmware_tools>
-                    </td>
-                    <td>
-                        <vm:num_cpu></vm:num_cpu> <br/>
-                        <vm:memory></vm:memory>
-                    </td>
-                </tr>
-            </tbody>
-           </table>
-
+           <ul>
+                    <li>Uptime: <vm:uptime></vm:uptime></li>
+                    <li>Memory usage: <vm:memory_usage></vm:memory_usage></li>
+           </ul>
            <div id="flot_area" style="width:600px;height:400px;"></div>
            <lift:FlotBuilder></lift:FlotBuilder>
            <!--<lift:FlotBuilder.vmPieMemory></lift:FlotBuilder.vmPieMemory> -->
@@ -50,12 +26,19 @@
     <lift:bind-at name="right-panel-content">
         <div class="right-panel-content">
             <div class="right-panel-section right-panel-section-first">
-
+                <span>Resources</span>
+                <ul>
+                    <li>vCPU: <vm:num_cpu></vm:num_cpu></li>
+                    <li>Memory: <vm:memory></vm:memory></li>
+                    <li>VMware tools: <vm:vmware_tools></vm:vmware_tools></li>
+                </ul>
             </div>
             <div class="right-panel-section">
-                <div id="vm_powerstate">
+
+                <div id="vm_powerstate" style="width: 50%; float: right;">
                      <vm:power_state></vm:power_state>
                 </div>
+                Power state:
 
             </div>
             <div class="right-panel-section">

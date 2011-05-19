@@ -98,11 +98,13 @@ class VMServiceSnippet {
       Alert("Selected VMs have been rebooted: "+selectedVMs.map(_.getName).mkString(", ")) & JsCmds.RedirectTo("")
     }
 
+
     bind("vms", html,
       "list" -> ( (ns: NodeSeq) =>
          PlabClient().getVMs() flatMap( vm => bind("vm",ns,
            "name" -> <a href={"/vmservice/vm/"+ URIUtil.encodeQuery(vm.getName,"UTF-8")}>{vm.getName}</a>,
-           "uptime" -> Box[Integer](vm.getSummary.quickStats.getUptimeSeconds).map(i => i.toString).openOr("unknown"),
+           "uptime" ->( if(vmIsOnline(vm)) ( (TimeHelpers.now.getTime - vm.getRuntime.getBootTime.getTimeInMillis)/ 1000 / 60).minutes.toString  else "N/A" ),
+             //Box[Integer](vm.getRuntime quickStats.getUptimeSeconds).map(i => i.toString).openOr("unknown"),
            "vmware_tools" -> ( vm.getGuest.getToolsRunningStatus match {
              case _ => <img src="/images/icons/" /> // TODO
            } ),
@@ -145,7 +147,7 @@ class VMServiceSnippet {
           "cpu_info" -> ( (ns: NodeSeq) =>
             bind("cpu", ns,
              "cores" -> host.getHardware.getCpuInfo.getNumCpuCores,
-             "hz" -> host.getHardware.getCpuInfo.getHz,
+             "hz" -> host.getHardware.getCpuInfo.getHz / 1024 / 1024,
              "threads" -> host.getHardware.getCpuInfo.getNumCpuThreads
             )
           )
@@ -174,13 +176,7 @@ class VMServiceSnippet {
           case Some(vm) => {
             bind("vm",html,
                "name" -> vm.getName,
-               "uptime" -> {
-                 val upTime = vm.getSummary.getQuickStats.getUptimeSeconds
-                 upTime match {
-                   case null => 0
-                   case time => time.intValue / 60 / 60  // in hours
-                 }
-               },
+               "uptime" -> ( if(vmIsOnline(vm)) ( (TimeHelpers.now.getTime - vm.getRuntime.getBootTime.getTimeInMillis)/ 1000 / 60).minutes.toString  else "N/A" ),
                "num_cpu" -> vm.getSummary.getConfig.getNumCpu.toString,
                "memory" -> vm.getSummary.getConfig.getMemorySizeMB.toString,
                "vmware_tools" -> ( vm.getGuest.getToolsRunningStatus match {
@@ -237,6 +233,14 @@ class VMServiceSnippet {
         NodeSeq.Empty
       }
     }
+  }
+
+
+  private def vmIsOnline(vm: VirtualMachine): Boolean = {
+      vm.getRuntime.getPowerState.name match {
+        case "poweredOn" => true
+        case _ => false
+      }
   }
 
 
