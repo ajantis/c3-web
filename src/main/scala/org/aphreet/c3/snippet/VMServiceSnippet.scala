@@ -36,11 +36,11 @@ import xml.{Text, NodeSeq}
 import org.aphreet.c3.plabaccess.PlabClient
 import net.liftweb.http.js.{JsCmds, JsCmd}
 import net.liftweb.common.{Full, Empty, Box}
-import net.liftweb.http.{S, RequestVar, SHtml}
-import com.vmware.vim25.mo.{HostSystem, VirtualMachine}
 import net.liftweb.util.TimeHelpers
 import org.apache.commons.httpclient.util.URIUtil
-import net.liftweb.http.js.JsCmds.{SetHtml, SetValById, Alert}
+import com.vmware.vim25.mo.{Network, HostSystem, VirtualMachine}
+import net.liftweb.http.{SessionVar, S, RequestVar, SHtml}
+import net.liftweb.http.js.JsCmds.{RedirectTo, SetHtml, SetValById, Alert}
 
 class VMServiceSnippet {
 
@@ -161,6 +161,8 @@ class VMServiceSnippet {
 
   }
 
+  private object currentFlot extends SessionVar[String]("mem_usage")
+
   def vmOverview(html: NodeSeq): NodeSeq = {
 
     def renderVMPowerStatus(vm: VirtualMachine):NodeSeq =
@@ -170,15 +172,22 @@ class VMServiceSnippet {
                  case _ => <img src="/images/icons/circle_orange.png" width="24" height="24" />
       })
 
+
     S.param("vmName") match {
       case Full(vmName: String) => {
         PlabClient().getVMByName(vmName) match {
           case Some(vm) => {
+
+            def chooseGraph(ns: NodeSeq): NodeSeq = currentFlot.get match {
+              case "active_mem" => new FlotBuilder().vmPieMemoryDetailed(ns,vm)
+              case _ => new FlotBuilder().vmPieMemory(html,vm)  // by default
+            }
+
             bind("vm",html,
                "name" -> vm.getName,
                "uptime" -> ( if(vmIsOnline(vm)) ( (TimeHelpers.now.getTime - vm.getRuntime.getBootTime.getTimeInMillis)/ 1000 / 60).minutes.toString  else "N/A" ),
                "num_cpu" -> vm.getSummary.getConfig.getNumCpu.toString,
-               "memory" -> vm.getSummary.getConfig.getMemorySizeMB.toString,
+               "memory" -> (vm.getSummary.getConfig.getMemorySizeMB.toString+" Mb"),
                "vmware_tools" -> ( vm.getGuest.getToolsRunningStatus match {
                  case "guestToolsRunning" => <img src="/images/accepted_48.png" width="24" height="24"/> // TODO
                  case _ => <img src="/images/cancel_48.png" width="24" height="24"/>
@@ -219,7 +228,18 @@ class VMServiceSnippet {
                       SetHtml("vm_powerstate",renderVMPowerStatus(vm))
                      },
                    (if(vm.getRuntime.getPowerState.name != "poweredOn") ("disabled" -> "disabled") else ("enabled" -> "enabled") )
-               ))
+               )),
+               "stat_chart" -> chooseGraph(html),
+               "memory_pie_chart" ->( new FlotBuilder().vmPieMemory(html, vm) ),
+               "memory_detailed_pie_chart" -> ( new FlotBuilder().vmPieMemoryDetailed(html,vm) ),    //
+               "networks" -> ( (ns: NodeSeq) =>
+                 vm.getNetworks.toSeq.flatMap( (network: Network) =>
+                  bind("network", ns,
+                    "name" -> network.getName,
+                    "neighbours" -> ( (nss: NodeSeq) => network.getVms.toSeq.flatMap(vm => bind("vm",nss,"name" -> vm.getName) ):NodeSeq)
+                  )
+                ):NodeSeq ),
+               "choose_graph" -> SHtml.ajaxSelect(List( "mem_usage" -> "Memory usage","active_mem" -> "Active memory info"),Full(currentFlot.get), (opt: String) => {currentFlot.set(opt); RedirectTo("")} )
             )
           }
           case _ => {

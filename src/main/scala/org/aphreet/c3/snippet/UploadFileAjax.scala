@@ -8,7 +8,6 @@ package org.aphreet.c3.snippet
  * modification, are permitted provided that the following conditions
  * are met:
  *
-
  * 1. Redistributions of source code must retain the above copyright
  * notice, this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above
@@ -63,6 +62,7 @@ class UploadFileAjax {
         try {
 
           uploadMethod(fph.file, Map("content.type" -> mimeType))
+          theUploadPath.set(Empty)
 
         }
         catch {
@@ -84,7 +84,7 @@ class UploadFileAjax {
     theUploadPath(if(S.uri.contains("/group/")) Full(S.uri.split("/group/").last+"/") else Empty)
 
     SHtml.fileUpload(fph => {
-      uploadFile(fph,C3Client().uploadFileToPath(URIUtil.decode(theUploadPath.open_!,"UTF-8")+fph.fileName) )
+      uploadFile(fph,C3Client().uploadFileToPath(URIUtil.decode(theUploadPath.open_!,"UTF-8") + fph.fileName) )
     }).attribute("name").get
   }
 

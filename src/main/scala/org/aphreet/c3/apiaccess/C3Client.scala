@@ -79,6 +79,10 @@ class C3Client(val host:String, val contextPath:String, val contextRestPath:Stri
     }
   }
 
+  // TODO
+  def renameNode( path: String, oldName: String, newName: String): Unit = {
+  }
+
   def getResourceMetadataWithFSPath(resourceId : String): NodeSeq = {
     val getMethod = createGetRestMethod(resourceId + "?metadata")
     getMethod.addRequestHeader(new Header("x-c3-extmeta", "c3.ext.fs.path"))
@@ -224,7 +228,6 @@ class C3Client(val host:String, val contextPath:String, val contextRestPath:Stri
 
     ((catalog \\ "directory")(0) \\ "nodes")(0) \\ "node"
   }
-
 
   def uploadFile( path:String, fileByteArray:Array[Byte], metadata:Map[String, String] = Map()): Unit = {
     val fileBytePartSource = new ByteArrayPartSource(fileByteArray)

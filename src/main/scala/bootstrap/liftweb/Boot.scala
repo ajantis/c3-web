@@ -23,6 +23,10 @@ import org.apache.commons.httpclient.util.URIUtil
 import net.liftweb.widgets.autocomplete.AutoComplete
 import net.liftweb.widgets.flot.Flot
 
+import net.liftweb.widgets.menu.MenuWidget
+import net.liftweb.sitemap.Menu.Menuable._
+import net.liftweb.sitemap.Loc.LocGroup._
+
 
 /**
  * A class that's instantiated early and run.  It allows the application
@@ -121,7 +125,7 @@ class Boot {
 
 
       // VM service's menu parts
-      Menu("VM Service") / "vmservice" / "index" >> loggedIn >> Hidden,
+      Menu("VM Service") / "vmservice" / "index" >> loggedIn >> LocGroup("mainmenu"),
       Menu("VMS vm's overview") / "vmservice" / "view_vm" >> loggedIn >> Hidden,
 
 
@@ -148,7 +152,7 @@ class Boot {
             C3Resource.get(group,directory.mkString("/")+dotExt) match {
               case Some(resource) if(resource.isInstanceOf[File]) => {
                 //RewriteResponse("download" :: groupname :: "files" :: (directory.mkString("/")+dotExt).split("/").toList)
-                RewriteResponse("groupsection" :: "file" :: Nil, Map("groupname" -> URIUtil.decode(groupname,"UTF-8"),"groupdirectory" -> (directory.mkString("/") + dotExt),"filepath" -> (directory.mkString("/") + dotExt), "rewrite" -> "groupFiles"))
+                RewriteResponse("groupsection" :: "file" :: Nil, Map("groupname" -> groupname,"groupdirectory" -> (directory.mkString("/") + dotExt),"filepath" -> (directory.mkString("/") + dotExt), "rewrite" -> "groupFiles"))
               }
               case Some(resource) => RewriteResponse("groupsection" :: "files" :: Nil, Map("groupname" -> groupname,"groupdirectory" -> directory.mkString("/"), "rewrite" -> "groupFiles"))
               case _ => RewriteResponse("404" :: Nil)
@@ -322,6 +326,8 @@ class Boot {
 
     // Initialization for flot (charting) widget
     Flot.init
+
+    MenuWidget.init()
 
     // for ajax file upload
     LiftRules.progressListener = {

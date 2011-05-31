@@ -14,9 +14,26 @@
                     <li>Uptime: <vm:uptime></vm:uptime></li>
                     <li>Memory usage: <vm:memory_usage></vm:memory_usage></li>
            </ul>
-           <div id="flot_area" style="width:600px;height:400px;"></div>
-           <lift:FlotBuilder></lift:FlotBuilder>
-           <!--<lift:FlotBuilder.vmPieMemory></lift:FlotBuilder.vmPieMemory> -->
+
+           <vm:choose_graph></vm:choose_graph>
+
+           <div id="vm_memory_flot_area" style="width:250px;height:250px;"></div>
+           <vm:stat_chart></vm:stat_chart>
+           <!--
+           <div id="vm_stat_flot">
+               <div id="vm_memory_flot_area" style="width:250px;height:250px; float: left;"></div>
+               <vm:memory_pie_chart></vm:memory_pie_chart>
+           </div>-->
+
+           <!-- <div>
+               <div id="vm_detailed_memory_flot_area" style="width:250px;height:250px;"></div>
+               <vm:memory_detailed_pie_chart></vm:memory_detailed_pie_chart>
+           </div> -->
+
+           <script language="javascript" type="text/javascript" src="/js/jquery.flot.pie.js" />
+
+           <!--<script language="javascript" type="text/javascript" src="/js/jquery.flot.stack.js" />-->
+           <!--<lift:FlotBuilder></lift:FlotBuilder> -->
 
        </div>
 
@@ -31,6 +48,13 @@
                     <li>vCPU: <vm:num_cpu></vm:num_cpu></li>
                     <li>Memory: <vm:memory></vm:memory></li>
                     <li>VMware tools: <vm:vmware_tools></vm:vmware_tools></li>
+                    <li>Virtual networks:
+                        <ul>
+                           <vm:networks>
+                               <li> <network:name></network:name> </li>
+                           </vm:networks>
+                        </ul>
+                    </li>
                 </ul>
             </div>
             <div class="right-panel-section">
