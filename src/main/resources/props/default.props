@@ -1,6 +1,6 @@
 # Properties in this file will be read when running in dev mode
 
-c3_host=http://c3.aphreet.org:7373
+c3_host=http://node0.c3.ifunsoftware.com
 
 #c3_context_path=/rest/fs/
 
