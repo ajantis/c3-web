@@ -8,8 +8,8 @@ c3_domain_name=c3web
 
 c3_domain_secret=95b39c16b3b6316a938ea5acbdba24a3
 
-plab_api_url=https://194.85.162.171/sdk
-admin_username=root
-admin_password=opensuse
+plab_api_url=https://localhost/sdk
+admin_username=
+admin_password=
 plab_esx_hostname=plab.cs.ifmo.ru
 
