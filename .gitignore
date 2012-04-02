@@ -1,6 +1,17 @@
-c3webclient.iml
-c3webclient.ipr
-c3webclient.iws
+target
+.idea
+.manager
+.externalToolBuilders
+.settings
+.project
+.classpath
+.springBeans
+*.iml
+*.iws
+*.out
+*.log
+*.ipr
+*.tmp
 *.db
 target
 
