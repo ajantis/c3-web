@@ -36,12 +36,11 @@ import org.aphreet.c3.helpers.MetadataParser
 import org.aphreet.c3.model.{Tag, Category, User}
 import net.liftweb.util.BindHelpers._
 import java.util.Date
-import java.text.{SimpleDateFormat}
+import java.text.SimpleDateFormat
 import net.liftweb.util.TimeHelpers
 import net.liftweb.common.{Logger, Box, Empty, Full}
 import org.apache.commons.lang.time.DateUtils
 import org.apache.commons.httpclient.util.URIUtil
-import net.liftweb.widgets.autocomplete.AutoComplete
 import net.liftweb.http._
 import org.aphreet.c3.apiaccess.{C3ClientException, C3Client}
 

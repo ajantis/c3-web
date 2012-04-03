@@ -1,12 +1,3 @@
-package org.aphreet.c3.model
-
-import net.liftweb.mapper._
-import net.liftweb.util.FieldError
-import xml.Text
-import net.liftweb.common.Box
-import net.liftweb.http.SHtml
-import org.aphreet.c3.apiaccess.{C3Client}
-
 /**
  * Copyright (c) 2011, Dmitry Ivanov
  * All rights reserved.
@@ -37,7 +28,14 @@ import org.aphreet.c3.apiaccess.{C3Client}
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
- 
+package org.aphreet.c3.model
+
+import net.liftweb.mapper._
+import net.liftweb.util.FieldError
+import xml.Text
+import net.liftweb.common.Box
+import net.liftweb.http.SHtml
+import org.aphreet.c3.apiaccess.C3
 
 class Group extends LongKeyedMapper[Group] with IdPK with ManyToMany{
 
@@ -85,22 +83,16 @@ class Group extends LongKeyedMapper[Group] with IdPK with ManyToMany{
 
     var resources: List[C3Resource] = List()
 
-    for( node <- C3Client().listResources(pathToDirectory = this.name.is+"/files" + directory)) {
-
-      val resName = (node \ "@name") text
-
-      if( ((node \ "@leaf") text).toBoolean ){
-        // File () ?? // TODO
-        resources = File(group = this, fullpath = directory + "/" + resName) :: resources
+    val children = C3().getFile("/" + this.name.is + "/files" + directory).asDirectory.children
+    
+    for(child <- children){
+      if(child.isDirectory){
+        resources = File(group = this, fullpath = directory + "/" + child.name) :: resources
       }else{
-        resources = Catalog( name = resName, group = this ) :: resources
+        resources = Catalog( name = child.name, group = this ) :: resources
       }
     }
     resources
-
-  }
-  def createCatalog (catalogName : String) : Boolean = {
-    C3Client().createDir(this.name.is+"/files/"+catalogName)
   }
 
   override def delete_! : Boolean = {
@@ -109,10 +101,6 @@ class Group extends LongKeyedMapper[Group] with IdPK with ManyToMany{
     }
     super.delete_!
   }
-
-
-
-
 }
 
 object Group extends Group with LongKeyedMetaMapper[Group] {

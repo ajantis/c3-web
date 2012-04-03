@@ -1,12 +1,12 @@
 # Properties in this file will be read when running in dev mode
 
-c3_host=http://node0.c3.ifunsoftware.com
+c3_host=http://localhost:7373
 
 #c3_context_path=/rest/fs/
 
-c3_domain_name=c3web
+c3_domain_name=anonymous
 
-c3_domain_secret=c94fe0d14f68f54ea0091a6a70b3e179
+c3_domain_secret=
 
 plab_api_url=https://localhost/sdk
 admin_username=

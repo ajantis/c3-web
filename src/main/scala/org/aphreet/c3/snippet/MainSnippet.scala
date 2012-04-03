@@ -60,8 +60,10 @@ class MainSnippet  {
 
      if(User.loggedIn_?) {
        bind("myGroupsList", html,
-        "groups" -> { (ns: NodeSeq) => User.currentUser.open_!.groups.flatMap(group => bind("group", ns,
-                          "name" -> group.asInstanceOf[Group].name.is)):NodeSeq
+        "groups" -> { (ns: NodeSeq) =>
+          User.currentUser.open_!.groups.flatMap(group =>
+            bind("group", ns,
+                 "name" -> group.asInstanceOf[Group].name.is)):NodeSeq
         }
 
        )

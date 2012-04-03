@@ -1,13 +1,3 @@
-package org.aphreet.c3.snippet
-
-import net.liftweb.util.BindHelpers._
-import org.aphreet.c3.apiaccess.C3Client
-import net.liftweb.http.{SHtml, S}
-import xml.{Text, NodeSeq}
-import net.liftweb.common.Full
-import net.liftweb.mapper.By
-import org.aphreet.c3.model.{Group, User}
-
 /**
  * Copyright (c) 2011, Dmitry Ivanov
  * All rights reserved.
@@ -38,6 +28,17 @@ import org.aphreet.c3.model.{Group, User}
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+
+package org.aphreet.c3.snippet
+
+import net.liftweb.util.BindHelpers._
+import net.liftweb.http.{SHtml, S}
+import xml.{Text, NodeSeq}
+import net.liftweb.common.Full
+import net.liftweb.mapper.By
+import org.aphreet.c3.model.{Group, User}
+
+
  
  
  

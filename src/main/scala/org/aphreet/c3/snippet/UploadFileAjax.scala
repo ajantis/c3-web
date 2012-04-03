@@ -1,5 +1,3 @@
-package org.aphreet.c3.snippet
-
 /**
  * Copyright (c) 2011, Dmitry Ivanov
  * All rights reserved.
@@ -30,6 +28,8 @@ package org.aphreet.c3.snippet
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+package org.aphreet.c3.snippet
+
 import net.liftweb._
 import common.{Logger, Full, Empty, Box}
 import http._
@@ -53,7 +53,7 @@ class UploadFileAjax {
 
   private def uploadFile(fph: FileParamHolder, uploadMethod: (Array[Byte], Map[String,String]) => Unit ) = {
 
-    println("Got a file "+fph.fileName)
+    logger.debug("Got a file "+fph.fileName)
 
     // this simple technique helps to predict uploaded file's type by it's name
     val mimeType: String = new MimetypesFileTypeMap().getContentType(fph.fileName)
@@ -72,7 +72,7 @@ class UploadFileAjax {
         }
       }
       case _ => {
-        println("Unknown upload c3 path for "+fph.fileName)
+        logger.warn("Unknown upload c3 path for "+fph.fileName)
       }
     }
 

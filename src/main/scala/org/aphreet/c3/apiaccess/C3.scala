@@ -14,4 +14,21 @@ object C3 {
 
     new C3SystemFactory().createSystem(host, domain, secret)
   }
+  
+  def createGroupMapping(name:String){
+    
+    val system = C3()
+    
+    val root = system.getFile("/").asDirectory
+    
+    root.createDirectory(name)
+
+    root.getChild(name) match {
+      case Some(node) => val dir = node.asDirectory
+        dir.createDirectory("files")
+        dir.createDirectory("wiki")
+      case None =>
+    }
+
+  }
 }
