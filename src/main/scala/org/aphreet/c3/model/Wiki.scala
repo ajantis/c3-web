@@ -31,11 +31,11 @@
 
 package org.aphreet.c3.model
 
-import org.aphreet.c3.apiaccess.C3Client
 import net.liftweb.common.Logger
-import xml.NodeSeq
-import org.apache.commons.codec.net.URLCodec
 import org.apache.commons.httpclient.util.URIUtil
+import org.aphreet.c3.apiaccess.C3
+import com.ifunsoftware.c3.access.fs.C3Directory
+import com.ifunsoftware.c3.access.DataStream
 
 class Wiki(var name:String, var content:String) {
 
@@ -50,12 +50,16 @@ object Wiki{
   }
 
   private def pageLocation(group:String, name:String) = {
-    group + "/wiki/" + encodeName(name)
+    pageDirectory(group) + encodeName(name)
+  }
+  
+  private def pageDirectory(group:String):String = {
+    "/" + group + "/wiki/"
   }
 
   def getPage(group:String, name:String):Option[Wiki] = {
     try{
-      val content = C3Client().getResourceAsString(pageLocation(group, name))
+      val content = C3().getFile(pageLocation(group, name)).versions.last.getData.readContentAsString
       Some(new Wiki(name, content))
     }catch{
       case e => None
@@ -64,9 +68,9 @@ object Wiki{
 
   def createPage(group:String, page:Wiki) = {
     try{
-      C3Client().uploadFile(pageLocation(group, page.name), page.content.getBytes("UTF-8"), Map(
-      "content.type" -> "application/x-c3-wiki"
-      ))
+
+      C3().getFile(pageDirectory(group)).asInstanceOf[C3Directory]
+        .createFile(page.name, Map("content.type" -> "application/x-c3-wiki"), DataStream(page.content))
     }catch{
       case e => logger.warn("Failed to save resource", e)
     }
@@ -74,7 +78,7 @@ object Wiki{
 
   def savePage(group:String, page:Wiki) = {
     try{
-      C3Client().updateResource(pageLocation(group, page.name), page.content.getBytes("UTF-8"))
+      C3().getFile(pageLocation(group, page.name)).update(DataStream(page.content))
     }catch{
       case e => logger.warn("Failed to save resource", e)
     }
@@ -82,11 +86,12 @@ object Wiki{
 
   def getMetadata(group:String, name:String):Map[String, String] = {
     try{
-      val metadata = C3Client().getNodeMetadata(pageLocation(group, name))
-
-      Map[String, String]() ++ ((metadata \\ "metadata")(0) \ "element").map(elem => ((elem \ "@key")(0).text, (elem \\ "value")(0).text))
+      C3().getFile(pageLocation(group, name)).metadata
     }catch{
-      case e => Map()
+      case e => {
+        e.printStackTrace()
+        Map()
+      }
     }
   }
 

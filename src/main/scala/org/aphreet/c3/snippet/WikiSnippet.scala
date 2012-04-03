@@ -38,7 +38,7 @@ import org.aphreet.c3.lib.wiki.C3HtmlVisitor
 import be.devijver.wikipedia.{SmartLinkResolver, Parser, SmartLink}
 import java.io.StringWriter
 import org.aphreet.c3.view.GroupNavigationUtil
-import xml.{Node, XML, NodeSeq}
+import xml.{XML, NodeSeq}
 import net.liftweb.http._
 import net.liftweb.common.{Box, Empty, Logger, Full}
 

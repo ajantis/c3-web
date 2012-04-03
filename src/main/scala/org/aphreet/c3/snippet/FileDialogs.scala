@@ -34,7 +34,6 @@ package org.aphreet.c3.snippet
 
 import _root_.net.liftweb._
 import http._
-import SHtml._
 import js._
 import JsCmds._
 import js.jquery.JqJsCmds
@@ -42,11 +41,8 @@ import JqJsCmds._
 import common._
 import util._
 import Helpers._
-import javax.activation.MimetypesFileTypeMap
-import java.net.URLEncoder
 import org.aphreet.c3.apiaccess.{C3ClientException, C3Client}
-import widgets.autocomplete.AutoComplete
-import xml.{Node, Text, NodeSeq}
+import xml.{Node, NodeSeq}
 
 trait C3ResourceMetadataForms {
 
@@ -81,14 +77,12 @@ trait C3ResourceMetadataForms {
         bind("list",xml,
           "tags_list" -> ( (ns: NodeSeq) => tags.toXML(ns) ),
           "add_tag" -> ( (ns: NodeSeq) => SHtml.hidden(addTag _) ++
-              SHtml.submit(ns.text, () => {
-              })
-          )
+            SHtml.submit(ns.text, () => {
+            })
+            )
         )
       )
-
     }
-
   }
 
 
@@ -98,23 +92,23 @@ trait C3ResourceMetadataForms {
 
     def toXML(xml: NodeSeq): NodeSeq = {
 
-        metadata.get.toList.sortWith(_._1 > _._1).flatMap(
-           mdNode => {
+      metadata.get.toList.sortWith(_._1 > _._1).flatMap(
+        mdNode => {
 
-              var tmpMDName = mdNode._1
-              var tmpMDValue = mdNode._2
+          var tmpMDName = mdNode._1
+          var tmpMDValue = mdNode._2
 
-              bind("md_node",xml,
-                "name" -> SHtml.text(mdNode._1, tmpMDName = _ , "placeholder" -> "e.g. author","size"-> "8" ),
-                "value" -> SHtml.text(mdNode._2,tmpMDValue = _ , "placeholder" -> "e.g. Jack Jones","size"-> "8" )
-              ) ++ SHtml.hidden( () => {
-                    if(tmpMDName != mdNode._1) {
-                      metadata -= mdNode._1
-                    }
-                    metadata+=(tmpMDName -> tmpMDValue)
-                  })
-           }
-        ) : NodeSeq
+          bind("md_node",xml,
+            "name" -> SHtml.text(mdNode._1, tmpMDName = _ , "placeholder" -> "e.g. author","size"-> "8" ),
+            "value" -> SHtml.text(mdNode._2,tmpMDValue = _ , "placeholder" -> "e.g. Jack Jones","size"-> "8" )
+          ) ++ SHtml.hidden( () => {
+            if(tmpMDName != mdNode._1) {
+              metadata -= mdNode._1
+            }
+            metadata+=(tmpMDName -> tmpMDValue)
+          })
+        }
+      ) : NodeSeq
 
     }
 
@@ -130,12 +124,12 @@ trait C3ResourceMetadataForms {
 
       SHtml.ajaxForm(
         bind("list",xml,
-              "md_list" ->( (ns: NodeSeq) => metadata.toXML(ns) ),
-              "add_md_node" -> ((ns: NodeSeq) => SHtml.hidden(addMDNode _) ++
-                SHtml.submit(ns.text, () => {
+          "md_list" ->( (ns: NodeSeq) => metadata.toXML(ns) ),
+          "add_md_node" -> ((ns: NodeSeq) => SHtml.hidden(addMDNode _) ++
+            SHtml.submit(ns.text, () => {
 
-                }) )
-            ))
+            }) )
+        ))
     }
 
   }
@@ -152,13 +146,13 @@ trait AbstractFormDialog {
       "close" -> ((b: NodeSeq) => <button onclick={Unblock.toJsCmd}>{b}</button>))
 
   def button(in: NodeSeq, path: Box[String]) =
-      SHtml.ajaxButton(in,
-               () => {
-                 theCurrentPath.set(path)
-                 S.runTemplate(List(templateName)).
-                   map(ns => ModalDialog(ns)) openOr
-                   Alert("Couldn't find "+templateName+" template")
-               })
+    SHtml.ajaxButton(in,
+      () => {
+        theCurrentPath.set(path)
+        S.runTemplate(List(templateName)).
+          map(ns => ModalDialog(ns)) openOr
+          Alert("Couldn't find "+templateName+" template")
+      })
 
   def form(xhtml: NodeSeq): NodeSeq
 
@@ -198,10 +192,10 @@ class FileUploadDialog extends AbstractFormDialog with C3ResourceMetadataForms {
         "file_upload" -> SHtml.fileUpload(ul => theFileUpload.set(Full(ul))),
         "metadata" -> ( (ns: NodeSeq) =>
           metadata.toForm(ns)
-        ),
+          ),
         "tags" -> ( (ns: NodeSeq) =>
           tags.toForm(ns)
-        ),
+          ),
         "submit" ->((ns: NodeSeq) => SHtml.hidden(uploadFile _) ++ SHtml.submit(ns.text, () => {} ))
       )
     )
@@ -219,26 +213,26 @@ class CreateDirectoryDialog extends AbstractFormDialog with C3ResourceMetadataFo
 
 
   private def createDirectory(): JsCmd = {
-      if(!theCurrentPath.isEmpty)
-        theDirectoryName.is match {
-          case Full(name) => {
+    if(!theCurrentPath.isEmpty)
+      theDirectoryName.is match {
+        case Full(name) => {
 
-            try {
-              C3Client().createDir(
-                theCurrentPath.get.open_! + "/" + theDirectoryName.get.open_!
-              ) match {
-                  case true => Unblock & Alert("Directory created.") & RedirectTo("")
-                  case _ => Unblock & Alert("Ooops. Directory wasn't created!")
-              }
+          try {
+            C3Client().createDir(
+              theCurrentPath.get.open_! + "/" + theDirectoryName.get.open_!
+            ) match {
+              case true => Unblock & Alert("Directory created.") & RedirectTo("")
+              case _ => Unblock & Alert("Ooops. Directory wasn't created!")
             }
-            catch {
-              case e: C3ClientException => Alert(e.toString)
-            }
-
           }
-          case _ => Alert("Please, enter directory name.")
+          catch {
+            case e: C3ClientException => Alert(e.toString)
+          }
+
         }
-      else Unblock & Alert("Internal error: unknown current path.")
+        case _ => Alert("Please, enter directory name.")
+      }
+    else Unblock & Alert("Internal error: unknown current path.")
   }
 
 
@@ -251,10 +245,10 @@ class CreateDirectoryDialog extends AbstractFormDialog with C3ResourceMetadataFo
         "name" -> SHtml.text("", (name: String) => if(name != "") theDirectoryName.set(Full(name)) ),
         "metadata" -> ( (ns: NodeSeq) =>
           metadata.toForm(ns)
-        ),
+          ),
         "tags" -> ( (ns: NodeSeq) =>
           tags.toForm(ns)
-        ),
+          ),
         "submit" ->((ns: NodeSeq) => SHtml.hidden(createDirectory _) ++ SHtml.submit(ns.text, () => {} ))
       )
     )
@@ -264,11 +258,11 @@ class CreateDirectoryDialog extends AbstractFormDialog with C3ResourceMetadataFo
 
   // little xml helpers :)
   private def attributeIDEqualsValue(value: String)(node: Node) =
-      (node.attribute("id").map(_.text).getOrElse("") == value)
+    (node.attribute("id").map(_.text).getOrElse("") == value)
 
 
   private def getNodeWithID(id: String, ns: NodeSeq): NodeSeq = {
-     (ns \\ "div").filter( attributeIDEqualsValue(id) _ )
+    (ns \\ "div").filter( attributeIDEqualsValue(id) _ )
   }
 
 
