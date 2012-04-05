@@ -36,8 +36,9 @@ import http._
 import util._
 import Helpers._
 import javax.activation.MimetypesFileTypeMap
-import org.aphreet.c3.apiaccess.{C3ClientException, C3Client}
 import org.apache.commons.httpclient.util.URIUtil
+import org.aphreet.c3.apiaccess.C3
+import com.ifunsoftware.c3.access.{C3AccessException, DataStream}
 
 /**
  * Attach a function to the uploaded file.
@@ -66,7 +67,7 @@ class UploadFileAjax {
 
         }
         catch {
-            case e: C3ClientException => {
+            case e: C3AccessException => {
               S.error(e.toString)
             }
         }
@@ -84,7 +85,7 @@ class UploadFileAjax {
     theUploadPath(if(S.uri.contains("/group/")) Full(S.uri.split("/group/").last+"/") else Empty)
 
     SHtml.fileUpload(fph => {
-      uploadFile(fph,C3Client().uploadFileToPath(URIUtil.decode(theUploadPath.open_!,"UTF-8") + fph.fileName) )
+      uploadFile(fph, uploadFileToPath(URIUtil.decode(theUploadPath.open_!,"UTF-8"), fph.fileName) )
     }).attribute("name").get
   }
 
@@ -93,8 +94,16 @@ class UploadFileAjax {
     theUploadPath(if(S.uri.contains("/group/")) Full(S.uri.split("/group/").last) else Empty)
 
     SHtml.fileUpload(fph => {
-      uploadFile(fph,C3Client().updateFile(URIUtil.decode(theUploadPath.open_!,"UTF-8")) )
+      uploadFile(fph, updateFile(URIUtil.decode(theUploadPath.open_!,"UTF-8")) )
     }).attribute("name").get
+  }
+  
+  def uploadFileToPath(path:String, name:String)(data:Array[Byte], metadata:Map[String, String]){
+    C3().getFile("/" + path).asDirectory.createFile(name, metadata, DataStream(data))
+  }
+  
+  def updateFile(path:String)(data:Array[Byte], metadata:Map[String, String]){
+    C3().getFile("/" + path).update(metadata, DataStream(data))
   }
 
 

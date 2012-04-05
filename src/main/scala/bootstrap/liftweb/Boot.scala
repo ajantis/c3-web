@@ -6,9 +6,7 @@ import _root_.net.liftweb.http.provider._
 import _root_.net.liftweb.sitemap._
 import _root_.net.liftweb.sitemap.Loc._
 import Helpers._
-import _root_.java.sql.{Connection, DriverManager}
 import org.aphreet.c3.model._
-import org.aphreet.c3.apiaccess.C3Client
 import net.liftweb.mapper._
 import net.liftweb.http._
 
@@ -24,8 +22,7 @@ import net.liftweb.widgets.autocomplete.AutoComplete
 import net.liftweb.widgets.flot.Flot
 
 import net.liftweb.widgets.menu.MenuWidget
-import net.liftweb.sitemap.Menu.Menuable._
-import net.liftweb.sitemap.Loc.LocGroup._
+import org.aphreet.c3.helpers.C3Streamer
 
 
 /**
@@ -86,7 +83,7 @@ class Boot {
         case _ => false
       }
     },
-    () => RedirectWithState("/index", RedirectState( () => {} ,"Not a group admin" -> NoticeType.Notice ) ) )
+      () => RedirectWithState("/index", RedirectState( () => {} ,"Not a group admin" -> NoticeType.Notice ) ) )
 
     // Build SiteMap
     def sitemap() = SiteMap(
@@ -197,40 +194,8 @@ class Boot {
     })
 
     LiftRules.dispatch.append {
-
       case Req("download" :: groupname :: filePath, extension, GetRequest) =>
-        () =>
-          for {
-            stream <- tryo(new java.io.ByteArrayInputStream(
-              try{
-                C3Client().getNodeData(groupname + "/" + filePath.reverse.tail.reverse.mkString("/") + "/" +
-                  filePath.last + {
-                  extension match {
-                    case "" => ""
-                    case ext => "." + ext
-                  }
-                })
-              }
-              catch {
-                case e: Exception => {
-                  e.printStackTrace
-                  S.notice("No file found!")
-                  S.redirectTo("/group/"+groupname+"/files/"+filePath.reverse.tail.reverse.mkString("/"))
-                }
-              }))
-            if null ne stream
-          } yield StreamingResponse(stream, () => stream.close,
-            stream.available, List("Content-Type" ->
-              C3Client().getResourseContentType(groupname +
-                "/" + filePath.reverse.tail.reverse.mkString("/") + "/" +
-                filePath.last + {
-                extension match {
-                  case "" => ""
-                  case ext => "." + ext
-                }
-              }
-              )),
-            Nil,200)
+        C3Streamer(groupname, filePath, extension)
     }
 
     // for ajax file upload
@@ -316,7 +281,7 @@ class Boot {
     UploadProgress.init
 
     //Make sure we don't put stuff in memory for uploads
-	  LiftRules.handleMimeFile = OnDiskFileParamHolder.apply
+    LiftRules.handleMimeFile = OnDiskFileParamHolder.apply
 
     // Initialization for auto complete widget
     AutoComplete.init

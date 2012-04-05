@@ -7,7 +7,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.aphreet.c3</groupId>
     <artifactId>c3webclient</artifactId>
-    <version>${bundleVersion}</version>
+    <version>1.0.0</version>
     <packaging>war</packaging>
     <name>C3 Web Client</name>
     <inceptionYear>2010</inceptionYear>
@@ -24,9 +24,30 @@
 
     <repositories>
         <repository>
-            <id>scala-tools.releases</id>
-            <name>Scala-Tools Dependencies Repository for Releases</name>
+            <id>central</id>
+            <name>Maven Central</name>
+            <url>http://repo1.maven.org/maven2</url>
+        </repository>
+
+        <repository>
+            <id>scala-tools.org</id>
+            <name>Scala-tools Maven2 Repository</name>
             <url>http://scala-tools.org/repo-releases</url>
+        </repository>
+
+        <repository>
+            <id>libs-release</id>
+            <name>iFunSoftware release repository</name>
+            <url>http://repository.ifunsoftware.com/artifactory/libs-release</url>
+        </repository>
+
+        <repository>
+            <id>libs-snapshot</id>
+            <name>iFunSoftware snapshot repository</name>
+            <url>http://repository.ifunsoftware.com/artifactory/libs-snapshot</url>
+            <snapshots>
+                <updatePolicy>daily</updatePolicy>
+            </snapshots>
         </repository>
 
         <repository>
@@ -35,6 +56,19 @@
             <url>http://c3-system.googlecode.com/svn/maven</url>
         </repository>
     </repositories>
+
+    <distributionManagement>
+        <repository>
+            <id>ifunsoftware</id>
+            <name>iFunSoftware release repository</name>
+            <url>http://repository.ifunsoftware.com/artifactory/libs-release-local</url>
+        </repository>
+        <snapshotRepository>
+            <id>ifunsoftware-snap</id>
+            <name>iFunSoftware snapshot repository</name>
+            <url>http://repository.ifunsoftware.com/artifactory/libs-snapshot-local</url>
+        </snapshotRepository>
+    </distributionManagement>
 
     <pluginRepositories>
         <pluginRepository>

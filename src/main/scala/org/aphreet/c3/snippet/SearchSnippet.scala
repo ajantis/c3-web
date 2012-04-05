@@ -27,22 +27,17 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-
-
 package org.aphreet.c3.snippet
 
 import xml.{Text, NodeSeq}
-import org.aphreet.c3.helpers.MetadataParser
 import org.aphreet.c3.model.{Tag, Category, User}
 import net.liftweb.util.BindHelpers._
-import java.util.Date
 import java.text.SimpleDateFormat
-import net.liftweb.util.TimeHelpers
 import net.liftweb.common.{Logger, Box, Empty, Full}
-import org.apache.commons.lang.time.DateUtils
 import org.apache.commons.httpclient.util.URIUtil
 import net.liftweb.http._
-import org.aphreet.c3.apiaccess.{C3ClientException, C3Client}
+import com.ifunsoftware.c3.access.C3AccessException
+import org.aphreet.c3.apiaccess.C3
 
 class SearchSnippet extends StatefulSnippet {
 
@@ -50,122 +45,85 @@ class SearchSnippet extends StatefulSnippet {
 
   var dispatch : DispatchIt = if(stringToSearch.isEmpty) {
 
-          case "search" => searchForm _
-          case "miniSearch" => miniSearchForm _
+    case "search" => searchForm _
+    case "miniSearch" => miniSearchForm _
   }
   else {
-          case "search" => resultPage _
-          case "miniSearch" => miniSearchForm _
+    case "search" => resultPage _
+    case "miniSearch" => miniSearchForm _
   }
 
 
   var searchString = ""
-  var resultSet = NodeSeq.Empty
 
   def resultPage (html: NodeSeq) = {
 
-     if (! stringToSearch.isEmpty ) searchString = stringToSearch.open_!
-     if(searchString!="") resultSet = C3Client().doSearch(searchString)
+    if (! stringToSearch.isEmpty )
+      searchString = stringToSearch.open_!
 
-     bind("search", html,
+    val resultEntries = C3().search(searchString)
+
+    val format: SimpleDateFormat = new SimpleDateFormat("dd/MM/yyyy")
+
+    bind("search", html,
       "query" -> SHtml.text(searchString, processQuery _ ,"placeholder" -> "Search","size" -> "60" ),
-      // doesn't work
-      /*"query" -> AutoComplete(searchString, (current: String,limit: Int) =>
-        User.currentSearchRequests.filter(_.toLowerCase.startsWith(current.toLowerCase)),
-        value => processQuery(value),
-        attrs = ("placeholder","Search")
-      ),*/
+
       "resultSet" -> { (ns : NodeSeq) =>
-        (resultSet \\ "entry").flatMap( entry => {
+        resultEntries.flatMap( entry => {
 
           try {
-            val metadata = C3Client().getResourceMetadataWithFSPath( (entry \ "@address").text )
+            val resource = C3().getResource(entry.address, List("c3.ext.fs.path"))
+            val metadata = resource.metadata
 
-            val mdParser = MetadataParser(metadata)
-
-            val name: String = mdParser.getNodeWithAttributeValue("element","key","c3.fs.nodename") match {
-              case NodeSeq.Empty => ""
-              case xs => (xs \\ "value")(0) text
-            }
-
-            val path: String = mdParser.getNodeWithAttributeValue("element","key","c3.ext.fs.path") match {
-              case NodeSeq.Empty => ""
-              case xs => (xs \\ "value")(0) text
-            }
-
-            //(metadata \\ "element").toList.filter((element:NodeSeq) => (element \ "@key").toString == "c3.fs.nodetype")
-            val resourceType: String = mdParser.getNodeWithAttributeValue("element","key","c3.fs.nodetype") match {
-              case NodeSeq.Empty => ""
-              case xs => (xs \\ "value")(0) text
-            }
-
-
-            //NOTE: ZZ on end is not compatible with jdk, but allows for formatting
-            //dates like so (note the : 3rd from last spot, which is iso8601 standard):
-            //date=2008-10-03T10:29:40.046-04:00
-            val DATE_FORMAT_8601 = "yyyy-MM-dd'T'HH:mm:ss"
-            logger error ((metadata \\ "resource")(0) \\ "@createDate")
-            val format: SimpleDateFormat = new SimpleDateFormat("dd/MM/yyyy")
-
-            val created: Date = ((metadata \\ "resource")(0) \\ "@createDate").text match {
-              case "" => TimeHelpers.now
-              case str => DateUtils.parseDate(str.split('.').head, Array(DATE_FORMAT_8601))
-            }
-
-            def parseToFolderPath(path: String): NodeSeq = {
-              path.split("/").toList.tail match {
-                case Nil => NodeSeq.Empty
-                case lst => {
-                  SHtml.link("/group/" + lst.reverse.tail.reverse.mkString("/"), () => {}, Text("Folder"))
-                }
-              }
-            }
+            val name = metadata.getOrElse("c3.fs.nodename", "")
+            val path = resource.systemMetadata.getOrElse("c3.ext.fs.path", "")
+            val resourceType = metadata.getOrElse("c3.fs.nodetype", "")
 
             if(name != "")
-                bind("entry", ns,
-                  "address" ->   { (entry \ "@address").text } ,
-                  "name" -> URIUtil.decode(name, "UTF-8"),
-                  "created" -> format.format(created),
-                  "resource_path" -> { path.split("/").toList.tail match {
-                    case Nil => NodeSeq.Empty
-                    case lst => SHtml.link("/group/" + lst.mkString("/"), () => {}, Text(name))
-                  }},
-                  "full_path" -> { path.split("/").toList.tail match {
-                    case Nil => NodeSeq.Empty
-                    case fullPath @ (group :: "files" :: filePath) => {
-                      (SHtml.link("/group/" + group + "/files" , () => {}, Text(group)):NodeSeq) ++
+              bind("entry", ns,
+                "address" ->  entry.address ,
+                "name" -> URIUtil.decode(name, "UTF-8"),
+                "created" -> format.format(resource.date),
+                "resource_path" -> { path.split("/").toList.tail match {
+                  case Nil => NodeSeq.Empty
+                  case lst => SHtml.link("/group/" + lst.mkString("/"), () => {}, Text(name))
+                }},
+                "full_path" -> { path.split("/").toList.tail match {
+                  case Nil => NodeSeq.Empty
+                  case fullPath @ (group :: "files" :: filePath) => {
+                    (SHtml.link("/group/" + group + "/files" , () => {}, Text(group)):NodeSeq) ++
                       (
                         filePath.reverse match {
                           case file :: path =>
                             path.reverse.flatMap( i =>
-                                (( Text("/") ++ SHtml.link("/group/"+group+"/files/"+filePath.takeWhile(_ != i).mkString("/") + i , () => {}, Text(i)) ):NodeSeq)
+                              (( Text("/") ++ SHtml.link("/group/"+group+"/files/"+filePath.takeWhile(_ != i).mkString("/") + i , () => {}, Text(i)) ):NodeSeq)
                             ): NodeSeq
                           case _ => NodeSeq.Empty
                         }
 
-                      )
-                    }: NodeSeq
-                    case fullPath @ (group :: "wiki" :: _) => {
-                      ((SHtml.link("/group/" + group + "/wiki" , () => {}, Text(group))):NodeSeq)
-                    }
-                    case _ => Text("<unknown>")
-                  }},
-                  "to_folder" -> parseToFolderPath(path),
-                  "type" -> { resourceType match {
-                    case "folder" => <img src="/images/icons/folder.gif"/>
-                    case _ => <img src="/images/icons/document.gif" />
-                  }}
-                )
+                        )
+                  }: NodeSeq
+                  case fullPath @ (group :: "wiki" :: _) => {
+                    ((SHtml.link("/group/" + group + "/wiki" , () => {}, Text(group))):NodeSeq)
+                  }
+                  case _ => Text("<unknown>")
+                }},
+                "to_folder" -> parseToFolderPath(path),
+                "type" -> { resourceType match {
+                  case "folder" => <img src="/images/icons/folder.gif"/>
+                  case _ => <img src="/images/icons/document.gif" />
+                }}
+              )
             else NodeSeq.Empty
           }
           catch {
-            case e: C3ClientException => {
-              logger error e.toString()
+            case e: C3AccessException => {
+              logger error e
               NodeSeq.Empty
             }
           }
 
-        })
+        }):NodeSeq
       },
       "submit" -> SHtml.submit("Go", () => {}  ),
       "user_categories" -> {(ns: NodeSeq ) => User.currentUser.open_!.categories.flatMap(
@@ -180,25 +138,28 @@ class SearchSnippet extends StatefulSnippet {
             ):NodeSeq }
           )
       ):NodeSeq}
-       )
+    )
+  }
+
+  private def parseToFolderPath(path: String): NodeSeq = {
+    path.split("/").toList.tail match {
+      case Nil => NodeSeq.Empty
+      case lst => {
+        SHtml.link("/group/" + lst.reverse.tail.reverse.mkString("/"), () => {}, Text("Folder"))
+      }
+    }
   }
 
   def searchForm (html: NodeSeq) = {
 
 
-     bind("search", html,
+    bind("search", html,
       "query" -> SHtml.text(searchString, processQuery _ , "placeholder" -> "Search","size" -> "60"),
-      // doesn't work
-      /*"query" -> AutoComplete(searchString, (current: String,limit: Int) =>
-        User.currentSearchRequests.filter(_.toLowerCase.startsWith(current.toLowerCase)),
-        value => processQuery(value),
-        attrs = ("placeholder","Search")
-      ),*/
       "resultSet" -> "",
       "submit" -> SHtml.submit("Go", () => {
         dispatch = {
-            case "search" => resultPage _
-            case "miniSearch" => miniSearchForm _
+          case "search" => resultPage _
+          case "miniSearch" => miniSearchForm _
         }
       }),
       "user_categories" -> {(ns: NodeSeq ) => User.currentUser.open_!.categories.flatMap(
@@ -213,7 +174,7 @@ class SearchSnippet extends StatefulSnippet {
             ):NodeSeq}
           )
       ):NodeSeq}
-     )
+    )
   }
 
   // we store a string entered in an input box of mini search form
@@ -223,12 +184,6 @@ class SearchSnippet extends StatefulSnippet {
     var searchParam = ""
     bind("miniSearch", html,
       "search_string" -> SHtml.text("",searchParam = _ , "placeholder" -> "Search"),
-      // doesn't work
-      /*"search_string" -> AutoComplete("", (current: String,limit: Int) =>
-        User.currentSearchRequests.filter(_.toLowerCase.startsWith(current.toLowerCase)),
-        searchParam = _,
-        attrs = ("placeholder","Search")
-      ), */
       "submit" -> SHtml.submit("Go", () => S.redirectTo("/search",() => {
 
         stringToSearch.set(Full(searchParam))

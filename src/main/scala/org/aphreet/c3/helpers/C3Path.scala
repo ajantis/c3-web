@@ -1,7 +1,5 @@
-package org.aphreet.c3.apiaccess
-
 /**
- * Copyright (c) 2011, Dmitry Ivanov
+ * Copyright (c) 2011, Mikhail Malygin
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,9 +28,17 @@ package org.aphreet.c3.apiaccess
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
- 
- 
- 
-case class Path (val is: String) {
-  override def toString = is
+package org.aphreet.c3.helpers
+
+object C3Path {
+
+  def apply(group:String, path:List[String], extension:String):String = {
+    "/" + group + "/" + path.reverse.tail.reverse.mkString("/") + "/" +
+      path.last + {
+      extension match {
+        case "" => ""
+        case ext => "." + ext
+      }
+    }
+  }
 }

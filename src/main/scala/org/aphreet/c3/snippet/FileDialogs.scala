@@ -41,8 +41,9 @@ import JqJsCmds._
 import common._
 import util._
 import Helpers._
-import org.aphreet.c3.apiaccess.{C3ClientException, C3Client}
-import xml.{Node, NodeSeq}
+import xml.NodeSeq
+import org.aphreet.c3.apiaccess.C3
+import com.ifunsoftware.c3.access.C3AccessException
 
 trait C3ResourceMetadataForms {
 
@@ -58,10 +59,6 @@ trait C3ResourceMetadataForms {
         (tag: String) =>
           bind("tag", xml,
             "text" -> ( SHtml.text(tag, (str) => { tags.get += str }, "placeholder" -> "e.g. IT","size"-> "8" ) )
-            /*"text" -> AutoComplete(tag, (current: String,limit: Int) =>
-              data.filter(_.toLowerCase.startsWith(current.toLowerCase)),
-              (value:String) => { tags.get += value },
-              attrs = ("placeholder", "e.g. IT") ) */
           )
       ): NodeSeq
     }
@@ -139,6 +136,7 @@ trait C3ResourceMetadataForms {
 trait AbstractFormDialog {
 
   val templateName: String
+
   protected  object theCurrentPath extends SessionVar[Box[String]](Empty)
 
   def unblockForm(xhtml: NodeSeq) =
@@ -216,19 +214,12 @@ class CreateDirectoryDialog extends AbstractFormDialog with C3ResourceMetadataFo
     if(!theCurrentPath.isEmpty)
       theDirectoryName.is match {
         case Full(name) => {
-
           try {
-            C3Client().createDir(
-              theCurrentPath.get.open_! + "/" + theDirectoryName.get.open_!
-            ) match {
-              case true => Unblock & Alert("Directory created.") & RedirectTo("")
-              case _ => Unblock & Alert("Ooops. Directory wasn't created!")
-            }
+            C3().getFile("/" + theCurrentPath.get.open_!).asDirectory.createDirectory(theDirectoryName.get.open_!)
+            Unblock & Alert("Directory created.") & RedirectTo("")
+          }catch {
+            case e: C3AccessException => Unblock & Alert("Ooops. Directory wasn't created!")
           }
-          catch {
-            case e: C3ClientException => Alert(e.toString)
-          }
-
         }
         case _ => Alert("Please, enter directory name.")
       }
@@ -253,18 +244,5 @@ class CreateDirectoryDialog extends AbstractFormDialog with C3ResourceMetadataFo
       )
     )
   }
-
-
-
-  // little xml helpers :)
-  private def attributeIDEqualsValue(value: String)(node: Node) =
-    (node.attribute("id").map(_.text).getOrElse("") == value)
-
-
-  private def getNodeWithID(id: String, ns: NodeSeq): NodeSeq = {
-    (ns \\ "div").filter( attributeIDEqualsValue(id) _ )
-  }
-
-
 
 }
