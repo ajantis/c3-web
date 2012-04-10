@@ -37,8 +37,8 @@ import util._
 import Helpers._
 import javax.activation.MimetypesFileTypeMap
 import org.apache.commons.httpclient.util.URIUtil
-import org.aphreet.c3.apiaccess.C3
-import com.ifunsoftware.c3.access.{C3AccessException, DataStream}
+import org.aphreet.c3.lib.DependencyFactory.inject
+import com.ifunsoftware.c3.access.{C3System, C3AccessException, DataStream}
 
 /**
  * Attach a function to the uploaded file.
@@ -47,6 +47,8 @@ import com.ifunsoftware.c3.access.{C3AccessException, DataStream}
 
 class UploadFileAjax {
 
+  val c3 = inject[C3System].open_!
+  
   val logger = Logger(classOf[UploadFileAjax])
 
   // the request-local variable that hold the upload path (in c3) file parameter
@@ -82,7 +84,7 @@ class UploadFileAjax {
 
   def render = "type=file [name]" #> {
 
-    theUploadPath(if(S.uri.contains("/group/")) Full(S.uri.split("/group/").last+"/") else Empty)
+    theUploadPath(if(S.uri.contains("/group/")) Full(S.uri.split("/group/", 2).last+"/") else Empty)
 
     SHtml.fileUpload(fph => {
       uploadFile(fph, uploadFileToPath(URIUtil.decode(theUploadPath.open_!,"UTF-8"), fph.fileName) )
@@ -91,7 +93,7 @@ class UploadFileAjax {
 
   def update = "type=file [name]" #> {
 
-    theUploadPath(if(S.uri.contains("/group/")) Full(S.uri.split("/group/").last) else Empty)
+    theUploadPath(if(S.uri.contains("/group/")) Full(S.uri.split("/group/", 2).last) else Empty)
 
     SHtml.fileUpload(fph => {
       uploadFile(fph, updateFile(URIUtil.decode(theUploadPath.open_!,"UTF-8")) )
@@ -99,11 +101,11 @@ class UploadFileAjax {
   }
   
   def uploadFileToPath(path:String, name:String)(data:Array[Byte], metadata:Map[String, String]){
-    C3().getFile("/" + path).asDirectory.createFile(name, metadata, DataStream(data))
+    c3.getFile("/" + path).asDirectory.createFile(name, metadata, DataStream(data))
   }
   
   def updateFile(path:String)(data:Array[Byte], metadata:Map[String, String]){
-    C3().getFile("/" + path).update(metadata, DataStream(data))
+    c3.getFile("/" + path).update(metadata, DataStream(data))
   }
 
 

@@ -1,10 +1,5 @@
-package org.aphreet.c3.snippet
-
-import xml.NodeSeq
-import org.aphreet.c3.openid.OpenIDVendor
-
 /**
- * Copyright (c) 2011, Dmitry Ivanov
+ * Copyright (c) 2012, Mikhail Malygin
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,13 +28,18 @@ import org.aphreet.c3.openid.OpenIDVendor
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+package org.aphreet.c3.service
 
+import org.aphreet.c3.model.Wiki
 
+trait WikiService {
 
-class OpenID {
+  def getPage(group:String, name:String):Option[Wiki]
 
-  // just for test
-  def renderForm(xhtml: NodeSeq) : NodeSeq =
-    OpenIDVendor.loginForm
+  def createPage(group:String, page:Wiki)
+
+  def savePage(group:String, page:Wiki)
+
+  def getMetadata(group:String, name:String):Map[String, String]
 
 }

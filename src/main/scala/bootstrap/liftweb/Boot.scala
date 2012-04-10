@@ -120,12 +120,6 @@ class Boot {
 
       Menu("Not found") / "404" >>  Hidden,
 
-
-      // VM service's menu parts
-      Menu("VM Service") / "vmservice" / "index" >> loggedIn >> LocGroup("mainmenu"),
-      Menu("VMS vm's overview") / "vmservice" / "view_vm" >> loggedIn >> Hidden,
-
-
       LogLevel.menu // default log level menu is located at /loglevel/change
 
 

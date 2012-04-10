@@ -147,27 +147,9 @@ class MainSnippet  {
               ): NodeSeq} }
            )
         }
-        case "vmOverview" => {
-
-          val vmName = S.param("vmName").open_!
-
-          val brdCrmbList : List[(String,String)] = ("/vmservice/","VM Service") :: ("/vmservice/vm/"+URIUtil.encodeQuery(vmName,"UTF-8"),vmName) :: Nil
-
-          bind("breadCrumbsMenu", html,
-               "breadCrumbs" -> {(ns: NodeSeq) => {
-                 brdCrmbList.flatMap(linkWithName =>
-                    bind("breadCrumb", ns,
-                      "link" -> <a href={linkWithName._1}>{linkWithName._2}</a>
-                    )
-              ): NodeSeq} }
-          )
-        }
         case _ => NodeSeq.Empty // TODO implement
       }
-
     }
-
-
   }
 
 
