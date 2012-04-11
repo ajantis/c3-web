@@ -7,12 +7,12 @@ import com.ifunsoftware.c3.access.fs.C3Directory
 import com.ifunsoftware.c3.access.DataStream
 import net.liftweb.common.Logger
 import org.aphreet.c3.model.Wiki
-import org.aphreet.c3.lib.DependencyFactory.inject
+import org.aphreet.c3.lib.DependencyFactory._
 
 
 class WikiServiceImpl extends WikiService{
 
-  val c3 = inject[C3System].open_!
+  lazy val c3 = inject[C3System].open_!
 
   val logger = Logger(classOf[Wiki])
 

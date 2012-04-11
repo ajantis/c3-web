@@ -36,15 +36,19 @@ import org.aphreet.c3.model._
 import net.liftweb.common.{Logger, Full, Empty}
 import net.liftweb.http.js.JsCmds.Alert
 import net.liftweb.mapper.By
-import net.liftweb.util.TimeHelpers
 import xml.{Text, NodeSeq}
 
 import net.liftweb.http.js.{JsCmd, JsCmds}
 import net.liftweb.http._
-import org.aphreet.c3.apiaccess.C3
+import com.ifunsoftware.c3.access.C3System
+import org.aphreet.c3.service.GroupService
+import org.aphreet.c3.lib.DependencyFactory._
 
-class GroupForm {
+class GroupForm{
 
+  val c3 = inject[C3System].open_!
+
+  val groupService = inject[GroupService].open_!
 
   val logger = Logger(classOf[GroupForm])
 
@@ -84,7 +88,7 @@ class GroupForm {
             // Linking group owner with a new Group in DB
             UserGroup.join(User.find(By(User.id,group.owner)).open_!,group)
 
-            C3.createGroupMapping(group.name.is)
+            groupService.createGroupMapping(group.name.is)
             S.notice("Added group: " + group.name); S.redirectTo("/groups")
           }
           case xs => S.error(xs) ; S.mapSnippet(invokedAs, newGroup)
@@ -124,7 +128,7 @@ class GroupForm {
             def deleteSelected: JsCmd = {
               for (resName <- selectedResources){
                 try {
-                  C3().deleteFile(groupname+"/files/"+groupdir.tail + "/"+ resName)
+                  c3.deleteFile(groupname+"/files/"+groupdir.tail + "/"+ resName)
                 }
                 catch {
                   case e: Exception => Alert(e.toString) & JsCmds.RedirectTo("")
@@ -164,7 +168,7 @@ class GroupForm {
                     case str => str + "/"
                   } } +  child.name
                   
-                  val file = C3().getFile(path)
+                  val file = c3.getFile(path)
                   val created = file.date
 
                   val url = "/group" + path
@@ -180,7 +184,7 @@ class GroupForm {
                     "delete" -> SHtml.ajaxButton("Delete",() => {
 
                       try {
-                        C3().deleteFile("/" + groupname+"/files/"+groupdir.tail + "/"+ child.name)
+                        c3.deleteFile("/" + groupname+"/files/"+groupdir.tail + "/"+ child.name)
                         Alert("Resource "+ child.name +" deleted.")
                       }
                       catch {
@@ -287,17 +291,17 @@ class GroupForm {
 
   private def bindNodeParameters(html:NodeSeq, groupName:String, groupPath:String):NodeSeq = {
     try{
-      val file = C3().getFile(pathInGroup(groupName, groupPath))
+      val file = c3.getFile(pathInGroup(groupName, groupPath))
 
       val md = file.metadata
       val createDate = file.date
-      val tags = md.getOrElse("tags", "")
+      val tags = md.getOrElse("tags", "").split(",").toList
 
       bind("currentResource", html,
         "name" -> groupPath,
         "owner" -> "owner2",
-        "created" -> TimeHelpers.now.toString,             // TODO List(tags) is a STUB for tag display test
-        "tags_list" -> {(ns: NodeSeq) => List("tag11","tag223","tag323").flatMap( tag =>
+        "created" -> createDate.toString,             // TODO List(tags) is a STUB for tag display test
+        "tags_list" -> {(ns: NodeSeq) => tags.flatMap( tag =>
           bind("tag", ns, "name" -> tag)) : NodeSeq
         }
       )

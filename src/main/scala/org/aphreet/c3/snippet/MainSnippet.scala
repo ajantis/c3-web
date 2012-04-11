@@ -1,14 +1,3 @@
-package org.aphreet.c3.snippet
-
-import org.aphreet.c3.model.{Group, User}
-import net.liftweb.mapper.MaxRows
-import net.liftweb.sitemap.Loc
-import net.liftweb.http.{GetRequest, Req, SHtml, S}
-import xml.{XML, Text, NodeSeq}
-import net.liftweb.common.Full
-import net.liftweb.widgets.autocomplete.AutoComplete
-import org.apache.commons.httpclient.util.URIUtil
-
 /**
  * Copyright (c) 2011, Dmitry Ivanov
  * All rights reserved.
@@ -39,6 +28,16 @@ import org.apache.commons.httpclient.util.URIUtil
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+
+package org.aphreet.c3.snippet
+
+import org.aphreet.c3.model.{Group, User}
+import net.liftweb.mapper.MaxRows
+import net.liftweb.sitemap.Loc
+import net.liftweb.http.S
+import xml.{Text, NodeSeq}
+import net.liftweb.common.Full
+import net.liftweb.widgets.autocomplete.AutoComplete
 
 import net.liftweb.util.BindHelpers._
  

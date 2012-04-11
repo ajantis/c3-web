@@ -38,15 +38,15 @@ import org.aphreet.c3.lib.wiki.C3HtmlVisitor
 import be.devijver.wikipedia.{SmartLinkResolver, Parser, SmartLink}
 import java.io.StringWriter
 import org.aphreet.c3.view.GroupNavigationUtil
-import org.aphreet.c3.lib.DependencyFactory.inject
 import net.liftweb.http._
 import net.liftweb.common.{Box, Empty, Logger, Full}
 import org.aphreet.c3.service.WikiService
 import xml.{Text, XML, NodeSeq}
+import org.aphreet.c3.lib.DependencyFactory._
 
 class WikiSnippet{
 
-  val wikiService = inject[WikiService].open_!
+  lazy val wikiService = inject[WikiService].open_!
 
   val logger = Logger(classOf[GroupForm])
 

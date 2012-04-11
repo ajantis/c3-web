@@ -32,15 +32,19 @@ package org.aphreet.c3.helpers
 
 import net.liftweb.http.{StreamingResponse, S}
 import net.liftweb.common.Full
-import org.aphreet.c3.apiaccess.C3
+import com.ifunsoftware.c3.access.C3System
+import org.aphreet.c3.model.C3Path
+import org.aphreet.c3.lib.DependencyFactory._
 
-object C3Streamer {
+object C3Streamer{
 
   def apply(group:String, path:List[String], extension:String) = {
     () => {
 
+      val c3 = inject[C3System].open_!
+
       try{
-        val file = C3().getFile(C3Path(group, path, extension))
+        val file = c3.getFile(C3Path(group, path, extension))
         val metadata = file.metadata
 
         val stream = file.versions.last.getDataStream

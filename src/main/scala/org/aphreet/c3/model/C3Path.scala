@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011, Dmitry Ivanov
+ * Copyright (c) 2012, Mikhail Malygin
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,11 +28,54 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package org.aphreet.c3.snippet
- 
-import _root_.scala.xml.NodeSeq
-import _root_.net.liftweb.widgets.menu.MenuWidget
+package org.aphreet.c3.model
 
-class Menubar {
-  def render (xhtml : NodeSeq) = MenuWidget("mainmenu" :: Nil)
+case class C3Path(path:String){
+
+  var groupName:String = ""
+
+  var resourceName:String = ""
+
+  var resourceType:ResourceType = UnknownType
+
+  var resourceUri = ""
+
+  {
+    path.split("/").toList.filter(!_.isEmpty) match {
+      case fullpath @ (group :: "files" :: filePath) => {
+        groupName = group
+        resourceName = "/" + filePath.mkString("/")
+        resourceType = FileType
+        resourceUri = "/group/" + group + "/files" + resourceName
+      }
+
+      case fullpath @ (group :: "wiki" :: filePath) => {
+        groupName = group
+        resourceName = filePath.head
+        resourceType = WikiType
+        resourceUri = "/group/" + group + "/wiki/" + resourceName
+      }
+
+      case _ =>
+    }
+  }
+
 }
+
+object C3Path {
+
+  def apply(group:String, path:List[String], extension:String):String = {
+    "/" + group + "/" + path.reverse.tail.reverse.mkString("/") + "/" +
+      path.last + {
+      extension match {
+        case "" => ""
+        case ext => "." + ext
+      }
+    }
+  }
+}
+
+sealed trait ResourceType;
+object FileType extends ResourceType
+object WikiType extends ResourceType
+object UnknownType extends ResourceType

@@ -30,16 +30,18 @@
 package org.aphreet.c3.snippet
 
 import xml.{Text, NodeSeq}
-import org.aphreet.c3.model.{Tag, Category, User}
 import net.liftweb.util.BindHelpers._
 import java.text.SimpleDateFormat
 import net.liftweb.common.{Logger, Box, Empty, Full}
 import org.apache.commons.httpclient.util.URIUtil
 import net.liftweb.http._
-import com.ifunsoftware.c3.access.C3AccessException
-import org.aphreet.c3.apiaccess.C3
+import org.aphreet.c3.model.{C3Path, Tag, Category, User}
+import com.ifunsoftware.c3.access.{C3System, C3AccessException}
+import org.aphreet.c3.lib.DependencyFactory._
 
-class SearchSnippet extends StatefulSnippet {
+class SearchSnippet extends StatefulSnippet{
+  
+  val c3 = inject[C3System].open_!
 
   val logger = Logger(classOf[SearchSnippet])
 
@@ -61,7 +63,7 @@ class SearchSnippet extends StatefulSnippet {
     if (! stringToSearch.isEmpty )
       searchString = stringToSearch.open_!
 
-    val resultEntries = C3().search(searchString)
+    val resultEntries = c3.search(searchString)
 
     val format: SimpleDateFormat = new SimpleDateFormat("dd/MM/yyyy")
 
@@ -72,45 +74,24 @@ class SearchSnippet extends StatefulSnippet {
         resultEntries.flatMap( entry => {
 
           try {
-            val resource = C3().getResource(entry.address, List("c3.ext.fs.path"))
+            val resource = c3.getResource(entry.address, List("c3.ext.fs.path"))
             val metadata = resource.metadata
 
             val name = metadata.getOrElse("c3.fs.nodename", "")
             val path = resource.systemMetadata.getOrElse("c3.ext.fs.path", "")
             val resourceType = metadata.getOrElse("c3.fs.nodetype", "")
 
+            val c3Path = C3Path(path)
+
             if(name != "")
               bind("entry", ns,
                 "address" ->  entry.address ,
                 "name" -> URIUtil.decode(name, "UTF-8"),
                 "created" -> format.format(resource.date),
-                "resource_path" -> { path.split("/").toList.tail match {
-                  case Nil => NodeSeq.Empty
-                  case lst => SHtml.link("/group/" + lst.mkString("/"), () => {}, Text(name))
-                }},
-                "full_path" -> { path.split("/").toList.tail match {
-                  case Nil => NodeSeq.Empty
-                  case fullPath @ (group :: "files" :: filePath) => {
-                    (SHtml.link("/group/" + group + "/files" , () => {}, Text(group)):NodeSeq) ++
-                      (
-                        filePath.reverse match {
-                          case file :: path =>
-                            path.reverse.flatMap( i =>
-                              (( Text("/") ++ SHtml.link("/group/"+group+"/files/"+filePath.takeWhile(_ != i).mkString("/") + i , () => {}, Text(i)) ):NodeSeq)
-                            ): NodeSeq
-                          case _ => NodeSeq.Empty
-                        }
-
-                        )
-                  }: NodeSeq
-                  case fullPath @ (group :: "wiki" :: _) => {
-                    ((SHtml.link("/group/" + group + "/wiki" , () => {}, Text(group))):NodeSeq)
-                  }
-                  case _ => Text("<unknown>")
-                }},
-                "to_folder" -> parseToFolderPath(path),
+                "resource_path" -> Text(""),
+                "full_path" -> SHtml.link(c3Path.resourceUri, () => {}, Text(name)),
                 "type" -> { resourceType match {
-                  case "folder" => <img src="/images/icons/folder.gif"/>
+                  case "directory" => <img src="/images/icons/folder.gif"/>
                   case _ => <img src="/images/icons/document.gif" />
                 }}
               )
@@ -139,15 +120,6 @@ class SearchSnippet extends StatefulSnippet {
           )
       ):NodeSeq}
     )
-  }
-
-  private def parseToFolderPath(path: String): NodeSeq = {
-    path.split("/").toList.tail match {
-      case Nil => NodeSeq.Empty
-      case lst => {
-        SHtml.link("/group/" + lst.reverse.tail.reverse.mkString("/"), () => {}, Text("Folder"))
-      }
-    }
   }
 
   def searchForm (html: NodeSeq) = {

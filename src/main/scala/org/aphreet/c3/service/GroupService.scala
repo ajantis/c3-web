@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011, Dmitry Ivanov
+ * Copyright (c) 2012, Mikhail Malygin
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,11 +28,10 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package org.aphreet.c3.snippet
- 
-import _root_.scala.xml.NodeSeq
-import _root_.net.liftweb.widgets.menu.MenuWidget
+package org.aphreet.c3.service
 
-class Menubar {
-  def render (xhtml : NodeSeq) = MenuWidget("mainmenu" :: Nil)
+trait GroupService {
+
+  def createGroupMapping(name:String)
+
 }
