@@ -5,9 +5,9 @@
     <title>Portal</title>
     <link rel="icon" href="/images/c3favicon.ico" />
 
-    <script id="jquery" src="/classpath/jquery.js" type="text/javascript"/>
+    <script id="jquery" src="/classpath/jquery.js" type="text/javascript"></script>
 
-    <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.11/themes/base/jquery-ui.css" id="theme"></link>
+    <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.11/themes/base/jquery-ui.css" id="theme"/>
     <link href="/css/jquery.fileupload-ui.css" type="text/css" rel="stylesheet"/>
 
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
@@ -17,7 +17,7 @@
     <script src="/js/jquery.fileupload-ui.js" type="text/javascript"></script>
     <script id="json" src="/classpath/json.js" type="text/javascript"></script>
 
-    <script src="/js/jquery.blockUI.js" type="text/javascript"/>
+    <script src="/js/jquery.blockUI.js" type="text/javascript"></script>
 
     <link rel="stylesheet" type="text/css" href="/css/main.css" />
 
@@ -102,11 +102,11 @@
             </li>
             <li>
                 <lift:Menu.item name="CreateUser">
-                    Register
+                    Sign up
                 </lift:Menu.item>
                 <lift:Menu.item name="EditUser">
                     <lift:snippet type="MainSnippet.currentUser">
-                        <user:email></user:email>
+                        <user:email/>
                     </lift:snippet>
                 </lift:Menu.item>
             </li>
@@ -124,35 +124,34 @@
                 <p><a href="/index">Plab Portal</a> <img alt="" id="ajax-loader" style="display:none; margin-bottom: 0px; margin-left: 5px" src="/images/ajax-loader.gif"/></p>
             </div>
             <div>
-                 <!-- <lift:Menubar /> style="padding-top: 0px;padding-left: 0px;padding-right: 0px; margin: 0px; padding-bottom: 5px;margin-bottom: 5px;" -->
-                  <lift:Menu.builder group="mainmenu"/>
+                <!-- <lift:Menubar /> style="padding-top: 0px;padding-left: 0px;padding-right: 0px; margin: 0px; padding-bottom: 5px;margin-bottom: 5px;" -->
+                <lift:Menu.builder group="mainmenu"/>
             </div>
         </div>
 
         <div class="breadcrumb">
-           <lift:SearchSnippet.miniSearch form="post">
-            <table width="100%">
-                <tr>
-                <td style="padding-left: 20px;">
-                <span><a href="/index">Home</a></span>
-                <span>&gt;</span>
-                <lift:MainSnippet.breadCrumbs>
-                    <breadCrumbsMenu:breadCrumbs>
-                        <span><breadCrumb:link></breadCrumb:link></span>
-                        <span>&gt;</span>
-                    </breadCrumbsMenu:breadCrumbs>
-                </lift:MainSnippet.breadCrumbs>
-                </td>
-                <td align="right">
-                <span>
-                    <miniSearch:search_string/>
-                    <miniSearch:submit/>
-
-                </span>
-                </td>
-                </tr>
-            </table>
-           </lift:SearchSnippet.miniSearch>
+            <lift:SearchSnippet.miniSearch form="post">
+                <table width="100%">
+                    <tr>
+                        <td style="padding-left: 20px;">
+                            <span><a href="/index">Home</a></span>
+                            <span>&gt;</span>
+                            <lift:MainSnippet.breadCrumbs>
+                                <breadCrumbsMenu:breadCrumbs>
+                                    <span><breadCrumb:link/></span>
+                                    <span>&gt;</span>
+                                </breadCrumbsMenu:breadCrumbs>
+                            </lift:MainSnippet.breadCrumbs>
+                        </td>
+                        <td align="right">
+                            <span>
+                                <miniSearch:search_string/>
+                                <miniSearch:submit/>
+                            </span>
+                        </td>
+                    </tr>
+                </table>
+            </lift:SearchSnippet.miniSearch>
         </div>
 
         <div class="content-wrap">
@@ -180,7 +179,7 @@
     <div class="list-menu">
         <ul>
             <li style="float: left;"><a href="http://c3.aphreet.org"><i>C3</i></a>
-                is Copyright 2009-2011 The Brotherhood of C3.  Distributed under a New BSD License.</li>
+                is Copyright 2009-2012 The Brotherhood of C3. Distributed under a New BSD License.</li>
             <li><a href="/faq">FAQ</a></li>
             <li><a href="/about">About</a></li>
         </ul>

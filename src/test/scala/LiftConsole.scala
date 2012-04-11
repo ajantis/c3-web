@@ -1,4 +1,4 @@
-import _root_.bootstrap.liftweb.Boot
+import org.aphreet.c3.Boot
 import _root_.scala.tools.nsc.MainGenericRunner
 
 object LiftConsole {

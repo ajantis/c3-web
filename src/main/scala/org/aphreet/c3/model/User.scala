@@ -15,8 +15,6 @@ import net.liftweb.openid.{OpenIDProtoUser, MetaOpenIDProtoUser}
 object User extends User with MetaMegaProtoUser[User]{
 
   /*
-  import org.aphreet.c3.openid.OpenIDVendor
-  def openIDVendor = OpenIDVendor
   override def homePage = if (loggedIn_?) "/dashboard" else "/" */
 
   def currentSearchRequests: List[String] = User.currentUser.map(_.searchRequests.get).openOr(Nil)
