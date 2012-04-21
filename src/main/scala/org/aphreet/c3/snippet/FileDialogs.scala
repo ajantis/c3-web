@@ -148,7 +148,7 @@ trait AbstractFormDialog {
       () => {
         theCurrentPath.set(path)
         S.runTemplate(List(templateName)).
-          map(ns => ModalDialog(ns)) openOr
+          map(ns => FancyDialog(ns)) openOr
           Alert("Couldn't find "+templateName+" template")
       })
 
@@ -245,4 +245,18 @@ class CreateDirectoryDialog extends AbstractFormDialog with C3ResourceMetadataFo
     )
   }
 
+}
+
+class FancyDialog(ns: NodeSeq) extends JsCmd
+{
+  override def toJsCmd = "fancybox(){message: {}; ... }" //TODO
+
+  /*
+  "jQuery.blockUI({ message: " + AltXML.toXML(Group(S.session.map(s =>
+  s.fixHtml(s.processSurroundAndInclude("Modal Dialog", html))).openOr(html)), false, true, S.ieMode).encJs +
+    (css.map(",  css: " + _.toJsCmd + " ").openOr("")) + "});" */
+}
+
+object FancyDialog {
+  def apply(ns: NodeSeq): FancyDialog = new FancyDialog(ns)
 }
