@@ -1,57 +1,71 @@
-<div style="padding: 15px;">
+<div class="cnt">
 
-    <p>Create directory</p>
 
-    <div id="form_id">
 
-            <div class="lift:CreateDirectoryDialog.form?id_md_name=md_id;id_tags_name=tags_id">
-
-                <lift:MainSnippet.sample form="post">
-                    Test for auto complete widget: <br/>
-                    <p>Type a name here: <f:find_name /></p>
-                 </lift:MainSnippet.sample>
-
-                <p>Name: <dir:name/></p>
-
-                <div style="float: left;">
-                     <dir:metadata>
-                        <div id="md_id">
-                            <ul style="list-style: none; list-style-type: none;">
-                                <list:md_list>
-                                    <li><md_node:name/> - <md_node:value/></li>
-                                </list:md_list>
-                                <li style="display: inline;"><list:add_md_node>Add MD</list:add_md_node></li>
-                            </ul>
-                        </div>
-                     </dir:metadata>
-                </div>
-
-                <div>
-                     <dir:tags>
-                        <div id="tags_id">
-                            <ul style="display: inline;list-style: none;list-style-type: none;">
-                                <list:tags_list form="post" list:style="z-index: 1500;">
-                                    <li style="display: inline;"><tag:text/> </li>
-                                </list:tags_list>
-                                <li style="display: inline;"><list:add_tag>Add tag</list:add_tag></li>
-                            </ul>
-
-                        </div>
-                     </dir:tags>
-                </div>
-
-                <p><dir:submit>Create</dir:submit></p>
-
+    <div class="cnt_header cnt_main" >
+        Основное
+    </div>
+    <div class="cnt_header_content">
+        <div class="cnt_bottom">
+            <div class="cnt_txt" > Файл
+            </div>
+            <input class="cnt_file" type="file">
+        </div>
+        <div>
+            <div class="cnt_txt"> Название
+            </div>
+            <input class="cnt_text" type="text">
+        </div>
+    </div>
+    <div class="cnt_header" >
+        Дополнительно
+    </div>
+    <div class="cnt_add_content" >
+        <div class="brd">
+            <div class="cnt_txt"> Описание
+            </div>
+            <textarea class="cnt_textarea cnt_bottom">
+            </textarea>
+            <div class="cnt_txt " > Язык
+            </div>
+            <select class="cnt_option1">
+                <option>Русский</option>
+                <option>Английский</option>
+                <option>Немецкий</option>
+            </select>
+        </div>
+        <div>
+            <div class="cnt_txt">Формат</div>
+            <div>
+                <select class="cnt_option2">
+                    <option>Формат1</option>
+                    <option>Формат2</option>
+                    <option>Формат3</option>
+                </select>
+                <input type="text">
 
             </div>
+            <div>
+                <select class="cnt_option_add">
+                    <option>Формат1</option>
+                    <option>Формат2</option>
+                    <option>Формат3</option>
+                </select>
+                <input type="text">
+
+            </div>
+            <button class="cnt_button_add">Добавить еще</button>
+
+
+        </div>
+        <div class="cnt_txt"> Теги
+        </div>
+        <textarea class="cnt_textarea1">
+        </textarea>
+        <button class="download"> Загрузить </button>
+        <button class="cancel"> Отмена</button>
+
+
     </div>
 
-
-     <br/>
-
-     <lift:CreateDirectoryDialog.unblockForm>
-        <form:close>Close</form:close>
-     </lift:CreateDirectoryDialog.unblockForm>
-
 </div>
-

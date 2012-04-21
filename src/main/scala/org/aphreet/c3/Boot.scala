@@ -120,7 +120,7 @@ class Boot extends net.liftweb.http.Bootable{
 
       Menu("Search") / "search" >> loggedIn >> Hidden,
 
-      Menu("Not found") / "404" >> Hidden,
+      Menu("test2ygyg") / "test1" / "test2" >> loggedIn >> Hidden,
 
       LogLevel.menu // default log level menu is located at /loglevel/change
 
