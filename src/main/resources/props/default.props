@@ -8,3 +8,11 @@ c3_domain_name=anonymous
 
 c3_domain_secret=
 
+
+
+### Do not use this functionality ###
+plab_api_url=https://localhost/sdk
+admin_username=
+admin_password=
+plab_esx_hostname=plab.cs.ifmo.ru
+
