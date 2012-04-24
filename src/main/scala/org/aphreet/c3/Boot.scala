@@ -29,7 +29,7 @@ import org.aphreet.c3.helpers.C3Streamer
  * A class that's instantiated early and run.  It allows the application
  * to modify lift's environment
  */
-class Boot {
+class Boot extends Bootable{
 
   def boot {
     if (!DB.jndiJdbcConnAvailable_?) {
@@ -197,12 +197,6 @@ class Boot {
     // for ajax file upload
     import org.aphreet.c3.lib.FileUpload
     LiftRules.dispatch.append(FileUpload)
-
-    import org.aphreet.c3.openid.OpenIDVendor
-
-    // dispatches for open ID support login
-    LiftRules.dispatch.append(OpenIDVendor.dispatchPF)
-    LiftRules.snippets.append(OpenIDVendor.snippetPF)
 
     LiftRules.statelessRewrite.prepend(NamedPF("ParticularUserRewrite") {
       case RewriteRequest(
