@@ -51,17 +51,13 @@ object C3Streamer{
         val length = stream.length
         val contentType = metadata.getOrElse("content.type", "application/octet-stream")
 
-        //This is a hack. I don't know why we can't pass InputStream to StreamingResponse
-        val byteStream = new AnyRef {
-          def read(buf: Array[Byte]): Int = stream.read(buf)
-        }
-
-        Full(StreamingResponse(byteStream, ()=> stream.close(), length, List("Content-Type" -> contentType), Nil, 200))
+        //If you see an error here, it is an issue of the IDEA scala plugin
+        Full(StreamingResponse(stream, ()=> stream.close(), length, List("Content-Type" -> contentType), Nil, 200))
       }catch{
         case e => {
           e.printStackTrace()
           S.notice("No file found!")
-          S.redirectTo("/group/"+group+"/files/"+path.reverse.tail.reverse.mkString("/"))
+          S.redirectTo("/group/"+group+"/files/"+path.init.mkString("/"))
         }
       }
     }
