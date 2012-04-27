@@ -7,7 +7,6 @@ import _root_.net.liftweb.common._
 import xml.{XML, NodeSeq, Text}
 import net.liftweb.http.S._
 import net.liftweb.http.{SessionVar, S, SHtml}
-import net.liftweb.openid.{OpenIDProtoUser, MetaOpenIDProtoUser}
 
 /**
  * The singleton that has methods for accessing the database
@@ -15,8 +14,6 @@ import net.liftweb.openid.{OpenIDProtoUser, MetaOpenIDProtoUser}
 object User extends User with MetaMegaProtoUser[User]{
 
   /*
-  import org.aphreet.c3.openid.OpenIDVendor
-  def openIDVendor = OpenIDVendor
   override def homePage = if (loggedIn_?) "/dashboard" else "/" */
 
   def currentSearchRequests: List[String] = User.currentUser.map(_.searchRequests.get).openOr(Nil)

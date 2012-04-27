@@ -1,10 +1,5 @@
-package org.aphreet.c3.snippet
-
-import xml.NodeSeq
-import org.aphreet.c3.openid.OpenIDVendor
-
 /**
- * Copyright (c) 2011, Dmitry Ivanov
+ * Copyright (c) 2012, Mikhail Malygin
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,13 +28,18 @@ import org.aphreet.c3.openid.OpenIDVendor
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+package org.aphreet.c3.service
 
+trait UriService {
 
+  def uriForWiki(group:String,  wiki:String):String = {
+    "/group/" + group + "/wiki/" + wiki
+  }
+  
+  def uriForPath(path:String):String = {
 
-class OpenID {
+    val pathComponents = path.split("/")
 
-  // just for test
-  def renderForm(xhtml: NodeSeq) : NodeSeq =
-    OpenIDVendor.loginForm
-
+    null
+  }
 }

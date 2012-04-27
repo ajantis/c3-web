@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011, Mikhail Malygin
+ * Copyright (c) 2012, Mikhail Malygin
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,17 +28,8 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package org.aphreet.c3.helpers
+package org.aphreet.c3.service
 
-object C3Path {
+trait FileService {
 
-  def apply(group:String, path:List[String], extension:String):String = {
-    "/" + group + "/" + path.reverse.tail.reverse.mkString("/") + "/" +
-      path.last + {
-      extension match {
-        case "" => ""
-        case ext => "." + ext
-      }
-    }
-  }
 }

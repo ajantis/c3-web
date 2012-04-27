@@ -31,68 +31,6 @@
 
 package org.aphreet.c3.model
 
-import net.liftweb.common.Logger
-import org.apache.commons.httpclient.util.URIUtil
-import org.aphreet.c3.apiaccess.C3
-import com.ifunsoftware.c3.access.fs.C3Directory
-import com.ifunsoftware.c3.access.DataStream
-
-class Wiki(var name:String, var content:String) {
-
-}
-
-object Wiki{
-
-  val logger = Logger(classOf[Wiki])
-
-  private def encodeName(name:String):String = {
-    URIUtil.encodeQuery(name, "UTF-8")
-  }
-
-  private def pageLocation(group:String, name:String) = {
-    pageDirectory(group) + encodeName(name)
-  }
+class Wiki(var name:String, var content:String, var metadata:Map[String, String] = Map()){
   
-  private def pageDirectory(group:String):String = {
-    "/" + group + "/wiki/"
-  }
-
-  def getPage(group:String, name:String):Option[Wiki] = {
-    try{
-      val content = C3().getFile(pageLocation(group, name)).versions.last.getData.readContentAsString
-      Some(new Wiki(name, content))
-    }catch{
-      case e => None
-    }
-  }
-
-  def createPage(group:String, page:Wiki) = {
-    try{
-
-      C3().getFile(pageDirectory(group)).asInstanceOf[C3Directory]
-        .createFile(page.name, Map("content.type" -> "application/x-c3-wiki"), DataStream(page.content))
-    }catch{
-      case e => logger.warn("Failed to save resource", e)
-    }
-  }
-
-  def savePage(group:String, page:Wiki) = {
-    try{
-      C3().getFile(pageLocation(group, page.name)).update(DataStream(page.content))
-    }catch{
-      case e => logger.warn("Failed to save resource", e)
-    }
-  }
-
-  def getMetadata(group:String, name:String):Map[String, String] = {
-    try{
-      C3().getFile(pageLocation(group, name)).metadata
-    }catch{
-      case e => {
-        e.printStackTrace()
-        Map()
-      }
-    }
-  }
-
 }

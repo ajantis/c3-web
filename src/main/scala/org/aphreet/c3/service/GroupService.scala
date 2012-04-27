@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011, Dmitry Ivanov
+ * Copyright (c) 2012, Mikhail Malygin
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,21 +28,10 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
- 
-package org.aphreet.c3.helpers
+package org.aphreet.c3.service
 
-import xml.NodeSeq
+trait GroupService {
 
-class MetadataParser(val metadata : NodeSeq) {
+  def createGroupMapping(name:String)
 
-   def getNodes(nodeName : String): NodeSeq = metadata \\ nodeName
-
-   def getNodeWithAttributeValue(nodeName : String, attribute : String, attributeValue: String) =
-     getNodes(nodeName).toList.filter((element:NodeSeq) => (element \ ("@"+attribute) ).toString == attributeValue )
-
-}
-
-object MetadataParser {
-
-  def apply(md : NodeSeq) = new MetadataParser(md)
 }

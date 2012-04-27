@@ -1,5 +1,3 @@
-package org.aphreet.c3.snippet
-
 /**
  * Copyright (c) 2011, Dmitry Ivanov
  * All rights reserved.
@@ -30,6 +28,7 @@ package org.aphreet.c3.snippet
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+package org.aphreet.c3.snippet
  
 import _root_.scala.xml.NodeSeq
 import _root_.net.liftweb.widgets.menu.MenuWidget

@@ -1,7 +1,5 @@
-package org.aphreet.c3.openid
-
 /**
- * Copyright (c) 2011, Dmitry Ivanov
+ * Copyright (c) 2012, Mikhail Malygin
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,22 +28,18 @@ package org.aphreet.c3.openid
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+package org.aphreet.c3.service
 
-import org.openid4java.discovery.DiscoveryInformation
-import org.openid4java.message.AuthRequest
-import net.liftweb.common.Full
-import net.liftweb.openid.{OpenIDConsumer, WellKnownEndpoints, WellKnownAttributes, SimpleOpenIDVendor}
+import org.aphreet.c3.model.Wiki
 
-object OpenIDVendor extends SimpleOpenIDVendor  {
-  def ext(di: DiscoveryInformation, authReq: AuthRequest): Unit = {
-    import WellKnownAttributes._
-    WellKnownEndpoints.findEndpoint(di) map {ep =>
-      ep.makeAttributeExtension(List(Email, FullName, FirstName, LastName)) foreach {ex =>
-        authReq.addExtension(ex)
-      }
-    }
-  }
-  override def createAConsumer = new OpenIDConsumer[UserType] {
-    beforeAuth = Full(ext _)
-  }
+trait WikiService {
+
+  def getPage(group:String, name:String):Option[Wiki]
+
+  def createPage(group:String, page:Wiki)
+
+  def savePage(group:String, page:Wiki)
+
+  def getMetadata(group:String, name:String):Map[String, String]
+
 }

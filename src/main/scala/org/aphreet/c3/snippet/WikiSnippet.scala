@@ -38,11 +38,15 @@ import org.aphreet.c3.lib.wiki.C3HtmlVisitor
 import be.devijver.wikipedia.{SmartLinkResolver, Parser, SmartLink}
 import java.io.StringWriter
 import org.aphreet.c3.view.GroupNavigationUtil
-import xml.{XML, NodeSeq}
 import net.liftweb.http._
 import net.liftweb.common.{Box, Empty, Logger, Full}
+import org.aphreet.c3.service.WikiService
+import xml.{Text, XML, NodeSeq}
+import org.aphreet.c3.lib.DependencyFactory._
 
 class WikiSnippet{
+
+  lazy val wikiService = inject[WikiService].open_!
 
   val logger = Logger(classOf[GroupForm])
 
@@ -58,35 +62,22 @@ class WikiSnippet{
       case _ => ""
     }
 
-    Wiki.getPage(groupName, pageName) match {
-      case Some(page) => {
-        
-        val metadata = Wiki.getMetadata(groupName, pageName)
+    def bindWikiPage(page:String, content:NodeSeq,  metadata:Map[String, String]):NodeSeq = {
+      bind("wiki", html,
+        "groupname" -> groupName,
+        "groupnav" -> GroupNavigationUtil.createNavigation(groupName),
 
-        bind("wiki", html,
-          "groupname" -> groupName,
-          "groupnav" -> GroupNavigationUtil.createNavigation(groupName),
+        "name" -> page,
+        "content" -> content,
+        "actions" -> <a href={"/group/" + groupName + "/wiki/" + pageName + "/edit"}>Edit</a>,
+        "metadata" -> {(ns:NodeSeq) =>
+          metadata.flatMap(el => bind("md", ns, "key" --> el._1, "value" --> el._2)).toSeq:NodeSeq}
+      )
+    }
 
-          "name" -> page.name,
-          "content" -> XML.loadString(formatContent(page.content, groupName)),
-          "actions" -> <a href={"/group/" + groupName + "/wiki/" + pageName + "/edit"}>Edit</a>,
-          "metadata" -> {(ns:NodeSeq) =>
-            metadata.flatMap(el => bind("md", ns, "key" --> el._1, "value" --> el._2)).toSeq:NodeSeq}
-        )
-      }
-        
-      case None => {
-        bind("wiki", html,
-          "groupname" -> groupName,
-          "groupnav" -> GroupNavigationUtil.createNavigation(groupName),
-
-          "name" -> pageName,
-          "content" -> "Page not found",
-          "actions" -> <a href={"/group/" + groupName + "/wiki/" + pageName + "/edit"}>Create</a>,
-          "metadata" -> {(ns:NodeSeq) =>
-            Map[String, String]().flatMap(el => bind("md", ns, "key" --> el._1, "value" --> el._2)).toSeq:NodeSeq}
-        )
-      }
+    wikiService.getPage(groupName, pageName) match {
+      case Some(page) => bindWikiPage(page.name, XML.loadString(formatContent(page.content, groupName)), page.metadata)
+      case None => bindWikiPage(pageName, Text("Page not found"), Map())
     }
   }
 
@@ -128,7 +119,7 @@ class WikiSnippet{
       "name" -> pageName,
       "actions" -> <a href={"/group/" + groupName + "/wiki/" + pageName}>Cancel</a>,
       "metadata" -> {(ns:NodeSeq) =>
-        Wiki.getMetadata(groupName, pageName).flatMap(i => bind("md", ns, "key" --> i._1, "value" --> i._2)).toSeq:NodeSeq}
+        wikiService.getMetadata(groupName, pageName).flatMap(i => bind("md", ns, "key" --> i._1, "value" --> i._2)).toSeq:NodeSeq}
     )
 
   }
@@ -151,12 +142,12 @@ class WikiSnippet{
     }
 
     def processWikiEdit() = {
-      Wiki.getPage(groupName, pageName) match {
+      wikiService.getPage(groupName, pageName) match {
         case Some(page) => {
 
           page.content = submittedContent;
 
-          Wiki.savePage(groupName, page)
+          wikiService.savePage(groupName, page)
           S.notice("Page saved")
           S.redirectTo("/group/" + groupName + "/wiki/" + pageName)
         }
@@ -165,7 +156,7 @@ class WikiSnippet{
 
           val page = new Wiki(pageName, submittedContent)
 
-          Wiki.createPage(groupName, page)
+          wikiService.createPage(groupName, page)
           S.notice("Page created")
           S.redirectTo("/group/" + groupName + "/wiki/" + pageName)
         }
@@ -183,7 +174,7 @@ class WikiSnippet{
       }
     }
 
-    val pageString = Wiki.getPage(groupName, pageName) match {
+    val pageString = wikiService.getPage(groupName, pageName) match {
       case Some(page) => page.content
       case None => ""
     }

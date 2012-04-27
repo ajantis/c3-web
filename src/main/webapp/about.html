@@ -1,8 +1,8 @@
-<div class="lift:surround?with=default;at=content">
+<lift:surround with="default">
 
-    <div class="content-header">
-            <h1>About C3</h1>
+    <lift:bind-at name="content-header">About C3</lift:bind-at>
 
+    <lift:bind-at name="content">
         <p>
             <strong>C3</strong> is an abbreviation for "<strong>Content</strong>, <strong>Collaboration</strong>, <strong>Communication</strong>".
         </p>
@@ -13,10 +13,6 @@
 
         C3 system development was started in 2008. It's a purely student part-time project.
 
-    </div>
-
-   <div style="text-align: left; margin: 30px;">
-    <div>
         <h3>C3 team</h3>
         <ul>
             <li>Source code: http://gitorious.org/c3</li>
@@ -25,19 +21,18 @@
         </ul>
 
         <i>
-        -- <br/>
-        With best regards, <br/>
-        C3 Team</i>
-    </div>
+            -- <br/>
+            With best regards, <br/>
+            C3 Team
+        </i>
 
-    <br/>
-
-    <div>
         <h3>Credits</h3>
         <ul>
             <li>...</li>
         </ul>
-    </div>
-   </div>
+    </lift:bind-at>
 
-</div>
+    <lift:bind-at name="right-panel-content">
+    </lift:bind-at>
+
+</lift:surround>
