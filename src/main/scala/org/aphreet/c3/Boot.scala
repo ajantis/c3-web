@@ -1,4 +1,4 @@
-package org.aphreet.c3
+package bootstrap.liftweb
 
 import _root_.net.liftweb.util._
 import _root_.net.liftweb.common._
@@ -29,7 +29,7 @@ import org.aphreet.c3.helpers.C3Streamer
  * A class that's instantiated early and run.  It allows the application
  * to modify lift's environment
  */
-class Boot extends net.liftweb.http.Bootable{
+class Boot extends Bootable{
 
   def boot {
     if (!DB.jndiJdbcConnAvailable_?) {
@@ -50,33 +50,31 @@ class Boot extends net.liftweb.http.Bootable{
 
     // where to search snippet
     LiftRules.addToPackages("org.aphreet.c3")
-    Schemifier.schemify(true, Schemifier.infoF _, User, Group, Category, Message, UserGroup)
+    Schemifier.schemify(true, Schemifier.infoF _, User, Group, Category,Message,UserGroup)
 
-    val isIE = Test(req => req.isIE)
+    val isIE = Test( req => req.isIE )
 
     lazy val loginUrl = "/user_mgt/login"
 
     // stateful redirect after login
     def loginAndComeBack = {
       val uri = S.uriAndQueryString
-      RedirectWithState(loginUrl, RedirectState(() => User.loginRedirect.set(uri), "Not logged in" -> NoticeType.Notice))
+      RedirectWithState ( loginUrl, RedirectState( () => User.loginRedirect.set(uri) , "Not logged in" -> NoticeType.Notice ) )
     }
 
-    val loggedIn = If(() => User.loggedIn_?, loginAndComeBack _)
+    val loggedIn = If(() => User.loggedIn_?, loginAndComeBack _ )
 
 
-    val isSuperAdmin = If(() => {
-      if (!User.currentUser.isEmpty) User.currentUser.open_!.superUser.is else false
-    },
-      () => RedirectWithState("/index", RedirectState(() => {}, "Not a super user" -> NoticeType.Notice))
+    val isSuperAdmin = If(() => {if(!User.currentUser.isEmpty) User.currentUser.open_!.superUser.is else false},
+      () => RedirectWithState("/index", RedirectState( () => {} ,"Not a super user" -> NoticeType.Notice ) )
     )
 
     val isGroupAdmin = If(() => {
       S.param("groupname") match {
-        case Full(name) => Group.find(By(Group.name, name)) match {
+        case Full(name) => Group.find(By(Group.name,name)) match {
           case Full(group) => {
             User.currentUser match {
-              case Full(user) if (user.id.is == group.owner.is) => true
+              case Full(user) if(user.id.is == group.owner.is) => true
               case _ => false
             }
           }
@@ -85,7 +83,7 @@ class Boot extends net.liftweb.http.Bootable{
         case _ => false
       }
     },
-      () => RedirectWithState("/index", RedirectState(() => {}, "Not a group admin" -> NoticeType.Notice)))
+      () => RedirectWithState("/index", RedirectState( () => {} ,"Not a group admin" -> NoticeType.Notice ) ) )
 
     // Build SiteMap
     def sitemap() = SiteMap(
@@ -120,7 +118,6 @@ class Boot extends net.liftweb.http.Bootable{
 
       Menu("Search") / "search" >> loggedIn >> Hidden,
 
-<<<<<<< HEAD:src/main/scala/bootstrap/liftweb/Boot.scala
       Menu("Not found") / "404" >>  Hidden,
 
       Menu("TestFansy") / "testFansy" >>  Hidden,
@@ -131,10 +128,12 @@ class Boot extends net.liftweb.http.Bootable{
       Menu("test2") / "test1" / "test2">> Hidden,
 
 
-=======
       Menu("Not found") / "404" >> Hidden,
->>>>>>> fcea4e01e28d7c7525c5643de2bdc6e293a06e64:src/main/scala/org/aphreet/c3/Boot.scala
 
+      Menu("Not found") / "404" >>  Hidden,
+
+      Menu("test2ygyg") / "test1" / "test2" >> loggedIn >> Hidden,
+    
       LogLevel.menu // default log level menu is located at /loglevel/change
 
 
@@ -146,21 +145,21 @@ class Boot extends net.liftweb.http.Bootable{
 
     LiftRules.statelessRewrite.prepend(NamedPF("ParticularGroupFilesRewrite") {
       case RewriteRequest(
-      ParsePath("group" :: groupname :: "files" :: directory, extension, _, _), _, _) => {
+      ParsePath("group" :: groupname  :: "files" :: directory , extension, _,_), _, _) => {
 
         val dotExt = extension match {
           case "" => ""
-          case str => "." + str
+          case str => "."+str
         }
-        Group.find(By(Group.name, groupname)) match {
+        Group.find(By(Group.name,groupname)) match {
           case Full(group) => {
             // TODO if resource instance is FIle ==>> rewrite request to file page
-            C3Resource.get(group, directory.mkString("/") + dotExt) match {
-              case Some(resource) if (resource.isInstanceOf[File]) => {
+            C3Resource.get(group,directory.mkString("/")+dotExt) match {
+              case Some(resource) if(resource.isInstanceOf[File]) => {
                 //RewriteResponse("download" :: groupname :: "files" :: (directory.mkString("/")+dotExt).split("/").toList)
-                RewriteResponse("groupsection" :: "file" :: Nil, Map("groupname" -> groupname, "groupdirectory" -> (directory.mkString("/") + dotExt), "filepath" -> (directory.mkString("/") + dotExt), "rewrite" -> "groupFiles"))
+                RewriteResponse("groupsection" :: "file" :: Nil, Map("groupname" -> groupname,"groupdirectory" -> (directory.mkString("/") + dotExt),"filepath" -> (directory.mkString("/") + dotExt), "rewrite" -> "groupFiles"))
               }
-              case Some(resource) => RewriteResponse("groupsection" :: "files" :: Nil, Map("groupname" -> groupname, "groupdirectory" -> directory.mkString("/"), "rewrite" -> "groupFiles"))
+              case Some(resource) => RewriteResponse("groupsection" :: "files" :: Nil, Map("groupname" -> groupname,"groupdirectory" -> directory.mkString("/"), "rewrite" -> "groupFiles"))
               case _ => RewriteResponse("404" :: Nil)
             }
           }
@@ -173,32 +172,32 @@ class Boot extends net.liftweb.http.Bootable{
 
     LiftRules.statelessRewrite.prepend(NamedPF("ParticularGroupOverviewRewrite") {
       case RewriteRequest(
-      ParsePath("group" :: groupname :: Nil, _, _, _), _, _) =>
+      ParsePath("group" :: groupname  :: Nil , _, _,_), _, _) =>
         RewriteResponse(
-          "groupsection" :: "index" :: Nil, Map("groupname" -> groupname, "rewrite" -> "groupOverview")
+          "groupsection" ::  "index" :: Nil, Map("groupname" -> groupname, "rewrite" -> "groupOverview")
         )
     })
     LiftRules.statelessRewrite.prepend(NamedPF("ParticularGroupWikiRewrite") {
       case RewriteRequest(
-      ParsePath("group" :: groupname :: "wiki" :: pagename :: Nil, _, _, _), _, _) =>
+      ParsePath("group" :: groupname  :: "wiki" :: pagename :: Nil , _, _,_), _, _) =>
         RewriteResponse(
-          "groupsection" :: "wiki-view" :: Nil, Map("groupname" -> groupname, "pagename" -> pagename, "rewrite" -> "groupWiki")
+          "groupsection" ::  "wiki-view" :: Nil, Map("groupname" -> groupname, "pagename" -> pagename,"rewrite" -> "groupWiki")
         )
     })
 
     LiftRules.statelessRewrite.prepend(NamedPF("ParticularGroupRewriteWikiMain") {
       case RewriteRequest(
-      ParsePath("group" :: groupname :: "wiki" :: Nil, _, _, _), _, _) =>
+      ParsePath("group" :: groupname  :: "wiki" :: Nil , _, _,_), _, _) =>
         RewriteResponse(
-          "groupsection" :: "wiki-view" :: Nil, Map("groupname" -> groupname, "pagename" -> "Main", "rewrite" -> "groupWikiMain")
+          "groupsection" ::  "wiki-view" :: Nil, Map("groupname" -> groupname, "pagename" -> "Main", "rewrite" -> "groupWikiMain")
         )
     })
 
     LiftRules.statelessRewrite.prepend(NamedPF("ParticularGroupAdminRewrite") {
       case RewriteRequest(
-      ParsePath("group" :: groupname :: "admin" :: Nil, _, _, _), _, _) =>
+      ParsePath("group" :: groupname  :: "admin" :: Nil , _, _,_), _, _) =>
         RewriteResponse(
-          "groupsection" :: "admin" :: Nil, Map("groupname" -> groupname)
+          "groupsection" ::  "admin" :: Nil, Map("groupname" -> groupname)
         )
     })
 
@@ -213,23 +212,23 @@ class Boot extends net.liftweb.http.Bootable{
 
     LiftRules.statelessRewrite.prepend(NamedPF("ParticularUserRewrite") {
       case RewriteRequest(
-      ParsePath("user" :: useremail :: Nil, _, _, _), _, _) =>
+      ParsePath("user" :: useremail  :: Nil , _, _,_), _, _) =>
         RewriteResponse(
-          "users" :: "edituser" :: Nil, Map("useremail" -> useremail)
+          "users" ::  "edituser" :: Nil, Map("useremail" -> useremail)
         )
     })
 
     LiftRules.statelessRewrite.prepend(NamedPF("ParticularGroupOverviewRewriteWikiEdit") {
       case RewriteRequest(
-      ParsePath("group" :: groupname :: "wiki" :: pagename :: "edit" :: Nil, _, _, _), _, _) =>
+      ParsePath("group" :: groupname  :: "wiki" :: pagename :: "edit" :: Nil , _, _,_), _, _) =>
         RewriteResponse(
-          "groupsection" :: "wiki-edit" :: Nil, Map("groupname" -> groupname, "pagename" -> pagename)
+          "groupsection" ::  "wiki-edit" :: Nil, Map("groupname" -> groupname, "pagename" -> pagename)
         )
     })
 
     LiftRules.statelessRewrite.prepend(NamedPF("IENotSupportedDisclaimerIndexRewrite") {
       case RewriteRequest(
-      ParsePath("index" :: Nil, _, _, _), _, req) if (req.userAgent.map(_.contains("MSIE")) openOr (false)) =>
+      ParsePath("index" :: Nil , _, _,_), _, req)  if( req.userAgent.map(_.contains("MSIE")) openOr(false) ) =>
         RewriteResponse(
           "ie_disclaimer" :: Nil
         )
@@ -238,7 +237,7 @@ class Boot extends net.liftweb.http.Bootable{
 
     LiftRules.statelessRewrite.prepend(NamedPF("IENotSupportedDisclaimerLoginRewrite") {
       case RewriteRequest(
-      ParsePath("user_mgt" :: _ :: Nil, _, _, _), _, req) if (req.userAgent.map(_.contains("MSIE")) openOr (false)) =>
+      ParsePath("user_mgt" :: _ :: Nil , _, _,_), _, req)  if( req.userAgent.map(_.contains("MSIE")) openOr(false) ) =>
         RewriteResponse(
           "ie_disclaimer" :: Nil
         )
@@ -247,9 +246,9 @@ class Boot extends net.liftweb.http.Bootable{
     // VM service rewrites
     LiftRules.statelessRewrite.prepend(NamedPF("VMServiceViewVMRewrite") {
       case RewriteRequest(
-      ParsePath("vmservice" :: "vm" :: vmName :: Nil, _, _, _), _, _) =>
+      ParsePath("vmservice" :: "vm" :: vmName :: Nil , _, _,_), _, _) =>
         RewriteResponse(
-          "vmservice" :: "view_vm" :: Nil, Map("vmName" -> URIUtil.decode(vmName, "UTF-8"), "rewrite" -> "vmOverview")
+          "vmservice" :: "view_vm" :: Nil, Map("vmName" -> URIUtil.decode(vmName,"UTF-8"),"rewrite" -> "vmOverview" )
         )
     })
 
@@ -304,7 +303,7 @@ class Boot extends net.liftweb.http.Bootable{
         (a, b, c) => {
           // println("progress listener "+a+" plus "+b+" "+c)
           // Thread.sleep(100) -- demonstrate slow uploads
-          opl(a, b, c)
+          opl(a,b,c)
         }
       ret
     }
