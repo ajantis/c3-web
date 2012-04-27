@@ -2,9 +2,9 @@
 
 c3_host=http://node0.c3.ifunsoftware.com
 
-c3_domain_name=c3web
+c3_domain_name=anonymous
 
-c3_domain_secret=95b39c16b3b6316a938ea5acbdba24a3
+c3_domain_secret=
 
 ### setting up database ###
 db.driver=org.postgresql.Driver
