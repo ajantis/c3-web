@@ -92,10 +92,7 @@ class GroupForm {
         }
       }
 
-      bind("group", form,
-        "name" -> group.name.toForm,
-        "owner" -> group.owner.toForm,
-        "submit" -> SHtml.submit("add", saveMe))
+      bind("group", form,"name" -> group.name.toForm,"owner" -> group.owner.toForm,"submit" -> SHtml.submit("add", saveMe))
     }
 
     newGroup(form)

@@ -21,7 +21,19 @@
 
     <link rel="stylesheet" type="text/css" href="/css/main.css" />
 
-    <script>function showDiv(div)
+    <script>
+
+        $(document).ready(function(){
+            $('#clk').click(function(){
+                 $("#MyId").toggleClass("MyClass_1 MyClass_2");
+            });
+
+        });
+
+
+
+
+        function showDiv(div)
         {
         if (document.getElementById(div).style.display=="none")document.getElementById(div).style.display="block";
         else document.getElementById(div).style.display="none";
@@ -30,6 +42,22 @@
 
 
     <style type="text/css">
+
+        /*test toggleClass*/
+        .MyClass_1{
+        font: bold 12px Verdana;
+
+
+
+        }
+        .MyClass_2{
+        font: bold 22px Verdana;
+
+
+
+        }
+
+
         /* <![CDATA[ */
         .edit_error_class {
         display: block;
@@ -101,6 +129,7 @@
                 </lift:Menu.item>
             </li>
             <li>
+
                 <lift:Menu.item name="CreateUser">
                     Register
                 </lift:Menu.item>

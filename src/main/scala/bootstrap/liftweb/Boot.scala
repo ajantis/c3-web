@@ -125,7 +125,8 @@ class Boot {
       // VM service's menu parts
       Menu("VM Service") / "vmservice" / "index" >> loggedIn >> LocGroup("mainmenu"),
       Menu("VMS vm's overview") / "vmservice" / "view_vm" >> loggedIn >> Hidden,
-      Menu("test2ygyg") / "test1" / "test2" >> loggedIn >> Hidden,
+      Menu("test2") / "test1" / "test2">> Hidden,
+
 
 
       LogLevel.menu // default log level menu is located at /loglevel/change

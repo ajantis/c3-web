@@ -197,12 +197,14 @@ class WikiSnippet{
       case Full(value) => value
       case _ => pageString
     }
-    
+
+    import net.liftweb.http.SHtml._
+
     bind("wiki-form", html,
-      "content" -> SHtml.textarea(editablePageContent, submittedContent = _),
+      "content" -> textarea(editablePageContent, submittedContent = _),
       "preview" -> previewXml,
-      "submit" -> SHtml.submit("Save", processWikiEdit),
-      "submit-preview" -> SHtml.submit("Preview", processPreview)
+      "submit" -> submit("Save", processWikiEdit),
+      "submit-preview" -> submit("Preview", processPreview)
     )
 
   }

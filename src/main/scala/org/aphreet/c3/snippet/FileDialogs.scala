@@ -143,15 +143,18 @@ trait AbstractFormDialog {
     bind("form",xhtml,
       "close" -> ((b: NodeSeq) => <button onclick={Unblock.toJsCmd}>{b}</button>))
 
-  def button(in: NodeSeq, path: Box[String]) =
-    SHtml.ajaxButton(in,
+  def button(in: NodeSeq, path: Box[String]) = {
+    theCurrentPath.set(path);
+
+    <a id="inframe" href={templateName} >Click here </a>
+  /*  SHtml.ajaxButton(in,
       () => {
         theCurrentPath.set(path)
         S.runTemplate(List(templateName)).
           map(ns => FancyDialog(ns)) openOr
           Alert("Couldn't find "+templateName+" template")
-      })
-
+      }) */
+  }
   def form(xhtml: NodeSeq): NodeSeq
 
 }
@@ -229,7 +232,6 @@ class CreateDirectoryDialog extends AbstractFormDialog with C3ResourceMetadataFo
 
 
   override def form(xhtml: NodeSeq): NodeSeq = {
-
 
     SHtml.ajaxForm(
       bind("dir", xhtml,
