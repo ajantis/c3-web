@@ -1,4 +1,4 @@
-package bootstrap.liftweb
+package org.aphreet.c3
 
 import _root_.net.liftweb.util._
 import _root_.net.liftweb.common._

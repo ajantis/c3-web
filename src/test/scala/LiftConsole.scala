@@ -1,5 +1,5 @@
-import org.aphreet.c3.Boot
 import _root_.scala.tools.nsc.MainGenericRunner
+import org.aphreet.c3.Boot
 
 object LiftConsole {
   def main(args : Array[String]) {
