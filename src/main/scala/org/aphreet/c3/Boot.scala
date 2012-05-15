@@ -122,16 +122,6 @@ class Boot extends Bootable{
 
       Menu("TestFansy") / "testFansy" >>  Hidden,
 
-      // VM service's menu parts
-      Menu("VM Service") / "vmservice" / "index" >> loggedIn >> LocGroup("mainmenu"),
-      Menu("VMS vm's overview") / "vmservice" / "view_vm" >> loggedIn >> Hidden,
-      Menu("test2") / "test1" / "test2">> Hidden,
-
-
-      Menu("Not found") / "404" >> Hidden,
-
-      Menu("Not found") / "404" >>  Hidden,
-
       Menu("test2ygyg") / "test1" / "test2" >> loggedIn >> Hidden,
     
       LogLevel.menu // default log level menu is located at /loglevel/change
@@ -226,14 +216,6 @@ class Boot extends Bootable{
         )
     })
 
-    LiftRules.statelessRewrite.prepend(NamedPF("IENotSupportedDisclaimerIndexRewrite") {
-      case RewriteRequest(
-      ParsePath("index" :: Nil , _, _,_), _, req)  if( req.userAgent.map(_.contains("MSIE")) openOr(false) ) =>
-        RewriteResponse(
-          "ie_disclaimer" :: Nil
-        )
-    })
-
 
     LiftRules.statelessRewrite.prepend(NamedPF("IENotSupportedDisclaimerLoginRewrite") {
       case RewriteRequest(
@@ -242,24 +224,6 @@ class Boot extends Bootable{
           "ie_disclaimer" :: Nil
         )
     })
-
-    // VM service rewrites
-    LiftRules.statelessRewrite.prepend(NamedPF("VMServiceViewVMRewrite") {
-      case RewriteRequest(
-      ParsePath("vmservice" :: "vm" :: vmName :: Nil , _, _,_), _, _) =>
-        RewriteResponse(
-          "vmservice" :: "view_vm" :: Nil, Map("vmName" -> URIUtil.decode(vmName,"UTF-8"),"rewrite" -> "vmOverview" )
-        )
-    })
-
-
-    /*
-     * Show the spinny image when an Ajax call starts
-     */
-    LiftRules.ajaxStart =
-      Full(() => LiftRules.jsArtifacts.show("ajax-loader").cmd)
-
-
 
     /*
      * Make the spinny image go away when it ends
@@ -323,5 +287,3 @@ class Boot extends Bootable{
     req.setCharacterEncoding("UTF-8")
   }
 }
-
-
