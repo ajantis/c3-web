@@ -13,7 +13,7 @@ import net.liftweb.common.Full
 
 trait GroupLoc[T <: GroupPage] extends Loc[T]{
 
-  protected val basePrefixUrl = "groupsection"
+  protected val basePrefixUrl = "group"
 
   protected val filesSuffix = "files"
 

@@ -31,15 +31,16 @@
 package org.aphreet.c3.service
 
 import org.aphreet.c3.model.Wiki
+import net.liftweb.common.Box
 
 trait WikiService {
 
-  def getPage(group:String, name:String):Option[Wiki]
+  def getPage(group:String, name:String): Box[Wiki]
 
   def createPage(group:String, page:Wiki)
 
   def savePage(group:String, page:Wiki)
 
-  def getMetadata(group:String, name:String):Map[String, String]
+  def getMetadata(group:String, name:String): Map[String, String]
 
 }

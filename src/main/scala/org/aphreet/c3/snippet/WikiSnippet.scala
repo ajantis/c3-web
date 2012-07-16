@@ -76,8 +76,8 @@ class WikiSnippet{
     }
 
     wikiService.getPage(groupName, pageName) match {
-      case Some(page) => bindWikiPage(page.name, XML.loadString(formatContent(page.content, groupName)), page.metadata)
-      case None => bindWikiPage(pageName, Text("Page not found"), Map())
+      case Full(page) => bindWikiPage(page.name, XML.loadString(formatContent(page.content, groupName)), page.metadata)
+      case Empty => bindWikiPage(pageName, Text("Page not found"), Map())
     }
   }
 
@@ -143,16 +143,16 @@ class WikiSnippet{
 
     def processWikiEdit() = {
       wikiService.getPage(groupName, pageName) match {
-        case Some(page) => {
+        case Full(page) => {
 
-          page.content = submittedContent;
+          page.content = submittedContent
 
           wikiService.savePage(groupName, page)
           S.notice("Page saved")
           S.redirectTo("/group/" + groupName + "/wiki/" + pageName)
         }
 
-        case None => {
+        case Empty => {
 
           val page = new Wiki(pageName, submittedContent)
 
@@ -175,8 +175,8 @@ class WikiSnippet{
     }
 
     val pageString = wikiService.getPage(groupName, pageName) match {
-      case Some(page) => page.content
-      case None => ""
+      case Full(page) => page.content
+      case Empty => ""
     }
 
     val previewXml = pagePreview.get match{

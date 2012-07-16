@@ -35,6 +35,7 @@ import be.devijver.wikipedia.html.{HtmlEncoder, HtmlVisitor}
 import be.devijver.wikipedia.{SmartLinkResolver, SmartLink}
 import java.io.Writer
 import org.apache.commons.lang.StringEscapeUtils
+import annotation.switch
 
 class WikiParser{
 
@@ -168,7 +169,7 @@ class C3HtmlEncoder extends HtmlEncoder{
 
       for(i <- 0 to source.length - 1){
         val c = source.charAt(i)
-        c match {
+        (c : @switch) match {
           case 34 =>
             builder.append("&quot;")
           case 38 =>
@@ -182,13 +183,13 @@ class C3HtmlEncoder extends HtmlEncoder{
         }
       }
 
-      builder.toString
+      builder.toString()
     }
   }
 
   override def encode(s:String):String = {
     val result = StringEscapeUtils.unescapeHtml(s)
-    return escape(result)
+    escape(result)
   }
 }
 
