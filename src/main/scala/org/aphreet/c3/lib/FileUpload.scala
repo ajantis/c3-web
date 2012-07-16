@@ -8,7 +8,6 @@ package org.aphreet.c3.lib
  * modification, are permitted provided that the following conditions
  * are met:
  *
-
  * 1. Redistributions of source code must retain the above copyright
  * notice, this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above
@@ -30,21 +29,24 @@ package org.aphreet.c3.lib
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
- 
- 
 
 import net.liftweb.http.rest._
 import net.liftweb.json._
 import JsonDSL._
 import net.liftweb.http.{S, InMemoryResponse, JsonResponse}
 import net.liftweb.json.JsonAST.JValue
-import net.liftweb.common.Box
+import net.liftweb.common.{Logger, Box}
 
 // for ajax file upload
 object FileUpload extends RestHelper {
+
+  val logger = Logger(classOf[FileUpload.type])
+
   serve {
     case "upload" :: "file" :: Nil Post req => {
-      println("uploaded "+req.uploadedFiles)
+
+      logger.info("Uploaded files: " + req.uploadedFiles)
+
       val ojv: Box[JValue] =
         req.uploadedFiles.map(fph => ("name" -> fph.fileName) ~
                               ("type" -> fph.mimeType) ~

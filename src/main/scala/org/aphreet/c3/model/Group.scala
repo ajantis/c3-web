@@ -109,4 +109,6 @@ object Group extends Group with LongKeyedMetaMapper[Group] {
 
   override def fieldOrder = name :: Nil
 
+  def findByName(name: String) = find(By(Group.name, name))
+
 }

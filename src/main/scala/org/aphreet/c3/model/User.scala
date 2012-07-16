@@ -165,7 +165,6 @@ object User extends User with MetaMegaProtoUser[User]{
  */
 class User extends MegaProtoUser[User] with ManyToMany   {
 
-
   thisuser =>
 
   def getSingleton = User // what's the "meta" server
@@ -175,10 +174,6 @@ class User extends MegaProtoUser[User] with ManyToMany   {
     override def textareaRows  = 10
     override def textareaCols = 50
     override def displayName = "Personal Essay"
-  }
-
-  object plabAdmin extends MappedBoolean(this) {
-    override def defaultValue = false
   }
 
   object groups extends MappedManyToMany(UserGroup, UserGroup.user, UserGroup.group, Group) {

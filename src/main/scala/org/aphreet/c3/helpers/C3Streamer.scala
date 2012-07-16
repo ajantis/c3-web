@@ -53,8 +53,8 @@ object C3Streamer{
 
         //If you see an error here, it is an issue of the IDEA scala plugin
         Full(StreamingResponse(stream, ()=> stream.close(), length, List("Content-Type" -> contentType), Nil, 200))
-      }catch{
-        case e => {
+      } catch {
+        case e: Exception => {
           e.printStackTrace()
           S.notice("No file found!")
           S.redirectTo("/group/"+group+"/files/"+path.init.mkString("/"))
