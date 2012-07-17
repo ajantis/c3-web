@@ -1,6 +1,6 @@
 package org.aphreet.c3.loc
 
-import net.liftweb.common.{Logger, Full}
+import net.liftweb.common._
 import net.liftweb.sitemap.Loc
 import xml._
 import net.liftweb.util.Helpers._
@@ -14,24 +14,27 @@ import org.aphreet.c3.lib.DependencyFactory._
 import org.aphreet.c3.loc.GroupWikiPage
 import org.aphreet.c3.service.WikiService
 import org.aphreet.c3.snippet.GroupForm
-import net.liftweb.common.Full
 import scala.Some
 import net.liftweb.http.RewriteRequest
 import net.liftweb.http.ParsePath
 import org.aphreet.c3.loc.GroupWikiPage
 import net.liftweb.util.BindHelpers._
-import net.liftweb.common.Full
 import scala.Some
 import net.liftweb.http.RewriteRequest
 import net.liftweb.http.ParsePath
 import org.aphreet.c3.loc.GroupWikiPage
 import org.aphreet.c3.view.GroupNavigationUtil
-import net.liftweb.common.Full
 import scala.Some
 import net.liftweb.http.RewriteRequest
 import net.liftweb.http.ParsePath
 import xml.Text
 import org.aphreet.c3.loc.GroupWikiPage
+import net.liftweb.common.Full
+import net.liftweb.http.RewriteRequest
+import net.liftweb.http.ParsePath
+import xml.Text
+import org.aphreet.c3.loc.GroupWikiPage
+import org.aphreet.c3.model.Wiki
 
 /**
  * Copyright iFunSoftware 2012
@@ -42,6 +45,10 @@ class GroupWikiLoc extends GroupLoc[GroupWikiPage]{
 
   lazy val wikiService = inject[WikiService].open_!
   val logger = Logger(classOf[GroupWikiLoc])
+
+  implicit val resolveSmartLink: Function2[String, String, SmartLink] =
+    (key: String, groupName: String) =>
+      new SmartLink(basePrefixUrl + groupName + wikiSuffix + key, key, SmartLinkType.A_LINK)
 
   def name = "wiki"
 
