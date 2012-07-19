@@ -6,6 +6,6 @@ package org.aphreet.c3.loc
  */
 
 
-trait GroupFilesLoc extends GroupLoc[GroupFilesLoc]{
+trait GroupFilesLoc extends GroupLoc[GroupFilesPage]{
 
 }
