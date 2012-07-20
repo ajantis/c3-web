@@ -2,24 +2,21 @@ package org.aphreet.c3.loc
 
 import org.aphreet.c3.model.{Wiki, Group}
 import net.liftweb.common.{Empty, Full, Box}
-import org.aphreet.c3.apiaccess.C3
 import xml.{NodeSeq, Text, XML}
 import org.aphreet.c3.lib.DependencyFactory._
-import scala.Some
 import org.aphreet.c3.service.WikiService
 import java.io.StringWriter
 import be.devijver.wikipedia.{SmartLink, SmartLinkResolver, Parser}
 import org.aphreet.c3.lib.wiki.C3HtmlVisitor
-import be.devijver.wikipedia.SmartLink.SmartLinkType
-import net.liftweb.http.S
 import net.liftweb.util.BindHelpers._
+import GroupWikiLoc._
+import net.liftweb.http.{RequestVar, S}
+import net.liftweb.util.Helpers
 
 /**
  * Copyright iFunSoftware 2011
  * @author Dmitry Ivanov
  */
-
-
 sealed class GroupPage(groupName: String){
   lazy val group: Box[Group] = Group findByName groupName
 }
@@ -52,28 +49,33 @@ case class GroupWikiPage(wikiName: String, groupName: String, edit: Boolean) ext
     writer.toString
   }
 
-  def toForm(): NodeSeq = {
-    def saveOrUpdate(newContent: String) = {
-      wikiService map { (service: WikiService) =>
-        val page = service.getPage(groupName, wikiName).map{ w =>
-          w.content = newContent
-          w
-        }.openOr(new Wiki(wikiName, newContent))
-        service.savePage(groupName, page)
-      }
+  private object pagePreview extends RequestVar[Box[String]](Empty)
+  private object pageContent extends RequestVar[Box[String]](Empty)
+
+  def toForm: NodeSeq = {
+    def saveOrUpdate(newContent: String) = () => {
+      for {
+        service <- wikiService ?~ "No wiki service is present!"
+        page <- service.getPage(groupName, wikiName).openOr(new Wiki(wikiName, newContent))
+        content <- page
+      } yield service.savePage(groupName, page)
+    }
+
+    import Helpers._
+    def processPreview() = tryo(onError = S error "Failed to parse page: " + _.getMessage ) {
+      val formattedContent = formatContent(submittedContent, groupName)
+      pagePreview.set(Full(formattedContent))
+      pageContent.set(Full(submittedContent))
     }
 
     import net.liftweb.http.SHtml._
 
+    var submittedContent = ""
+
     // TODO refactor
-    ".content" -> textarea(editablePageContent, submittedContent = _) &
-    ".preview" -> previewXml &
-    ".submit" -> submit("Save", saveOrUpdate(submittedContent)) &
-    ".submit-preview" -> submit("Preview", processPreview)
+    ".content" #> textarea(wiki.map(_.content).openOr(""), submittedContent = _) &
+    ".submit" #> submit("Save", saveOrUpdate(submittedContent)) &
+    ".submit-preview" #> submit("Preview", processPreview _)
 
   }
-
-
-
-
 }

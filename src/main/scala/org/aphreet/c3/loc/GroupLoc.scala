@@ -11,12 +11,10 @@ import net.liftweb.common.Full
  */
 
 
-trait GroupLoc[T <: GroupPage] extends Loc[T]{
+trait GroupLoc[T <: GroupPage] extends Loc[T]
 
-  protected val basePrefixUrl = "group"
-
-  protected val filesSuffix = "files"
-
-  protected val wikiSuffix = "wiki"
-
+object GroupLoc {
+  val basePrefixUrl = "group"
+  val filesSuffix = "files"
+  val wikiSuffix = "wiki"
 }
