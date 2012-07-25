@@ -46,18 +46,18 @@ class GroupWikiLoc extends GroupLoc[GroupWikiPage]{
 
   override def snippets: SnippetTest = {
     case ("wiki", Full(wp @ GroupWikiPage(_, _, true))) =>
-      editWiki(wp) _
+      editWiki(wp)(_)
     case ("wiki", Full(wp: GroupWikiPage)) =>
-      displayWiki(wp) _
+      displayWiki(wp)(_)
   }
 
   override val rewrite: LocRewrite =
     Full(NamedPF("Wiki Rewrite"){
       case RewriteRequest(ParsePath(
-        basePrefixUrl() :: groupName :: "wiki" :: wikiName :: "edit" :: Nil, _, _,_),_,_) =>
+        GroupLoc.basePrefixUrl :: groupName :: "wiki" :: wikiName :: "edit" :: Nil, _, _,_),_,_) =>
           (RewriteResponse("wiki" :: Nil), GroupWikiPage(wikiName, groupName, edit = true) )
       case RewriteRequest(ParsePath(
-        basePrefixUrl() :: groupName :: "wiki" :: wikiName :: Nil, _, _,_),_,_) =>
+        GroupLoc.basePrefixUrl :: groupName :: "wiki" :: wikiName :: Nil, _, _,_),_,_) =>
           (RewriteResponse("wiki" :: Nil), GroupWikiPage(wikiName, groupName, edit = true) )
     })
 

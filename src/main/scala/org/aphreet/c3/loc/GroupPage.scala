@@ -1,6 +1,6 @@
 package org.aphreet.c3.loc
 
-import org.aphreet.c3.model.{Wiki, Group}
+import org.aphreet.c3.model.{User, Wiki, Group}
 import net.liftweb.common.{Empty, Full, Box}
 import xml.{NodeSeq, Text, XML}
 import org.aphreet.c3.lib.DependencyFactory._
@@ -10,8 +10,9 @@ import be.devijver.wikipedia.{SmartLink, SmartLinkResolver, Parser}
 import org.aphreet.c3.lib.wiki.C3HtmlVisitor
 import net.liftweb.util.BindHelpers._
 import GroupWikiLoc._
-import net.liftweb.http.{RequestVar, S}
+import net.liftweb.http.{SHtml, RequestVar, S}
 import net.liftweb.util.Helpers
+import collection.mutable
 
 /**
  * Copyright iFunSoftware 2011
@@ -52,17 +53,17 @@ case class GroupWikiPage(wikiName: String, groupName: String, edit: Boolean) ext
   private object pagePreview extends RequestVar[Box[String]](Empty)
   private object pageContent extends RequestVar[Box[String]](Empty)
 
-  def toForm: NodeSeq = {
+  def toForm = {
     def saveOrUpdate(newContent: String) = () => {
       for {
         service <- wikiService ?~ "No wiki service is present!"
-        page <- service.getPage(groupName, wikiName).openOr(new Wiki(wikiName, newContent))
-        content <- page
+        page <- service.getPage(groupName, wikiName).or(Full(new Wiki(wikiName, newContent)))
       } yield service.savePage(groupName, page)
     }
 
+    var submittedContent = ""
     import Helpers._
-    def processPreview() = tryo(onError = S error "Failed to parse page: " + _.getMessage ) {
+    def processPreview() = tryo( onError = (e: Throwable) => S.error("Failed to parse page: " + e.getMessage) ) {
       val formattedContent = formatContent(submittedContent, groupName)
       pagePreview.set(Full(formattedContent))
       pageContent.set(Full(submittedContent))
@@ -70,9 +71,6 @@ case class GroupWikiPage(wikiName: String, groupName: String, edit: Boolean) ext
 
     import net.liftweb.http.SHtml._
 
-    var submittedContent = ""
-
-    // TODO refactor
     ".content" #> textarea(wiki.map(_.content).openOr(""), submittedContent = _) &
     ".submit" #> submit("Save", saveOrUpdate(submittedContent)) &
     ".submit-preview" #> submit("Preview", processPreview _)

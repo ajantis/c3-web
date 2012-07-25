@@ -5,6 +5,6 @@ package org.aphreet.c3.loc
  * @author Dmitry Ivanov
  */
 
-trait GroupFilesLoc extends GroupLoc[GroupFilesLoc]{
+trait GroupFilesLoc extends GroupLoc[GroupFilesPage]{
 
 }
