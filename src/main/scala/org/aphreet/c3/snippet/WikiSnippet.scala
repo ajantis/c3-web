@@ -6,7 +6,6 @@
  * modification, are permitted provided that the following conditions
  * are met:
  *
-
  * 1. Redistributions of source code must retain the above copyright 
  * notice, this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above 
@@ -77,7 +76,7 @@ class WikiSnippet{
 
     wikiService.getPage(groupName, pageName) match {
       case Full(page) => bindWikiPage(page.name, XML.loadString(formatContent(page.content, groupName)), page.metadata)
-      case Empty => bindWikiPage(pageName, Text("Page not found"), Map())
+      case _ => bindWikiPage(pageName, Text("Page not found"), Map())
     }
   }
 
@@ -91,7 +90,7 @@ class WikiSnippet{
         resolveSmartLink(key, group)
       }
 
-    }));
+    }))
 
     writer.toString
   }
@@ -130,7 +129,6 @@ class WikiSnippet{
   def form(html: NodeSeq) : NodeSeq = {
 
     var submittedContent:String = null
-
     val pageName = S.param("pagename") match {
       case Full(value) => value
       case _ => "Main"
@@ -144,15 +142,13 @@ class WikiSnippet{
     def processWikiEdit() = {
       wikiService.getPage(groupName, pageName) match {
         case Full(page) => {
-
           page.content = submittedContent
-
           wikiService.savePage(groupName, page)
           S.notice("Page saved")
           S.redirectTo("/group/" + groupName + "/wiki/" + pageName)
         }
 
-        case Empty => {
+        case _ => {
 
           val page = new Wiki(pageName, submittedContent)
 
@@ -164,19 +160,18 @@ class WikiSnippet{
     }
 
     def processPreview() = {
-
       try{
         val formattedContent = formatContent(submittedContent, groupName)
         pagePreview.set(Full(formattedContent))
         pageContent.set(Full(submittedContent))
-      }catch{
-        case e => S.error("Failed to parse page: " + e.getMessage)
+      } catch {
+        case e: Exception => S.error("Failed to parse page: " + e.getMessage)
       }
     }
 
     val pageString = wikiService.getPage(groupName, pageName) match {
       case Full(page) => page.content
-      case Empty => ""
+      case _ => ""
     }
 
     val previewXml = pagePreview.get match{

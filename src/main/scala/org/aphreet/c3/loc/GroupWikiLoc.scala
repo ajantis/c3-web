@@ -22,10 +22,14 @@ import org.aphreet.c3.service.WikiService
  * Copyright iFunSoftware 2012
  * @author Dmitry Ivanov
  */
-class GroupWikiLoc extends GroupLoc[GroupWikiPage]{
+object GroupWikiLoc extends GroupLoc[GroupWikiPage]{
+
+  implicit val resolveSmartLink: Function2[String, String, SmartLink] =
+    (key: String, groupName: String) =>
+      new SmartLink(basePrefixUrl + groupName + wikiSuffix + key, key, SmartLinkType.A_LINK)
 
   lazy val wikiService = inject[WikiService].open_!
-  val logger = Logger(classOf[GroupWikiLoc])
+  val logger = Logger(GroupWikiLoc.getClass)
 
   def name = "wiki"
 
@@ -91,11 +95,4 @@ class GroupWikiLoc extends GroupLoc[GroupWikiPage]{
       ".key *" #> md._1
       ".value *" #> md._2
     }
-}
-
-object GroupWikiLoc{
-
-  implicit val resolveSmartLink: Function2[String, String, SmartLink] =
-    (key: String, groupName: String) =>
-      new SmartLink(basePrefixUrl + groupName + wikiSuffix + key, key, SmartLinkType.A_LINK)
 }

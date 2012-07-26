@@ -6,6 +6,7 @@ import _root_.net.liftweb.http.provider._
 import _root_.net.liftweb.sitemap._
 import _root_.net.liftweb.sitemap.Loc._
 import Helpers._
+import loc.GroupWikiLoc
 import org.aphreet.c3.model._
 import net.liftweb.mapper._
 import net.liftweb.http._
@@ -70,20 +71,13 @@ class Boot extends Bootable{
     )
 
     val isGroupAdmin = If(() => {
-      S.param("groupname") match {
-        case Full(name) => Group.find(By(Group.name,name)) match {
-          case Full(group) => {
-            User.currentUser match {
-              case Full(user) if(user.id.is == group.owner.is) => true
-              case _ => false
-            }
-          }
-          case _ => false
-        }
-        case _ => false
-      }
-    },
-      () => RedirectWithState("/index", RedirectState( () => {} ,"Not a group admin" -> NoticeType.Notice ) ) )
+      (for {
+        groupName <- S.param("groupname")
+        group     <- Group.find(By(Group.name,groupName))
+        user      <- User.currentUser
+        if user.id.is == group.owner.is
+      } yield true).openOr(false)
+    }, () => RedirectWithState("/index", RedirectState( () => {} ,"Not a group admin" -> NoticeType.Notice )))
 
     // Build SiteMap
     def sitemap() = SiteMap(
@@ -118,20 +112,19 @@ class Boot extends Bootable{
 
       Menu("Search") / "search" >> loggedIn >> Hidden,
 
-      Menu("Not found") / "404" >>  Hidden,
-
-      Menu("TestFansy") / "testFansy" >>  Hidden,
-
-      Menu("test2ygyg") / "test1" / "test2" >> loggedIn >> Hidden,
+      Menu(GroupWikiLoc),
     
       LogLevel.menu // default log level menu is located at /loglevel/change
-
 
     )
 
     LiftRules.setSiteMapFunc(() => User.sitemapMutator(sitemap()))
 
-
+    // Custom 404 page
+    LiftRules.uriNotFound.prepend(NamedPF("404handler"){
+      case (req,failure) =>
+        NotFoundAsTemplate(ParsePath(List("404"),"html", false, false))
+    })
 
     LiftRules.statelessRewrite.prepend(NamedPF("ParticularGroupFilesRewrite") {
       case RewriteRequest(
@@ -146,17 +139,13 @@ class Boot extends Bootable{
             // TODO if resource instance is FIle ==>> rewrite request to file page
             C3Resource.get(group,directory.mkString("/")+dotExt) match {
               case Some(resource) if(resource.isInstanceOf[File]) => {
-                //RewriteResponse("download" :: groupname :: "files" :: (directory.mkString("/")+dotExt).split("/").toList)
                 RewriteResponse("groupsection" :: "file" :: Nil, Map("groupname" -> groupname,"groupdirectory" -> (directory.mkString("/") + dotExt),"filepath" -> (directory.mkString("/") + dotExt), "rewrite" -> "groupFiles"))
               }
-              case Some(resource) => RewriteResponse("groupsection" :: "files" :: Nil, Map("groupname" -> groupname,"groupdirectory" -> directory.mkString("/"), "rewrite" -> "groupFiles"))
-              case _ => RewriteResponse("404" :: Nil)
+              case Some(resource) =>
+                RewriteResponse("groupsection" :: "files" :: Nil, Map("groupname" -> groupname,"groupdirectory" -> directory.mkString("/"), "rewrite" -> "groupFiles"))
             }
           }
-          case _ => RewriteResponse("404" :: Nil)
         }
-
-
       }
     })
 
@@ -276,7 +265,6 @@ class Boot extends Bootable{
     // Use HTML5 for rendering
     LiftRules.htmlProperties.default.set((r: Req) =>
       new Html5Properties(r.userAgent)) */
-
     S.addAround(DB.buildLoanWrapper)
   }
 
