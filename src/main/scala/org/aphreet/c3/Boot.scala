@@ -136,19 +136,22 @@ class Boot extends Bootable{
         }
         Group.find(By(Group.name,groupname)) match {
           case Full(group) => {
-            // TODO if resource instance is FIle ==>> rewrite request to file page
-            C3Resource.get(group,directory.mkString("/")+dotExt) match {
+            // TODO if resource instance is File ==>> rewrite request to file page
+            C3Resource.get(group,directory.mkString("/") + dotExt) match {
               case Some(resource) if(resource.isInstanceOf[File]) => {
                 RewriteResponse("groupsection" :: "file" :: Nil, Map("groupname" -> groupname,"groupdirectory" -> (directory.mkString("/") + dotExt),"filepath" -> (directory.mkString("/") + dotExt), "rewrite" -> "groupFiles"))
               }
               case Some(resource) =>
                 RewriteResponse("groupsection" :: "files" :: Nil, Map("groupname" -> groupname,"groupdirectory" -> directory.mkString("/"), "rewrite" -> "groupFiles"))
+              case _ =>
+                RewriteResponse("404" :: Nil)
             }
           }
+          case _ => RewriteResponse("404" :: Nil)
         }
       }
     })
-
+           NotFoundAsResponse
     LiftRules.statelessRewrite.prepend(NamedPF("ParticularGroupOverviewRewrite") {
       case RewriteRequest(
       ParsePath("group" :: groupname  :: Nil , _, _,_), _, _) =>

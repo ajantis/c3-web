@@ -56,7 +56,7 @@ object GroupWikiLoc extends GroupLoc[GroupWikiPage]{
   }
 
   override val rewrite: LocRewrite =
-    Full(NamedPF("Wiki Rewrite"){
+    Full(NamedPF("WikiRewrite"){
       case RewriteRequest(ParsePath(
         GroupLoc.basePrefixUrl :: groupName :: "wiki" :: wikiName :: "edit" :: Nil, _, _,_),_,_) =>
           (RewriteResponse("wiki" :: Nil), GroupWikiPage(wikiName, groupName, edit = true) )

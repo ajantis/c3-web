@@ -1,23 +1,23 @@
 package org.aphreet.c3.loc
 
-import org.aphreet.c3.model.{User, Wiki, Group}
-import net.liftweb.common.{Empty, Full, Box}
-import xml.{NodeSeq, Text, XML}
-import org.aphreet.c3.lib.DependencyFactory._
+import org.aphreet.c3.model.{Wiki, Group}
+import net.liftweb.common.{Full, Empty, Box}
+import be.devijver.wikipedia.{SmartLinkResolver, Parser, SmartLink}
 import org.aphreet.c3.service.WikiService
+import xml.XML
 import java.io.StringWriter
-import be.devijver.wikipedia.{SmartLink, SmartLinkResolver, Parser}
 import org.aphreet.c3.lib.wiki.C3HtmlVisitor
-import net.liftweb.util.BindHelpers._
+import net.liftweb.http.{S, RequestVar}
+import org.aphreet.c3.lib.DependencyFactory._
+import net.liftweb.util.Helpers._
 import GroupWikiLoc._
-import net.liftweb.http.{SHtml, RequestVar, S}
-import net.liftweb.util.Helpers
-import collection.mutable
 
 /**
  * Copyright iFunSoftware 2011
  * @author Dmitry Ivanov
  */
+
+
 sealed class GroupPage(groupName: String){
   lazy val group: Box[Group] = Group findByName groupName
 }
@@ -62,7 +62,6 @@ case class GroupWikiPage(wikiName: String, groupName: String, edit: Boolean) ext
     }
 
     var submittedContent = ""
-    import Helpers._
     def processPreview() = tryo( onError = (e: Throwable) => S.error("Failed to parse page: " + e.getMessage) ) {
       val formattedContent = formatContent(submittedContent, groupName)
       pagePreview.set(Full(formattedContent))

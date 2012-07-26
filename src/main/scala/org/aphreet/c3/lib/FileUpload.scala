@@ -39,9 +39,8 @@ import net.liftweb.common.{Logger, Box}
 
 // for ajax file upload
 object FileUpload extends RestHelper {
-  self =>
 
-  val logger = Logger(self.getClass)
+  val logger = Logger(FileUpload.getClass)
 
   serve {
     case "upload" :: "file" :: Nil Post req => {
