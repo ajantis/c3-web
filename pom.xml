@@ -39,16 +39,13 @@
         <repository>
             <id>libs-release</id>
             <name>iFunSoftware release repository</name>
-            <url>http://repository.ifunsoftware.com/artifactory/libs-release</url>
+            <url>http://repository-ifunsoftware.rhcloud.com/content/repositories/releases</url>
         </repository>
 
         <repository>
             <id>libs-snapshot</id>
             <name>iFunSoftware snapshot repository</name>
-            <url>http://repository.ifunsoftware.com/artifactory/libs-snapshot</url>
-            <snapshots>
-                <updatePolicy>never</updatePolicy>
-            </snapshots>
+            <url>http://repository-ifunsoftware.rhcloud.com/content/repositories/snapshots/</url>
         </repository>
 
         <repository>
@@ -68,12 +65,12 @@
         <repository>
             <id>ifunsoftware</id>
             <name>iFunSoftware release repository</name>
-            <url>http://repository.ifunsoftware.com/artifactory/libs-release-local</url>
+            <url>http://repository-ifunsoftware.rhcloud.com/content/repositories/releases</url>
         </repository>
         <snapshotRepository>
             <id>ifunsoftware-snap</id>
             <name>iFunSoftware snapshot repository</name>
-            <url>http://repository.ifunsoftware.com/artifactory/libs-snapshot-local</url>
+            <url>http://repository-ifunsoftware.rhcloud.com/content/repositories/snapshots/</url>
         </snapshotRepository>
     </distributionManagement>
 
