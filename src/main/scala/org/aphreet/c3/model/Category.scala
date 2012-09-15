@@ -39,12 +39,16 @@ class Category extends LongKeyedMapper[Category] with IdPK {
 
   def getSingleton = Category
 
-  object user extends MappedLongForeignKey(this, User)
-
   object name extends MappedString(this,64)
 
   def tags : List[Tag] = Tag.findAll(By(Tag.category, this))
 
+
+  // TODO ajantis: find some standard cascading approach
+  override def delete_! = {
+    this.tags.foreach(_.delete_!)
+    super.delete_!
+  }
 
 }
 

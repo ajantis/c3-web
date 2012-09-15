@@ -51,7 +51,7 @@ class Boot extends Bootable{
 
     // where to search snippet
     LiftRules.addToPackages("org.aphreet.c3")
-    Schemifier.schemify(true, Schemifier.infoF _, User, Group, Category,Message,UserGroup)
+    Schemifier.schemify(true, Schemifier.infoF _, User, Group, Category, Tag, Message,UserGroup)
 
     val isIE = Test( req => req.isIE )
 
@@ -64,7 +64,6 @@ class Boot extends Bootable{
     }
 
     val loggedIn = If(() => User.loggedIn_?, loginAndComeBack _ )
-
 
     val isSuperAdmin = If(() => {if(!User.currentUser.isEmpty) User.currentUser.open_!.superUser.is else false},
       () => RedirectWithState("/index", RedirectState( () => {} ,"Not a super user" -> NoticeType.Notice ) )
@@ -151,7 +150,7 @@ class Boot extends Bootable{
         }
       }
     })
-           NotFoundAsResponse
+
     LiftRules.statelessRewrite.prepend(NamedPF("ParticularGroupOverviewRewrite") {
       case RewriteRequest(
       ParsePath("group" :: groupname  :: Nil , _, _,_), _, _) =>
@@ -269,6 +268,15 @@ class Boot extends Bootable{
     LiftRules.htmlProperties.default.set((r: Req) =>
       new Html5Properties(r.userAgent)) */
     S.addAround(DB.buildLoanWrapper)
+
+    if(!Props.productionMode){
+      Category.findAll().foreach(_.delete_!)
+      (1 to 10).foreach{ i: Int => {
+        val cat = Category.create.name("Category" + i).saveMe()
+        val tags = (1 to 5).map(i => Tag.create.name("Tag" + i + "_for_" + cat.name.is).category(cat).saveMe())
+      }}
+    }
+
   }
 
   /**

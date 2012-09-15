@@ -106,19 +106,7 @@ class SearchSnippet extends StatefulSnippet{
 
         }):NodeSeq
       },
-      "submit" -> SHtml.submit("Go", () => {}  ),
-      "user_categories" -> {(ns: NodeSeq ) => User.currentUser.open_!.categories.flatMap(
-        (category: Category) =>
-          bind("category",ns,
-            "name" -> category.name.is,
-            "tags" -> { (nss: NodeSeq) => category.tags.flatMap(
-              (tag:Tag) =>
-                bind("tag",nss,
-                  "name" -> tag.name.is
-                )
-            ):NodeSeq }
-          )
-      ):NodeSeq}
+      "submit" -> SHtml.submit("Go", () => {}  )
     )
   }
 
@@ -133,19 +121,7 @@ class SearchSnippet extends StatefulSnippet{
           case "search" => resultPage _
           case "miniSearch" => miniSearchForm _
         }
-      }),
-      "user_categories" -> {(ns: NodeSeq ) => User.currentUser.open_!.categories.flatMap(
-        (category: Category) =>
-          bind("category",ns,
-            "name" -> category.name.is,
-            "tags" -> { (nss: NodeSeq) => category.tags.flatMap(
-              (tag:Tag) =>
-                bind("tag",nss,
-                  "name" -> tag.name.is
-                )
-            ):NodeSeq}
-          )
-      ):NodeSeq}
+      })
     )
   }
 

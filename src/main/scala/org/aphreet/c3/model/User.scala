@@ -189,8 +189,6 @@ class User extends MegaProtoUser[User] with ManyToMany   {
     }
   }
 
-  def categories: List[Category] = Category.findAll(By(Category.user,this))
-
   object searchRequests extends SessionVar[List[String]] ( "scala" :: "java" :: "performance" :: "c3" :: Nil )
 
 
