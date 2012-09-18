@@ -81,6 +81,9 @@ class Boot extends Bootable{
     // Build SiteMap
     def sitemap() = SiteMap(
 
+      Menu("Home") / "index" >> LocGroup("mainmenu"),
+      //>> User.AddUserMenusAfter, // Simple menu form
+
       Menu("IEDisclaimer") / "ie_disclaimer" >> isIE >> Hidden,
 
       Menu("About") / "about" >> LocGroup("footerMenu"),
@@ -92,8 +95,6 @@ class Boot extends Bootable{
       Menu("Categories") / "categories" >> loggedIn >> LocGroup("mainmenu"),
 
       Menu("Groups") / "groups" >> loggedIn >> LocGroup("mainmenu"),
-
-      Menu("Home") / "index" >> LocGroup("footerMenu") >> User.AddUserMenusAfter, // Simple menu form
 
       Menu("GroupOverview") / "groupsection" / "index" >> loggedIn >> Hidden,
 
@@ -263,10 +264,11 @@ class Boot extends Bootable{
       ret
     }
 
-    /*
-    // Use HTML5 for rendering
+
+    //Use HTML5 for rendering
     LiftRules.htmlProperties.default.set((r: Req) =>
-      new Html5Properties(r.userAgent)) */
+      new Html5Properties(r.userAgent))
+
     S.addAround(DB.buildLoanWrapper)
 
     if(!Props.productionMode){
