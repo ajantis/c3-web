@@ -40,18 +40,20 @@ import net.liftweb.common.Full
 import net.liftweb.widgets.autocomplete.AutoComplete
 
 import net.liftweb.util.BindHelpers._
+import net.liftweb.util.PassThru
 
 
 class MainSnippet  {
-
-  def currentUser(html: NodeSeq) : NodeSeq = {
+  def currentUser = {
     User.currentUser match {
       case Full(user) => {
-        bind("user", html,
-          "email" -> user.email.is
-        )
+        ".username" #> user.shortName &
+        ".user ^*" #> PassThru &
+        ".not_logged_in" #> NodeSeq.Empty
       }
-      case _ => NodeSeq.Empty
+      case _ =>
+        ".user" #> NodeSeq.Empty &
+        ".not_logged_in ^*" #> PassThru
     }
   }
 
@@ -89,7 +91,7 @@ class MainSnippet  {
 
   }
 
-  def breadCrumbs(html: NodeSeq) : NodeSeq = {
+  def breadCrumbs = {
     val breadcrumbs: List[Loc[_]] =
       for {
         currentLoc <- S.location.toList
@@ -98,24 +100,24 @@ class MainSnippet  {
       } yield loc
 
 
-    if(S.param("rewrite").isEmpty) {
-      bind("breadCrumbsMenu", html,
-        "breadCrumbs" -> {(ns: NodeSeq) => {breadcrumbs.flatMap( loc =>
-          if(! loc.createDefaultLink.get.text.contains("index"))
-
-            bind("breadCrumb", ns,
-              "link" -> <a href={loc.createDefaultLink.get}>{loc.title}</a> //SHtml.link(loc.linkText.toString,() => {}, loc.title)
-
-
-            )
-
-          else NodeSeq.Empty
-        ): NodeSeq} }
+    def buildBreadCrumbs(brdCrmbs: List[(String, String)]) = {
+      "bcrumb_item *" #> brdCrmbs.filter(_._2 != "").map(
+        linkWithName =>
+          ".bcrumb_link [href]" #> linkWithName._1 &
+            ".bcrumb_link *" #> linkWithName._2
       )
     }
+
+    if(S.param("rewrite").isEmpty) {
+      // TODO rewrite
+      ".bcrumb_item *" #> breadcrumbs.
+        filter(loc => !loc.createDefaultLink.get.text.contains("index")).map{ loc =>
+        ".bcrumb_link [href]" #> loc.createDefaultLink.get &
+        ".bcrumb_link *" #> loc.title
+      }
+    }
     else {
-      S.param("rewrite").open_! match
-      {
+      S.param("rewrite").open_! match {
         case "groupFiles" => {
           val groupname = S.param("groupname").open_!
 
@@ -128,25 +130,13 @@ class MainSnippet  {
 
           val brdCrmbList : List[(String,String)] = Tuple2("/group/"+groupname,groupname) :: Tuple2("/group/"+groupname+"/files", "Files") :: groupDirLinkLst
 
-          bind("breadCrumbsMenu", html,
-            "breadCrumbs" -> {(ns: NodeSeq) => {brdCrmbList.filter(_._2 != "").flatMap(linkWithName =>
-              bind("breadCrumb", ns,
-                "link" -> <a href={linkWithName._1}>{linkWithName._2}</a>
-              )
-            ): NodeSeq} }
-          )
+          buildBreadCrumbs(brdCrmbList)
         }
         case "groupOverview" => {
           val groupname = S.param("groupname").open_!
           val brdCrmbList : List[(String,String)] = Tuple2("/group/"+groupname,groupname) :: Nil
 
-          bind("breadCrumbsMenu", html,
-            "breadCrumbs" -> {(ns: NodeSeq) => {brdCrmbList.filter(_._2 != "").flatMap(linkWithName =>
-              bind("breadCrumb", ns,
-                "link" -> <a href={linkWithName._1}>{linkWithName._2}</a>
-              )
-            ): NodeSeq} }
-          )
+          buildBreadCrumbs(brdCrmbList)
         }
         case _ => NodeSeq.Empty // TODO implement
       }

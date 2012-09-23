@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<head>
+<head xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html">
     <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="" />
@@ -13,46 +13,129 @@
     <link href="/css/c3-main.css" rel="stylesheet"/>
     <link href="/bootstrap/css/bootstrap-responsive.css" rel="stylesheet"/>
 
+
+    <!--Old links -->
+
+    <link rel="icon" href="/images/c3favicon.ico" />
+
+    <script src="/js/jquery-1.7.2.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.11/themes/base/jquery-ui.css" id="theme"/>
+    <link href="/css/jquery.fileupload-ui.css" type="text/css" rel="stylesheet"/>
+
+    <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.11/jquery-ui.min.js"></script>
+
+    <script src="/js/jquery.fileupload.js" type="text/javascript"></script>
+    <script src="/js/jquery.fileupload-ui.js" type="text/javascript"></script>
+    <script id="json" src="/classpath/json.js" type="text/javascript"></script>
+
+    <script src="/js/jquery.blockUI.js" type="text/javascript"></script>
+     <!--End-->
+
+
     <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
     <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
-
-</head>
+   </head>
 <body data-spy="scroll" data-offset="500" onunload="GUnload()">
 
 
 <div class="navbar navbar-fixed-top">
     <div class="navbar-inner">
         <div class="container">
+            <!--  not use this block
             <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
-            </a>
+            </a>-->
             <a class="brand" href="/">CSE vLaboratory</a>
             <div class="nav-collapse">
-                <span class="lift:Menu.builder?linkToSelf=true&group=mainmenu&li_item:class=active;ul:class=nav"></span>
+               <span class="lift:Menu.builder?linkToSelf=true&group=mainmenu&li_item:class=active;ul:class=nav"></span>
             </div>
+            <img class="ajax-loader" alt="" id="ajax-loader" src="/images/ajax-loader.gif"/>
 
-            <img alt="" id="ajax-loader" style="display:none; margin-bottom: 0px; margin-left: 5px" src="/images/ajax-loader.gif"/>
+            <div class="list-menu">
+                <div class="btn-group">
 
+                    <div class="lift:MainSnippet.currentUser">
+                        <span class="user">
+                            <div class="btn-group">
+                                <a class="btn btn-primary" href="#"><i class="icon-user icon-white"></i> <span class="username">Ivan Petrov</span></a>
+                                <a class="btn btn-primary dropdown-toggle" data-toggle="dropdown" href="#"><span class="caret"></span></a>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <lift:Menu.item name="EditUser"><i class="icon-pencil"></i> Edit</lift:Menu.item>
+                                    </li>
+                                    <li>
+                                        <lift:Menu.item name="Logout">
+                                            Sign out
+                                        </lift:Menu.item>
+                                    </li>
+                                </ul>
+                            </div>
+                        </span>
+                        <span class="not_logged_in">
+                            <span class="lift:Menu.builder?linkToSelf=true&group=loginLogoutMenu&li_item:class=active;ul:class=nav"></span>
+                        </span>
+                    </div>
+
+                </div>
+
+            </div>
             <div class="navbar-search pull-right">
                 <div> <!--class="lift:SearchForm.form"> -->
                     <div data-lift-id="datalist"></div>
-                    <input name="query" type="search" style="margin-bottom: 0px;"
-                           onkeydown="if (event.keyCode == 13) document.getElementById('btnSearch').click()"></input>
-                    <button id="btnSearch" class="btn btn-small btn-primary" type="submit" style="margin-bottom: 5px;">
+                    <input class="find_input" name="query" type="search" onkeydown="if (event.keyCode == 13) document.getElementById('btnSearch').click()"></input>
+                    <button id="btnSearch" class="btn btn-small btn-primary find_button" type="submit">
                         <i class="icon-search icon-white"></i>
                     </button>
                 </div>
             </div>
 
+
         </div>
     </div>
 
     <div class="container max-height no-overflow">
+        <div class="lift:MainSnippet.breadCrumbs">
+            <ul class="breadcrumb">
+                <li>
+                    <a href="/index">Home</a> <span class="divider">&gt;</span>
+                </li>
+                <li class="bcrumb_item">
+                    <a href="#" class="bcrumb_link">First</a> <span class="divider">&gt;</span>
+                </li>
+                <li class="active">HTML5</li>
+            </ul>
+        </div>
+        <!--Path dir -->
+
+        <!--<div class="breadcrumb">-->
+            <!--<div class="lift:SearchSnippet.miniSearch?form=post">-->
+               <!--<table width="100%">-->
+                   <!--<tr>-->
+                       <!--<td style="padding-left: 20px;">-->
+                           <!--<span><a href="/index">Home</a></span>-->
+                           <!--<span>&gt;</span>-->
+                           <!--<span class="lift:MainSnippet.breadCrumbs">-->
+                               <!--<breadCrumbsMenu:breadCrumbs>-->
+                                   <!--<span><breadCrumb:link></breadCrumb:link></span>-->
+                                   <!--<span>&gt;</span>-->
+                               <!--</breadCrumbsMenu:breadCrumbs>-->
+                           <!--</span>-->
+                       <!--</td>-->
+                       <!--<td align="right">-->
+                           <!--<span>-->
+                               <!--<miniSearch:search_strin></miniSearch:search_strin>-->
+                               <!--<miniSearch:submit></miniSearch:submit>-->
+                           <!--</span>-->
+                       <!--</td>-->
+                   <!--</tr>-->
+               <!--</table>-->
+            <!--</div>-->
+        <!--</div>-->
 
         <div class="lift:LiftMessages">
             <div class="lift_messages_container">
@@ -78,11 +161,17 @@
                 </div>
             </div>
         </div>
-
-        <div id="content">
-            <!-- The HTML content will go here -->
+        <div class="container-fluid">
+            <div class="row-fluid">
+                <div class="span2" id="right-panel">
+                    <!--Sidebar content-->
+                    <div id="right-panel-content"></div>
+                </div>
+                <div class="span10" id="content">
+                    <!--Body content-->
+                </div>
+            </div>
         </div>
-
         <hr/>
 
         <footer>
@@ -109,7 +198,6 @@
 <script src="/bootstrap/js/bootstrap-collapse.js"></script>
 <script src="/bootstrap/js/bootstrap-carousel.js"></script>
 <script src="/bootstrap/js/bootstrap-typeahead.js"></script>
-
 
 </body>
 </html>

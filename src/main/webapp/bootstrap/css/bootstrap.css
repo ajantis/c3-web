@@ -965,6 +965,7 @@ input[type="search"],
 input[type="tel"],
 input[type="color"],
 .uneditable-input {
+  margin-top:3px;
   display: inline-block;
   height: 20px;
   padding: 4px 6px;
@@ -4192,14 +4193,17 @@ input[type="submit"].btn.btn-mini {
 }
 
 .navbar .brand {
+  float:left;
   display: block;
-  float: left;
+  width:280px;
   padding: 10px 20px 10px;
-  margin-left: -20px;
-  font-size: 20px;
+  margin-top:5px;
+  margin-left:0px;
+  font-size: 35px;
   font-weight: 200;
   color: #777777;
   text-shadow: 0 1px 0 #ffffff;
+
 }
 
 .navbar .brand:hover {
@@ -4234,7 +4238,7 @@ input[type="submit"].btn.btn-mini {
 .navbar .btn-group .btn,
 .navbar .input-prepend .btn,
 .navbar .input-append .btn {
-  margin-top: 0;
+  margin-top: 5px;
 }
 
 .navbar-form {
@@ -4374,7 +4378,7 @@ input[type="submit"].btn.btn-mini {
   left: 0;
   display: block;
   float: left;
-  margin: 0 10px 0 0;
+  margin: 5px 10px 0 0;
 }
 
 .navbar .nav.pull-right {

@@ -6,7 +6,7 @@
 
 
     <lift:bind-at name="content">
-        <lift:SearchSnippet.search form="post">
+        <div class="lift:SearchSnippet.search?form=post">
 
             <div>
                 <search:query search:size="60"></search:query> <search:submit/>
@@ -29,16 +29,16 @@
                         <tr>
 
                             <td>
-                                <entry:type/>
+                                <entry:type></entry:type>
                             </td>
                             <td>
-                                <entry:resource_path/>
+                                <entry:resource_path></entry:resource_path>
                             </td>
                             <td>
-                                <entry:full_path/>
+                                <entry:full_path></entry:full_path>
                             </td>
                             <td class="file-table-date">
-                                <entry:created/>
+                                <entry:created></entry:created>
                             </td>
                         </tr>
                     </search:resultSet>
@@ -47,7 +47,7 @@
             </div>
 
 
-        </lift:SearchSnippet.search>
+        </div>
     </lift:bind-at>
 
     <lift:bind-at name="right-panel-content">
@@ -56,7 +56,7 @@
 
                 <span>Pick a category or tag</span>
                 <div>
-                    <lift:SearchSnippet.search form="post">
+                    <div class="lift:SearchSnippet.search?form=post">
                         <ul>
                             <search:user_categories>
                                 <li><a href="#"><category:name/></a>
@@ -68,7 +68,7 @@
                                 </li>
                             </search:user_categories>
                         </ul>
-                    </lift:SearchSnippet.search>
+                    </div>
                 </div>
             </div>
         </div>

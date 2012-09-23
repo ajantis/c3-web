@@ -18,7 +18,6 @@ import net.liftweb.widgets.uploadprogress._
 
 import org.aphreet.c3.logging.LogLevel
 import net.liftweb.widgets.tablesorter.TableSorter
-import org.apache.commons.httpclient.util.URIUtil
 import net.liftweb.widgets.autocomplete.AutoComplete
 import net.liftweb.widgets.flot.Flot
 
@@ -82,7 +81,6 @@ class Boot extends Bootable{
     def sitemap() = SiteMap(
 
       Menu("Home") / "index" >> LocGroup("mainmenu"),
-      //>> User.AddUserMenusAfter, // Simple menu form
 
       Menu("IEDisclaimer") / "ie_disclaimer" >> isIE >> Hidden,
 
@@ -115,7 +113,6 @@ class Boot extends Bootable{
       Menu(GroupWikiLoc),
     
       LogLevel.menu // default log level menu is located at /loglevel/change
-
     )
 
     LiftRules.setSiteMapFunc(() => User.sitemapMutator(sitemap()))

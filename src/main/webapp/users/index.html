@@ -3,8 +3,8 @@
 
   <div id="addUser" style="display: none;">
   <lift:snippet type="UserForm.add" form="post">
-      <b>First name: </b> <user:firstName/> <br/>
-      <b>Last name: </b> <user:lastName/>
+      <b>First name: </b> <user:firstName></user:firstName> <br/>
+      <b>Last name: </b> <user:lastName></user:lastName>
       <br/>
 
       <user:submit/>
@@ -16,7 +16,7 @@
   <br/>
   <lift:snippet type="UserForm.list">
       <ul>
-          <li><user:name/></li>
+          <li><user:name></user:name></li>
       </ul>
   </lift:snippet>
 

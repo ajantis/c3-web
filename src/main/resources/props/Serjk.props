@@ -2,3 +2,8 @@ c3_host=http://node0.c3.ifunsoftware.com
 
 c3_domain_name=anonymous
 c3_domain_secret=
+
+
+#c3_host=http://node0.c3.ifunsoftware.com
+#c3_domain_name=dev-serjk
+#c3_domain_secret=947e83d99dc01eb0b86acbd994e249b7

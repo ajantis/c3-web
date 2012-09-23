@@ -1,34 +1,44 @@
 <lift:surround with="default">
 
- <lift:bind-at name="content">
+     <script type="text/javascript">
+         document.getElementById('addGroup_button').onclick = function() {
+             $('.AddGroup').next().css("display","block");
+             });
+         };
+    </script>
+
+
+
+
+ <div class="lift:bind-at?name=content">
     <div class="content-header">
             <h1>My groups</h1>
     </div>
 
 
-    <h2>Groups  <a href="javascript:showDiv('addGroup')"><img src="/images/add_48.png" style="position: relative; top: 8px;" width="32" height="32" align="middle"/></a></h2>
+    <h2>Groups  <a class="AddGroup_button" id="addGroup_button"></a></h2>
 
-    <div id="addGroup" style="display:none;">
+    <div id="addGroup" class="AddGroup">
         <lift:snippet type="GroupForm.add" form="post">
-            <b>Group name: </b> <group:name/> <br/>
-            <b>Owner: </b> <group:owner/>
+            <b>Group name: </b> <group:name></group:name> <br/>
+            <b>Owner: </b> <group:owner></group:owner>
             <br/>
 
-            <group:submit/>
+            <group:submit></group:submit>
             <br/><br/>
         </lift:snippet>
         <hr/>
     </div>
 
     <br/>
-    <lift:snippet type="GroupForm.list" form="post">
+    <div class="lift:GroupForm.list?form=post">
         <ul>
-            <li><group:name/> - <group:owner/> - <group:delete/></li>
+            <li><group:name></group:name> - <group:owner></group:owner> - <group:delete></group:delete></li>
         </ul>
-    </lift:snippet>
- </lift:bind-at>
+    </div>
+ </div>
 
- <lift:bind-at name="right-panel-content">
+ <div class="lift:bind-at?name=right-panel-content">
 
     <div class="right-panel-section right-panel-section-first">
         <span></span>
@@ -41,6 +51,6 @@
 
     </div>
 
- </lift:bind-at>
+ <div>
 
 </lift:surround>

@@ -1,33 +1,25 @@
-<div class="lift:surround?with=default;at=content">
-    <script type="javascript">
-        $(document).ready(function(){
-            //hover categories
-            $('.category_cont').hover(function(){
-            $('.category_tags').css("display","none");
-            $(this).next().css("display","block");
+<div class="lift:surround?with=default">
 
-            });
-            $('.category_tags').hover(
-            function(){},
-            function(){
-            $(this).css("display","none");
-            });
-        });
-    </script>
-    <div class="content-header">
-		<h1>My categories</h1>
+    <div class="lift:bind-at?name=content">
+        <div class="content-header">
+            <h1>My categories</h1>
+        </div>
+        <h3>List of user's categories</h3>
     </div>
 
-    <h3>List of user's categories</h3>
-    <div class="lift:CategoriesSnippet.list">
-        <ul class="categories">
-            <li class="category_cnt">
-                <span class="category_cont">Category1</span>
-                <ul class="category_tags">
-                    <li class="cat_tags">Tag1</li>
-                </ul>
-            </li>
-        </ul>
+    <div class="lift:bind-at?name=right-panel">
+        <script src="/js/categories.js">
+        </script>
+        <div class="lift:CategoriesSnippet.list">
+            <ul class="categories">
+                <li class="category_cnt">
+                    <span class="category_cont">Category1</span>
+                    <ul class="category_tags">
+                        <li class="cat_tags">Tag1</li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
     </div>
 
 </div>

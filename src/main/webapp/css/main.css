@@ -510,12 +510,13 @@ a.vm_link:hover{
     margin-left:-25px;
     float:left;
 
+}
+.cat_tags:hover{
+    cursor:pointer;
+    text-decoration:underline;
 
 
 }
-
-
-
 /*********************************************************
 * End Categories part
 *********************************************************/

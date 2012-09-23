@@ -1,19 +1,19 @@
 <lift:surround with="default">
 
-    <lift:WikiSnippet.edit>
+    <div class="lift:WikiSnippet.edit">
 
         <lift:bind-at name="content-header">
-            <wiki:name/>
+            <wiki:name></wiki:name>
         </lift:bind-at>
 
         <lift:bind-at name="content">
             <div class="wiki-form">
                 <lift:WikiSnippet.form form="POST">
-                    <wiki-form:content/>
-                    <wiki-form:preview/>
+                    <wiki-form:content></wiki-form:content>
+                    <wiki-form:preview></wiki-form:preview>
 
-                    <wiki-form:submit-preview/>
-                    <wiki-form:submit/>
+                    <wiki-form:submit-preview></wiki-form:submit-preview>
+                    <wiki-form:submit></wiki-form:submit>
                 </lift:WikiSnippet.form>
             </div>
         </lift:bind-at>
@@ -23,9 +23,9 @@
             <div class="right-panel-content">
 
                 <div class="right-panel-section  right-panel-section-first">
-                    <span><wiki:groupname/></span>
+                    <span><wiki:groupname></wiki:groupname></span>
                     <div>
-                        <wiki:groupnav/>
+                        <wiki:groupnav></wiki:groupnav>
                     </div>
                 </div>
                 <div class="right-panel-section">
@@ -45,7 +45,7 @@
                     <span>Actions</span>
                     <div>
                         <ul>
-                            <li><wiki:actions/></li>
+                            <li><wiki:actions></wiki:actions></li>
                         </ul>
                     </div>
                 </div>
@@ -53,7 +53,5 @@
             </div>
 
         </lift:bind-at>
-
-    </lift:WikiSnippet.edit>
-
+    </div>
 </lift:surround>

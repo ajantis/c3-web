@@ -7,14 +7,15 @@ import _root_.net.liftweb.common._
 import xml.{XML, NodeSeq, Text}
 import net.liftweb.http.S._
 import net.liftweb.http.{SessionVar, S, SHtml}
+import net.liftweb.sitemap.Loc.LocGroup
 
 /**
  * The singleton that has methods for accessing the database
  */
 object User extends User with MetaMegaProtoUser[User]{
 
-  /*
-  override def homePage = if (loggedIn_?) "/dashboard" else "/" */
+  override def loginMenuLocParams = LocGroup("loginLogoutMenu") :: super.loginMenuLocParams
+  override def createUserMenuLocParams = LocGroup("loginLogoutMenu") :: super.createUserMenuLocParams
 
   def currentSearchRequests: List[String] = User.currentUser.map(_.searchRequests.get).openOr(Nil)
 
@@ -190,7 +191,6 @@ class User extends MegaProtoUser[User] with ManyToMany   {
   }
 
   object searchRequests extends SessionVar[List[String]] ( "scala" :: "java" :: "performance" :: "c3" :: Nil )
-
 
 }
 

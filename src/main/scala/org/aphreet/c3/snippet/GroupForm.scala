@@ -221,10 +221,10 @@ class GroupForm{
 
         bind("group",html,
           "name" -> name,
-          "overviewLink" -> <a href={"/group/"+name}>Overview</a>,
-          "filesLink" -> <a href={"/group/"+name+"/files"}>Files</a>,
-          "wikiLink" -> <a href={"/group/"+name+"/wiki"}>Wiki</a>,
-          "adminLink" -> {Group.find(By(Group.name,name)) match {
+          "overview_link" -> <a href={"/group/"+name}>Overview</a>,
+          "files_link" -> <a href={"/group/"+name+"/files"}>Files</a>,
+          "wiki_link" -> <a href={"/group/"+name+"/wiki"}>Wiki</a>,
+          "admin_link" -> {Group.find(By(Group.name,name)) match {
             case Full(group) => {
               User.currentUser match {
                 case Full(user) if(user.id.is == group.owner.is) => <a href={"/group/"+name+"/admin"}>Admin</a>

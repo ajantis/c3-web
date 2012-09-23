@@ -1,6 +1,21 @@
 body {
     padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
 }
+input {
+    border:solid 1px #AAA;
+}
+
+a:link{
+	color:#111;
+}
+
+a:hover{
+	color:#555;
+}
+
+a:visited{
+	color:#777;
+}
 
 #lift__noticesContainer__ ul {
     list-style-type: none;
@@ -10,3 +25,507 @@ body {
 #lift__noticesContainer__ p {
     margin: 0px;
 }
+
+/*********************************************************
+ * Begin header
+ *********************************************************/
+.ajax-loader{
+    display:none;
+    margin-bottom: 0px;
+    margin-left: 5px;
+    float:left;
+
+
+}
+.find_input{
+    width:200px;
+    height:20px;
+
+
+
+}
+.find_button{
+    margin-bottom: 8px;
+
+
+}
+
+/*********************************************************
+ * End header
+ *********************************************************/
+/*********************************************************
+ * Begin login
+ *********************************************************/
+.login_button{
+
+
+
+}
+.login_menu{
+
+
+}
+
+
+div.list-menu{
+	margin-left:20px;
+	margin-top:-4px;
+	width:150px;
+	float:right;
+    height:30px;
+
+}
+
+.list-menu li{
+	color:#777;
+	list-style: none;
+    list-style-type: none;
+    display: inline;
+    font-size:12px;
+    padding-left:5px;
+    padding-right:5px;
+}
+.list-menu li.currentUser {
+    float: left;
+}
+
+.list-menu ul{
+	text-align:right;
+	padding-right:25px;
+	margin-top:10px;
+	margin-bottom:10px;
+}
+
+.list-menu a{
+	color:#777;
+	text-decoration:none;
+}
+
+.list-menu a:hover{
+	text-decoration:underline;
+}
+/*********************************************************
+ * End login part
+ *********************************************************/
+
+
+
+
+
+
+
+/*********************************************************
+ * Begin breadcrumb part
+ *********************************************************/
+div.breadcrumb{
+    border-color:#333;
+
+}
+
+.breadcrumb p{
+	margin-top:0px;
+	margin-bottom:0px;
+	margin-left:10px;
+}
+
+.breadcrumb span{
+	padding-right:10px;
+	font-size:12px;
+}
+
+.breadcrumb a:link{
+	color:#777;
+	text-decoration:none;
+}
+
+.breadcrumb a:hover{
+	color:#333333;
+	text-decoration:underline;
+}
+
+.breadcrumb a:visited{
+	color:#333333;
+	text-decoration:none;
+}
+/*********************************************************
+ * End breadcrumb part
+ *********************************************************/
+
+
+
+
+
+/*********************************************************
+ * Begin notification part
+ *********************************************************/
+div#lift__noticesContainer__{
+	margin-left:10px;
+	margin-right:10px;
+}
+
+#lift__noticesContainer__ ul{
+	margin:0px;
+	text-align:center;
+	padding-top:5px;
+	padding-bottom:5px;
+}
+
+#lift__noticesContainer__ li{
+	list-style:none;
+}
+
+div#lift__noticesContainer___error{
+	background-color:#FFCCCC;
+	border:1px solid;
+	border-color:#F00;
+
+	margin-top:2px;
+	margin-bottom:2px;
+}
+
+div#lift__noticesContainer___notice{
+	background-color:#EEEEEE;
+	border:1px solid;
+	border-color:#CCC;
+
+	margin-top:2px;
+	margin-bottom:2px;
+}
+/*********************************************************
+ * End notification part
+ *********************************************************/
+
+
+
+/*********************************************************
+ * Begin content part
+ *********************************************************/
+div.content-wrap{
+	background-color: #FFF;
+	min-height: 500px;
+	padding-left:15px;
+	padding-right:15px;
+	overflow: auto;
+}
+
+div.content-header{
+	width:100%;
+}
+
+.content-header h1{
+	margin-top:0px;
+	margin-left:10px;
+	margin-bottom:5px;
+	padding-top:15px;
+}
+
+div.content-page{
+	float:left;
+	width:75%;
+	background-color: #FFF;
+}
+
+.content-page div{
+
+    /*
+        margin:5px;
+        padding-top:6px;
+        padding-left:5px;
+        padding-right:10px;
+    */
+}
+
+/*********************************************************
+ * End content part
+ *********************************************************/
+
+
+
+
+
+
+
+
+
+/*********************************************************
+ * Begin right panel part
+ *********************************************************/
+div.right-panel{
+	float:left;
+	width:25%;
+}
+
+div.right-panel-content{
+	background-color:#EEE;
+	margin:5px 10px 5px 5px;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	padding:0px 5px 5px 5px;
+}
+
+.right-panel span{
+	font-weight:bold;
+}
+
+div.right-panel-section{
+	padding:10px 5px 10px 10px;
+	border-top:1px solid;
+	border-color:#BBB;
+	border-radius:0px;
+	-moz-border-radius: 0px;
+}
+
+div.right-panel-section-first{
+	border-top:0px;
+}
+
+.right-panel-section div{
+	font-size:12px;
+}
+
+.right-panel-section table{
+	width:100%;
+	padding-left:5px;
+	padding-top:5px;
+}
+
+td.metadata-key{
+	width:40%;
+}
+
+.right-panel-section li{
+	list-style-type:none;
+	padding-bottom:5px;
+}
+
+.right-panel-section ul{
+	padding-left:10px;
+	margin-bottom:0px;
+	margin-top:7px;
+}
+/*********************************************************
+ * End right panel part
+ *********************************************************/
+
+/*********************************************************
+ * Begin file table part
+ *********************************************************/
+table.file-table {
+	width:100%;
+	font-size:12px;
+	border-collapse:collapse;
+}
+
+.file-table td{
+	border-top:1px solid;
+	border-bottom:1px solid;
+	border-color:#CCC;
+	padding:2px;
+}
+
+tr.file-table-name{
+	width:70%;
+}
+
+td.file-table-date td.file-table-owner{
+	width:15%;
+}
+
+td.file-table-date{
+	text-align:right;
+}
+
+div.toolbar_menu {
+    width: 40%;
+    /*background-color: #EEE;*/
+    padding: 2px 2px 2px 2px;
+    margin:5px;
+}
+/*********************************************************
+ * End file table part
+ *********************************************************/
+
+/*********************************************************
+ * Begin user menus part (login, lostpassword forms, etc...)
+ *********************************************************/
+
+div.user-form {
+	margin:0px;
+	padding:0px;
+}
+
+.user-form div{
+    margin-left:10px;
+    margin-right:10px;
+    margin-top:0px;
+    padding:0px;
+}
+
+.user-form h1{
+    font-size: 16px;
+    margin-top:0px;
+}
+
+div.user-form-content{
+
+    background-color: #EEE;
+    padding: 10px 10px 10px 10px;
+    margin:0px;
+}
+
+.user-form-content table{
+    width:100%;
+}
+
+td.user-form-key{
+    width:40%;
+    text-align:right;
+    padding-right:20px;
+}
+
+.user-form-value input{
+    padding:3px;
+    margin:2px;
+    width:50%;
+}
+
+.user-form-submit input{
+    margin-left:2px;
+    margin-top:5px;
+}
+
+/*********************************************************
+ * End user menus part
+ *********************************************************/
+
+/*********************************************************
+* Begin wiki part
+*********************************************************/
+
+div.wiki-content div.wiki-form{
+    padding-top:0px;
+}
+
+.wiki-content p{
+    margin-top:0px;
+}
+
+.wiki-form div{
+    background-color:#EEE;
+}
+
+.wiki-form textarea{
+    width:100%;
+    min-height:300px;
+}
+
+
+/*********************************************************
+* End wiki part
+*********************************************************/
+
+
+/*********************************************************
+* Begin VM service part
+*********************************************************/
+
+a.vm_link:visited {
+    color:#111;
+	text-decoration:none;
+}
+
+a.vm_link:link{
+	color:#111;
+	text-decoration:none;
+}
+
+a.vm_link:hover{
+	text-decoration:underline;
+}
+
+/*********************************************************
+* End VM service part
+*********************************************************/
+/*********************************************************
+* Begin Categories part
+*********************************************************/
+.categories{
+    list-style:none;
+    width:150px;
+    background: #bdbdbd;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+
+}
+.category_tags{
+    list-style:none;
+    position:absolute;
+    display:none;
+    min-width:50px;
+    max-width:200px;
+    min-height:100px;
+    padding-top:5px;
+    padding-left:3px;
+    padding-right:3px;
+    padding-bottom:5px;
+    top:0px;
+    left:150px;
+    background: #bdbdbd;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+
+}
+.category_cont:hover{
+    cursor:pointer;
+
+
+}
+.category_cnt{
+    position:relative;
+
+}
+.cat_tags{
+
+    margin-left:5px;
+    float:left;
+
+}
+.cat_tags:hover{
+    cursor:pointer;
+    text-decoration:underline;
+
+
+}
+/*********************************************************
+* End Categories part
+*********************************************************/
+/*********************************************************
+ *Begin Groups part
+ *********************************************************/
+ .AddGroup_button{
+    display:inline-block;
+    background-image:url(/images/add_32.png);
+    width:32px;
+    height:32px;
+
+ }
+ .AddGroup_button:hover{
+    cursor:pointer;
+
+ }
+ /*
+ .AddGroup{
+    display:none;
+
+
+ }
+ */
+
+
+
+
+/*********************************************************
+ *End Groups part
+ *********************************************************/
