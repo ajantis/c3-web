@@ -38,7 +38,7 @@ import org.aphreet.c3.lib.DependencyFactory._
 
 object C3Streamer{
 
-  def apply(group:String, path:List[String], extension:String) = {
+  def apply(group:String, path: List[String], extension:String) = {
     () => {
 
       val c3 = inject[C3System].open_!
