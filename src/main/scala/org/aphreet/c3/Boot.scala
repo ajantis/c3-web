@@ -50,7 +50,7 @@ class Boot extends Bootable{
 
     // where to search snippet
     LiftRules.addToPackages("org.aphreet.c3")
-    Schemifier.schemify(true, Schemifier.infoF _, User, Group, Category, Tag, Message,UserGroup)
+    Schemifier.schemify(true, Schemifier.infoF _, User, Group, Category, Tag, UserGroup)
 
     val isIE = Test( req => req.isIE )
 

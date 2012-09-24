@@ -32,6 +32,10 @@ package org.aphreet.c3.service
 
 trait GroupService {
 
-  def createGroupMapping(name:String)
+  def createGroupMapping(name: String)
+
+  def removeGroupMapping(name: String)
 
 }
+
+
