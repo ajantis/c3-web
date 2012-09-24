@@ -56,7 +56,6 @@ class GroupFormTest  extends TestCase {
       DB.defineConnectionManager(DefaultConnectionIdentifier, vendor)
     }
 
-    Schemifier.schemify(true, Schemifier.infoF _, User, Group, Category,Message,UserGroup)
 
    }
    override def tearDown : Unit = {
