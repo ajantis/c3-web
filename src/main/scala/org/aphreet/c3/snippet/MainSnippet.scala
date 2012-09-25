@@ -109,11 +109,18 @@ class MainSnippet  {
     }
 
     if(S.param("rewrite").isEmpty) {
-      // TODO rewrite
-      ".bcrumb_item *" #> breadcrumbs.
-        filter(loc => !loc.createDefaultLink.get.text.contains("index")).map{ loc =>
-        ".bcrumb_link [href]" #> loc.createDefaultLink.get &
-        ".bcrumb_link *" #> loc.title
+      User.currentUser match {
+        case Full(user) => {
+          // TODO rewrite
+          ".bcrumb_item *" #> breadcrumbs.
+            filter(loc => !loc.createDefaultLink.get.text.contains("index")).map{ loc =>
+            ".bcrumb_link [href]" #> loc.createDefaultLink.get &
+            ".bcrumb_link *" #> loc.title
+          }
+        }
+        case _ =>{
+          ".breadcrumb" #> NodeSeq.Empty
+        }
       }
     }
     else {

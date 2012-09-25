@@ -2772,7 +2772,7 @@ table [class*=span],
   z-index: 1000;
   display: none;
   float: left;
-  min-width: 160px;
+  min-width: 110px;
   padding: 5px 0;
   margin: 2px 0 0;
   list-style: none;
@@ -2808,6 +2808,7 @@ table [class*=span],
 }
 
 .dropdown-menu a {
+  float:left;
   display: block;
   padding: 3px 20px;
   clear: both;
