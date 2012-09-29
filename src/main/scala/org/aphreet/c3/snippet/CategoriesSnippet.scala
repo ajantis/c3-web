@@ -5,6 +5,8 @@ import net.liftweb.util._
 import org.aphreet.c3.model.{Tag, Category}
 import net.liftweb.mapper.By
 import xml.{Text, NodeSeq}
+import net.liftweb.http.js.JsCmds
+import net.liftweb.http.js.JsCmds.{OnLoad, Script}
 
 class CategoriesSnippet {
 
@@ -22,7 +24,6 @@ class CategoriesSnippet {
           if (flag1==1)
            Text("active")
           else  Text("")
-
         }}
 
         "a *" #> cat.name.is &
@@ -35,11 +36,6 @@ class CategoriesSnippet {
       val id = "tab"+flag2
       val tagNames = Tag.findAll(By(Tag.category, cat)).map(_.name.is)
 
-//      def setActive: CssSel = ".tab-pane [class+]" #> { (x: NodeSeq) => {
-//        if (flag1==1)
-//          Text("active")
-//        else  Text("")
-//      }}
       ".tab-pane [id]" #> id &
       "span *" #> tagNames andThen
       "#tab1 [class+]" #>"active"
@@ -47,7 +43,8 @@ class CategoriesSnippet {
     }
 
     ".tabs-left1 *" #> categories.map{ cat: Category => tabs(cat) } &
-    ".tab-pane" #> categories.map{ cat:Category =>  categoryContents(cat) }
+    ".tab-pane" #> categories.map{ cat:Category =>  categoryContents(cat) } andThen
+    "* *" #> ((x: NodeSeq) => x ++ Script(OnLoad(JsCmds.JsHideId("right-panel"))))
 
   }
 }
