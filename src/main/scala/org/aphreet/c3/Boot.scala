@@ -272,7 +272,7 @@ class Boot extends Bootable{
       Category.findAll().foreach(_.delete_!)
         (1 to 10).foreach{ i: Int => {
         val cat = Category.create.name("Category" + i).saveMe()
-        val tags = (1 to 5).map(i => Tag.create.name("Tag" + i + "_for_" + cat.name.is).category(cat).saveMe())
+        val tags = (1 to 5).map(i => Tag.create.name("Tag" + i).category(cat).saveMe())
       }}
     }
 

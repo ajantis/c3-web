@@ -47,4 +47,7 @@ class CategoriesSnippet {
     "* *" #> ((x: NodeSeq) => x ++ Script(OnLoad(JsCmds.JsHideId("right-panel"))))
 
   }
+  def search = {
+    "* *" #> ((x: NodeSeq) => x ++ Script(OnLoad(JsCmds.JsShowId("categories_s"))))
+  }
 }
