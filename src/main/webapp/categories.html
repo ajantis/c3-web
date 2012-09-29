@@ -1,25 +1,31 @@
 <div class="lift:surround?with=default">
-
     <div class="lift:bind-at?name=content">
-        <div class="content-header">
-            <h1>My categories</h1>
-        </div>
-        <h3>List of user's categories</h3>
-    </div>
-
-    <div class="lift:bind-at?name=right-panel">
-        <script src="/js/categories.js">
-        </script>
         <div class="lift:CategoriesSnippet.list">
-            <ul class="categories">
-                <li class="category_cnt">
-                    <span class="category_cont">Category1</span>
-                    <ul class="category_tags">
-                        <li class="cat_tags">Tag1</li>
-                    </ul>
-                </li>
-            </ul>
+            <div class="tabbable tabs-left"> <!-- Only required for left/right tabs -->
+                <ul class="nav nav-tabs">
+                    <li class="tabs-left1"><a href="#tab1" data-toggle="tab">Section 2</a></li>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane" id="tab1">
+                       <span>Tags</span>
+                    </div>
+                </div>
+            </div>
         </div>
-    </div>
 
+        <!--<div class="tabbable tabs-left"> &lt;!&ndash; Only required for left/right tabs &ndash;&gt;-->
+            <!--<ul class="nav nav-tabs">-->
+                <!--<li class="tabs-left1 active"><a href="#tab1" data-toggle="tab">Section 1</a></li>-->
+                <!--<li class="tabs-left1"><a href="#tab2" data-toggle="tab">Section 2</a></li>-->
+            <!--</ul>-->
+            <!--<div class="tab-content">-->
+                <!--<div class="tab-pane active" id="tab1">-->
+                    <!--<p>I'm in Section 1.</p>-->
+                <!--</div>-->
+                <!--<div class="tab-pane" id="tab2">-->
+                    <!--<p>Howdy, I'm in Section 2.</p>-->
+                <!--</div>-->
+            <!--</div>-->
+        <!--</div>-->
+    </div>
 </div>
