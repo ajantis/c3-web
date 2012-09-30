@@ -1,12 +1,12 @@
  $(document).ready(function(){
-    $(".margn").click(function(){
+    $(".margn").live("click",function(){
         $(this).appendTo(".flt");
         $(this).removeClass();
         $(this).wrap('<div class="label-info margn_search"></div>');
         $(this).after('<a class="close cls">&times;</a>');
 
     });
-    $(".close").click(function(){
+    $(".close").live("click",function(){
       var $parent = $(this).parent();
       var id = $parent.children("span").attr("id");
       var id_new = "";
