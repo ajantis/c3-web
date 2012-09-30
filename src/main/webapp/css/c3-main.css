@@ -478,6 +478,7 @@ a.vm_link:hover{
    float: left;
    width: 350px;
    height: 33px;
+   overflow:hidden;
 
 
 }

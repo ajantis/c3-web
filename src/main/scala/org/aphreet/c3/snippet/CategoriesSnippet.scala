@@ -34,10 +34,15 @@ class CategoriesSnippet {
     def categoryContents(cat: Category) = {
       flag2+=1
       val id = "tab"+flag2
-      val tagNames = Tag.findAll(By(Tag.category, cat)).map(_.name.is)
+      var id_span = 0
+      val tagNames = Tag.findAll(By(Tag.category, cat))
 
-      ".tab-pane [id]" #> id &
-      "span *" #> tagNames andThen
+      "span" #> tagNames.map{tg:Tag =>{
+        id_span+=1
+        "span *" #> tg.name &
+        "span [id]" #> (id+"_"+id_span)
+      }}&
+      ".tab-pane [id]" #> id andThen
       "#tab1 [class+]" #>"active"
 
     }
