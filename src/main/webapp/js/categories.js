@@ -19,7 +19,6 @@
           }
       i++;
       }
-      alert(id_new);
       $parent.children("span").addClass("label margn");
       $parent.children("span").appendTo("#"+id_new);
       $parent.remove();
