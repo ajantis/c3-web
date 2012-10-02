@@ -15,7 +15,7 @@ import org.junit
  * @author Dmitry Ivanov
  */
 
-@junit.Ignore
+//@junit.Ignore
 class MessageServiceImplIntegrationTest extends TestCase {
 
   private final val logger = Logger(classOf[MessageServiceImplIntegrationTest])
@@ -37,7 +37,6 @@ class MessageServiceImplIntegrationTest extends TestCase {
       DB.defineConnectionManager(DefaultConnectionIdentifier, vendor)
     }
     group = Group.create.name("TestGroup2").saveMe()
-
     groupService.createGroupMapping(group.name.is)
   }
 

@@ -83,7 +83,7 @@ class Group extends LongKeyedMapper[Group] with IdPK with ManyToMany{
 
     var resources: List[C3Resource] = List()
 
-    val children = C3().getFile("/" + this.name.is + "/files" + directory).asDirectory.children
+    val children = C3().getFile("/" + this.name.is + "/files" + directory).asDirectory.children()
     
     for(child <- children){
       if(child.isDirectory){

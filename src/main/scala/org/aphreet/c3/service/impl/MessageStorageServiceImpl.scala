@@ -10,6 +10,8 @@ import com.ifunsoftware.c3.access.fs.C3Directory
 import org.apache.commons.io.IOUtils
 import net.liftweb.util.TimeHelpers.{now, time}
 import net.liftweb.util.Helpers
+import MessageStorageServiceImpl._
+import io.Source
 
 /**
  * Copyright iFunSoftware 2011
@@ -17,8 +19,9 @@ import net.liftweb.util.Helpers
  */
 class MessageStorageServiceImpl extends MessageStorageService with C3Loggable{
 
+  private val metaTags = Set(MSG_CREATOR_META, MSG_DATE_META)
+
   lazy val c3 = inject[C3System].open_!
-  final private val GROUP_MESSAGES_ROOT = "messages"
 
   @throws(classOf[MessageStorageException])
   override def findAll(group: Group): Traversable[Message] = {
@@ -31,13 +34,13 @@ class MessageStorageServiceImpl extends MessageStorageService with C3Loggable{
     else {
       val messages = for {
         root <- messagesRoot.toList
-        file <- root.children.filter(!_.isDirectory).map(_.asFile)
+        file <- root.children(embedChildrenData = true, embedChildMetaData = metaTags).filter(!_.isDirectory).map(_.asFile)
       } yield {
         val md = file. metadata
         Message(group.id.is.toString,
           Box(md.get("x-c3-msg-creator")).openOr("N/A"),
           time(Box(md.get("x-c3-msg-date")).map(_.split("-").head.toLong).openOr(now.getTime)),
-          IOUtils.toString(file.versions.head.getDataStream))
+          file.versions.head.getData.readContentAsString)
       }
 
       messages
@@ -83,7 +86,16 @@ class MessageStorageServiceImpl extends MessageStorageService with C3Loggable{
 
 }
 
+object MessageStorageServiceImpl{
+
+  val GROUP_MESSAGES_ROOT = "messages"
+  val MSG_CREATOR_META = "x-c3-msg-creator"
+  val MSG_DATE_META = "x-c3-msg-date"
+
+  def apply: MessageStorageService = new MessageStorageServiceImpl
+}
+
 sealed abstract class MsgMDTag(val name: String, val value: String)
 
-final case class CreatorTag(creator: String) extends MsgMDTag(name = "x-c3-msg-creator", value = creator)
-final case class DateTag(dateStr: String) extends MsgMDTag(name = "x-c3-msg-date", value = dateStr)
+final case class CreatorTag(creator: String) extends MsgMDTag(name = MSG_CREATOR_META, value = creator)
+final case class DateTag(dateStr: String) extends MsgMDTag(name = MSG_DATE_META, value = dateStr)

@@ -30,7 +30,7 @@ class GroupServiceImpl extends GroupService{
     val root = c3.getFile("/").asDirectory
 
     def removeDirectory(dir: C3Directory) {
-      for(child <- dir.children){
+      for(child <- dir.children()){
         child match {
           case d: C3Directory => {
             removeDirectory(d)

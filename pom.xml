@@ -104,12 +104,18 @@
         <dependency>
             <groupId>com.ifunsoftware.c3</groupId>
             <artifactId>accesslib</artifactId>
-            <version>1.0.2</version>
+            <version>1.0.4-SNAPSHOT</version>
         </dependency>
 
         <dependency>
             <groupId>net.liftweb</groupId>
             <artifactId>lift-mapper_${scala.version}</artifactId>
+            <version>${lift.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>net.liftweb</groupId>
+            <artifactId>lift-textile_${scala.version}</artifactId>
             <version>${lift.version}</version>
         </dependency>
 
