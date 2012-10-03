@@ -6,8 +6,8 @@ import net.liftweb.mapper.By
 import net.liftweb.common.{Full, Empty, Box}
 
 /**
- * @author Dmitry Ivanov (mailto: Dmitry.Ivanov@reltio.com)
- *         Reltio, Inc.
+ * @author Dmitry Ivanov (mailto: id.ajantis@gmail.com)
+ *         iFunSoftware
  */
 trait GroupContextAware {
 
