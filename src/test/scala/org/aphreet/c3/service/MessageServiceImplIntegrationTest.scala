@@ -15,7 +15,7 @@ import org.junit
  * @author Dmitry Ivanov
  */
 
-//@junit.Ignore
+@junit.Ignore
 class MessageServiceImplIntegrationTest extends TestCase {
 
   private final val logger = Logger(classOf[MessageServiceImplIntegrationTest])

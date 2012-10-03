@@ -100,6 +100,8 @@ class Boot extends Bootable{
 
       Menu("GroupFiles") / "groupsection" / "file" >> loggedIn >> Hidden,
 
+      Menu("GroupMessages") / "groupsection" / "messages" >> loggedIn >> Hidden,
+
       Menu("GroupWiki") / "groupsection" / "wiki-view" >> loggedIn >> Hidden,
 
       Menu("GroupWiki") / "groupsection" / "wiki-edit" >> loggedIn >> Hidden,
@@ -169,6 +171,14 @@ class Boot extends Bootable{
       ParsePath("group" :: groupname  :: "wiki" :: Nil , _, _,_), _, _) =>
         RewriteResponse(
           "groupsection" ::  "wiki-view" :: Nil, Map("groupname" -> groupname, "pagename" -> "Main", "rewrite" -> "groupWikiMain")
+        )
+    })
+
+    LiftRules.statelessRewrite.prepend(NamedPF("ParticularGroupMessages") {
+      case RewriteRequest(
+      ParsePath("group" :: groupname  :: "messages" :: Nil , _, _,_), _, _) =>
+        RewriteResponse(
+          "groupsection" ::  "messages" :: Nil, Map("groupname" -> groupname, "rewrite" -> "groupMessages")
         )
     })
 

@@ -38,9 +38,6 @@ import net.liftweb.common.Full
 import net.liftweb.mapper.By
 import org.aphreet.c3.model.{Group, User}
 
-
- 
- 
  
 class UserForm {
 

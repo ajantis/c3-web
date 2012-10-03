@@ -73,10 +73,6 @@ class Group extends LongKeyedMapper[Group] with IdPK with ManyToMany{
     override def defaultValue = true
   }
 
-  object plabAccess extends MappedBoolean(this) {
-    override def defaultValue = false
-  }
-
   def getChildren(): List[C3Resource] = getChildren("")
 
   def getChildren(directory: String) : List[C3Resource] = {

@@ -92,6 +92,7 @@ class MainSnippet  {
   }
 
   def breadCrumbs = {
+    /*
     val breadcrumbs: List[Loc[_]] =
       for {
         currentLoc <- S.location.toList
@@ -147,7 +148,8 @@ class MainSnippet  {
         }
         case _ => NodeSeq.Empty // TODO implement
       }
-    }
+    } */
+    PassThru
   }
 
 

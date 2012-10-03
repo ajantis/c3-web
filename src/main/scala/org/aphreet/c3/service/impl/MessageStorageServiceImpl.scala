@@ -43,7 +43,7 @@ class MessageStorageServiceImpl extends MessageStorageService with C3Loggable{
           file.versions.head.getData.readContentAsString)
       }
 
-      messages
+      messages.sortWith((cd1, cd2) => cd1.creationDate.after(cd2.creationDate))
     }
   }
 

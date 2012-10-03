@@ -43,6 +43,7 @@ import net.liftweb.http._
 import com.ifunsoftware.c3.access.C3System
 import org.aphreet.c3.service.GroupService
 import org.aphreet.c3.lib.DependencyFactory._
+import net.liftweb.util.BindHelpers
 
 class GroupForm{
 
@@ -96,7 +97,10 @@ class GroupForm{
         }
       }
 
-      bind("group", form,"name" -> group.name.toForm,"owner" -> group.owner.toForm,"submit" -> SHtml.submit("add", saveMe))
+      bind("group", form,
+        "name" -> group.name.toForm,
+        "owner" -> group.owner.toForm,
+        "submit" -> SHtml.submit("add", saveMe))
     }
 
     newGroup(form)
