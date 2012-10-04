@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html>
-    <head xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html">
+    <head xmlns="http://www.w3.org/1999/xhtml">
         <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta name="description" content="" />
@@ -48,7 +48,7 @@
 
     </head>
     <body>
-        <div class="navbar navbar-fixed-top">
+        <div class="navbar navbar-inverse navbar-fixed-top">
             <div class="navbar-inner">
                 <div class="container">
                     <!--  not use this block
@@ -68,26 +68,26 @@
                         <div class="btn-group">
 
                             <div class="lift:MainSnippet.currentUser">
-                                <span class="user">
-                                    <div class="btn-group">
-                                        <a class="btn btn-primary" href="#"><i class="icon-user icon-white"></i> <span class="username">Ivan Petrov</span></a>
-                                        <a class="btn btn-primary dropdown-toggle" data-toggle="dropdown" href="#"><span class="caret"></span></a>
-                                        <ul class="dropdown-menu">
-                                            <li>
-                                                <lift:Menu.item name="EditUser"><i class="icon-pencil"></i> Edit</lift:Menu.item>
-                                            </li>
-                                            <li>
-                                                <lift:Menu.item name="Logout">
-                                                    <i class="icon-share"></i>
-                                                    Sign out
-                                                </lift:Menu.item>
-                                            </li>
-                                        </ul>
+                                    <div class="user">
+                                        <div class="btn-group">
+                                            <a class="btn btn-primary" href="#"><i class="icon-user icon-white"></i> <span class="username">Ivan Petrov</span></a>
+                                            <a class="btn btn-primary dropdown-toggle" data-toggle="dropdown" href="#"><span class="caret"></span></a>
+                                            <ul class="dropdown-menu">
+                                                <li>
+                                                    <lift:Menu.item name="EditUser"><i class="icon-pencil"></i> Edit</lift:Menu.item>
+                                                </li>
+                                                <li>
+                                                    <lift:Menu.item name="Logout">
+                                                        <i class="icon-share"></i>
+                                                        Sign out
+                                                    </lift:Menu.item>
+                                                </li>
+                                            </ul>
+                                        </div>
                                     </div>
-                                </span>
-                                <span class="not_logged_in">
-                                    <span class="lift:Menu.builder?linkToSelf=true&group=loginLogoutMenu&li_item:class=active;ul:class=nav"></span>
-                                </span>
+                                    <span class="not_logged_in">
+                                        <span class="lift:Menu.builder?linkToSelf=true&group=loginLogoutMenu&li_item:class=active;ul:class=nav"></span>
+                                    </span>
                             </div>
 
                         </div>
@@ -107,69 +107,78 @@
 
                 </div>
             </div>
+        </div>
 
-            <div class="container scrollable">
-                <div class="lift:MainSnippet.breadCrumbs">
-                    <ul class="breadcrumb">
-                        <li>
-                            <a href="/index">Home</a>
-                        </li>
-                        <li class="bcrumb_item">
-                            <span class="divider">&gt;</span>
-                            <a href="#" class="bcrumb_link">First</a>
-                        </li>
-                        <!--<li class="active">HTML5</li>-->
-                    </ul>
-                </div>
-                <div class="lift:LiftMessages">
-                    <div class="lift_messages_container">
-                        <div class="errors">
-                            <div class="alert alert-error fade in">
-                                <button type="button" class="close" data-dismiss="alert">×</button>
-                                <p class="message">Here go all errors</p>
-                            </div>
+        <div class="container">
+
+            <div class="lift:LiftMessages row">
+                <div class="lift_messages_container span12">
+                    <div class="errors">
+                        <div class="alert alert-error fade in">
+                            <button type="button" class="close" data-dismiss="alert">×</button>
+                            <p class="message">Here go all errors</p>
                         </div>
+                    </div>
 
-                        <div class="warnings">
-                            <div class=" alert alert-warning fade in">
-                                <button type="button" class="close" data-dismiss="alert">×</button>
-                                <p class="message">Here go all warnings</p>
-                            </div>
+                    <div class="warnings">
+                        <div class="alert alert-warning fade in">
+                            <button type="button" class="close" data-dismiss="alert">×</button>
+                            <p class="message">Here go all warnings</p>
                         </div>
+                    </div>
 
-                        <div class="notices">
-                            <div class="alert alert-info fade in">
-                                <button type="button" class="close" data-dismiss="alert">×</button>
-                                <p class="message">Here go all notices</p>
-                            </div>
+                    <div class="row notices">
+                        <div class="alert alert-info fade in">
+                            <button type="button" class="close" data-dismiss="alert">×</button>
+                            <p class="message">Here go all notices</p>
                         </div>
                     </div>
                 </div>
-                <div class="container-fluid">
-                    <div id="categories_s" class="row-fluid">
-                        <div class="span10 offset1" id="categories_search">
+            </div>
 
-
-                        </div>
-                    </div>
-                    <div class="row-fluid">
-                        <div class="span2" id="right-panel">
-                            <!--Sidebar content-->
-                            <div id="right-panel-content"></div>
-                        </div>
-                        <div class="span10" id="content">
-                            <!--Body content-->
-                        </div>
+            <div class="row">
+                <div class="span12">
+                    <div class="lift:MainSnippet.breadCrumbs">
+                        <ul class="breadcrumb">
+                            <li>
+                                <a href="/index">Home</a>
+                            </li>
+                            <li class="bcrumb_item">
+                                <span class="divider">&gt;</span>
+                                <a href="#" class="bcrumb_link">First</a>
+                            </li>
+                        </ul>
                     </div>
                 </div>
-                <hr/>
+            </div>
 
-                <footer>
-                    <p>&copy; <a href="http://www.ifunsoftware.com"><i>iFunSoftware</i></a></p>
-                </footer>
+            <div id="categories_s" class="row">
+                <div class="span10 offset1" id="categories_search">
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="span3" id="right-panel">
+                    <!--Sidebar content-->
+                    <div id="right-panel-content"></div>
+                </div>
+                <div class="span9" id="content">
+                    <!--Body content-->
+                </div>
             </div>
 
         </div>
+
+        <footer class="footer">
+           <div class="container">
+             <p class="pull-right"><a href="#">Back to top</a></p>
+             <p>&copy; <a href="http://www.ifunsoftware.com"><i>iFunSoftware</i></a></p>
+             <ul class="footer-links">
+               <li><a href="https://github.com/ifunsoftware/c3-web">Source code</a></li>
+               <li><a href="https://github.com/ifunsoftware/c3-web/wiki">Roadmap and changelog</a></li>
+             </ul>
+           </div>
+         </footer>
 
         <!-- javascript
         ================================================== -->
