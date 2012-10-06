@@ -89,7 +89,7 @@ body > .navbar .brand:hover {
 /* Login form
 -------------------------------------------------- */
 .well {
-    width:600px;
+    width:500px;
     /*height:160px;*/
     outline:1px solid #CCC;
 }
@@ -129,7 +129,7 @@ body > .navbar .brand:hover {
 }
 
 .login-form form a {
-	margin-right: 220px;
+	margin-right: 120px;
 	margin-top: 10px;
 }
 
