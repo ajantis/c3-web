@@ -2,9 +2,7 @@ package org.aphreet.c3.comet
 
 import net.liftweb.http.ListenerManager
 import net.liftweb.actor.LiftActor
-import xml.NodeSeq
-import net.liftweb.common.{Logger, Empty}
-import net.liftweb.textile.TextileParser
+import net.liftweb.common.Logger
 import org.aphreet.c3.model.{Group, User, Message}
 import org.aphreet.c3.service.MessageStorageService
 import org.aphreet.c3.lib.DependencyFactory._
@@ -28,15 +26,6 @@ class MessageServer(val group: Group) extends LiftActor with ListenerManager {
   }
 
   def createUpdate = MessageServerUpdate(msgService.findAll(group).take(15).toList)
-
-  /**
-   * Convert an incoming string into XHTML using Textile Markup
-   *
-   * @param msg the incoming string
-   *
-   * @return textile markup for the incoming string
-   */
-  def toHtml(msg: String): NodeSeq = TextileParser.paraFixer(TextileParser.toHtml(msg, Empty))
 
 }
 

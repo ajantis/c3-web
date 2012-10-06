@@ -12,6 +12,7 @@ import org.aphreet.c3.lib.group.GroupContextAware
 import java.util
 import java.text.SimpleDateFormat
 import net.liftweb.common.Full
+import net.liftweb.textile.TextileParser
 
 /**
  * @author Dmitry Ivanov (mailto: id.ajantis@gmail.com)
@@ -76,7 +77,7 @@ class GroupMessagesLog extends CometActor with CometListener with GroupContextAw
   private def line(c: Message) = {
     ("name=when" #> formatMsgCreationDate(c.creationDate) &
      "name=who" #> c.author.map(_.shortName) &
-     "name=body" #> c.content)(li)
+     "name=body" #> toHtml(c.content))(li)
   }
 
   // display a list of messages
@@ -115,6 +116,15 @@ class GroupMessagesLog extends CometActor with CometListener with GroupContextAw
       }
     }
   }
+
+  /**
+     * Convert an incoming string into XHTML using Textile Markup
+     *
+     * @param msg the incoming string
+     *
+     * @return textile markup for the incoming string
+     */
+    def toHtml(msg: String): NodeSeq = TextileParser.paraFixer(TextileParser.toHtml(msg, Empty))
 
   private val customFormatter = new SimpleDateFormat("dd.MM.yyyy HH:mm")
   private def formatMsgCreationDate(date: util.Date): String = customFormatter.format(date)
