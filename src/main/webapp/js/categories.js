@@ -1,9 +1,9 @@
  $(document).ready(function(){
     $(".margn").live("click",function(){
-        $(this).appendTo(".flt");
-        $(this).removeClass();
-        $(this).wrap('<div class="label-info margn_search"></div>');
-        $(this).after('<a class="close cls">&times;</a>');
+       $(this).appendTo(".flt");
+       $(this).removeClass();
+       $(this).wrap('<div class="label-info margn_search"></div>');
+       $(this).after('<a class="close cls">&times;</a>');
 
     });
     $(".close").live("click",function(){
