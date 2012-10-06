@@ -1,13 +1,14 @@
-package org.aphreet.c3 {
-package model {
+package org.aphreet.c3.model
 
-import _root_.net.liftweb.mapper._
-import _root_.net.liftweb.util._
-import _root_.net.liftweb.common._
-import xml.{XML, NodeSeq, Text}
+import net.liftweb.mapper._
+import net.liftweb.util._
+import net.liftweb.common._
 import net.liftweb.http.S._
 import net.liftweb.http.{SessionVar, S, SHtml}
 import net.liftweb.sitemap.Loc.LocGroup
+import net.liftweb.util.BindHelpers._
+import xml.{Text, NodeSeq}
+import net.liftweb.http.js.JsCmds.FocusOnLoad
 
 /**
  * The singleton that has methods for accessing the database
@@ -76,27 +77,32 @@ object User extends User with MetaMegaProtoUser[User]{
   }
 
   override def loginXhtml = {
-    (<div>
-      <h1>{S.??("log.in")}</h1>
-      <div class="user-form-content">
-        <form method="post" action={S.uri}>
-          <table>
-            <tr>
-              <td class="user-form-key">{userNameFieldString}</td>
-              <td class="user-form-value"><user:email /></td>
-            </tr>
-            <tr>
-              <td class="user-form-key">{S.??("password")}</td>
-              <td class="user-form-value"><user:password /></td>
-            </tr>
-            <tr>
-              <td class="user-form-key"><a href={lostPasswordPath.mkString("/", "/", "")}>{S.??("recover.password")}</a></td>
-              <td class="user-form-submit"><user:submit /></td>
-            </tr>
-          </table>
+    (
+      <div class="form-holder login-form well">
+        <form action={S.uri} method="POST" class="form">
+          <fieldset>
+            <legend>Existing Users Login</legend>
+
+            <label for="username">Email</label>
+            <div class="div_text">
+              <div class="input-prepend"><span class="add-on"><i class="icon-user"></i></span><user:email/></div>
+            </div>
+
+            <label for="password">Password</label>
+            <div class="div_text">
+              <div class="input-prepend"><span class="add-on"><i class="icon-lock"></i></span><user:password /></div>
+            </div>
+
+            <div class="button_div"><input name="rememberme" type="checkbox" id="rememberme" value="forever" />&nbsp;Remember me&nbsp;&nbsp;<user:submit/></div>
+
+            <div class="clear"></div>
+            <div align="right">Forgot password?&nbsp;<a href={this.lostPasswordMenuLoc.open_!.loc.createDefaultLink.get}>Click here to reset</a></div>
+            <div align="right">New User?&nbsp;<a href={this.createUserMenuLoc.open_!.loc.createDefaultLink.get}>Click here to register</a></div>
+            <div class="clear"></div>
+          </fieldset>
         </form>
-      </div>
-    </div>)
+     </div>
+    )
   }
 
   override protected def localForm(user: TheUserType, ignorePassword: Boolean, fields: List[FieldPointerType]): NodeSeq = {
@@ -107,6 +113,7 @@ object User extends User with MetaMegaProtoUser[User]{
       form <- field.toForm.toList
     } yield <tr><td class="user-form-key">{field.displayName}</td><td class="user-form-value">{form}</td></tr>
   }
+
 
 
   override def signupXhtml(user: TheUserType) = {
@@ -159,6 +166,39 @@ object User extends User with MetaMegaProtoUser[User]{
     </lift:Menu.item>.toList
   } : NodeSeq
 
+  override def login = {
+    if (S.post_?) {
+      S.param("username").
+        flatMap(username => findUserByUserName(username)) match {
+        case Full(user) if user.validated_? &&
+          user.testPassword(S.param("password")) => {
+          logUserIn(user, () => {
+            S.notice(S.??("logged.in"))
+
+            val redir = loginRedirect.is match {
+              case Full(url) =>
+                loginRedirect(Empty)
+                url
+              case _ =>
+                homePage
+            }
+            S.redirectTo(redir)
+          })
+        }
+
+        case Full(user) if !user.validated_? =>
+          S.error(S.??("account.validation.error"))
+
+        case _ => S.error(S.??("invalid.credentials"))
+      }
+    }
+
+    bind("user", loginXhtml,
+      "email" -> (FocusOnLoad(<input name="username" type="text" id="log inputIcon" value="" class="username span2" />)),
+      "password" -> (<input name="password" type="password" id="pwd inputIcon" class="password span2" />),
+      "submit" -> (<input type="submit" name="Submit" value="Login" class="btn btn-primary" />))
+  }
+
 }
 
 /**
@@ -192,7 +232,4 @@ class User extends MegaProtoUser[User] with ManyToMany   {
 
   object searchRequests extends SessionVar[List[String]] ( "scala" :: "java" :: "performance" :: "c3" :: Nil )
 
-}
-
-}
 }

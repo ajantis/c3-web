@@ -4185,7 +4185,7 @@ input[type="submit"].btn.btn-mini {
   clear: both;
 }
 
-.navbar .container {
+.container .navbar .container {
   width: auto;
 }
 

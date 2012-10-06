@@ -11,9 +11,9 @@
 
         <!-- Le styles -->
         <link href="/bootstrap/css/bootstrap.css" rel="stylesheet"/>
-        <link href="/css/c3-main.css" rel="stylesheet"/>
-        <link href="/bootstrap/css/bootstrap-responsive.css" rel="stylesheet"/>
 
+        <link href="/css/c3-next.css" rel="stylesheet"/>
+        <link href="/bootstrap/css/bootstrap-responsive.css" rel="stylesheet"/>
 
         <!--Old links -->
         <link rel="icon" href="/images/c3favicon.ico" />
@@ -43,6 +43,15 @@
             function searchClick(){
                 if (event.keyCode == 13) document.getElementById('btnSearch').click()
             }
+            $(document).ready( function(){
+                $('.search-query').focus(function() {
+                    $(this).stop().animate({width: '400px'}, 'slow');
+                });
+                $('.search-query').blur(function() {
+                    $(this).stop().animate({width: '200px'},'fast');
+                });
+            });
+
             // ]]>
         </script>
 
@@ -51,65 +60,55 @@
         <div class="navbar navbar-inverse navbar-fixed-top">
             <div class="navbar-inner">
                 <div class="container">
-                    <!--  not use this block
                     <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                    </a>-->
-                    <a class="brand" href="/">CSE vLaboratory</a>
+                    </a>
+                    <a class="brand" href="/">CSE vLab</a>
                     <div class="nav-collapse">
                         <span class="lift:Menu.builder?linkToSelf=true&group=mainmenu&li_item:class=active;ul:class=nav"></span>
                     </div>
                     <img class="ajax-loader" alt="" id="ajax-loader" src="/images/ajax-loader.gif" />
 
-                    <div class="list-menu">
+                    <div class="list-menu pull-right user-menu">
                         <div class="btn-group">
-
                             <div class="lift:MainSnippet.currentUser">
                                     <div class="user">
                                         <div class="btn-group">
-                                            <a class="btn btn-primary" href="#"><i class="icon-user icon-white"></i> <span class="username">Ivan Petrov</span></a>
+                                            <a class="btn btn-primary" href="/user_mgt/edit"><i class="icon-user icon-white"></i> <span class="username">Ivan Petrov</span></a>
                                             <a class="btn btn-primary dropdown-toggle" data-toggle="dropdown" href="#"><span class="caret"></span></a>
                                             <ul class="dropdown-menu">
                                                 <li>
-                                                    <lift:Menu.item name="EditUser"><i class="icon-pencil"></i> Edit</lift:Menu.item>
+                                                    <lift:Menu.item name="ChangePassword"><i class="icon-pencil"></i> Change password</lift:Menu.item>
                                                 </li>
                                                 <li>
                                                     <lift:Menu.item name="Logout">
-                                                        <i class="icon-share"></i>
-                                                        Sign out
+                                                        <i class="icon-off"></i> Sign out
                                                     </lift:Menu.item>
                                                 </li>
                                             </ul>
                                         </div>
                                     </div>
-                                    <span class="not_logged_in">
-                                        <span class="lift:Menu.builder?linkToSelf=true&group=loginLogoutMenu&li_item:class=active;ul:class=nav"></span>
-                                    </span>
+                                    <div class="not_logged_in">
+                                        <div class="btn-group">
+                                            <a class="btn btn-primary" href="/user_mgt/login"><span class="username">Login</span></a>
+                                        </div>
+                                    </div>
                             </div>
 
                         </div>
-
                     </div>
 
-                    <div class="navbar-search pull-right">
-                        <div> <!--class="lift:SearchForm.form"> -->
-                            <div data-lift-id="datalist"></div>
-                            <input class="find_input" name="query" type="search" onkeydown="searchClick()" />
-                            <button id="btnSearch" class="btn btn-small btn-primary find_button" type="submit">
-                                <i class="icon-search icon-white"></i>
-                            </button>
-                        </div>
-                    </div>
-
+                    <form class="navbar-search pull-right" action="">
+                        <input type="text" class="search-query span3" style="width: 200px" placeholder="Search" />
+                    </form>
 
                 </div>
             </div>
         </div>
 
-        <div class="container">
+        <div class="container main">
 
             <div class="lift:LiftMessages row">
                 <div class="lift_messages_container span12">
@@ -127,7 +126,7 @@
                         </div>
                     </div>
 
-                    <div class="row notices">
+                    <div class="notices">
                         <div class="alert alert-info fade in">
                             <button type="button" class="close" data-dismiss="alert">×</button>
                             <p class="message">Here go all notices</p>
