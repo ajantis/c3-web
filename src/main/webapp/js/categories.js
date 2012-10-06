@@ -1,4 +1,9 @@
  $(document).ready(function(){
+    $("#category_name_1").click(function(){
+        $("#category_name_2").toggleClass("category_name_hide category_name_show");
+
+    });
+
     $(".margn").live("click",function(){
        $(this).appendTo(".flt");
        $(this).removeClass();
@@ -23,5 +28,6 @@
       $parent.children("span").appendTo("#"+id_new);
       $parent.remove();
     });
+
 
  });

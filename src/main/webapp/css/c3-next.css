@@ -245,6 +245,13 @@ body > .navbar .brand:hover {
 .search_categories{
     margin:0,auto;
 }
+.category_name_hide{
+    display:none;
+}
+.category_name_show{
+    display:block;
+}
+
 /*********************************************************
 * End Categories part
 *********************************************************/

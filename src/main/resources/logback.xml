@@ -12,7 +12,7 @@
 
     <logger name="org.aphreet" level="info"/>
 
-    <root level="info">
+    <root level="debug">
         <appender-ref ref="STDOUT" />
     </root>
 </configuration>
