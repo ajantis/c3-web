@@ -11,7 +11,7 @@
                         <div class="lift:AddTag.adm add_cat" style="float:right">
                             <div class="btn tagAddButton">+ Add</div>
                             <form class="lift:AddTag.render?form=post category_name_hide tagNameForm">
-                                <input class="inputCateg" name="categoryName" style="display:none">
+                                <input class="inputCateg disp_none" name="categoryName">
                                 <input name="TagName" placeholder="Enter tag name...">
                                 <button type="submit" value="submit">Add</button>
                             </form>
@@ -32,12 +32,13 @@
     </div>
     <div class="lift:bind-at?name=categories_search">
         <div class="lift:CategoriesSnippet.search">
-            <form class="form-search search_categories">
+            <form class="lift:CategoriesSnippet.render?form=post form-search search_categories">
                 <div class="input-append">
                     <div class="text_size">
                         <div class="flt">
                         </div>
-                        <input type="text" class="span2 text_search" placeholder="Edit text...">
+                        <input name="tags" class="disp_none tags_input">
+                        <input name="query" type="text" class="span2 text_search" placeholder="Edit text...">
                     </div>
                     <button type="submit" class="btn btn_search">Search</button>
                 </div>

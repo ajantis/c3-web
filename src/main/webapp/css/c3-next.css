@@ -245,6 +245,9 @@ body > .navbar .brand:hover {
 .search_categories{
     margin:0,auto;
 }
+.disp_none{
+    display:none!important;
+}
 .category_name_hide{
     display:none;
 }

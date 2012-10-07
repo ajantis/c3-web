@@ -7,6 +7,7 @@ import net.liftweb.mapper.By
 import xml.{Text, NodeSeq}
 import net.liftweb.http.js.JsCmds
 import net.liftweb.http.js.JsCmds.{OnLoad, Script}
+import net.liftweb.http.{SHtml, S}
 
 class CategoriesSnippet {
 
@@ -55,4 +56,24 @@ class CategoriesSnippet {
   def search = {
     "* *" #> ((x: NodeSeq) => x ++ Script(OnLoad(JsCmds.JsShowId("categories_s"))))
   }
+  def render = {
+    var Tags=""
+    var Query=""
+    def process() = {
+      val request = "/search?tags=" + Tags+ "&query=" + Query
+      if (Tags!=""||Query!=""){
+        S.redirectTo(request)
+      }
+
+
+
+    }
+    "name=tags" #> SHtml.onSubmit(Tags = _)&
+    "name=query" #> SHtml.onSubmit(Query = _)&
+    "type=submit" #> SHtml.onSubmitUnit(process)
+
+
+
+  }
+
 }

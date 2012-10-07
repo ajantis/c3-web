@@ -1,13 +1,15 @@
  $(document).ready(function(){
+    //show/hide add category
     $("#category_name_1").click(function(){
         $("#category_name_2").toggleClass("category_name_hide category_name_show");
 
     });
+    //show/hide add tags
      $(".tagAddButton").live("click",function(){
             $(".tagNameForm").toggleClass("category_name_hide category_name_show");
 
-        });
-
+     });
+     // add tag in search
     $(".margn").live("click",function(){
        $(this).appendTo(".flt");
        $(this).removeClass();
@@ -15,6 +17,7 @@
        $(this).after('<a class="close cls">&times;</a>');
 
     });
+    // delete tag from search
     $(".close").live("click",function(){
       var $parent = $(this).parent();
       var id = $parent.children("span").attr("id");
@@ -32,9 +35,25 @@
       $parent.children("span").appendTo("#"+id_new);
       $parent.remove();
     });
-    $(".tabs-left1").live("click",function(){
-        var CatName = $(".tabs-left1.active").children("a").text();
-        $(".inputCateg").val(CatName);
+
+     //current category
+     $(".tabs-left1").live("click",function(){
+         var CatName = $(".tabs-left1.active").children("a").text();
+         $(".inputCateg").val(CatName);
+     });
+     //current pick tags
+    $(".btn_search").live("click",function(){
+        var tags="";
+        var flag = true;
+        $(".flt").find("span").each( function () {
+            if(flag){
+                tags = $(this).text();
+                flag = false;
+            } else{
+                tags = tags+","+$(this).text();
+            }
+        });
+        $(".tags_input").val(tags);
     });
 
  });

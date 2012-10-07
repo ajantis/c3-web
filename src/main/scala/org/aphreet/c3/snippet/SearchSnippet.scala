@@ -40,8 +40,8 @@ import com.ifunsoftware.c3.access.{C3System, C3AccessException}
 import org.aphreet.c3.lib.DependencyFactory._
 
 class SearchSnippet extends StatefulSnippet{
-  
-  val c3 = inject[C3System].open_!
+
+   val c3 = inject[C3System].open_!
 
   val logger = Logger(classOf[SearchSnippet])
 
