@@ -20,15 +20,15 @@ class CategoriesSnippet {
         flag1+=1
         val hrf = "#tab" + flag1
 
-        def setActive: CssSel = ".tabs-left1 [class+]" #> { (x: NodeSeq) => {
-          if (flag1==1)
-           Text("active")
-          else  Text("")
-        }}
+//        def setActive: CssSel = ".tabs-left1 [class+]" #> { (x: NodeSeq) => {
+//          if (flag1==1)
+//           Text("active")
+//          else  Text("")
+//        }}
 
         "a *" #> cat.name.is &
-          "a [href]" #> hrf &
-        setActive
+          "a [href]" #> hrf //&
+//        setActive
     }
 
     def categoryContents(cat: Category) = {
@@ -42,12 +42,12 @@ class CategoriesSnippet {
         "span *" #> tg.name &
         "span [id]" #> (id+"_"+id_span)
       }}&
-      ".tab-pane [id]" #> id andThen
-      "#tab1 [class+]" #>"active"
+      ".tab-pane [id]" #> id //andThen
+//      "#tab1 [class+]" #>"active"
 
     }
 
-    ".tabs-left1 *" #> categories.map{ cat: Category => tabs(cat) } &
+    ".tabs-left1" #> categories.map{ cat: Category => tabs(cat) } &
     ".tab-pane" #> categories.map{ cat:Category =>  categoryContents(cat) } andThen
     "* *" #> ((x: NodeSeq) => x ++ Script(OnLoad(JsCmds.JsHideId("right-panel"))))
 

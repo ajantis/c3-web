@@ -3,6 +3,10 @@
         $("#category_name_2").toggleClass("category_name_hide category_name_show");
 
     });
+     $(".tagAddButton").live("click",function(){
+            $(".tagNameForm").toggleClass("category_name_hide category_name_show");
+
+        });
 
     $(".margn").live("click",function(){
        $(this).appendTo(".flt");
@@ -28,6 +32,9 @@
       $parent.children("span").appendTo("#"+id_new);
       $parent.remove();
     });
-
+    $(".tabs-left1").live("click",function(){
+        var CatName = $(".tabs-left1.active").children("a").text();
+        $(".inputCateg").val(CatName);
+    });
 
  });
