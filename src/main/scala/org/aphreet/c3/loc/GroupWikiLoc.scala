@@ -15,13 +15,14 @@ import net.liftweb.common.Full
 import net.liftweb.http.RewriteRequest
 import net.liftweb.http.ParsePath
 import xml.Text
-import GroupLoc._
+//import GroupLoc._
 import org.aphreet.c3.service.WikiService
 
 /**
  * Copyright iFunSoftware 2012
  * @author Dmitry Ivanov
  */
+/*
 object GroupWikiLoc extends GroupLoc[GroupWikiPage]{
 
   implicit val resolveSmartLink: Function2[String, String, SmartLink] =
@@ -95,4 +96,4 @@ object GroupWikiLoc extends GroupLoc[GroupWikiPage]{
       ".key *" #> md._1
       ".value *" #> md._2
     }
-}
+} */

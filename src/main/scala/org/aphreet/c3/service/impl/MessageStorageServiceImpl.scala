@@ -1,7 +1,7 @@
 package org.aphreet.c3.service.impl
 
 import org.aphreet.c3.service.{MessageStorageException, MessageStorageService}
-import org.aphreet.c3.common.C3Loggable
+import org.aphreet.c3.util.C3Loggable
 import org.aphreet.c3.model.{Group, Message}
 import org.aphreet.c3.lib.DependencyFactory._
 import com.ifunsoftware.c3.access.{DataStream, C3System}

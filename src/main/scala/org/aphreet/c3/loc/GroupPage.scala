@@ -10,7 +10,6 @@ import org.aphreet.c3.lib.wiki.C3HtmlVisitor
 import net.liftweb.http.{S, RequestVar}
 import org.aphreet.c3.lib.DependencyFactory._
 import net.liftweb.util.Helpers._
-import GroupWikiLoc._
 
 /**
  * Copyright iFunSoftware 2011
@@ -18,6 +17,7 @@ import GroupWikiLoc._
  */
 
 
+/*
 sealed class GroupPage(groupName: String){
   lazy val group: Box[Group] = Group findByName groupName
 }
@@ -75,4 +75,4 @@ case class GroupWikiPage(wikiName: String, groupName: String, edit: Boolean) ext
     ".submit-preview" #> submit("Preview", processPreview _)
 
   }
-}
+} */

@@ -6,7 +6,7 @@ import org.aphreet.c3.lib.DependencyFactory._
 import com.ifunsoftware.c3.access.fs.{C3FileSystemNode, C3File, C3Directory}
 import annotation.tailrec
 import net.liftweb.common.{Box, Full}
-import org.aphreet.c3.common.C3Exception
+import org.aphreet.c3.util.C3Exception
 
 class GroupServiceImpl extends GroupService{
 
