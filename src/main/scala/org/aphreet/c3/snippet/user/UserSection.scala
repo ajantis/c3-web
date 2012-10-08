@@ -8,5 +8,5 @@ import org.aphreet.c3.Section
  * @author Dmitry Ivanov
  */
 object UserSection extends Section{
-  override lazy val menus: List[Menu] = List()
+  override lazy val menus: List[Menu] = List(Menu(UserPage))
 }

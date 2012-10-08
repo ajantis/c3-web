@@ -1,64 +1,36 @@
-/**
- * Copyright (c) 2011, Dmitry Ivanov
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- *
+package org.aphreet.c3.snippet.group.snippet
 
- * 1. Redistributions of source code must retain the above copyright
- * notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above
- * copyright notice, this list of conditions and the following disclaimer
- * in the documentation and/or other materials provided with the distribution.
- * 3. Neither the name of the IFMO nor the names of its contributors
- * may be used to endorse or promote products derived from this software
- * without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
- * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
- * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
- */
-
-package org.aphreet.c3.snippet
-
-import net.liftweb.util.BindHelpers._
-import org.aphreet.c3.model._
-import net.liftweb.common.{Logger, Full, Empty}
-import net.liftweb.http.js.JsCmds.Alert
-import net.liftweb.mapper.By
-import xml.{Text, NodeSeq}
-
-import net.liftweb.http.js.{JsCmd, JsCmds}
-import net.liftweb.http._
 import com.ifunsoftware.c3.access.C3System
-import org.aphreet.c3.service.GroupService
 import org.aphreet.c3.lib.DependencyFactory._
+import org.aphreet.c3.service.GroupService
+import net.liftweb.common.{Empty, Full, Logger}
+import xml.{Text, NodeSeq}
+import org.aphreet.c3.model.{C3Resource, UserGroup, Group, User}
+import net.liftweb.http.{RequestVar, S, SHtml}
+import net.liftweb.http.js.JsCmds.Alert
 import net.liftweb.util.BindHelpers._
+import net.liftweb.mapper.By
+import net.liftweb.http.js.{JsCmds, JsCmd}
+import org.aphreet.c3.snippet.{FileUploadDialog, CreateDirectoryDialog}
 
-class GroupForm{
+/**
+ * @author Dmitry Ivanov (mailto: Dmitry.Ivanov@reltio.com)
+ *         Reltio, Inc.
+ */
+class GroupListPage {
 
   val c3 = inject[C3System].open_!
 
   val groupService = inject[GroupService].open_!
 
-  val logger = Logger(classOf[GroupForm])
+  val logger = Logger(classOf[GroupListPage])
 
   def list(html: NodeSeq) : NodeSeq = {
 
     val groupList = User.currentUser.open_!.groups.toList
 
     groupList.flatMap(group =>
-      bind("group", html, "name" -> <a href={"/group/"+group.name}>{group.name}</a>,
+      bind("group", html, "name" -> <a href={"/group/"+group.id}>{group.name}</a>,
         "owner" -> group.owner.obj.map(usr => usr.email.is).openOr("<unknown>"),
         "delete" -> {SHtml.ajaxSubmit("Delete",
           () => {
@@ -168,7 +140,7 @@ class GroupForm{
                     case "" => ""
                     case str => str + "/"
                   } } +  child.name
-                  
+
                   val file = c3.getFile(path)
                   val created = file.date
 

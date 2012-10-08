@@ -15,13 +15,13 @@ import net.liftweb.util.Helpers._
 class Breadcrumbs {
 
   def breadcrumb = "*" #> {
-    val breadcrumbs: List[Loc[_]] =
+    val allLocs: List[Loc[_]] =
       for {
         currentLoc <- S.location.toList
         loc <- currentLoc.breadCrumbs
       } yield loc
 
-    val currentLoc = breadcrumbs.lastOption
+    val currentLoc = allLocs.lastOption
 
     def setActiveClass(loc: Loc[_]) = {
       if(loc == currentLoc.get)
@@ -31,34 +31,57 @@ class Breadcrumbs {
         ".link [class!]" #> "active" // remove class
     }
 
-    def getLocLink[T](loc: Loc[T])(implicit manifest : Manifest[T]): NodeSeq = {
 
-      def compareLocParamTypes[A, B](l1: Loc[A],l2: Loc[B])(implicit m1 : Manifest[A], m2 : Manifest[B]): Boolean = {
-        m1 == m2
+    "li *" #> allLocs.map {
+      loc => {
+        val propsBuilder = new LocPropertiesBuilder(loc, allLocs)
+
+        ".link *" #> propsBuilder.buildLocTitle() &
+        ".link [href]" #> propsBuilder.buildLocLink() &
+        setActiveClass(loc)
       }
+    }
+  }
 
-      def findContextValueForLoc(loc: Loc[T]): Box[T] = {
-        breadcrumbs.dropWhile(loc != _) match {
+}
+
+class LocPropertiesBuilder[T](loc: Loc[T], allLocs: List[Loc[_]])(implicit manifest : Manifest[T]){
+
+  lazy val valueBox: Box[T] = findContextValueForLoc(loc)
+
+  def findContextValueForLoc(loc: Loc[T]): Box[T] = {
+    loc.currentValue.isEmpty match {
+      case false => loc.currentValue
+      case true => {
+        def compareLocParamTypes[A, B](l1: Loc[A],l2: Loc[B])(implicit m1 : Manifest[A], m2 : Manifest[B]): Boolean = {
+          m1 == m2
+        }
+
+        allLocs.dropWhile(loc != _) match {
           case Nil => Empty
           case xs => xs.tail.filter(l => !l.currentValue.isEmpty && compareLocParamTypes(loc, l)).headOption.map(_.currentValue.open_!.asInstanceOf[T])
         }
       }
-
-      val linkBox: Option[NodeSeq] = loc.currentValue match {
-        case Full(v) => loc.createLink(v)
-        case _ =>
-          findContextValueForLoc(loc).choice((v: T) => loc.createLink(v))(loc.createDefaultLink)
-      }
-
-      linkBox.getOrElse(Text("#"))
-    }
-
-    "li *" #> breadcrumbs.map {
-      loc =>
-        ".link *" #> loc.title &
-        ".link [href]" #> getLocLink(loc) &
-        setActiveClass(loc)
     }
   }
 
+  def buildLocLink(): NodeSeq = {
+    val linkOption: Option[NodeSeq] = valueBox match {
+      case Full(v) =>
+        loc.createLink(v)
+      case _ =>
+        loc.createDefaultLink
+    }
+    linkOption.getOrElse(Text("#"))
+  }
+
+  def buildLocTitle(): NodeSeq = {
+    val titleOption: NodeSeq = valueBox match {
+      case Full(v) =>
+        loc.title(v)
+      case _ =>
+        loc.title
+    }
+    titleOption
+  }
 }

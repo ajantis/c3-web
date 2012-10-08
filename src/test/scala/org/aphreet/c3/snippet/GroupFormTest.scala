@@ -8,7 +8,6 @@ package org.aphreet.c3.snippet
  * modification, are permitted provided that the following conditions
  * are met:
  *
-
  * 1. Redistributions of source code must retain the above copyright
  * notice, this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above
@@ -31,6 +30,7 @@ package org.aphreet.c3.snippet
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+import group.snippet.GroupListPage
 import net.liftweb.util._
 import net.liftweb.common._
 import junit.framework.TestCase
@@ -71,7 +71,7 @@ class GroupFormTest  extends TestCase {
                   <li><group:name/> - <group:owner/> - <group:delete/></li>
                 </ul>
 
-      val snippet = new GroupForm()
+      val snippet = new GroupListPage()
       val output = snippet.list(xml)
       // Do verification of data returned; assert if something is amiss
       assert ( (output \\ "li").length ==  0)
