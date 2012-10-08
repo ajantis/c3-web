@@ -47,7 +47,7 @@ class WikiSnippet{
 
   lazy val wikiService = inject[WikiService].open_!
 
-  val logger = Logger(classOf[GroupForm])
+  val logger = Logger(classOf[WikiSnippet])
 
   def view(html: NodeSeq) : NodeSeq = {
 

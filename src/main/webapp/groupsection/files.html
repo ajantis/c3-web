@@ -19,7 +19,7 @@
         </script>
     </head>
 
-    <div class="lift:GroupForm.view">
+    <div class="lift:GroupListPage.view">
 
         <lift:bind-at name="content-header">
             <group:name/>'s files                                                     f
@@ -57,7 +57,7 @@
         <lift:bind-at name="right-panel-content">
             <div class="right-panel-content">
                 <div class="right-panel-section right-panel-section-first">
-                    <lift:snippet type="GroupForm.groupMenu">
+                    <lift:snippet type="GroupListPage.groupMenu">
                         <span><group:name></group:name></span>
                         <div>
                             <ul>
@@ -70,7 +70,7 @@
                     </lift:snippet>
                 </div>
                 <div class="right-panel-section">
-                    <lift:snippet type="GroupForm.resourceProperties">
+                    <lift:snippet type="GroupListPage.resourceProperties">
                         <span>Metadata</span>
                         <div>
                             <table>
