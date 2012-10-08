@@ -2,13 +2,12 @@ package org.aphreet.c3.comet
 
 import net.liftweb.http._
 import net.liftweb.common._
-import org.aphreet.c3.common.C3Exception
+import org.aphreet.c3.util.C3Exception
 import org.aphreet.c3.model.{Group, User, Message}
 import net.liftweb.util.Helpers
 import xml.NodeSeq
 import js.jquery.JqJsCmds.PrependHtml
 import net.liftweb.http.js.JsCmds._
-import org.aphreet.c3.lib.group.GroupContextAware
 import java.util
 import java.text.SimpleDateFormat
 import net.liftweb.common.Full
@@ -18,15 +17,14 @@ import net.liftweb.textile.TextileParser
  * @author Dmitry Ivanov (mailto: id.ajantis@gmail.com)
  *         iFunSoftware
  */
-case class UpdateGroupMapping(groupname: String)
-
-class GroupMessagesLog extends CometActor with CometListener with GroupContextAware {
+class GroupMessagesLog extends CometActor with CometListener {
 
   private val logger = Logger(classOf[GroupMessagesLog])
+  private val group: Box[Group] = S.attr("group_id").flatMap(Group.find(_))
+  private val messageServer: Box[MessageServer] = group.map(MessageServerFactory(_))
 
-  private var group: Box[Group] = Empty
   private var messages: List[Message] = Nil
-  private var messageServer: Box[MessageServer] = Empty
+
 
   /* need these vals to be set eagerly, within the scope
    * of Comet component constructor
@@ -38,8 +36,6 @@ class GroupMessagesLog extends CometActor with CometListener with GroupContextAw
 
   private lazy val li = liId.
     flatMap{ Helpers.findId(defaultHtml, _) } openOr NodeSeq.Empty
-
-  private val inputId = Helpers.nextFuncName
 
   // handle an update to the message logs
   // by diffing the lists and then sending a partial update
@@ -53,21 +49,6 @@ class GroupMessagesLog extends CometActor with CometListener with GroupContextAw
       messages = value
     }
     case _ => logger.error("Not sure how we got here.")
-  }
-
-  override def highPriority = {
-    case UpdateGroupMapping(groupname) => {
-      group = Group.findByName(groupname)
-      if (group.isEmpty)
-        logger.error("Group " + groupname + " is not found!")
-      else {
-        logger.info("Updating GroupMessagesLog for group: %s".format(group.open_!.name.is))
-        messageServer.foreach(_ ! RemoveAListener(this))
-        logger.info("Registering comet actor: %s".format(this))
-        MessageServerFactory.apply(group.open_!) ! AddAListener(this, shouldUpdate)
-        reRender(sendAll = true) // update all
-      }
-    }
   }
 
   // fixedRender is always appended to render(..)
@@ -90,7 +71,7 @@ class GroupMessagesLog extends CometActor with CometListener with GroupContextAw
     ("#"+ulId+" *") #> displayList &
     ("#" + inputTextContainerId + " *") #> { (xml: NodeSeq) => {
       SHtml.ajaxForm(("#postit" #> SHtml.onSubmit((s: String) => {
-        messageServer.foreach( _ ! MessageServerMsg(User.currentUser.open_!, currentGroup.open_! ,s.trim) )
+        messageServer.foreach( _ ! MessageServerMsg(User.currentUser.open_!, group.open_! ,s.trim) )
         SetValById("postit", "")
       })).apply(xml))
     }}
@@ -103,28 +84,19 @@ class GroupMessagesLog extends CometActor with CometListener with GroupContextAw
 
   // register as a listener
   override def registerWith = {
-    currentGroup match {
-      case Full(g: Group) => {
-        group = Full(g)
-        val ms: MessageServer = MessageServerFactory(g)
-        messageServer = Full(ms)
-        ms
-      }
-      case _ => {
-        throw new C3Exception("Cannot instantiate group message log outside group context!")
-        null
-      }
-    }
+    if(messageServer.isEmpty)
+      throw new C3Exception("Cannot instantiate group message log outside group context!")
+    else messageServer.open_!
   }
 
   /**
-     * Convert an incoming string into XHTML using Textile Markup
-     *
-     * @param msg the incoming string
-     *
-     * @return textile markup for the incoming string
-     */
-    def toHtml(msg: String): NodeSeq = TextileParser.paraFixer(TextileParser.toHtml(msg, Empty))
+   * Convert an incoming string into XHTML using Textile Markup
+   *
+   * @param msg the incoming string
+   *
+   * @return textile markup for the incoming string
+   */
+  def toHtml(msg: String): NodeSeq = TextileParser.paraFixer(TextileParser.toHtml(msg, Empty))
 
   private val customFormatter = new SimpleDateFormat("dd.MM.yyyy HH:mm")
   private def formatMsgCreationDate(date: util.Date): String = customFormatter.format(date)

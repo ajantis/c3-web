@@ -1,4 +1,4 @@
-package org.aphreet.c3.common
+package org.aphreet.c3.util
 
 import net.liftweb.common.Loggable
 

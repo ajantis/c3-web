@@ -43,7 +43,7 @@ import net.liftweb.http._
 import com.ifunsoftware.c3.access.C3System
 import org.aphreet.c3.service.GroupService
 import org.aphreet.c3.lib.DependencyFactory._
-import net.liftweb.util.BindHelpers
+import net.liftweb.util.BindHelpers._
 
 class GroupForm{
 

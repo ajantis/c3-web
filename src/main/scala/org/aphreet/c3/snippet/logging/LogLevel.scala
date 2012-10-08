@@ -1,4 +1,4 @@
-package org.aphreet.c3.logging
+package org.aphreet.c3.snippet.logging
 
 /**
  * Copyright (c) 2011, Dmitry Ivanov
@@ -8,7 +8,6 @@ package org.aphreet.c3.logging
  * modification, are permitted provided that the following conditions
  * are met:
  *
-
  * 1. Redistributions of source code must retain the above copyright
  * notice, this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above

@@ -6,30 +6,27 @@ import _root_.net.liftweb.http.provider._
 import _root_.net.liftweb.sitemap._
 import _root_.net.liftweb.sitemap.Loc._
 import Helpers._
-import loc.GroupWikiLoc
 import org.aphreet.c3.model._
 import net.liftweb.mapper._
 import net.liftweb.http._
-
 import js.jquery.JQuery14Artifacts
-
 import net.liftweb.widgets.logchanger._
 import net.liftweb.widgets.uploadprogress._
-
-import org.aphreet.c3.logging.LogLevel
 import net.liftweb.widgets.tablesorter.TableSorter
 import net.liftweb.widgets.autocomplete.AutoComplete
-import net.liftweb.widgets.flot.Flot
-
 import net.liftweb.widgets.menu.MenuWidget
-import org.aphreet.c3.helpers.C3Streamer
-
+import snippet.group.GroupSection
+import snippet.logging.LogLevel
+import snippet.search.SearchSection
+import snippet.user.UserSection
 
 /**
  * A class that's instantiated early and run.  It allows the application
  * to modify lift's environment
  */
 class Boot extends Bootable{
+
+  private val sections: List[Section] = List(BaseSection, UserSection, GroupSection, SearchSection)
 
   def boot {
     if (!DB.jndiJdbcConnAvailable_?) {
@@ -48,8 +45,9 @@ class Boot extends Bootable{
 
     LiftRules.jsArtifacts = JQuery14Artifacts
 
-    // where to search snippet
-    LiftRules.addToPackages("org.aphreet.c3")
+    // where to search snippets
+    sections.foreach(s => LiftRules.addToPackages(s.currentPackage))
+
     Schemifier.schemify(true, Schemifier.infoF _, User, Group, Category, Tag, UserGroup)
 
     val isIE = Test( req => req.isIE )
@@ -82,8 +80,6 @@ class Boot extends Bootable{
 
       Menu("Home") / "index" >> LocGroup("mainmenu"),
 
-      Menu("IEDisclaimer") / "ie_disclaimer" >> isIE >> Hidden,
-
       Menu("About") / "about" >> LocGroup("footerMenu"),
 
       Menu("Faq") / "faq" >> LocGroup("footerMenu"),
@@ -92,6 +88,7 @@ class Boot extends Bootable{
 
       Menu("Categories") / "categories" >> loggedIn >> LocGroup("mainmenu"),
 
+    /*
       Menu("Groups") / "groups" >> loggedIn >> LocGroup("mainmenu"),
 
       Menu("GroupOverview") / "groupsection" / "index" >> loggedIn >> Hidden,
@@ -107,12 +104,16 @@ class Boot extends Bootable{
       Menu("GroupWiki") / "groupsection" / "wiki-edit" >> loggedIn >> Hidden,
 
       Menu("GroupAdmin") / "groupsection" / "admin" >> loggedIn >> Hidden >> isGroupAdmin,
-
+   */
       Menu("UserEdit") / "users" / "edituser" >> loggedIn >> Hidden,
 
       Menu("Search") / "search" >> loggedIn >> Hidden,
 
-      Menu(GroupWikiLoc),
+//      Menu(GroupWikiLoc),
+
+      Menu("Groups") / "groups" >> loggedIn >> LocGroup("mainmenu") submenus {
+        GroupSection.menus:_*
+      },
 
       LogLevel.menu // default log level menu is located at /loglevel/change
     )
@@ -124,7 +125,7 @@ class Boot extends Bootable{
       case (req,failure) =>
         NotFoundAsTemplate(ParsePath(List("404"),"html", false, false))
     })
-
+    /*
     LiftRules.statelessRewrite.prepend(NamedPF("ParticularGroupFilesRewrite") {
       case RewriteRequest(
       ParsePath("group" :: groupname  :: "files" :: directory , extension, _,_), _, _) => {
@@ -213,16 +214,7 @@ class Boot extends Bootable{
         RewriteResponse(
           "groupsection" ::  "wiki-edit" :: Nil, Map("groupname" -> groupname, "pagename" -> pagename)
         )
-    })
-
-
-    LiftRules.statelessRewrite.prepend(NamedPF("IENotSupportedDisclaimerLoginRewrite") {
-      case RewriteRequest(
-      ParsePath("user_mgt" :: _ :: Nil , _, _,_), _, req)  if( req.userAgent.map(_.contains("MSIE")) openOr(false) ) =>
-        RewriteResponse(
-          "ie_disclaimer" :: Nil
-        )
-    })
+    })   */
 
     /*
      * Make the spinny image go away when it ends
@@ -253,9 +245,6 @@ class Boot extends Bootable{
 
     // Initilization for table sorter widget
     TableSorter.init
-
-    // Initialization for flot (charting) widget
-    Flot.init
 
     MenuWidget.init()
 
