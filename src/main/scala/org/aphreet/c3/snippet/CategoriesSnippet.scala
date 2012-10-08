@@ -53,27 +53,27 @@ class CategoriesSnippet {
     "* *" #> ((x: NodeSeq) => x ++ Script(OnLoad(JsCmds.JsHideId("right-panel"))))
 
   }
+
   def search = {
     "* *" #> ((x: NodeSeq) => x ++ Script(OnLoad(JsCmds.JsShowId("categories_s"))))
   }
+
+  val tagSeparator = ","
+
   def render = {
-    var Tags=""
-    var Query=""
-    def process() = {
-      val request = "/search?tags=" + Tags+ "&query=" + Query
-      if (Tags!=""||Query!=""){
+    var tags: Array[String] = Array()
+    var query = ""
+
+    def process(){
+      println(tags)
+      val request = "/search?tags=%s&query=%s".format(tags.map(urlEncode _).mkString(tagSeparator), urlEncode(query))
+      if (!tags.isEmpty || !query.isEmpty){
         S.redirectTo(request)
       }
-
-
-
     }
-    "name=tags" #> SHtml.onSubmit(Tags = _)&
-    "name=query" #> SHtml.onSubmit(Query = _)&
+    "name=tags" #> SHtml.onSubmit(v => tags = v.split(tagSeparator)) &
+    "name=query" #> SHtml.onSubmit(query = _) &
     "type=submit" #> SHtml.onSubmitUnit(process)
-
-
-
   }
-
 }
+
