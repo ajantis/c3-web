@@ -1,4 +1,4 @@
-package org.aphreet.c3.snippet
+package org.aphreet.c3.snippet.categories
 
 import net.liftweb.util.Helpers._
 import net.liftweb.util._
@@ -8,7 +8,7 @@ import xml.{Text, NodeSeq}
 import net.liftweb.http.js.JsCmds
 import net.liftweb.http.js.JsCmds.{OnLoad, Script}
 
-class CategoriesSnippet {
+class CategoryListPage {
 
   def list = {
     val categories = Category.findAll()

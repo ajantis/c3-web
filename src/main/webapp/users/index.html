@@ -1,23 +1,25 @@
-<div class="lift:surround?with=default;at=content">
-  <h2>Users <a href="javascript:showDiv('addUser')"><img src="/images/add_48.png" style="position: relative; top: 8px;" width="32" height="32" align="middle"/></a></h2>
+<lift:surround with="default">
 
-  <div id="addUser" style="display: none;">
-  <lift:snippet type="UserForm.add" form="post">
-      <b>First name: </b> <user:firstName></user:firstName> <br/>
-      <b>Last name: </b> <user:lastName></user:lastName>
-      <br/>
+    <div class="lift:bind-at?name=content">
+        <div class="lift:UserPage.view">
+            <h2 class="name">John Smith</h2>
 
-      <user:submit/>
-      <br/><br/>
-  </lift:snippet>
-  <hr/>
-  </div>
+            <p>
+                <b>Email</b>: <a class="mailto" href="#"><span class="email">john.smith@gmail.com</span></a>
+            </p>
+            <p>
+                <b>Admin</b>: <span class="is_admin">No</span>
+            </p>
 
-  <br/>
-  <lift:snippet type="UserForm.list">
-      <ul>
-          <li><user:name></user:name></li>
-      </ul>
-  </lift:snippet>
+            <p><b>Groups</b>:</p>
+            <ol>
+                <li class="user_group">
+                    <a class="group_link" href="#">
+                        <span class="name">Performance testing</span>
+                    </a>
+                </li>
+            </ol>
+        </div>
+    </div>
 
-</div>
+</lift:surround>

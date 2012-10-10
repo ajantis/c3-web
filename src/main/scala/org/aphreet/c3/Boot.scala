@@ -89,7 +89,7 @@ class Boot extends Bootable{
         GroupSection.menus:_*
       },
 
-      Menu("Users") / "users" >> isSuperAdmin >> LocGroup("mainmenu") submenus {
+      Menu("Users") / "users" >> loggedIn >> LocGroup("mainmenu") submenus {
         UserSection.menus:_*
       },
 
