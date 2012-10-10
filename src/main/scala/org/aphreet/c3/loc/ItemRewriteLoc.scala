@@ -71,11 +71,6 @@ trait ItemRewriteLoc[S, T <: PageData] extends Loc[T] {
   })
 }
 
-/**
- * Copyright iFunSoftware 2011
- * @author Dmitry Ivanov
- */
-
 trait PageData {
   def currentUser: Box[User] = User.currentUser
 }

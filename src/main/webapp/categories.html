@@ -6,17 +6,8 @@
                     <li class="tabs-left1"><a href="#tab1" data-toggle="tab">Section 2</a></li>
                 </ul>
                 <div class="tab-content">
-
                     <div class="tab-pane" id="tab1">
-                        <div class="lift:AddTag.adm add_cat" style="float:right">
-                            <div class="btn tagAddButton">+ Add</div>
-                            <form class="lift:AddTag.render?form=post category_name_hide tagNameForm">
-                                <input class="inputCateg disp_none" name="categoryName">
-                                <input name="TagName" placeholder="Enter tag name...">
-                                <button type="submit" value="submit">Add</button>
-                            </form>
-                        </div>
-                        <span class="label margn">Tags</span>
+                       <span class="label margn">Tags</span>
 
                     </div>
                 </div>
@@ -31,14 +22,13 @@
         </div>
     </div>
     <div class="lift:bind-at?name=categories_search">
-        <div class="lift:CategoriesSnippet.search">
-            <form class="lift:CategoriesSnippet.render?form=post form-search search_categories">
+        <div class="lift:CategoryListPage.search">
+            <form class="form-search search_categories">
                 <div class="input-append">
                     <div class="text_size">
                         <div class="flt">
                         </div>
-                        <input name="tags" class="disp_none tags_input">
-                        <input name="query" type="text" class="span2 text_search" placeholder="Edit text...">
+                        <input type="text" class="span2 text_search" placeholder="Edit text...">
                     </div>
                     <button type="submit" class="btn btn_search">Search</button>
                 </div>

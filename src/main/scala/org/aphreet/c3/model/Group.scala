@@ -32,10 +32,14 @@ package org.aphreet.c3.model
 
 import net.liftweb.mapper._
 import net.liftweb.util.FieldError
-import xml.Text
-import net.liftweb.common.Box
+import xml.{NodeSeq, Text}
+import net.liftweb.common.{Full, Failure, Empty, Box}
 import net.liftweb.http.SHtml
 import org.aphreet.c3.apiaccess.C3
+import net.liftweb.util.Helpers._
+import com.ifunsoftware.c3.access.fs.C3File
+import com.ifunsoftware.c3.access.C3AccessException
+import org.apache.commons.httpclient.HttpStatus
 
 class Group extends LongKeyedMapper[Group] with IdPK with ManyToMany{
 
@@ -79,7 +83,7 @@ class Group extends LongKeyedMapper[Group] with IdPK with ManyToMany{
 
     var resources: List[C3Resource] = List()
 
-    val children = C3().getFile("/" + this.name.is + "/files" + directory).asDirectory.children()
+    val children = C3().getFile(baseFilePath + directory).asDirectory.children()
     
     for(child <- children){
       if(child.isDirectory){
@@ -91,12 +95,21 @@ class Group extends LongKeyedMapper[Group] with IdPK with ManyToMany{
     resources
   }
 
+  def getFile(path: String): Box[File] = tryo {
+      C3().getFile(baseFilePath + path)
+      File(group = this, fullpath = path) }
+
+
   override def delete_! : Boolean = {
     for(user <- users) {
       UserGroup.find(By(UserGroup.user,user),By(UserGroup.group,this)).map(_.delete_!).openOr()
     }
     super.delete_!
   }
+
+  private def baseFilePath = "/" + this.name.is + "/files"
+
+  def createLink: NodeSeq = Text("/groups/" + id.is)
 }
 
 object Group extends Group with LongKeyedMetaMapper[Group] {
