@@ -41,13 +41,6 @@ import org.aphreet.c3.model.{Group, User}
  
 class UserForm {
 
-  def list(html: NodeSeq) : NodeSeq = {
-
-    User.findAll.flatMap(user =>
-      bind("user", html, "name" -> <a href={"/user/"+user.email.is}>{user.firstName+" "+user.lastName}</a> )
-    )
-  }
-
   def add(form: NodeSeq) : NodeSeq = {
     val invokedAs = S.invokedAs
     var user = User.create

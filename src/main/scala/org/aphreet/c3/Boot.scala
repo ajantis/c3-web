@@ -15,6 +15,7 @@ import net.liftweb.widgets.uploadprogress._
 import net.liftweb.widgets.tablesorter.TableSorter
 import net.liftweb.widgets.autocomplete.AutoComplete
 import net.liftweb.widgets.menu.MenuWidget
+import snippet.categories.CategoriesSection
 import snippet.group.GroupSection
 import snippet.logging.LogLevel
 import snippet.search.SearchSection
@@ -84,9 +85,19 @@ class Boot extends Bootable{
 
       Menu("Faq") / "faq" >> LocGroup("footerMenu"),
 
-      Menu("Users") / "users" / "index" >> isSuperAdmin >> LocGroup("mainmenu"),
+      Menu("Groups") / "groups" >> loggedIn >> LocGroup("mainmenu") submenus {
+        GroupSection.menus:_*
+      },
 
-      Menu("Categories") / "categories" >> loggedIn >> LocGroup("mainmenu"),
+      Menu("Users") / "users" >> isSuperAdmin >> LocGroup("mainmenu") submenus {
+        UserSection.menus:_*
+      },
+
+      Menu("Categories") / "categories" >> loggedIn >> LocGroup("mainmenu") submenus {
+        CategoriesSection.menus:_*
+      },
+
+      LogLevel.menu, // default log level menu is located at /loglevel/change
 
     /*
       Menu("Groups") / "groups" >> loggedIn >> LocGroup("mainmenu"),
@@ -107,15 +118,11 @@ class Boot extends Bootable{
    */
       Menu("UserEdit") / "users" / "edituser" >> loggedIn >> Hidden,
 
-      Menu("Search") / "search" >> loggedIn >> Hidden,
+      Menu("Search") / "search" >> loggedIn >> Hidden
 
 //      Menu(GroupWikiLoc),
 
-      Menu("Groups") / "groups" >> loggedIn >> LocGroup("mainmenu") submenus {
-        GroupSection.menus:_*
-      },
 
-      LogLevel.menu // default log level menu is located at /loglevel/change
     )
 
     LiftRules.setSiteMapFunc(() => User.sitemapMutator(sitemap()))

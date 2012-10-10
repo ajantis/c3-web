@@ -1,10 +1,12 @@
-package org.aphreet.c3.snippet.user
+package org.aphreet.c3.snippet.user.snippet
 
 import org.aphreet.c3.model.User
 import org.aphreet.c3.loc.ItemRewriteLoc
 import xml.Text
 import net.liftweb.sitemap.Loc.{Link, LinkText}
 import net.liftweb.common.{Logger, Full, Box}
+import net.liftweb.util.BindHelpers._
+import org.aphreet.c3.snippet.user.UserPageData
 
 /**
  * @author Dmitry Ivanov (mailto: Dmitry.Ivanov@reltio.com)
@@ -28,8 +30,16 @@ object UserPage extends ItemRewriteLoc[User, UserPageData] {
   }
 }
 
-class UserPage(data: UserPageData) {
+class UserPage(data: UserPageData) extends UserHelpers{
   private val logger = Logger(classOf[UserPage])
+
+  def view = {
+    toCssBindings(data.user) &
+    ".user_group *" #> data.user.groups.map {
+      group =>
+        ".name *" #> group.name.is
+    }
+  }
 
 }
 

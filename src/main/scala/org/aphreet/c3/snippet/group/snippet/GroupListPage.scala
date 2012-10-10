@@ -30,7 +30,7 @@ class GroupListPage {
     val groupList = User.currentUser.open_!.groups.toList
 
     groupList.flatMap(group =>
-      bind("group", html, "name" -> <a href={"/group/"+group.id}>{group.name}</a>,
+      bind("group", html, "name" -> <a href={"/groups/"+group.id}>{group.name}</a>,
         "owner" -> group.owner.obj.map(usr => usr.email.is).openOr("<unknown>"),
         "delete" -> {SHtml.ajaxSubmit("Delete",
           () => {
