@@ -15,7 +15,7 @@ import net.liftweb.sitemap.Loc.Link
  
 object GroupPageMessages extends AbstractGroupPageLoc[GroupPageData] with SuffixLoc {
   override val name = "Messages"
-  override val pathPrefix = "group" :: Nil
+  override val pathPrefix = "groups" :: Nil
   override val pathSuffix = "messages" ::  Nil
   override def getItem(id: String) = Group.find(id)
   override def wrapItem(groupBox: Box[Group]) = groupBox.map(GroupPageData(_))

@@ -232,4 +232,5 @@ class User extends MegaProtoUser[User] with ManyToMany   {
 
   object searchRequests extends SessionVar[List[String]] ( "scala" :: "java" :: "performance" :: "c3" :: Nil )
 
+  def profileLink: NodeSeq = Text("/users/" + id.is)
 }

@@ -18,7 +18,7 @@ object GroupPage extends ItemRewriteLoc[Group, GroupPageData] {
   override def title = Text(currentValue.map(_.group.name.is).openOr("Group"))
   override def text = new LinkText[GroupPageData](text = v => Text(v.group.name.is))
 
-  override val pathPrefix = "group" :: Nil
+  override val pathPrefix = "groups" :: Nil
   override lazy val pathList = pathPrefix ++ List("index")
   override def link = new Link[GroupPageData](pathList){
     override def pathList(value: GroupPageData): List[String] = pathPrefix ::: value.group.id.is.toString :: Nil
