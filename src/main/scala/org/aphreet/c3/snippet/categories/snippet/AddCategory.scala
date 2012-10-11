@@ -1,10 +1,11 @@
-package org.aphreet.c3.snippet
+package org.aphreet.c3.snippet.categories.snippet
 
 import net.liftweb.http.{SHtml, S}
 import org.aphreet.c3.model.{User, Category}
 import net.liftweb.util.Helpers._
 import net.liftweb.mapper.{Cmp, OprEnum}
 import net.liftweb.common.Full
+
 import xml.NodeSeq
 /**
  * @author Serjk
@@ -26,10 +27,10 @@ class AddCategory{
      def process() {
         if (Category.find(Cmp(Category.name, OprEnum.Eql, Full(categoryName.toLowerCase), None, Full("LOWER"))).isEmpty){
            Category.create.name(categoryName).saveMe()
-           S.notice("This category was added.")
+           S.notice("Category is added.")
         }
         else{
-           S.error("This category exists.")
+           S.error("This category already exists.")
         }
      }
     "name=categories" #> SHtml.onSubmit(categoryName = _)&
