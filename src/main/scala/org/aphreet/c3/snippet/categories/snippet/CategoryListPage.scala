@@ -1,4 +1,4 @@
-package org.aphreet.c3.snippet.categories
+package org.aphreet.c3.snippet.categories.snippet
 
 import net.liftweb.util.Helpers._
 import net.liftweb.util._

@@ -40,12 +40,12 @@ object GroupPageFiles extends ItemRewriteLoc[Group, GroupPageFilesData] with Suf
   }
 }
 
-class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers{
+class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers with GroupPageHelpers{
 
   private val logger = Logger(classOf[GroupPageFiles])
-  private lazy val c3 = inject[C3System].open_!
 
-  lazy val group = data.group
+  override lazy val activeLocId = "files"
+  override lazy val group = data.group
   lazy val path = data.path
 
   def render = {

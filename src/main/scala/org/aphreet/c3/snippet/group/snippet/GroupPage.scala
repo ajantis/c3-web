@@ -4,9 +4,9 @@ import org.aphreet.c3.loc.ItemRewriteLoc
 import org.aphreet.c3.model.Group
 import net.liftweb.sitemap.Loc.{LinkText, Link}
 import net.liftweb.common.{Logger, Full, Box}
-import net.liftweb.util.BindHelpers._
 import org.aphreet.c3.snippet.group.GroupPageData
-import xml.{NodeSeq, Text}
+import xml.Text
+import net.liftweb.util.BindHelpers._
 
 /**
  * Copyright iFunSoftware 2011
@@ -30,8 +30,19 @@ object GroupPage extends ItemRewriteLoc[Group, GroupPageData] {
   }
 }
 
-class GroupPage(data: GroupPageData) {
+class GroupPage(data: GroupPageData) extends GroupPageHelpers{
+  override lazy val group = data.group
+  override lazy val activeLocId = "about"
+
   private val logger = Logger(classOf[GroupPage])
 
+}
+
+trait GroupPageHelpers {
+  val group: Group
+  val activeLocId: String
+  def embedTabMenu = {
+    "* *" #> <lift:embed what="/groups/_group_tab_menu" active={activeLocId} group_id={group.id.is.toString} />
+  }
 }
 

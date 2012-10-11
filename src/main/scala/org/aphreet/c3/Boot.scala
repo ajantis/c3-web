@@ -27,7 +27,7 @@ import snippet.user.UserSection
  */
 class Boot extends Bootable{
 
-  private val sections: List[Section] = List(BaseSection, UserSection, GroupSection, SearchSection)
+  private val sections: List[Section] = List(BaseSection, UserSection, GroupSection, SearchSection, CategoriesSection)
 
   def boot {
     if (!DB.jndiJdbcConnAvailable_?) {
@@ -50,8 +50,6 @@ class Boot extends Bootable{
     sections.foreach(s => LiftRules.addToPackages(s.currentPackage))
 
     Schemifier.schemify(true, Schemifier.infoF _, User, Group, Category, Tag, UserGroup)
-
-    val isIE = Test( req => req.isIE )
 
     lazy val loginUrl = "/user_mgt/login"
 

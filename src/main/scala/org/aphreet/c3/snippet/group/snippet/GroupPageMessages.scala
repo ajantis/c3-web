@@ -27,12 +27,13 @@ object GroupPageMessages extends AbstractGroupPageLoc[GroupPageData] with Suffix
   }
 }
 
-class GroupPageMessages(data: GroupPageData) {
+class GroupPageMessages(data: GroupPageData) extends GroupPageHelpers{
+  override lazy val group = data.group
+  override lazy val activeLocId = "messages"
 
   private val logger = Logger(classOf[GroupPageMessages])
 
   def putCometMessenger(xml: NodeSeq): NodeSeq = {
-    val group = data.group
     val actorName = "group-" + group.id.is + "-messages-log-comet-actor"
     logger.debug("Using CometActor with name: %s".format(actorName))
 
