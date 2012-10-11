@@ -8,7 +8,14 @@
                 <div class="tab-content">
                     <div class="tab-pane" id="tab1">
                        <span class="label margn">Tags</span>
-
+                       <div class="lift:AddTag.adm add_cat" style="float:right">
+                            <div class="btn tagAddButton">+ Add</div>
+                            <form class="lift:AddTag.render?form=post category_name_hide tagNameForm">
+                                <input class="inputCateg disp_none" name="categoryName">
+                                <input name="TagName" placeholder="Enter tag name...">
+                                <button type="submit" value="submit">Add</button>
+                            </form>
+                       </div>
                     </div>
                 </div>
             </div>
