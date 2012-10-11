@@ -24,6 +24,7 @@ class AddTag {
       }
     }
   }
+
   def render = {
     var tagName = ""
     var categoryName = ""

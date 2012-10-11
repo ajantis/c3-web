@@ -41,25 +41,24 @@ import org.aphreet.c3.lib.DependencyFactory._
 
 class SearchSnippet extends StatefulSnippet{
 
-   val c3 = inject[C3System].open_!
-
+  val c3 = inject[C3System].open_!
   val logger = Logger(classOf[SearchSnippet])
 
-  var dispatch : DispatchIt = if(stringToSearch.isEmpty) {
+  var dispatch : DispatchIt = if(stringToSearch.isEmpty){
 
     case "search" => searchForm _
     case "miniSearch" => miniSearchForm _
-  }
-  else {
+
+  } else {
+
     case "search" => resultPage _
     case "miniSearch" => miniSearchForm _
-  }
 
+  }
 
   var searchString = ""
 
   def resultPage (html: NodeSeq) = {
-
     if (! stringToSearch.isEmpty )
       searchString = stringToSearch.open_!
 
@@ -111,8 +110,6 @@ class SearchSnippet extends StatefulSnippet{
   }
 
   def searchForm (html: NodeSeq) = {
-
-
     bind("search", html,
       "query" -> SHtml.text(searchString, processQuery _ , "placeholder" -> "Search","size" -> "60"),
       "resultSet" -> "",
@@ -145,8 +142,7 @@ class SearchSnippet extends StatefulSnippet{
     stringToSearch(Full(query))
 
     if(searchString != ""){
-
-      User.addSearchRequest( searchString )
+      User.addSearchRequest(searchString)
 
       dispatch = {
         case "search" => resultPage _
