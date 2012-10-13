@@ -1,4 +1,4 @@
-package org.aphreet.c3.snippet
+package org.aphreet.c3.snippet.categories.snippet
 
 import org.aphreet.c3.model.{User, Category, Tag}
 import net.liftweb.mapper.{By, OprEnum, Cmp}
