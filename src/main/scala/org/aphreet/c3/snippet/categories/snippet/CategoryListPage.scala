@@ -64,8 +64,10 @@ class CategoryListPage {
     var tagsName=""
     var catName=""
     def process(){
-      Tag.find(By(Tag.name,tagsName)).foreach(_.delete_!)
-
+      val cat = Category.find(By(Category.name,catName))
+      cat.map{ ct:Category =>{
+        Tag.find(By(Tag.name,tagsName),By(Tag.category,ct.id)).foreach(_.delete_!)
+      }}
     }
     "name=tagName" #> SHtml.onSubmit(tagsName = _)&
     "name=categoryName" #> SHtml.onSubmit(catName = _)&
