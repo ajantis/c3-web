@@ -169,12 +169,44 @@ body > .navbar .brand:hover {
 /*********************************************************
 * Begin Categories part
 *********************************************************/
+.table{
+    margin-right: 50px;
+    float: left;
+    width: 150px;
 
+}
+.labls{
+    margin-bottom: 5px;
+    display: block;
+}
+.label_tags{
+    background-color:#999!important;
+    text-align:center;
+    margin-left:5px;
+    height:25px;
+    font-size:16px;
+    color:white;
+    margin-top:5px;
+    padding-top:3px;
+    padding-left:5px;
+    padding-right:5px;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+}
+.close_orient{
+    margin-bottom:1px;
+
+
+}
+.tags_orient{
+    display:inline-block;
+
+
+}
 
 #categories_s{
     display:none;
-
-
 }
 .text_size{
     width:500px;
@@ -192,7 +224,7 @@ body > .navbar .brand:hover {
 }
 .cls{
     margin-top: -5px!important;
-    margin-left: 1px;
+    margin-left: 5px;
 }
 .flt{
    float: left;

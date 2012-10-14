@@ -1,4 +1,5 @@
-package  org.aphreet.c3.snippet
+package org.aphreet.c3.snippet.search
+
 import xml.NodeSeq
  import net.liftweb.http.js.JsCmds._
  import net.liftweb.http.js.JsCmds
@@ -84,7 +85,7 @@ private lazy val dateFormat: SimpleDateFormat = new SimpleDateFormat("dd/MM/yyyy
         "ul [id]" #> id
     }
     ".category_cnt *" #> categories.map{ cat:Category =>  categoryContents(cat) }
-    }
+  }
 
 }
 

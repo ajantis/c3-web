@@ -19,7 +19,7 @@ $(document).ready( function(){
 
     });
     // delete tag from search
-    $(".close").live("click",function(){
+    $(".cls").live("click",function(){
       var $parent = $(this).parent();
       var id = $parent.children("span").attr("id");
       var id_new = "";
@@ -37,11 +37,6 @@ $(document).ready( function(){
       $parent.remove();
     });
 
-     //current category
-     $(".tabs-left1").live("click",function(){
-         var CatName = $(".tabs-left1.active").children("a").text();
-         $(".inputCateg").val(CatName);
-     });
      //current pick tags
     $(".btn_search").live("click",function(){
         var tags="";

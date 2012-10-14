@@ -1,25 +1,5 @@
 <div class="lift:surround?with=default">
     <div class="lift:bind-at?name=content">
-        <div class="lift:CategoryListPage.list">
-            <div class="tabbable tabs-left"> <!-- Only required for left/right tabs -->
-                <ul class="nav nav-tabs">
-                    <li class="tabs-left1"><a href="#tab1" data-toggle="tab">Section 2</a></li>
-                </ul>
-                <div class="tab-content">
-                    <div class="tab-pane" id="tab1">
-                       <span class="label margn">Tags</span>
-                       <div class="lift:AddTag.adm add_cat" style="float:right">
-                            <div class="btn tagAddButton">+ Add</div>
-                            <form class="lift:AddTag.render?form=post category_name_hide tagNameForm">
-                                <input class="inputCateg disp_none" name="categoryName">
-                                <input name="TagName" placeholder="Enter tag name...">
-                                <button type="submit" value="submit">Add</button>
-                            </form>
-                       </div>
-                    </div>
-                </div>
-            </div>
-        </div>
         <div class="CategoryListPage.adm add_cat">
             <div class="btn" id="category_name_1">+ Add</div>
             <form id="category_name_2" class="lift:CategoryListPage.render?form=post category_name_hide">
@@ -27,6 +7,25 @@
                 <button type="submit" value="submit">Add</button>
             </form>
         </div>
+        <div class="lift:CategoryListPage.list">
+            <div class="well table">
+                <h2 class="muted">Economy</h2>
+                <form class="lift:CategoryListPage.del_tag?form=post label-info label_tags">
+                    <span class="tags_orient">Tags1</span>
+                    <input name="tagName"  class="disp_none tagName">
+                    <input name="categoryName" class="disp_none CatName">
+                    <button type="submit" class="close close_orient">&times;</button>
+                </form>
+                <hr>
+                <div class="lift:AddTag.adm add_cat">
+                    <div class="btn tagAddButton">+ Add</div>
+                    <form class="lift:AddTag.render?form=post category_name_hide tagNameForm">
+                        <input class="inputCateg disp_none" name="categoryName">
+                        <input name="TagName" placeholder="Enter tag name...">
+                        <button type="submit" value="submit">Add</button>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
-
 </div>

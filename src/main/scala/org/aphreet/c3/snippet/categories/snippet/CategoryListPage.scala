@@ -10,35 +10,29 @@ import net.liftweb.http.{SHtml, S}
 import net.liftweb.common.Full
 
 class CategoryListPage {
+
+  val categories = Category.findAll()
   def list = {
-    val categories = Category.findAll()
+
 
     var flag1 = 0
     var flag2 = 0
-
-    def tabs(cat: Category) = {
-        flag1+=1
-        val hrf = "#tab" + flag1
-        "a *" #> cat.name.is &
-        "a [href]" #> hrf
-    }
-
+    val categories = Category.findAll()
     def categoryContents(cat: Category) = {
       flag2+=1
       val id = "tab"+flag2
       var id_span = 0
       val tagNames = Tag.findAll(By(Tag.category, cat))
 
-      "span" #> tagNames.map{tg:Tag =>{
+      ".label_tags *" #> tagNames.map{tg:Tag =>{
         id_span+=1
         "span *" #> tg.name &
         "span [id]" #> (id+"_"+id_span)
       }}&
-      ".tab-pane [id]" #> id
+        ".muted *" #> cat.name &
+        ".muted [id]" #> id
     }
-
-    ".tabs-left1" #> categories.map{ cat: Category => tabs(cat) } &
-    ".tab-pane" #> categories.map{ cat:Category =>  categoryContents(cat) } andThen
+    ".well *" #> categories.map{ cat:Category =>  categoryContents(cat) } andThen
     "* *" #> ((x: NodeSeq) => x ++ Script(OnLoad(JsCmds.JsHideId("left-panel"))))
 
   }
@@ -65,6 +59,18 @@ class CategoryListPage {
     }
     "name=categories" #> SHtml.onSubmit(categoryName = _)&
       "type=submit" #> SHtml.onSubmitUnit(process)
+  }
+  def del_tag = {
+    var tagsName=""
+    var catName=""
+    def process(){
+      Tag.find(By(Tag.name,tagsName)).foreach(_.delete_!)
+
+    }
+    "name=tagName" #> SHtml.onSubmit(tagsName = _)&
+    "name=categoryName" #> SHtml.onSubmit(catName = _)&
+    "type=submit" #> SHtml.onSubmitUnit(process)
+
   }
 
 }
