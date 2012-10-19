@@ -35,14 +35,13 @@ import net.liftweb.mapper._
  
  
  
-class Category extends LongKeyedMapper[Category] with IdPK {
+class Category extends LongKeyedMapper[Category] with IdPK with OneToMany[Long, Category]{
 
   def getSingleton = Category
 
   object name extends MappedString(this,64)
 
-  def tags : List[Tag] = Tag.findAll(By(Tag.category, this))
-
+  object tags extends MappedOneToMany(Tag, Tag.category)
 
   // TODO ajantis: find some standard cascading approach
   override def delete_! = {
