@@ -14,7 +14,6 @@ class CategoryListPage {
   val categories = Category.findAll()
   def list = {
 
-
     var flag1 = 0
     var flag2 = 0
     val categories = Category.findAll()

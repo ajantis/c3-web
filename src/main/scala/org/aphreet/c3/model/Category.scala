@@ -32,9 +32,7 @@ import net.liftweb.mapper._
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
- 
- 
- 
+
 class Category extends LongKeyedMapper[Category] with IdPK with OneToMany[Long, Category]{
 
   def getSingleton = Category

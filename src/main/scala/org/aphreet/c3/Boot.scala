@@ -20,6 +20,7 @@ import snippet.group.GroupSection
 import snippet.logging.LogLevel
 import snippet.search.SearchSection
 import snippet.user.UserSection
+import util.TextileRenderer
 
 /**
  * A class that's instantiated early and run.  It allows the application
@@ -252,6 +253,8 @@ class Boot extends Bootable{
     TableSorter.init
 
     MenuWidget.init()
+
+    LiftRules.statelessDispatchTable.append(TextileRenderer)
 
     // for ajax file upload
     LiftRules.progressListener = {
