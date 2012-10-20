@@ -7,7 +7,7 @@ import net.liftweb.http.S._
 import net.liftweb.http.{SessionVar, S, SHtml}
 import net.liftweb.sitemap.Loc.LocGroup
 import net.liftweb.util.BindHelpers._
-import xml.{Text, NodeSeq}
+import xml.{Text, NodeSeq, Elem}
 import net.liftweb.http.js.JsCmds.FocusOnLoad
 
 /**
@@ -63,17 +63,21 @@ object User extends User with MetaMegaProtoUser[User]{
   */
 
   override def lostPasswordXhtml = {
-    (<div>
-      <h1>{S.??("enter.email")}</h1>
-      <div class="user-form-content">
-        <form method="post" action={S.uri}>
-          <table>
-            <tr><td class="user-form-key">{userNameFieldString}</td><td class="user-form-value"><user:email /></td></tr>
-            <tr><td class="user-form-key">&nbsp;</td><td class="user-form-submit"><user:submit /></td></tr>
-          </table>
+    (<div class="forgot_password_form">
+        <form action={S.uri} method="POST" class="form">
+          <fieldset>
+            <legend>Forgot Password</legend>
+            <label for="email_field">
+              Email<br/>
+                <user:email />
+            </label>
+            <label>
+                <user:submit />
+            </label>
+
+          </fieldset>
         </form>
-      </div>
-    </div>)
+      </div>)
   }
 
   override def loginXhtml = {
@@ -206,6 +210,7 @@ object User extends User with MetaMegaProtoUser[User]{
  */
 class User extends MegaProtoUser[User] with ManyToMany   {
 
+
   thisuser =>
 
   def getSingleton = User // what's the "meta" server
@@ -228,6 +233,14 @@ class User extends MegaProtoUser[User] with ManyToMany   {
       }
       else Text("No groups.")
     }
+  }
+
+
+  object email extends MappedString(this, 128){
+    def addClassCss: ElemSelector  =
+      "input [class+]" #> "span3" &
+      "input [placeholder]" #> S.?("email.placeholder")
+    override def toForm:Box[Elem] =  super.toForm.map(e => addClassCss(NodeSeq.fromSeq(e.toSeq)))
   }
 
   object searchRequests extends SessionVar[List[String]] ( "scala" :: "java" :: "performance" :: "c3" :: Nil )
