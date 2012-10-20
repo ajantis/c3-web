@@ -22,14 +22,13 @@ class CategoryListPage {
       val id = "tab"+flag2
       var id_span = 0
       val tagNames = Tag.findAll(By(Tag.category, cat))
-
-      ".label_tags *" #> tagNames.map{tg:Tag =>{
+      ".label_tags" #> tagNames.map{tg:Tag =>{
         id_span+=1
         "span *" #> tg.name &
         "span [id]" #> (id+"_"+id_span)
       }}&
-        ".muted *" #> cat.name &
-        ".muted [id]" #> id
+      ".muted *" #> cat.name &
+      ".muted [id]" #> id
     }
     ".well *" #> categories.map{ cat:Category =>  categoryContents(cat) } andThen
     "* *" #> ((x: NodeSeq) => x ++ Script(OnLoad(JsCmds.JsHideId("left-panel"))))

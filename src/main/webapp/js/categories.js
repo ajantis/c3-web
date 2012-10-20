@@ -10,7 +10,6 @@
            $(this).parent().children("form").toggleClass("category_name_hide category_name_show");
            var CatName = $(this).parent().parent().children("h2").text();
            $(this).parent().children("form").children(".inputCateg").val(CatName);
-
      });
      //for delete, current value tag
      $(".close_orient").live("click",function(){

@@ -171,9 +171,11 @@ body > .navbar .brand:hover {
 *********************************************************/
 .table{
     margin-right: 50px;
-    float: left;
+    display:inline-block;
+    vertical-align:top;
     width: 150px;
-
+    zoom:1 !ie;
+    display:inline !ie;
 }
 .labls{
     margin-bottom: 5px;

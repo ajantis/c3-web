@@ -1,4 +1,4 @@
-package org.aphreet.c3.snippet.search
+package org.aphreet.c3.snippet.search.snippet
 
 import xml.NodeSeq
  import net.liftweb.http.js.JsCmds._
@@ -14,9 +14,24 @@ import net.liftweb.mapper.By
 
 class SearchSnippet {
 
-   private val c3 = inject[C3System].open_!
-   var results: List[SearchResultEntry] = List()
-   def search = {
+  private val c3 = inject[C3System].open_!
+  var results: List[SearchResultEntry] = List()
+
+  def miniSearch ={
+
+    def process(query: String){
+      if (!query.isEmpty){
+        results = c3.search(query)
+        S.redirectTo("/search")
+      }
+      else{
+        S.notice("Entry param search")
+      }
+    }
+    "name=query" #> SHtml.onSubmit(process _)
+  }
+
+  def search = {
     "* *" #> ((x: NodeSeq) => x ++ Script(OnLoad(JsCmds.JsShowId("categories_s"))))
   }
 
@@ -40,7 +55,7 @@ class SearchSnippet {
     }
 
     "name=tags" #> SHtml.onSubmit(v => tags = v.split(tagSeparator))&
-    "name=query" #> SHtml.onSubmit(query = _) &
+    "name=query" #> SHtml.onSubmit(query = _)&
     "type=submit" #> SHtml.onSubmitUnit(process)
   }
   def result = {
@@ -86,6 +101,7 @@ private lazy val dateFormat: SimpleDateFormat = new SimpleDateFormat("dd/MM/yyyy
     }
     ".category_cnt *" #> categories.map{ cat:Category =>  categoryContents(cat) }
   }
+
 
 }
 
