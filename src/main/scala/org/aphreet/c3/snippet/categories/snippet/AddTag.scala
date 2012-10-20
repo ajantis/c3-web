@@ -34,6 +34,7 @@ class AddTag {
       if(category.isEmpty)
         S.error("Category with name " + categoryName + " is not found!")
       else {
+        tag.category(category.open_!)
         tag.validate match {
           case Nil => {
             tag.save()
