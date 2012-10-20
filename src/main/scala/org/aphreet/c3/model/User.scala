@@ -1,14 +1,14 @@
 package org.aphreet.c3.model
 
 import net.liftweb.mapper._
-import net.liftweb.util._
 import net.liftweb.common._
-import net.liftweb.http.S._
 import net.liftweb.http.{SessionVar, S, SHtml}
-import net.liftweb.sitemap.Loc.LocGroup
-import net.liftweb.util.BindHelpers._
 import xml.{Text, NodeSeq, Elem}
 import net.liftweb.http.js.JsCmds.FocusOnLoad
+import net.liftweb.util.Helpers._
+import net.liftweb.common.Full
+import net.liftweb.sitemap.Loc.LocGroup
+import xml.Text
 
 /**
  * The singleton that has methods for accessing the database
@@ -170,6 +170,12 @@ object User extends User with MetaMegaProtoUser[User]{
     </lift:Menu.item>.toList
   } : NodeSeq
 
+  override def lostPassword = {
+    bind("user", lostPasswordXhtml,
+         "email" -> SHtml.text("", sendPasswordReset _, ("placeholder" -> S.?("email.placeholder"))),
+         "submit" -> lostPasswordSubmitButton(S.??("send.it")))
+  }
+
   override def login = {
     if (S.post_?) {
       S.param("username").
@@ -208,9 +214,7 @@ object User extends User with MetaMegaProtoUser[User]{
 /**
  * An O-R mapped "User" class that includes first name, last name, password and we add a "Personal Essay" to it
  */
-class User extends MegaProtoUser[User] with ManyToMany   {
-
-
+class User extends MegaProtoUser[User] with ManyToMany {
   thisuser =>
 
   def getSingleton = User // what's the "meta" server
@@ -222,8 +226,7 @@ class User extends MegaProtoUser[User] with ManyToMany   {
     override def displayName = "Personal Essay"
   }
 
-  object groups extends MappedManyToMany(UserGroup, UserGroup.user, UserGroup.group, Group) {
-
+  object groups extends MappedManyToMany(UserGroup, UserGroup.user, UserGroup.group, Group){
     def toForm() : NodeSeq = {
       if(!this.toList.isEmpty) {
         {<ul>{
@@ -235,12 +238,15 @@ class User extends MegaProtoUser[User] with ManyToMany   {
     }
   }
 
-
-  object email extends MappedString(this, 128){
-    def addClassCss: ElemSelector  =
+  // this is just a prototype change
+  override lazy val email: MappedEmail[T] = new MyEmail(this, 128){
+    def addClassCss =
       "input [class+]" #> "span3" &
       "input [placeholder]" #> S.?("email.placeholder")
-    override def toForm:Box[Elem] =  super.toForm.map(e => addClassCss(NodeSeq.fromSeq(e.toSeq)))
+
+    override def toForm:Box[Elem] = {
+      super.toForm.map(addClassCss(_).asInstanceOf[Elem])
+    }
   }
 
   object searchRequests extends SessionVar[List[String]] ( "scala" :: "java" :: "performance" :: "c3" :: Nil )
