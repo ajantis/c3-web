@@ -40,13 +40,17 @@ class Category extends LongKeyedMapper[Category] with IdPK with OneToMany[Long, 
   def getSingleton = Category
 
   object name extends MappedString(this,64){
-    override def validations = isUnique _ :: Nil
+    override def validations = nonEmpty _ :: isUnique _ :: Nil
 
     private def isUnique(s: String): List[FieldError] = {
       if(!Category.find(Cmp(Category.name, OprEnum.Eql, Full(s.toLowerCase), None, Full("LOWER"))).isEmpty)
-        List(FieldError(this, "Category with this name already exists"))
+        List(FieldError(this, "Category with name " + s + " already exists"))
       else Nil
     }
+
+    private def nonEmpty(s: String) =
+      if(s.isEmpty) List(FieldError(this, "Category's name cannot be empty"))
+      else Nil
 
   }
 

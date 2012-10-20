@@ -45,17 +45,18 @@ class CategoryListPage {
     }
   }
   def render = {
-    var categoryName = ""
+    val category = Category.create
     def process() {
-      if (Category.find(Cmp(Category.name, OprEnum.Eql, Full(categoryName.toLowerCase), None, Full("LOWER"))).isEmpty){
-        Category.create.name(categoryName).saveMe()
-        S.notice("Category is added.")
-      }
-      else{
-        S.error("This category already exists.")
+      category.validate match {
+        case Nil => {
+          category.save()
+          S.notice("Category is added")
+        }
+        case xs =>
+          xs.foreach(f => S.error(f.msg))
       }
     }
-    "name=categories" #> SHtml.onSubmit(categoryName = _)&
+    "name=categories" #> SHtml.onSubmit(category.name(_))&
     "type=submit" #> SHtml.onSubmitUnit(process)
   }
 

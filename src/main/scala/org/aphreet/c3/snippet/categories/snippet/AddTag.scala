@@ -29,8 +29,9 @@ class AddTag {
     var categoryName = ""
     val tag = Tag.create
 
-    def process() {
+    def process() = {
       val category = Category.find(Cmp(Category.name, OprEnum.Eql, Full(categoryName.toLowerCase), None, Full("LOWER")))
+
       if(category.isEmpty)
         S.error("Category with name " + categoryName + " is not found!")
       else {
@@ -40,14 +41,15 @@ class AddTag {
             tag.save()
             S.notice("Tag is added.")
           }
-          case xs => S.error(xs)
+          case xs => {
+            xs.foreach(fe => S.error(fe.msg))
+          }
         }
       }
-
     }
     "name=categoryName" #> SHtml.onSubmit(categoryName = _)&
     "name=TagName" #> SHtml.onSubmit(tag.name(_))&
-    "type=submit" #> SHtml.onSubmitUnit(process)
+    "type=submit" #> SHtml.onSubmitUnit(process _)
   }
 
 }
