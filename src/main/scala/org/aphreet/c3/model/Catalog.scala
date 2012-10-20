@@ -46,5 +46,5 @@ class Catalog(val group : Group, val name : String,val created : Date , val tags
 }
 
 object Catalog {
-  def apply(group : Group, name : String, createDate : Date = TimeHelpers.now, tags : List[String] = List()) = new Catalog(group = group,name = name, created = createDate, tags = tags)
+  def apply(group : Group, name : String, created : Date = TimeHelpers.now, tags : List[String] = List()) = new Catalog(group = group,name = name, created = created, tags = tags)
 }

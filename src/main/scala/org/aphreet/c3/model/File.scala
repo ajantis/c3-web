@@ -48,7 +48,7 @@ class File(val group : Group, val path : String, val fileType : String ,val crea
 
 object File {
 
-  def apply(group : Group, fullpath : String, fileType: String = "application/octet-stream", create : Date = TimeHelpers.now, tags : List[String] = List() ) = new File(group = group, path = fullpath, fileType = fileType, created = create,tags = tags)
+  def apply(group : Group, fullpath : String, fileType: String = "application/octet-stream", created : Date = TimeHelpers.now, tags : List[String] = List() ) = new File(group = group, path = fullpath, fileType = fileType, created = created, tags = tags)
 
   /*def getFile(group:String, filePath:String):Option[File] = {
     try{

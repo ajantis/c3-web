@@ -12,6 +12,7 @@ import com.ifunsoftware.c3.access.C3System
 import net.liftweb.http.S
 import net.liftweb.common.Full
 import org.aphreet.c3.snippet.group.GroupPageFilesData
+import org.aphreet.c3.snippet.{FileUploadDialog, CreateDirectoryDialog}
 
 /**
  * @author Dmitry Ivanov (mailto: id.ajantis@gmail.com)
@@ -48,8 +49,11 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers with Gr
   override lazy val group = data.group
   lazy val path = data.path
 
+  lazy val fileUpload = new GroupFileUpload(group, data.currentAddress)
+
   def render = {
     ".current_path *" #> Text(data.currentAddress) &
+    ".fileUploadForm *" #> ((n: NodeSeq) => fileUpload.fileUploadForm(n)) &
     (if(data.isDirectoryLoc)
       renderDirectoryLoc
     else
@@ -59,10 +63,12 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers with Gr
   protected def renderDirectoryLoc = {
     ".child *" #> group.getChildren(data.currentAddress).map {
       resource => {
-        if(C3Resource.C3_DIRECTORY == resource.resourceType)
-          toCss(resource.asInstanceOf[Catalog])
-        else
-          toCss(resource.asInstanceOf[File])
+        logger.error(resource.name)
+        logger.error(resource.resourceType)
+        resource match {
+          case c: Catalog => toCss(c)
+          case f: File => toCss(f)
+        }
       }
     }
   }
@@ -91,14 +97,14 @@ trait C3ResourceHelpers {
   import net.liftweb.util.TimeHelpers._
 
   def toCss(directory: Catalog) = {
-    ".name *" #> directory.name
-    ".icon [class+]" #> "icon-folder-close"
+    ".name *" #> directory.name &
+    ".icon [class+]" #> "icon-folder-close" &
     ".created_date *" #> internetDateFormatter.format(directory.created)
   }
 
   def toCss(file: File) = {
-    ".name *" #> file.name
-    ".icon [class+]" #> "icon-file"
+    ".name *" #> file.name &
+    ".icon [class+]" #> "icon-file" &
     ".created_date *" #> internetDateFormatter.format(file.created)
   }
 }

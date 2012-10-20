@@ -20,6 +20,7 @@ import snippet.group.GroupSection
 import snippet.logging.LogLevel
 import snippet.search.SearchSection
 import snippet.user.UserSection
+import util.helpers.C3Streamer
 import util.TextileRenderer
 
 /**
@@ -98,30 +99,9 @@ class Boot extends Bootable{
 
       LogLevel.menu, // default log level menu is located at /loglevel/change
 
-    /*
-      Menu("Groups") / "groups" >> loggedIn >> LocGroup("mainmenu"),
-
-      Menu("GroupOverview") / "groupsection" / "index" >> loggedIn >> Hidden,
-
-      Menu("GroupFiles") / "groupsection" / "files" >> loggedIn >> Hidden,
-
-      Menu("GroupFiles") / "groupsection" / "file" >> loggedIn >> Hidden,
-
-      Menu("GroupMessages") / "groupsection" / "messages" >> loggedIn >> Hidden,
-
-      Menu("GroupWiki") / "groupsection" / "wiki-view" >> loggedIn >> Hidden,
-
-      Menu("GroupWiki") / "groupsection" / "wiki-edit" >> loggedIn >> Hidden,
-
-      Menu("GroupAdmin") / "groupsection" / "admin" >> loggedIn >> Hidden >> isGroupAdmin,
-   */
       Menu("UserEdit") / "users" / "edituser" >> loggedIn >> Hidden,
 
       Menu("Search") / "search" >> loggedIn >> Hidden
-
-//      Menu(GroupWikiLoc),
-
-
     )
 
     LiftRules.setSiteMapFunc(() => User.sitemapMutator(sitemap()))
@@ -131,96 +111,36 @@ class Boot extends Bootable{
       case (req,failure) =>
         NotFoundAsTemplate(ParsePath(List("404"),"html", false, false))
     })
-    /*
-    LiftRules.statelessRewrite.prepend(NamedPF("ParticularGroupFilesRewrite") {
-      case RewriteRequest(
-      ParsePath("group" :: groupname  :: "files" :: directory , extension, _,_), _, _) => {
 
-        val dotExt = extension match {
-          case "" => ""
-          case str => "."+str
-        }
-        Group.find(By(Group.name,groupname)) match {
-          case Full(group) => {
-            // TODO if resource instance is File ==>> rewrite request to file page
-            C3Resource.get(group,directory.mkString("/") + dotExt) match {
-              case Some(resource) if(resource.isInstanceOf[File]) => {
-                RewriteResponse("groupsection" :: "file" :: Nil, Map("groupname" -> groupname,"groupdirectory" -> (directory.mkString("/") + dotExt),"filepath" -> (directory.mkString("/") + dotExt), "rewrite" -> "groupFiles"))
-              }
-              case Some(resource) =>
-                RewriteResponse("groupsection" :: "files" :: Nil, Map("groupname" -> groupname,"groupdirectory" -> directory.mkString("/"), "rewrite" -> "groupFiles"))
-              case _ =>
-                RewriteResponse("404" :: Nil)
-            }
-          }
-          case _ => RewriteResponse("404" :: Nil)
-        }
-      }
-    })
-
-    LiftRules.statelessRewrite.prepend(NamedPF("ParticularGroupOverviewRewrite") {
-      case RewriteRequest(
-      ParsePath("group" :: groupname  :: Nil , _, _,_), _, _) =>
-        RewriteResponse(
-          "groupsection" ::  "index" :: Nil, Map("groupname" -> groupname, "rewrite" -> "groupOverview")
-        )
-    })
-    LiftRules.statelessRewrite.prepend(NamedPF("ParticularGroupWikiRewrite") {
-      case RewriteRequest(
-      ParsePath("group" :: groupname  :: "wiki" :: pagename :: Nil , _, _,_), _, _) =>
-        RewriteResponse(
-          "groupsection" ::  "wiki-view" :: Nil, Map("groupname" -> groupname, "pagename" -> pagename,"rewrite" -> "groupWiki")
-        )
-    })
-
-    LiftRules.statelessRewrite.prepend(NamedPF("ParticularGroupRewriteWikiMain") {
-      case RewriteRequest(
-      ParsePath("group" :: groupname  :: "wiki" :: Nil , _, _,_), _, _) =>
-        RewriteResponse(
-          "groupsection" ::  "wiki-view" :: Nil, Map("groupname" -> groupname, "pagename" -> "Main", "rewrite" -> "groupWikiMain")
-        )
-    })
-
-    LiftRules.statelessRewrite.prepend(NamedPF("ParticularGroupMessages") {
-      case RewriteRequest(
-      ParsePath("group" :: groupname  :: "messages" :: Nil , _, _,_), _, _) =>
-        RewriteResponse(
-          "groupsection" ::  "messages" :: Nil, Map("groupname" -> groupname, "rewrite" -> "groupMessages")
-        )
-    })
-
-    LiftRules.statelessRewrite.prepend(NamedPF("ParticularGroupAdminRewrite") {
-      case RewriteRequest(
-      ParsePath("group" :: groupname  :: "admin" :: Nil , _, _,_), _, _) =>
-        RewriteResponse(
-          "groupsection" ::  "admin" :: Nil, Map("groupname" -> groupname)
-        )
-    })
 
     LiftRules.dispatch.append {
       case Req("download" :: groupname :: filePath, extension, GetRequest) =>
         C3Streamer(groupname, filePath, extension)
     }
+    /************************ FILE UPLOAD *******************************/
+    // In cases where we have an AJAX request for IE with an uploaded file, we
+    // assume we served through an iframe (a fairly safe assumption) and serve
+    // up the response with a content type of text/plain so that IE does not
+    // attempt to save the response as a downloaded file.
+    LiftRules.responseTransformers.append {
+      resp =>
+        (for (req <- S.request) yield {
+          resp match {
+            case InMemoryResponse(data, headers, cookies, code)
+              if ! req.uploadedFiles.isEmpty &&
+                req.isIE &&
+                req.path.wholePath.head == LiftRules.ajaxPath =>
+              val contentlessHeaders = headers.filterNot(_._1.toLowerCase == "content-type")
+              InMemoryResponse(data, ("Content-Type", "text/plain; charset=utf-8") :: contentlessHeaders, cookies, code)
+            case _ => resp
+          }
+        }) openOr resp
+    }
+    /********************************************************************/
 
     // for ajax file upload
-    import org.aphreet.c3.lib.FileUpload
-    LiftRules.dispatch.append(FileUpload)
-
-    LiftRules.statelessRewrite.prepend(NamedPF("ParticularUserRewrite") {
-      case RewriteRequest(
-      ParsePath("user" :: useremail  :: Nil , _, _,_), _, _) =>
-        RewriteResponse(
-          "users" ::  "edituser" :: Nil, Map("useremail" -> useremail)
-        )
-    })
-
-    LiftRules.statelessRewrite.prepend(NamedPF("ParticularGroupOverviewRewriteWikiEdit") {
-      case RewriteRequest(
-      ParsePath("group" :: groupname  :: "wiki" :: pagename :: "edit" :: Nil , _, _,_), _, _) =>
-        RewriteResponse(
-          "groupsection" ::  "wiki-edit" :: Nil, Map("groupname" -> groupname, "pagename" -> pagename)
-        )
-    })   */
+    //import org.aphreet.c3.lib.FileUpload
+    //LiftRules.dispatch.append(FileUpload)
 
     /*
      * Make the spinny image go away when it ends
@@ -261,8 +181,6 @@ class Boot extends Bootable{
       val opl = LiftRules.progressListener
       val ret: (Long, Long, Int) => Unit =
         (a, b, c) => {
-          // println("progress listener "+a+" plus "+b+" "+c)
-          // Thread.sleep(100) -- demonstrate slow uploads
           opl(a,b,c)
         }
       ret
@@ -279,7 +197,7 @@ class Boot extends Bootable{
       Category.findAll().foreach(_.delete_!)
         (1 to 10).foreach{ i: Int => {
         val cat = Category.create.name("Category" + i).saveMe()
-        val tags = (1 to 5).map(i => Tag.create.name("Tag" + i).category(cat).saveMe())
+        (1 to 5).map(i => Tag.create.name("Tag" + i).category(cat).saveMe())
       }}
     }
 

@@ -163,7 +163,6 @@ class FileUploadDialog extends AbstractFormDialog with C3ResourceMetadataForms {
 
   val templateName = "_jsdialog_fileupload"
 
-
   private object theFileName extends RequestVar[Box[String]](Empty)
   private object theFileUpload extends RequestVar[Box[FileParamHolder]](Empty)
 
@@ -177,7 +176,6 @@ class FileUploadDialog extends AbstractFormDialog with C3ResourceMetadataForms {
     )
 
   private def uploadFile(): JsCmd = {
-
     theFileName.is match {
       case Full(some) => Alert("Stub for file upload!")
       case _ => Alert("File is empty :(") & Unblock
@@ -186,7 +184,6 @@ class FileUploadDialog extends AbstractFormDialog with C3ResourceMetadataForms {
   }
 
   override def form(xhtml: NodeSeq) = {
-
     SHtml.ajaxForm(
       bind("file", xhtml,
         "name" -> SHtml. text("", (name: String) => if(name != "") theFileName.set(Full(name)) ),

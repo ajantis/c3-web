@@ -87,9 +87,9 @@ class Group extends LongKeyedMapper[Group] with IdPK with ManyToMany{
     
     for(child <- children){
       if(child.isDirectory){
-        resources = File(group = this, fullpath = directory + "/" + child.name) :: resources
-      }else{
-        resources = Catalog( name = child.name, group = this ) :: resources
+        resources = Catalog( name = child.name, group = this, created = child.versions.head.date) :: resources
+      } else{
+        resources = File(group = this, fullpath = directory + "/" + child.name, created = child.versions.head.date) :: resources
       }
     }
     resources
@@ -107,7 +107,7 @@ class Group extends LongKeyedMapper[Group] with IdPK with ManyToMany{
     super.delete_!
   }
 
-  private def baseFilePath = "/" + this.name.is + "/files"
+  def baseFilePath = "/" + this.name.is + "/files"
 
   def createLink: NodeSeq = Text("/groups/" + id.is)
 }

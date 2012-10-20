@@ -54,9 +54,9 @@ object C3Resource {
         val createDate = file.date
         
         if(file.isInstanceOf[C3Directory]){
-          Some(Catalog(group = group, name = relativePath.split("/").last, createDate =  createDate))
+          Some(Catalog(group = group, name = relativePath.split("/").last, created = createDate))
         }else{
-          Some(File(group = group, fullpath = relativePath, fileType = file.metadata.getOrElse("content.type", "application/octet-stream"), create = createDate ))
+          Some(File(group = group, fullpath = relativePath, fileType = file.metadata.getOrElse("content.type", "application/octet-stream"), created = createDate ))
         }
       }
       catch {

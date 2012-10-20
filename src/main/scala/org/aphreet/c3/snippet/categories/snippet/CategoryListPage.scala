@@ -2,13 +2,11 @@ package org.aphreet.c3.snippet.categories.snippet
 
 import net.liftweb.util.Helpers._
 import org.aphreet.c3.model.{User, Tag, Category}
-import net.liftweb.mapper.{OprEnum, Cmp, By}
 import xml.NodeSeq
 import net.liftweb.http.js.{JsCmd, JsCmds}
 import net.liftweb.http.js.JsCmds.{OnLoad, Script}
 import net.liftweb.http.{SHtml, S}
 import net.liftweb.common.Full
-import com.sun.tools.corba.se.idl.Noop
 
 class CategoryListPage {
 
