@@ -26,30 +26,26 @@ class AddTag {
   }
 
   def render = {
-    var tagName = ""
     var categoryName = ""
+    val tag = Tag.create
 
     def process() {
-
-      val cat = Category.find(Cmp(Category.name, OprEnum.Eql, Full(categoryName.toLowerCase), None, Full("LOWER")))
-
-      cat match {
-        case Full(c) => {
-          if (Tag.find(Cmp(Tag.name, OprEnum.Eql, Full(tagName.toLowerCase), None, Full("LOWER"))).isEmpty){
-            Tag.create.name(tagName).category(c).saveMe()
-            S.notice("This tag is added.")
+      val category = Category.find(Cmp(Category.name, OprEnum.Eql, Full(categoryName.toLowerCase), None, Full("LOWER")))
+      if(category.isEmpty)
+        S.error("Category with name " + categoryName + " is not found!")
+      else {
+        tag.validate match {
+          case Nil => {
+            tag.save()
+            S.notice("Tag is added.")
           }
-          else{
-            S.error("This tag exists.")
-          }
-        }
-        case _ => {
-          S.error("Category is not found!")
+          case xs => S.error(xs)
         }
       }
+
     }
     "name=categoryName" #> SHtml.onSubmit(categoryName = _)&
-    "name=TagName" #> SHtml.onSubmit(tagName = _)&
+    "name=TagName" #> SHtml.onSubmit(tag.name(_))&
     "type=submit" #> SHtml.onSubmitUnit(process)
   }
 

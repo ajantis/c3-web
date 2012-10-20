@@ -56,12 +56,16 @@ class CategoryListPage {
       }
     }
     "name=categories" #> SHtml.onSubmit(categoryName = _)&
-      "type=submit" #> SHtml.onSubmitUnit(process)
+    "type=submit" #> SHtml.onSubmitUnit(process)
   }
+
   def del_tag = {
     var tagsName=""
     var catName=""
     def process(){
+
+      // TODO: Tag.find(By(Tag.name, tagsName), By(Tag.category, 1)).foreach(_.delete_!)
+
       val cat = Category.find(By(Category.name,catName))
       cat.map{ ct:Category =>{
         Tag.find(By(Tag.name,tagsName),By(Tag.category,ct.id)).foreach(_.delete_!)
@@ -70,7 +74,6 @@ class CategoryListPage {
     "name=tagName" #> SHtml.onSubmit(tagsName = _)&
     "name=categoryName" #> SHtml.onSubmit(catName = _)&
     "type=submit" #> SHtml.onSubmitUnit(process)
-
   }
 
 }

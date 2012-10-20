@@ -1,6 +1,8 @@
 package org.aphreet.c3.model
 
 import net.liftweb.mapper._
+import net.liftweb.util.FieldError
+import net.liftweb.common.Full
 
 /**
  * Copyright (c) 2011, Dmitry Ivanov
@@ -37,7 +39,16 @@ class Category extends LongKeyedMapper[Category] with IdPK with OneToMany[Long, 
 
   def getSingleton = Category
 
-  object name extends MappedString(this,64)
+  object name extends MappedString(this,64){
+    override def validations = isUnique _ :: Nil
+
+    private def isUnique(s: String): List[FieldError] = {
+      if(!Category.find(Cmp(Category.name, OprEnum.Eql, Full(s.toLowerCase), None, Full("LOWER"))).isEmpty)
+        List(FieldError(this, "Category with this name already exists"))
+      else Nil
+    }
+
+  }
 
   object tags extends MappedOneToMany(Tag, Tag.category)
 

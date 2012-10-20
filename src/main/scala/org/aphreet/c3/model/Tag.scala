@@ -33,14 +33,24 @@ package org.aphreet.c3.model
  
 
 import net.liftweb.mapper._
- 
+import net.liftweb.util.FieldError
+import net.liftweb.common.Full
+
 class Tag extends LongKeyedMapper[Tag] with IdPK {
 
   def getSingleton = Tag
 
   object category extends MappedLongForeignKey(this,Category)
 
-  object name extends MappedString(this, 256)
+  object name extends MappedString(this, 256){
+    override def validations = isUniqueWithinCategory _ :: Nil
+
+    private def isUniqueWithinCategory(s: String): List[FieldError] = {
+      if(!Tag.find(Cmp(Tag.name, OprEnum.Eql, Full(s.toLowerCase), None, Full("LOWER")), By(Tag.category, category)).isEmpty)
+        List(FieldError(this, "Tag with this name already exists within category"))
+      else Nil
+    }
+  }
 
 
 }
