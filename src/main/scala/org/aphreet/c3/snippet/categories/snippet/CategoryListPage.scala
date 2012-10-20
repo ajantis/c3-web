@@ -4,36 +4,49 @@ import net.liftweb.util.Helpers._
 import org.aphreet.c3.model.{User, Tag, Category}
 import net.liftweb.mapper.{OprEnum, Cmp, By}
 import xml.NodeSeq
-import net.liftweb.http.js.JsCmds
+import net.liftweb.http.js.{JsCmd, JsCmds}
 import net.liftweb.http.js.JsCmds.{OnLoad, Script}
 import net.liftweb.http.{SHtml, S}
 import net.liftweb.common.Full
+import com.sun.tools.corba.se.idl.Noop
 
 class CategoryListPage {
 
   val categories = Category.findAll()
-  def list = {
 
-    var flag1 = 0
-    var flag2 = 0
+
+  def list = {
     val categories = Category.findAll()
+
     def categoryContents(cat: Category) = {
-      flag2+=1
-      val id = "tab"+flag2
-      var id_span = 0
-      val tagNames = Tag.findAll(By(Tag.category, cat))
-      ".label_tags" #> tagNames.map{tg:Tag =>{
-        id_span+=1
-        "span *" #> tg.name &
-        "span [id]" #> (id+"_"+id_span)
-      }}&
+      val id = "category_" + cat.id.is
+      val tags: List[Tag] = cat.tags.toList
+
+      ".label_tag" #> tags.map {
+        tag: Tag => {
+          val formId = "tag_" + tag.id.is
+
+          def deleteTag(): JsCmd = {
+            tag.delete_!
+            JsCmds.Replace(formId, NodeSeq.Empty)
+          }
+
+          ".label_tag [id]" #> formId &
+          ".label_tag *" #>
+            ((n: NodeSeq) => SHtml.ajaxForm(
+              ("span *" #> tag.name.is andThen
+               "* *" #> SHtml.memoize(f => f ++ SHtml.hidden(deleteTag _))).apply(n)
+            ))
+        }
+      } &
       ".muted *" #> cat.name &
       ".muted [id]" #> id
     }
+
     ".well *" #> categories.map{ cat:Category =>  categoryContents(cat) } andThen
     "* *" #> ((x: NodeSeq) => x ++ Script(OnLoad(JsCmds.JsHideId("left-panel"))))
-
   }
+
   def adm = {
     User.currentUser match {
       case Full(user) => {
@@ -57,23 +70,6 @@ class CategoryListPage {
       }
     }
     "name=categories" #> SHtml.onSubmit(category.name(_))&
-    "type=submit" #> SHtml.onSubmitUnit(process)
-  }
-
-  def del_tag = {
-    var tagsName=""
-    var catName=""
-    def process(){
-
-      // TODO: Tag.find(By(Tag.name, tagsName), By(Tag.category, 1)).foreach(_.delete_!)
-
-      val cat = Category.find(By(Category.name,catName))
-      cat.map{ ct:Category =>{
-        Tag.find(By(Tag.name,tagsName),By(Tag.category,ct.id)).foreach(_.delete_!)
-      }}
-    }
-    "name=tagName" #> SHtml.onSubmit(tagsName = _)&
-    "name=categoryName" #> SHtml.onSubmit(catName = _)&
     "type=submit" #> SHtml.onSubmitUnit(process)
   }
 
