@@ -70,10 +70,20 @@ class GroupMessagesLog extends CometActor with CometListener {
     "name=user_name" #> User.currentUser.map(_.shortName) &
     ("#"+ulId+" *") #> displayList &
     ("#" + inputTextContainerId + " *") #> { (xml: NodeSeq) => {
-      SHtml.ajaxForm(("#postit" #> SHtml.onSubmit((s: String) => {
-        messageServer.foreach( _ ! MessageServerMsg(User.currentUser.open_!, group.open_! ,s.trim) )
-        SetValById("postit", "")
-      })).apply(xml))
+      var content = ""
+      var tagsInput = ""
+      SHtml.ajaxForm(
+        (
+          "#postit" #> SHtml.onSubmit((s: String) => content = s.trim) &
+          "#tags_input" #> SHtml.onSubmit((s: String) => tagsInput) &
+          "type=submit" #> SHtml.onSubmitUnit(() => {
+              val tags = tagsInput.split(",").toList
+              messageServer.foreach( _ ! MessageServerMsg(User.currentUser.open_!, group.open_!, content, tags))
+              SetValById("postit", "")
+          })
+        ).apply(xml)
+      )
+
     }}
   }
 

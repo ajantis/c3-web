@@ -17,7 +17,7 @@ class MessageServer(val group: Group) extends LiftActor with ListenerManager {
   private lazy val msgService = inject[MessageStorageService].open_!
 
   override def lowPriority = {
-    case MessageServerMsg(user, messageGroup, content) if content.length > 0 =>
+    case MessageServerMsg(user, messageGroup, content, tags) if content.length > 0 =>
       val msg = Message(group.id.is.toString, user.id.is.toString, content)
       logger.debug("Received a message: " + msg + ". Saving...")
       msgService.save(msg)
@@ -54,6 +54,6 @@ object MessageServerFactory{
   }
 }
 
-case class MessageServerMsg(user: User, group: Group, msg: String)
+case class MessageServerMsg(user: User, group: Group, msg: String, tags: List[String])
 case class MessageServerUpdate(msgs: List[Message])
 

@@ -1,15 +1,15 @@
 package org.aphreet.c3.model
 
-import java.util
 import net.liftweb.util.TimeHelpers
 import net.liftweb.common.Box
+import java.util
 
 /**
  * Copyright iFunSoftware 2011
  * @author Dmitry Ivanov
  */
 
-case class Message(groupId: String, authorId: String, creationDate: util.Date, content: String) {
+case class Message(groupId: String, authorId: String, creationDate: util.Date, content: String, tags: List[String] = List()) {
   lazy val author: Box[User] = User.find(authorId)
   lazy val group: Box[Group] = Group.find(groupId)
 
@@ -25,5 +25,5 @@ case class Message(groupId: String, authorId: String, creationDate: util.Date, c
   }
 }
 object Message {
-  def apply(groupId: String, authorId: String, content: String) = new Message(groupId, authorId, TimeHelpers.now, content)
+  def apply(groupId: String, authorId: String, content: String, tags: List[String]) = new Message(groupId, authorId, TimeHelpers.now, content, tags)
 }

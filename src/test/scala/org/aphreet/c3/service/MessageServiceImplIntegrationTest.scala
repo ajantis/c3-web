@@ -47,9 +47,9 @@ class MessageServiceImplIntegrationTest extends TestCase {
 
   def testMessageCreation(){
 
-    val msg1 = Message(group.id.is.toString, "1", "This is test message!")
-    val msg2 = Message(group.id.is.toString, "1", "If u don't like C3 get lost")
-    val msg3 = Message(group.id.is.toString, "1", "This is another testing message!")
+    val msg1 = Message(group.id.is.toString, "1", "This is test message!", Nil)
+    val msg2 = Message(group.id.is.toString, "1", "If u don't like C3 get lost", Nil)
+    val msg3 = Message(group.id.is.toString, "1", "This is another testing message!", Nil)
 
     logger.debug("Saving messages of group " + msg1.group)
 
@@ -69,9 +69,9 @@ class MessageServiceImplIntegrationTest extends TestCase {
 
   def testMessageDeletion(){
     // Storing some messages to delete them further
-    service.save(Message(group.id.is.toString, "1", "This is test message!"))
-    service.save(Message(group.id.is.toString, "1", "If u don't like C3 get lost"))
-    service.save(Message(group.id.is.toString, "1", "This is another testing message!"))
+    service.save(Message(group.id.is.toString, "1", "This is test message!", List()))
+    service.save(Message(group.id.is.toString, "1", "If u don't like C3 get lost", List()))
+    service.save(Message(group.id.is.toString, "1", "This is another testing message!", List()))
 
     val messages = service.findAll(group)
 
