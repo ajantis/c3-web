@@ -18,7 +18,7 @@ class MessageServer(val group: Group) extends LiftActor with ListenerManager {
 
   override def lowPriority = {
     case MessageServerMsg(user, messageGroup, content, tags) if content.length > 0 =>
-      val msg = Message(group.id.is.toString, user.id.is.toString, content)
+      val msg = Message(group.id.is.toString, user.id.is.toString, content, tags)
       logger.debug("Received a message: " + msg + ". Saving...")
       msgService.save(msg)
       updateListeners()
