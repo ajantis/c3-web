@@ -80,12 +80,12 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers with Gr
         toCss(f) &
         ".tag *" #> f.tags
       }
-      case Empty => {
-        S.warning("File not found!")
+      case Failure(msg, t, chain) => {
+        S.warning("File not found")
         "* *" #> NodeSeq.Empty
       }
-      case Failure(msg, t, chain) => {
-        S.error("Oops. something bad happen: " + msg)
+      case _ => {
+        S.error("Oops, something bad is happened")
         "* *" #> NodeSeq.Empty
       }
     }

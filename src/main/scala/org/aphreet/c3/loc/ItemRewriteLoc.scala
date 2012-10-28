@@ -55,7 +55,10 @@ trait ItemRewriteLoc[S, T <: PageData] extends Loc[T] {
       in.path.partPath.splitAt(prefix.length) match {
         case (`prefix`, id :: rest) => {
           // wrapItem(getItem(id))
-          finishPath(getItem(id), rest)
+          // TODO: rewrite this is kinda a hack =) to add ".<suffix>" to resource ids names (e.g. files)
+          val resultPath = if(!rest.isEmpty) rest.dropRight(1) ::: (rest.last + "." + in.path.suffix) :: Nil
+          else rest
+          finishPath(getItem(id), resultPath)
         }
         case _ => Empty
       }

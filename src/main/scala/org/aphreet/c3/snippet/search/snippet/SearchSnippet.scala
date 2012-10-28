@@ -15,20 +15,26 @@ import net.liftweb.mapper.By
 class SearchSnippet {
 
   private val c3 = inject[C3System].open_!
-  var results: List[SearchResultEntry] = List()
 
   def miniSearch ={
 
     def process(query: String){
       if (!query.isEmpty){
-        results = c3.search(query)
-        S.redirectTo("/search")
+        S.redirectTo("/search?query=" + queryParam(Nil,query))
       }
       else{
-        S.notice("Entry param search")
+        S.notice("Empty search query")
       }
     }
+    val query = S.param("query").openOr("")
+
+    "name=query [value]" #> query &
     "name=query" #> SHtml.onSubmit(process _)
+  }
+
+  private def queryParam(tags: List[String],query:String) = {
+    //TODO:query params =  tags + query text
+    query
   }
 
   def search = {
@@ -38,27 +44,29 @@ class SearchSnippet {
   val tagSeparator = ","
 
   def render = {
-    var tags: Array[String] = Array()
-    var query = ""
-    def process(){
-      def query_param(tags:Array[String],query:String) = {
-        //TODO:query params =  tags + query text
+    var tags: List[String] = Nil
+    var query = S.param("query").openOr("")
 
-        query
-      }
+    def process(){
+
       if (!tags.isEmpty || !query.isEmpty){
-        results = c3.search(query_param(tags,query))
+        S.redirectTo("/search?query=" + queryParam(tags,query))
       }
       else{
         S.notice("Entry param search")
       }
     }
 
-    "name=tags" #> SHtml.onSubmit(v => tags = v.split(tagSeparator))&
+    "name=query [value]" #> query &
+    "name=tags" #> SHtml.onSubmit(v => tags = v.split(tagSeparator).toList)&
     "name=query" #> SHtml.onSubmit(query = _)&
     "type=submit" #> SHtml.onSubmitUnit(process)
   }
+
   def result = {
+    var query = S.param("query")
+    val results: List[SearchResultEntry] = query.map(c3.search(_)).openOr(Nil)
+
     if (results.isEmpty){
       ".conteyner_result" #> NodeSeq.Empty
     }else{
