@@ -36,8 +36,11 @@ object GroupPageFiles extends ItemRewriteLoc[Group, GroupPageFilesData] with Suf
   }
 
   override def finishPath(itemBox: => Box[Group],
-                 suffix: List[String]): Box[GroupPageFilesData] = {
-    if (suffix.startsWith(pathSuffix)) wrapItemWithPath(itemBox, suffix.diff(pathSuffix)) else Empty
+                          restPath: List[String],
+                          suffix: String = ""): Box[GroupPageFilesData] = {
+
+    val resultPath = if(suffix.isEmpty) restPath.diff(pathSuffix) else restPath.diff(pathSuffix).init ::: List(restPath.diff(pathSuffix).last + "." + suffix)
+    if (restPath.startsWith(pathSuffix)) wrapItemWithPath(itemBox, resultPath) else Empty
   }
 }
 

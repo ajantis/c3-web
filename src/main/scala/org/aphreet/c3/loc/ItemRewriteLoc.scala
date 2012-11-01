@@ -46,19 +46,17 @@ trait ItemRewriteLoc[S, T <: PageData] extends Loc[T] {
    * Override to handle other cases.
    */
   def finishPath(itemBox: => Box[MyS],
-                 pathSuffix: List[String]): Box[T] = {
-    if (pathSuffix == Nil) wrapItem(itemBox) else Empty
+                 restPath: List[String],
+                 suffix: String = ""): Box[T] = {
+    if (restPath == Nil) wrapItem(itemBox) else Empty
   }
 
   private class PrefixRewriteRequest(prefix: List[String]) {
     def unapply(in: RewriteRequest): Option[T] = {
       in.path.partPath.splitAt(prefix.length) match {
         case (`prefix`, id :: rest) => {
-          // wrapItem(getItem(id))
-          // TODO: rewrite this is kinda a hack =) to add ".<suffix>" to resource ids names (e.g. files)
-          val resultPath = if(!rest.isEmpty) rest.dropRight(1) ::: (rest.last + "." + in.path.suffix) :: Nil
-          else rest
-          finishPath(getItem(id), resultPath)
+          //wrapItem(getItem(id))
+          finishPath(getItem(id), rest, in.path.suffix)
         }
         case _ => Empty
       }
@@ -92,7 +90,8 @@ trait SuffixLoc {
   }
 
   override def finishPath(itemBox: => Box[MyS],
-                          suffix: List[String]): Box[MyT] = {
-    if (suffix == pathSuffix) wrapItem(itemBox) else Empty
+                          restPath: List[String],
+                          suffix: String = ""): Box[MyT] = {
+    if (restPath == pathSuffix) wrapItem(itemBox) else Empty
   }
 }
