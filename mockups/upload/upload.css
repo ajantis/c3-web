@@ -1,0 +1,86 @@
+ .popup {
+   visibility: visible;
+   position: absolute;
+   top:100px;
+   left: 300px;
+   z-index: 100;
+   height: 800px;
+   width :500px;
+   border-color: green;
+   border : 2;
+   background-color: #2c3033;
+   text-align: center;
+  
+
+
+
+
+ }
+ .dropzone {
+	background: #eee;
+	border: 1px solid #ccc;
+
+
+	height: 65%;
+	margin :10;
+	margin-bottom: 5;
+
+	padding: 10px ;
+
+
+ }
+
+ .filecontainer{
+ 	margin: 10px;
+ }
+
+ .bartext {
+ 	z-index: 101;
+ 	position: absolute;
+ 	width: inherit;
+ 	text-align: center;
+
+
+ }
+ .bar{
+ 	
+ 	background-color: green;
+ 	width :10%;
+ 	height: 100%;
+ }
+
+ .barcontainer {
+ 	width: 100px;
+ 	height: 20px;
+ 	border :1px;
+ 	
+ 	background-color:#004b52; 
+ 	float: left;
+ 	margin-left: inherit;
+ 	right: 60;
+ 	position: absolute;
+ }
+ .lineContainer{
+ 	float: left;
+ 	margin-left: inherit;
+ }
+ .removebutton{
+ 	
+ 	
+ 	right: 15;
+ 	text-align: right;
+	cursor: pointer;
+ 	
+ }
+ .close{
+ 	margin-right: 5;
+ 	background-color: #f7f7f9;
+ 	height: 4%;
+ 	text-align: center;
+ 	width: 50; 
+ 	float: right;
+ 	cursor: pointer;
+
+ }
+
+ 
