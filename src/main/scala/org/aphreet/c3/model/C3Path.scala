@@ -43,9 +43,9 @@ case class C3Path(path:String){
     path.split("/").toList.filter(!_.isEmpty) match {
       case fullpath @ (group :: "files" :: filePath) => {
         groupName = group
-        resourceName = "/" + filePath.mkString("/")
+        resourceName =filePath.mkString("/")
         resourceType = FileType
-        resourceUri = "/group/" + group + "/files" + resourceName
+        resourceUri = "/group/" + group + "/files/" + resourceName
       }
 
       case fullpath @ (group :: "wiki" :: filePath) => {
@@ -53,6 +53,12 @@ case class C3Path(path:String){
         resourceName = filePath.head
         resourceType = WikiType
         resourceUri = "/group/" + group + "/wiki/" + resourceName
+      }
+      case fullpath @ (group :: "messages" :: filePath) => {
+        groupName = group
+        resourceName = filePath.head
+        resourceType = MessagesType
+        resourceUri = "/group/" + group + "/messages/" + resourceName
       }
 
       case _ =>
@@ -64,7 +70,7 @@ case class C3Path(path:String){
 object C3Path {
 
   def apply(group:String, path:List[String], extension:String):String = {
-    "/" + group + "/" + path.reverse.tail.reverse.mkString("/") + "/" +
+    "/" + group + "/" + path.init.mkString("/") + "/" +
       path.last + {
       extension match {
         case "" => ""
@@ -78,3 +84,4 @@ sealed trait ResourceType;
 object FileType extends ResourceType
 object WikiType extends ResourceType
 object UnknownType extends ResourceType
+object MessagesType extends ResourceType
