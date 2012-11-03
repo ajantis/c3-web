@@ -290,6 +290,17 @@ body > .navbar .brand:hover {
 .category_name_show{
     display:block;
 }
+.header_search{
+    margin: 10px 0;
+    font-family: inherit;
+    font-weight: bold;
+    line-height: 1;
+    color: inherit;
+    text-rendering: optimizelegibility;
+    font-size: 20px;
+    line-height: 25px;
+
+}
 /*********************************************************
 * End Categories part
 *********************************************************/
