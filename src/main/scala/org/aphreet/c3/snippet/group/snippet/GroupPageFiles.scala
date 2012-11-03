@@ -44,7 +44,7 @@ object GroupPageFiles extends ItemRewriteLoc[Group, GroupPageFilesData] with Suf
   }
 }
 
-class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers with GroupPageHelpers{
+class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers with GroupPageHelpers {
 
   private val logger = Logger(classOf[GroupPageFiles])
 
@@ -93,7 +93,6 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers with Gr
       }
     }
   }
-
 }
 
 trait C3ResourceHelpers {
