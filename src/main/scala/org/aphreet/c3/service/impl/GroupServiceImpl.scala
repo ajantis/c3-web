@@ -12,12 +12,12 @@ class GroupServiceImpl extends GroupService{
 
   lazy val c3 = inject[C3System].open_!
 
-  def createGroupMapping(name: String){
+  def createGroupMapping(groupId: String){
     val root = c3.getFile("/").asDirectory
 
-    root.createDirectory(name)
+    root.createDirectory(groupId)
 
-    root.getChild(name) match {
+    root.getChild(groupId) match {
       case Some(node) => val dir = node.asDirectory
       dir.createDirectory("files")
       dir.createDirectory("messages")

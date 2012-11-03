@@ -107,7 +107,7 @@ class Group extends LongKeyedMapper[Group] with IdPK with ManyToMany{
     super.delete_!
   }
 
-  def baseFilePath = "/" + this.name.is + "/files"
+  def baseFilePath = "/" + this.id.is + "/files"
 
   def createLink: NodeSeq = Text("/groups/" + id.is)
 }

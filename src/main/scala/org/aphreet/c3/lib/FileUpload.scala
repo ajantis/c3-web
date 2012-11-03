@@ -33,24 +33,34 @@ package org.aphreet.c3.lib
 import net.liftweb.http.rest._
 import net.liftweb.json._
 import JsonDSL._
-import net.liftweb.http.{S, InMemoryResponse, JsonResponse}
+import net.liftweb.http.{FileParamHolder, S, InMemoryResponse, JsonResponse}
 import net.liftweb.json.JsonAST.JValue
 import net.liftweb.common.{Logger, Box}
+import org.aphreet.c3.lib.DependencyFactory._
+import com.ifunsoftware.c3.access.{DataStream, C3System}
 
 // for ajax file upload
 object FileUpload extends RestHelper {
 
   val logger = Logger(FileUpload.getClass)
-
+  val c3 = inject[C3System].open_!
   serve {
-    case "upload" :: "file" :: Nil Post req => {
-
+    case "upload" :: "file" :: currentPath Post req => {
       logger.info("Uploaded files: " + req.uploadedFiles)
+      val filePath: List[String] = currentPath match {
+        case List("index") => Nil
+        case xs => xs
+      }
+
+      logger.info("Path to upload: " + filePath)
 
       val ojv: Box[JValue] =
-        req.uploadedFiles.map(fph => ("name" -> fph.fileName) ~
-                              ("type" -> fph.mimeType) ~
-                              ("size" -> fph.file.length)).headOption
+        req.uploadedFiles.map(fph => {
+            uploadToC3(fph, filePath)
+            ("name" -> fph.fileName) ~
+            ("type" -> fph.mimeType) ~
+            ("size" -> fph.file.length)
+        }).headOption
 
       val ajv = ("name" -> "n/a") ~ ("type" -> "n/a") ~ ("size" -> 0L) ~ ("yak" -> "brrrr")
 
@@ -62,5 +72,11 @@ object FileUpload extends RestHelper {
                        ("Content-Type", "text/plain") :: S.getHeaders(Nil),
                        S.responseCookies, 200)
     }
+  }
+
+  private def uploadToC3(fph: FileParamHolder, filePath: List[String]) = {
+    logger info String.format("Uploading file %s to C3..", fph.name)
+    c3.getFile(filePath.mkString("/", "/", "")).asDirectory.createFile(fph.fileName, Map(), DataStream(fph.file))
+    logger info String.format("File %s is uploaded to C3!", fph.name)
   }
 }

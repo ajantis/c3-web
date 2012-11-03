@@ -139,8 +139,8 @@ class Boot extends Bootable{
     /********************************************************************/
 
     // for ajax file upload
-    //import org.aphreet.c3.lib.FileUpload
-    //LiftRules.dispatch.append(FileUpload)
+    import org.aphreet.c3.lib.FileUpload
+    LiftRules.dispatch.append(FileUpload)
 
     /*
      * Make the spinny image go away when it ends

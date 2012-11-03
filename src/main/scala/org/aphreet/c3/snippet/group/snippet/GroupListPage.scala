@@ -61,7 +61,7 @@ class GroupListPage {
             // Linking group owner with a new Group in DB
             UserGroup.join(User.find(By(User.id,group.owner)).open_!,group)
 
-            groupService.createGroupMapping(group.name.is)
+            groupService.createGroupMapping(group.id.is.toString)
             S.notice("Added group: " + group.name); S.redirectTo("/groups")
           }
           case xs => S.error(xs) ; S.mapSnippet(invokedAs, newGroup)

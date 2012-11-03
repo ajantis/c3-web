@@ -62,6 +62,8 @@ class Category extends LongKeyedMapper[Category] with IdPK with OneToMany[Long, 
     super.delete_!
   }
 
+  object linkedGroup extends MappedLongForeignKey(this, Group)
+
 }
 
 object Category extends Category with LongKeyedMetaMapper[Category] {
