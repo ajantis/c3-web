@@ -6,6 +6,7 @@ import net.liftweb.http.{SessionVar, S, SHtml}
 import xml.{Text, NodeSeq, Elem}
 import net.liftweb.http.js.JsCmds.FocusOnLoad
 import net.liftweb.util.Helpers._
+import net.liftweb.http.S._
 import net.liftweb.common.Full
 import net.liftweb.sitemap.Loc.LocGroup
 import xml.Text
@@ -44,6 +45,7 @@ object User extends User with MetaMegaProtoUser[User]{
   override def fieldOrder = List(id, firstName, lastName, email,
   locale, timezone, password, textArea)
 
+
   // comment this line out to require email validations
   override def skipEmailValidation = true
 
@@ -62,18 +64,25 @@ object User extends User with MetaMegaProtoUser[User]{
   }
   */
 
+  override def lostPassword = {
+    bind("user", lostPasswordXhtml,
+      "email" -> SHtml.text("", sendPasswordReset _, ("placeholder" -> S.?("email.placeholder")),("id"->"log inputIcon"),("class"->"username span2")),
+      "submit" -> <input type="submit" name="Submit" class="btn btn-primary" value={S.?("lost_password.send")} />)
+  }
+
   override def lostPasswordXhtml = {
-    (<div class="forgot_password_form">
+    (<div class="forgot_password_form form-holder login-form well">
         <form action={S.uri} method="POST" class="form">
           <fieldset>
-            <legend>Forgot Password</legend>
-            <label for="email_field">
-              Email<br/>
-                <user:email />
-            </label>
-            <label>
-                <user:submit />
-            </label>
+            <legend>{S.?("lost_password.legend")}</legend>
+            <label for="username">Email</label>
+            <div class="div_text">
+              <div class="input-prepend"><span class="add-on"><i class="icon-user"></i></span><user:email/></div>
+            </div>
+
+            <div class="button_div">
+              <user:submit />
+            </div>
 
           </fieldset>
         </form>
@@ -115,42 +124,43 @@ object User extends User with MetaMegaProtoUser[User]{
       field <- computeFieldFromPointer(user, pointer).toList
       if field.show_? && (!ignorePassword || !pointer.isPasswordField_?)
       form <- field.toForm.toList
-    } yield <tr><td class="user-form-key">{field.displayName}</td><td class="user-form-value">{form}</td></tr>
+    } yield <div class="input-prepend"><label for="password">{field.displayName}</label>{form}</div>
   }
 
-
+  override def signupFields: List[FieldPointerType] = List(firstName,lastName,email, password)
+  override def editFields: List[FieldPointerType] = List(firstName,lastName, email)
 
   override def signupXhtml(user: TheUserType) = {
-    (<div>
-      <h1>{S.??("sign.up")}</h1>
-      <div class="user-form-content">
-        <form method="post" action={S.uri}>
-          <table>
+    (<div class="form-holder signup-form login-form well">
+      <form action={S.uri} method="POST" class="form">
+        <fieldset>
+          <legend>{S.?("signup.legend")}</legend>
             {localForm(user, false, signupFields)}
-            <tr>
-              <td class="user-form-key"></td>
-              <td class="user-form-submit"><user:submit/></td>
-            </tr>
-          </table></form></div>
+
+          <div class="button_div">
+            <user:submit/>
+          </div>
+        </fieldset>
+      </form>
     </div>)
   }
 
   override def editXhtml(user: TheUserType) = {
-    (<div>
-      <h1>{S.??("edit")}</h1>
-      <div class="user-form-content">
-        <form method="post" action={S.uri}>
-          <table>
-            {localForm(user, true, editFields)}
-            <tr>
-              <td class="user-form-key"></td>
-              <td class="user-form-submit"><user:submit/></td>
-            </tr>
-          </table>
+    ( <div class="form-holder edit-form login-form well">
+        <form action={S.uri} method="POST" class="form">
+          <fieldset>
+            <legend>{S.?("edit.legend")}</legend>
+            <div class="div_text">
+              {localForm(user, true, editFields)}
+            </div>
+            <div class="button_div">
+            <user:submit/>
+              </div>
+          </fieldset>
         </form>
-      </div>
-    </div>)
+      </div>)
   }
+
 
   override def screenWrap = Full(
     <lift:surround with="default" at="content">
@@ -170,11 +180,28 @@ object User extends User with MetaMegaProtoUser[User]{
     </lift:Menu.item>.toList
   } : NodeSeq
 
-  override def lostPassword = {
-    bind("user", lostPasswordXhtml,
-         "email" -> SHtml.text("", sendPasswordReset _, ("placeholder" -> S.?("email.placeholder"))),
-         "submit" -> lostPasswordSubmitButton(S.??("send.it")))
+  override def signup = {
+    val theUser: TheUserType = mutateUserOnSignup(createNewUserInstance())
+    val theName = signUpPath.mkString("")
+
+    def testSignup() {
+      validateSignup(theUser) match {
+        case Nil =>
+          actionsAfterSignup(theUser, () => S.redirectTo(homePage))
+
+        case xs => S.error(xs) ; signupFunc(Full(innerSignup _))
+      }
+    }
+
+    def innerSignup = bind("user",
+      signupXhtml(theUser),
+      "submit" -> signupSubmitButton(S.??("sign.up"), testSignup _))
+    innerSignup
   }
+  override def standardSubmitButton(name: String,  func: () => Any = () => {}) = {
+    SHtml.submit(name, func,("class","btn btn-primary"))
+  }
+
 
   override def login = {
     if (S.post_?) {
@@ -238,14 +265,45 @@ class User extends MegaProtoUser[User] with ManyToMany {
     }
   }
 
-  // this is just a prototype change
+      // this is just a prototype change
   override lazy val email: MappedEmail[T] = new MyEmail(this, 128){
-    def addClassCss =
-      "input [class+]" #> "span3" &
-      "input [placeholder]" #> S.?("email.placeholder")
 
-    override def toForm:Box[Elem] = {
-      super.toForm.map(addClassCss(_).asInstanceOf[Elem])
+    override def _toForm: Box[Elem] =
+      fmapFunc({s: List[String] => this.setFromAny(s)}){name =>
+        Full(appendFieldId(<input type={formInputType}
+                                name={name}
+                                class="span2"
+                                placeholder ={S.?("email.placeholder")}
+                                value={is match {case null => "" case s => s.toString}}/>))}
+
+  }
+  override lazy val firstName: MappedString[T] = new MyFirstName(this, 32){
+    override def _toForm: Box[Elem] =
+      fmapFunc({s: List[String] => this.setFromAny(s)}){name =>
+        Full(appendFieldId(<input type={formInputType} maxlength={maxLen.toString}
+                                  name={name}
+                                  class="username span2"
+                                  placeholder ={S.?("firstName.placeholder")}
+                                  value={is match {case null => "" case s => s.toString}}/>))}
+  }
+  override lazy val lastName: MappedString[T] = new MyLastName(this, 32) {
+    override def _toForm: Box[Elem] =
+      fmapFunc({s: List[String] => this.setFromAny(s)}){name =>
+        Full(appendFieldId(<input type={formInputType} maxlength={maxLen.toString}
+                                  name={name}
+                                  class="username span2"
+                                  placeholder ={S.?("lastName.placeholder")}
+                                  value={is match {case null => "" case s => s.toString}}/>))}
+  }
+  override lazy val password: MappedPassword[T] = new MyPassword(this){
+    override def _toForm: Box[NodeSeq] = {
+      S.fmapFunc({s: List[String] => this.setFromAny(s)}){funcName =>
+        Full(<span>{appendFieldId(<input type={formInputType}
+                                         name={funcName}
+                                         class="password span2"
+                                         value={is.toString}/>)}
+          </span>)
+      }
     }
   }
 
