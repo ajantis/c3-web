@@ -287,6 +287,7 @@ function hash(str) {
 	var str = String(str);
 	if(str.length == 0) return hsh;
 	for(i = 0; i < str.length; i++) {
+
 		chr = str.charCodeAt(i);
 		hsh = ((hsh << 5) - hsh) + chr;
 		hsh = hsh & hsh; // Convert to 32bit integer
