@@ -12,6 +12,7 @@ import net.liftweb.util.TimeHelpers.{now, time}
 import net.liftweb.util.Helpers
 import MessageStorageServiceImpl._
 import io.Source
+import org.aphreet.c3.lib.metadata.Metadata._
 
 /**
  * Copyright iFunSoftware 2011
@@ -87,11 +88,7 @@ class MessageStorageServiceImpl extends MessageStorageService with C3Loggable{
 }
 
 object MessageStorageServiceImpl{
-
   val GROUP_MESSAGES_ROOT = "messages"
-  val MSG_CREATOR_META = "x-c3-msg-creator"
-  val MSG_DATE_META = "x-c3-msg-date"
-
   def apply: MessageStorageService = new MessageStorageServiceImpl
 }
 

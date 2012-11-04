@@ -38,6 +38,7 @@ import net.liftweb.json.JsonAST.JValue
 import net.liftweb.common.{Logger, Box}
 import org.aphreet.c3.lib.DependencyFactory._
 import com.ifunsoftware.c3.access.{DataStream, C3System}
+import org.aphreet.c3.lib.metadata.Metadata._
 
 // for ajax file upload
 object FileUpload extends RestHelper {
@@ -47,6 +48,10 @@ object FileUpload extends RestHelper {
   serve {
     case "upload" :: "file" :: currentPath Post req => {
       logger.info("Uploaded files: " + req.uploadedFiles)
+
+      // we imply that currently "metadata" is a list of tags
+      val fileMetadata: Map[String, String] = req param("metadata") map(s => Map((TAGS_META -> s))) openOr Map()
+
       val filePath: List[String] = currentPath match {
         case List("index") => Nil
         case xs => xs
@@ -56,7 +61,7 @@ object FileUpload extends RestHelper {
 
       val ojv: Box[JValue] =
         req.uploadedFiles.map(fph => {
-            uploadToC3(fph, filePath)
+            uploadToC3(fph, filePath, fileMetadata)
             ("name" -> fph.fileName) ~
             ("type" -> fph.mimeType) ~
             ("size" -> fph.file.length)
@@ -74,9 +79,9 @@ object FileUpload extends RestHelper {
     }
   }
 
-  private def uploadToC3(fph: FileParamHolder, filePath: List[String]) = {
+  private def uploadToC3(fph: FileParamHolder, filePath: List[String], metadata: Map[String, String]){
     logger info String.format("Uploading file %s to C3..", fph.name)
-    c3.getFile(filePath.mkString("/", "/", "")).asDirectory.createFile(fph.fileName, Map(), DataStream(fph.file))
+    c3.getFile(filePath.mkString("/", "/", "")).asDirectory.createFile(fph.fileName, metadata, DataStream(fph.file))
     logger info String.format("File %s is uploaded to C3!", fph.name)
   }
 }

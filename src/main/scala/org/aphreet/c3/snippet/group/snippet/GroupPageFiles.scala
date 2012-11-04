@@ -52,11 +52,8 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers with Gr
   override lazy val group = data.group
   lazy val path = data.path
 
-  lazy val fileUpload = new GroupFileUpload(group, data.currentAddress)
-
   def render = {
     ".current_path *" #> Text(data.currentAddress) &
-    ".fileUploadForm *" #> ((n: NodeSeq) => fileUpload.fileUploadForm(n)) &
     (if(data.isDirectoryLoc)
       renderDirectoryLoc
     else
