@@ -283,13 +283,13 @@ function isNumber(o) {
 }
 
 function hash(str) {
-	var hash = 0;
+	var hsh = 0;
 	var str = String(str);
-	if(str.length == 0) return hash;
+	if(str.length == 0) return hsh;
 	for(i = 0; i < str.length; i++) {
-		char = str.charCodeAt(i);
-		hash = ((hash << 5) - hash) + char;
-		hash = hash & hash; // Convert to 32bit integer
+		chr = str.charCodeAt(i);
+		hsh = ((hsh << 5) - hsh) + chr;
+		hsh = hsh & hsh; // Convert to 32bit integer
 	}
-	return hash;
+	return hsh;
 }
