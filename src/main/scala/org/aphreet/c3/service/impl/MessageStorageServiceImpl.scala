@@ -7,12 +7,11 @@ import org.aphreet.c3.lib.DependencyFactory._
 import com.ifunsoftware.c3.access.{DataStream, C3System}
 import net.liftweb.common.Box
 import com.ifunsoftware.c3.access.fs.C3Directory
-import org.apache.commons.io.IOUtils
 import net.liftweb.util.TimeHelpers.{now, time}
 import net.liftweb.util.Helpers
 import MessageStorageServiceImpl._
-import io.Source
 import org.aphreet.c3.lib.metadata.Metadata._
+import Helpers._
 
 /**
  * Copyright iFunSoftware 2011
@@ -76,9 +75,7 @@ class MessageStorageServiceImpl extends MessageStorageService with C3Loggable{
   }
 
   protected def getGroupMessagesRoot(group: Group): Box[C3Directory] = {
-    val root = c3.getFile("/").asDirectory
-    val groupRoot = root.getChild(group.name.is).filter(_.isDirectory).map(_.asDirectory)
-    groupRoot.flatMap(_.getChild(GROUP_MESSAGES_ROOT).filter(_.isDirectory).map(_.asDirectory))
+    tryo(c3.getFile("/" + group.id.is.toString + "/" + GROUP_MESSAGES_ROOT)).filter(_.isDirectory).map(_.asDirectory)
   }
 
   protected def buildTagsMap(tags: MsgMDTag*): Map[String, String] = {
