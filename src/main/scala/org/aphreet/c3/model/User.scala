@@ -3,13 +3,20 @@ package org.aphreet.c3.model
 import net.liftweb.mapper._
 import net.liftweb.common._
 import net.liftweb.http.{SessionVar, S, SHtml}
-import xml.{Text, NodeSeq, Elem}
+import xml._
 import net.liftweb.http.js.JsCmds.FocusOnLoad
 import net.liftweb.util.Helpers._
 import net.liftweb.http.S._
 import net.liftweb.common.Full
 import net.liftweb.sitemap.Loc.LocGroup
+import org.aphreet.c3.model.Group
+import scala.Null
+import net.liftweb.common.Full
+import net.liftweb.sitemap.Loc.LocGroup
+import xml.Group
+import net.liftweb.sitemap.Loc.LocGroup
 import xml.Text
+import net.liftweb.common.Full
 
 /**
  * The singleton that has methods for accessing the database
@@ -65,9 +72,11 @@ object User extends User with MetaMegaProtoUser[User]{
   */
 
   override def lostPassword = {
-    bind("user", lostPasswordXhtml,
-      "email" -> SHtml.text("", sendPasswordReset _, ("placeholder" -> S.?("email.placeholder")),("id"->"log inputIcon"),("class"->"username span2")),
-      "submit" -> <input type="submit" name="Submit" class="btn btn-primary" value={S.?("lost_password.send")} />)
+
+
+      bind("user", lostPasswordXhtml,
+        "email" -> SHtml.text("", sendPasswordReset _, ("placeholder" -> S.?("email.placeholder")),("id"->"log inputIcon"),("class"->"username span2")),
+        "submit" -> lostPasswordSubmitButton(S.?("repeat.password")))
   }
 
   override def lostPasswordXhtml = {
@@ -195,7 +204,7 @@ object User extends User with MetaMegaProtoUser[User]{
 
     def innerSignup = bind("user",
       signupXhtml(theUser),
-      "submit" -> signupSubmitButton(S.??("sign.up"), testSignup _))
+      "submit" -> signupSubmitButton(S.?("signup.button"), testSignup _))
     innerSignup
   }
   override def standardSubmitButton(name: String,  func: () => Any = () => {}) = {
@@ -270,39 +279,46 @@ class User extends MegaProtoUser[User] with ManyToMany {
 
     override def _toForm: Box[Elem] =
       fmapFunc({s: List[String] => this.setFromAny(s)}){name =>
-        Full(appendFieldId(<input type={formInputType}
+        Full(appendFieldId(<div class="icon-envelope"><span class="add-on"><i class="icon-user"></i></span><input type={formInputType}
                                 name={name}
                                 class="span2"
                                 placeholder ={S.?("email.placeholder")}
-                                value={is match {case null => "" case s => s.toString}}/>))}
+                                value={is match {case null => "" case s => s.toString}}/></div>))}
 
   }
+
   override lazy val firstName: MappedString[T] = new MyFirstName(this, 32){
     override def _toForm: Box[Elem] =
       fmapFunc({s: List[String] => this.setFromAny(s)}){name =>
-        Full(appendFieldId(<input type={formInputType} maxlength={maxLen.toString}
+        Full(appendFieldId(<div class="input-prepend"><span class="add-on"><i class="icon-user"></i></span><input type={formInputType} maxlength={maxLen.toString}
                                   name={name}
                                   class="username span2"
                                   placeholder ={S.?("firstName.placeholder")}
-                                  value={is match {case null => "" case s => s.toString}}/>))}
+                                  value={is match {case null => "" case s => s.toString}}/></div>))}
   }
   override lazy val lastName: MappedString[T] = new MyLastName(this, 32) {
     override def _toForm: Box[Elem] =
       fmapFunc({s: List[String] => this.setFromAny(s)}){name =>
-        Full(appendFieldId(<input type={formInputType} maxlength={maxLen.toString}
+        Full(appendFieldId(<div class="input-prepend"><span class="add-on"><i class="icon-user"></i></span><input type={formInputType} maxlength={maxLen.toString}
                                   name={name}
                                   class="username span2"
                                   placeholder ={S.?("lastName.placeholder")}
-                                  value={is match {case null => "" case s => s.toString}}/>))}
+                                  value={is match {case null => "" case s => s.toString}}/></div>))}
   }
   override lazy val password: MappedPassword[T] = new MyPassword(this){
+
     override def _toForm: Box[NodeSeq] = {
       S.fmapFunc({s: List[String] => this.setFromAny(s)}){funcName =>
-        Full(<span>{appendFieldId(<input type={formInputType}
+        Full(<span>{appendFieldId(<div class="input-prepend"><span class="add-on"><i class="icon-lock"></i></span><input type={formInputType}
                                          name={funcName}
                                          class="password span2"
-                                         value={is.toString}/>)}
-          </span>)
+                                         value={is.toString}/></div>)}
+          <label for="password">{S.?("repeat.password")}</label>
+          <div class="icon-refresh"><span class="add-on"><i class="icon-lock"></i></span><input
+          type={formInputType}
+          name={funcName}
+          class="password span2"
+          value={is.toString}/></div></span>)
       }
     }
   }
