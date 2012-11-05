@@ -38,8 +38,8 @@ class MessageStorageServiceImpl extends MessageStorageService with C3Loggable{
       } yield {
         val md = file. metadata
         Message(group.id.is.toString,
-          Box(md.get("x-c3-msg-creator")).openOr("N/A"),
-          time(Box(md.get("x-c3-msg-date")).map(_.split("-").head.toLong).openOr(now.getTime)),
+          Box(md.get(MSG_CREATOR_META)).openOr("N/A"),
+          time(Box(md.get(MSG_DATE_META)).map(_.split("-").head.toLong).openOr(now.getTime)),
           file.versions.head.getData.readContentAsString)
       }
 
@@ -75,7 +75,10 @@ class MessageStorageServiceImpl extends MessageStorageService with C3Loggable{
   }
 
   protected def getGroupMessagesRoot(group: Group): Box[C3Directory] = {
-    tryo(c3.getFile("/" + group.id.is.toString + "/" + GROUP_MESSAGES_ROOT)).filter(_.isDirectory).map(_.asDirectory)
+    tryo{
+      val path = "/" + group.id.is.toString + "/" + GROUP_MESSAGES_ROOT + "/"
+      c3.getFile(path)
+    }.filter(_.isDirectory).map(_.asDirectory)
   }
 
   protected def buildTagsMap(tags: MsgMDTag*): Map[String, String] = {

@@ -23,9 +23,4 @@
         $("#cont_button_message").toggleClass("hide show");
 
      });
-      $("#hide_button").live("click",function(){
-            $("#input_container").toggleClass("hide show");
-            $("#cont_button_message").toggleClass("hide show");
-      });
-
 });

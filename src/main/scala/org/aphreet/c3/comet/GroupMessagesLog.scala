@@ -1,6 +1,7 @@
 package org.aphreet.c3.comet
 
 import net.liftweb.http._
+import js.{JsCmds, JsCmd}
 import net.liftweb.common._
 import org.aphreet.c3.util.C3Exception
 import org.aphreet.c3.model.{Group, User, Message}
@@ -10,7 +11,6 @@ import js.jquery.JqJsCmds.PrependHtml
 import net.liftweb.http.js.JsCmds._
 import java.util
 import java.text.SimpleDateFormat
-import net.liftweb.common.Full
 import net.liftweb.textile.TextileParser
 
 /**
@@ -67,23 +67,33 @@ class GroupMessagesLog extends CometActor with CometListener {
   // render the whole list of messages
   override def render = {
 
+    val showInputBtnId = "show_input_msg"
+    val hideInputBtnId = "hide_input_msg"
+
+    // Helper js methods to show\hide input message form
+    def showInput(): JsCmd = JsCmds.JsShowId(inputTextContainerId) & JsCmds.JsHideId(showInputBtnId)
+    def hideInput(): JsCmd = JsCmds.JsHideId(inputTextContainerId) & JsCmds.JsShowId(showInputBtnId)
+
     "name=user_name" #> User.currentUser.map(_.shortName) &
     ("#"+ulId+" *") #> displayList &
+    ("#" + showInputBtnId + " [onclick]") #> SHtml.ajaxInvoke(showInput _) &
     ("#" + inputTextContainerId + " *") #> { (xml: NodeSeq) => {
       var content = ""
       var tagsInput = ""
-      SHtml.ajaxForm(
-        (
-          "#postit" #> SHtml.onSubmit((s: String) => content = s.trim) &
-          "#tags_input" #> SHtml.onSubmit((s: String) => tagsInput) &
-          "type=submit" #> SHtml.onSubmitUnit(() => {
-              val tags = tagsInput.split(",").toList
-              messageServer.foreach( _ ! MessageServerMsg(User.currentUser.open_!, group.open_!, content, tags))
-              SetValById("postit", "")
-          })
-        ).apply(xml)
-      )
 
+      def sendMessage(): JsCmd = {
+        val tags = tagsInput.split(",").toList
+        println(messageServer)
+        messageServer.foreach(_ ! MessageServerMsg(User.currentUser.open_!, group.open_!, content, tags))
+        SetValById("postit", "") & JsCmds.JsHideId(inputTextContainerId) & JsCmds.JsShowId(showInputBtnId)
+      }
+
+      SHtml.ajaxForm {
+          ("#" + hideInputBtnId + " [onclick]") #> SHtml.ajaxInvoke(hideInput _) &
+          "#postit" #> SHtml.onSubmit((s: String) => content = s.trim) &
+          "#tags_input" #> SHtml.onSubmit((s: String) => tagsInput = s.trim) &
+          "type=submit" #> (xml => xml ++ SHtml.hidden(sendMessage _)) apply(xml)
+      }
     }}
   }
 

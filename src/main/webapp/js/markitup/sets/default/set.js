@@ -36,4 +36,4 @@ var mySettings = {
         {separator:'---------------' },
         {name:'Preview', call:'preview', className:'preview'}
     ]
-}
+};
