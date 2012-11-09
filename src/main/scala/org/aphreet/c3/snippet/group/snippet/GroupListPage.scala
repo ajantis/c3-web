@@ -5,13 +5,16 @@ import org.aphreet.c3.lib.DependencyFactory._
 import org.aphreet.c3.service.GroupService
 import net.liftweb.common.{Empty, Full, Logger}
 import xml.{Text, NodeSeq}
-import org.aphreet.c3.model.{C3Resource, UserGroup, Group, User}
+import org.aphreet.c3.model._
 import net.liftweb.http.{RequestVar, S, SHtml}
 import net.liftweb.http.js.JsCmds.Alert
 import net.liftweb.util.BindHelpers._
 import net.liftweb.mapper.By
 import net.liftweb.http.js.{JsCmds, JsCmd}
 import org.aphreet.c3.snippet.{FileUploadDialog, CreateDirectoryDialog}
+import net.liftweb.http.js.JsCmds.Alert
+import net.liftweb.common.Full
+import xml.Text
 
 /**
  * @author Dmitry Ivanov (mailto: Dmitry.Ivanov@reltio.com)
@@ -48,6 +51,8 @@ class GroupListPage {
   }
   def add = {
     var group = Group.create
+    var category = Category.create
+    var sameCategory = "default"
     def saveMe(){
       group.validate match {
         case Nil => {
@@ -56,16 +61,32 @@ class GroupListPage {
           // Linking group owner with a new Group in DB
           UserGroup.join(User.find(By(User.id,group.owner)).open_!,group)
           groupService.createGroupMapping(group.id.is.toString)
-          S.notice("Added group: " + group.name)
+          if(sameCategory!="default"){
+            category.name(group.name.is)
+            category.linkedGroup(group)
+            category.validate match {
+              case Nil => {
+                category.save()
+                S.notice("Added group and category:"+group.name+ "is added")
+              }
+              case xs =>
+                xs.foreach(f => S.error(f.msg))
+            }
+          }
+          else{
+            S.notice("Added group: " + group.name)
+          }
         }
+
         case xs =>
           xs.foreach(f => S.error(f.msg))
       }
     }
     "name=name" #> SHtml.onSubmit(group.name(_))&
     "name=description" #> SHtml.onSubmit(group.description(_))&
+    "name=sameCategory" #> SHtml.onSubmit(sameCategory = _) &
     "type=submit" #> SHtml.onSubmitUnit(saveMe)
-    }
+  }
   object selectedResources extends RequestVar[scala.collection.mutable.Set[String]](scala.collection.mutable.Set())
   object actionCommand extends RequestVar[Command](DeleteSelectedResources)
 

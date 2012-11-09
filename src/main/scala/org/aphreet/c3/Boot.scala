@@ -195,13 +195,13 @@ class Boot extends Bootable{
 
     S.addAround(DB.buildLoanWrapper)
 
-    if(!Props.productionMode){
-      Category.findAll().foreach(_.delete_!)
-        (1 to 10).foreach{ i: Int => {
-        val cat = Category.create.name("Category" + i).saveMe()
-        (1 to 5).map(i => Tag.create.name("Tag" + i).category(cat).saveMe())
-      }}
-    }
+//    if(!Props.productionMode){
+//      Category.findAll().foreach(_.delete_!)
+//        (1 to 10).foreach{ i: Int => {
+//        val cat = Category.create.name("Category" + i).saveMe()
+//        (1 to 5).map(i => Tag.create.name("Tag" + i).category(cat).saveMe())
+//      }}
+//    }
 
   }
 

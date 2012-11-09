@@ -39,7 +39,7 @@ class Category extends LongKeyedMapper[Category] with IdPK with OneToMany[Long, 
 
   def getSingleton = Category
 
-  object name extends MappedString(this,64){
+   object name extends MappedString(this,64){
     override def validations = nonEmpty _ :: isUnique _ :: Nil
 
     private def isUnique(s: String): List[FieldError] = {
