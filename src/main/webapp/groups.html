@@ -1,54 +1,95 @@
-<lift:surround with="default">
-
-     <script type="text/javascript">
-         // <![CDATA[
-         document.getElementById('addGroup_button').onclick = function() {
-             $('.AddGroup').next().css("display","block");
-         };
-         // ]]>
-    </script>
-
- <div class="lift:bind-at?name=content">
-    <div class="content-header">
-            <h1>My groups</h1>
-    </div>
-
-
-    <h2>Groups <a class="AddGroup_button" id="addGroup_button"></a></h2>
-
-    <div id="addGroup" class="AddGroup">
-        <lift:snippet type="GroupListPage.add" form="post">
-            <b>Group name: </b> <group:name></group:name> <br/>
-            <b>Owner: </b> <group:owner></group:owner>
-            <br/>
-
-            <group:submit></group:submit>
-            <br/><br/>
-        </lift:snippet>
-        <hr/>
-    </div>
-
-    <br/>
-    <div class="lift:GroupListPage.list?form=post">
-        <ul>
-            <li><group:name></group:name> - <group:owner></group:owner> - <group:delete></group:delete></li>
-        </ul>
-    </div>
- </div>
-
- <div class="lift:bind-at?name=right-panel-content">
-
-    <div class="right-panel-section right-panel-section-first">
-        <span></span>
-        <div>
-            <ul>
+<div class="lift:surround?with=default">
+    <div class="lift:bind-at?name=left-panel">
+        <div class="lift:GroupListPage.list">
+            <ul class="listGroup nav nav-list">
+                <li class="nav-header groupsHeader">Groups</li>
+                <li class="container_groups"><a></a><button class="delete_group close">&times;</button></li>
             </ul>
         </div>
     </div>
+    <div class="lift:bind-at?name=content">
+        <form class="lift:GroupListPage.add">
+            <div id="legend">
+                <legend class="">Add group</legend>
+            </div>
+            <div class="control-group">
+                <label class="control-label">Group Name</label>
+                <div class="controls">
+                    <input type="text" name="name" placeholder="" class="input-xlarge">
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label">Description group:</label>
+                <div class="controls">
+                    <textarea type="text" name="description" placeholder="" class="input-xlarge"></textarea>
+                </div>
+            </div>
+            <div class="control-group">
+                <!-- Button -->
+                <div class="controls">
+                    <button type="submit" class="btn btn-success">Add</button>
+                </div>
+            </div>
+        </form>
+    </div>
 
-    <div class="right-panel-section"></div>
 
- </div>
+</div>
 
 
-</lift:surround>
+
+
+<!--<lift:surround with="default">-->
+
+     <!--<script type="text/javascript">-->
+         <!--// <![CDATA[-->
+         <!--document.getElementById('addGroup_button').onclick = function() {-->
+             <!--$('.AddGroup').next().css("display","block");-->
+         <!--};-->
+         <!--// ]]>-->
+    <!--</script>-->
+
+ <!--<div class="lift:bind-at?name=content">-->
+    <!--<div class="content-header">-->
+            <!--<h1>My groups</h1>-->
+    <!--</div>-->
+
+
+    <!--<h2>Groups <a class="AddGroup_button" id="addGroup_button"></a></h2>-->
+
+    <!--<div id="addGroup" class="AddGroup">-->
+        <!--<lift:snippet type="GroupListPage.add" form="post">-->
+            <!--<b>Group name: </b> <group:name></group:name> <br/>-->
+            <!--<b>Owner: </b> <group:owner></group:owner>-->
+            <!--<br/>-->
+
+            <!--<group:submit></group:submit>-->
+            <!--<br/><br/>-->
+        <!--</lift:snippet>-->
+        <!--<hr/>-->
+    <!--</div>-->
+
+    <!--<br/>-->
+    <!--<div class="lift:GroupListPage.list?form=post">-->
+        <!--<ul>-->
+            <!--<li><group:name></group:name> - <group:owner></group:owner> - <group:delete></group:delete></li>-->
+        <!--</ul>-->
+    <!--</div>-->
+ <!--</div>-->
+
+ <!--<div class="lift:bind-at?name=right-panel-content">-->
+
+    <!--<div class="right-panel-section right-panel-section-first">-->
+        <!--<span></span>-->
+        <!--<div>-->
+            <!--<ul>-->
+            <!--</ul>-->
+        <!--</div>-->
+    <!--</div>-->
+
+    <!--<div class="right-panel-section"></div>-->
+
+ <!--</div>-->
+
+
+<!--</lift:surround>-->

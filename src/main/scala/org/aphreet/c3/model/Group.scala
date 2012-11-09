@@ -60,13 +60,18 @@ class Group extends LongKeyedMapper[Group] with IdPK with ManyToMany{
   }
 
   object name extends MappedString(this,64){
+    override def validations = nonEmpty _ :: isUnique _ :: Nil
 
     def isUnique(s: String): List[FieldError] = {
-      if(!Group.find(By(Group.name,s),NotBy(Group.id,thisgroup.id)).isEmpty ) List(FieldError(this,Text("Group with this name already exists")))
+      if(!Group.find(Cmp(Group.name, OprEnum.Eql, Full(s.toLowerCase), None, Full("LOWER"))).isEmpty )
+        List(FieldError(this, "Group with name " + s + " already exists"))
       else Nil
     }
+    private def nonEmpty(s: String) =
+      if(s.isEmpty) List(FieldError(this, "Groups's name cannot be empty"))
+      else Nil
 
-    override def validations = isUnique _ :: super.validations
+
   }
 
   object isOpenRegistration extends MappedBoolean(this){

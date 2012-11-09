@@ -25,60 +25,47 @@ class GroupListPage {
 
   val logger = Logger(classOf[GroupListPage])
 
-  def list(html: NodeSeq) : NodeSeq = {
 
+  def list = {
     val groupList = User.currentUser.open_!.groups.toList
+    ".container_groups" #> groupList.map{ group:Group =>{
 
-    groupList.flatMap(group =>
-      bind("group", html, "name" -> <a href={"/groups/"+group.id}>{group.name}</a>,
-        "owner" -> group.owner.obj.map(usr => usr.email.is).openOr("<unknown>"),
-        "delete" -> {SHtml.ajaxSubmit("Delete",
-          () => {
+      def deleteGroup(): JsCmd = {
+        //TODO verify access user
 
-            // TODO with Alert + Promt a-la "Are you sure you wanna delete this group??"
-            if(group.delete_!) Alert("Group "+group.name.is+" deleted.")
-            else Alert("Group "+group.name.is+" NOT deleted.")
-            //JE.JsRaw("alert('Group "+group.name.is+" deleted.'); location.reload(true)").cmd
-          }
-        )})
-    )
-
-  }
-
-  def add(form: NodeSeq) : NodeSeq = {
-
-    val invokedAs = S.invokedAs
-    var group = Group.create
-
-
-    def newGroup(form: NodeSeq): NodeSeq = {
-      def saveMe(): Unit = {
-        group.validate match {
-          case Nil => {
-
-            group.save
-
-            // Linking group owner with a new Group in DB
-            UserGroup.join(User.find(By(User.id,group.owner)).open_!,group)
-
-            groupService.createGroupMapping(group.id.is.toString)
-            S.notice("Added group: " + group.name); S.redirectTo("/groups")
-          }
-          case xs => S.error(xs) ; S.mapSnippet(invokedAs, newGroup)
-
-        }
+        group.delete_!
+        JsCmds.Alert("Group deleted") & JsCmds.Replace(group.id.is.toString, NodeSeq.Empty)
       }
-
-      bind("group", form,
-        "name" -> group.name.toForm,
-        "owner" -> group.owner.toForm,
-        "submit" -> SHtml.submit("add", saveMe))
+      ".container_groups [id]"#> group.id.is&
+      ".container_groups *" #>
+        ((n: NodeSeq) => SHtml.ajaxForm(
+          ("a *" #> group.name.is &
+           "a [href]" #>("/groups/"+group.id) andThen
+           "* *" #> SHtml.memoize(f => f ++ SHtml.hidden(deleteGroup _))).apply(n)
+        ))
+      }
     }
-
-    newGroup(form)
   }
-
-
+  def add = {
+    var group = Group.create
+    def saveMe(){
+      group.validate match {
+        case Nil => {
+          group.owner(User.currentUser.open_!)
+          group.save
+          // Linking group owner with a new Group in DB
+          UserGroup.join(User.find(By(User.id,group.owner)).open_!,group)
+          groupService.createGroupMapping(group.id.is.toString)
+          S.notice("Added group: " + group.name)
+        }
+        case xs =>
+          xs.foreach(f => S.error(f.msg))
+      }
+    }
+    "name=name" #> SHtml.onSubmit(group.name(_))&
+    "name=description" #> SHtml.onSubmit(group.description(_))&
+    "type=submit" #> SHtml.onSubmitUnit(saveMe)
+    }
   object selectedResources extends RequestVar[scala.collection.mutable.Set[String]](scala.collection.mutable.Set())
   object actionCommand extends RequestVar[Command](DeleteSelectedResources)
 
