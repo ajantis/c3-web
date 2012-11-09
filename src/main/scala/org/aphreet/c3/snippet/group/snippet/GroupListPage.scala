@@ -52,7 +52,7 @@ class GroupListPage {
   def add = {
     var group = Group.create
     var category = Category.create
-    var sameCategory = "default"
+    var sameCategory = ""
     def saveMe(){
       group.validate match {
         case Nil => {
@@ -61,7 +61,7 @@ class GroupListPage {
           // Linking group owner with a new Group in DB
           UserGroup.join(User.find(By(User.id,group.owner)).open_!,group)
           groupService.createGroupMapping(group.id.is.toString)
-          if(sameCategory!="default"){
+          if(sameCategory!="false"){
             category.name(group.name.is)
             category.linkedGroup(group)
             category.validate match {
