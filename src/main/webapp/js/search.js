@@ -51,7 +51,7 @@ $(document).ready( function(){
         });
         $(".tags_input").val(tags);
     });
-     $('.category_cont').hover(function(){
+     $('.con_category').hover(function(){
         $('.category_tags').css("display","none");
         $(this).next().css("display","block");
 

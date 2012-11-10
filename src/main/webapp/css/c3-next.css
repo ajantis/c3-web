@@ -414,6 +414,9 @@ body > .navbar .brand:hover {
     cursor:pointer;
     text-decoration:underline;
 }
+.floatLeft{
+    float:left!important;
+}
 .hide_button{
     float:right;
     margin-right:63px;

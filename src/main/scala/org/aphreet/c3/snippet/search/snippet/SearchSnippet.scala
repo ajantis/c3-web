@@ -102,14 +102,24 @@ private lazy val dateFormat: SimpleDateFormat = new SimpleDateFormat("dd/MM/yyyy
       val id = "tab"+flag2
       var id_span = 0
       val tagNames = Tag.findAll(By(Tag.category, cat))
-
+      def groupCat(cat:Category)={
+        if (!cat.linkedGroup.isEmpty){
+          val group=cat.linkedGroup.open_!
+          ".linkGroup [href]" #>("/groups/"+group.id)&
+          ".category_cont [class+]" #> "floatLeft"
+        }
+        else{
+          ".linkGroup" #> NodeSeq.Empty
+        }
+      }
       "span" #> tagNames.map{tg:Tag =>{
         id_span+=1
         "span *" #> tg.name &
         "span [id]" #> (id+"_"+id_span)
       }}&
-        "a *" #> cat.name &
-        "ul [id]" #> id
+       ".category_cont *" #> cat.name &
+       "ul [id]" #> id &
+       ".con_category" #> groupCat(cat)
     }
     ".category_cnt *" #> categories.map{ cat:Category =>  categoryContents(cat) }
   }
