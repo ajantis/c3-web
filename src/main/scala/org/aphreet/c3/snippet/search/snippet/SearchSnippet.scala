@@ -106,9 +106,11 @@ private lazy val dateFormat: SimpleDateFormat = new SimpleDateFormat("dd/MM/yyyy
         if (!cat.linkedGroup.isEmpty){
           val group=cat.linkedGroup.open_!
           ".linkGroup [href]" #>("/groups/"+group.id)&
-          ".category_cont [class+]" #> "floatLeft"
+          ".category_cont [class+]" #> "floatLeft" &
+          ".category_cont *" #> cat.name.is
         }
         else{
+          ".category_cont *" #> cat.name.is &
           ".linkGroup" #> NodeSeq.Empty
         }
       }
@@ -117,7 +119,6 @@ private lazy val dateFormat: SimpleDateFormat = new SimpleDateFormat("dd/MM/yyyy
         "span *" #> tg.name &
         "span [id]" #> (id+"_"+id_span)
       }}&
-       ".category_cont *" #> cat.name &
        "ul [id]" #> id &
        ".con_category" #> groupCat(cat)
     }
