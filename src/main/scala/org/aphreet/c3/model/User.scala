@@ -7,13 +7,6 @@ import xml._
 import net.liftweb.http.js.JsCmds.FocusOnLoad
 import net.liftweb.util.Helpers._
 import net.liftweb.http.S._
-import net.liftweb.common.Full
-import net.liftweb.sitemap.Loc.LocGroup
-import org.aphreet.c3.model.Group
-import scala.Null
-import net.liftweb.common.Full
-import net.liftweb.sitemap.Loc.LocGroup
-import xml.Group
 import net.liftweb.sitemap.Loc.LocGroup
 import xml.Text
 import net.liftweb.common.Full

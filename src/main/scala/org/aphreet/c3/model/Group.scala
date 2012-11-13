@@ -33,13 +33,10 @@ package org.aphreet.c3.model
 import net.liftweb.mapper._
 import net.liftweb.util.FieldError
 import xml.{NodeSeq, Text}
-import net.liftweb.common.{Full, Failure, Empty, Box}
+import net.liftweb.common.{Full, Box}
 import net.liftweb.http.SHtml
 import org.aphreet.c3.apiaccess.C3
 import net.liftweb.util.Helpers._
-import com.ifunsoftware.c3.access.fs.C3File
-import com.ifunsoftware.c3.access.C3AccessException
-import org.apache.commons.httpclient.HttpStatus
 
 class Group extends LongKeyedMapper[Group] with IdPK with ManyToMany{
 
@@ -48,7 +45,7 @@ class Group extends LongKeyedMapper[Group] with IdPK with ManyToMany{
   def getSingleton = Group
 
   object owner extends MappedLongForeignKey(this,User){
-    override def toForm = Box(SHtml.selectObj[User](User.findAll.map(user => (user,user.email.is)),User.currentUser, usr => thisgroup.owner(usr)))
+    override def toForm = Box.!!(SHtml.selectObj[User](User.findAll().map(user => (user,user.email.is)),User.currentUser, usr => thisgroup.owner(usr)))
   }
 
   object users extends MappedManyToMany(UserGroup, UserGroup.group, UserGroup.user, User)
@@ -82,7 +79,7 @@ class Group extends LongKeyedMapper[Group] with IdPK with ManyToMany{
     override def defaultValue = true
   }
 
-  def getChildren(): List[C3Resource] = getChildren("")
+  def getChildren: List[C3Resource] = getChildren("")
 
   def getChildren(directory: String) : List[C3Resource] = {
 

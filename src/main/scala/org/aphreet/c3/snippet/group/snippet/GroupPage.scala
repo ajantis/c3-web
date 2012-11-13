@@ -24,7 +24,7 @@ object GroupPage extends ItemRewriteLoc[Group, GroupPageData] {
     override def pathList(value: GroupPageData): List[String] = pathPrefix ::: value.group.id.is.toString :: Nil
   }
   override def getItem(id: String) = Group.find(id)
-  override def wrapItem(groupBox: Box[Group]) = groupBox.map(GroupPageData(_))
+  override def wrapItem(groupBox: Box[Group]) = groupBox.map(new GroupPageData(_))
   override def canonicalUrl(data: GroupPageData) = {
     Full((pathPrefix:::List(data.group.id.is.toString)).mkString("/","/",""))
   }
@@ -33,9 +33,6 @@ object GroupPage extends ItemRewriteLoc[Group, GroupPageData] {
 class GroupPage(data: GroupPageData) extends GroupPageHelpers{
   override lazy val group = data.group
   override lazy val activeLocId = "about"
-
-  private val logger = Logger(classOf[GroupPage])
-
 }
 
 trait GroupPageHelpers {

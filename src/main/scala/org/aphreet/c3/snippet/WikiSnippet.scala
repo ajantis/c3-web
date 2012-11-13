@@ -70,7 +70,7 @@ class WikiSnippet{
         "content" -> content,
         "actions" -> <a href={"/group/" + groupName + "/wiki/" + pageName + "/edit"}>Edit</a>,
         "metadata" -> {(ns:NodeSeq) =>
-          metadata.flatMap(el => bind("md", ns, "key" --> el._1, "value" --> el._2)).toSeq:NodeSeq}
+          metadata.flatMap(el => bind("md", ns, "key" -> el._1, "value" -> el._2)).toSeq:NodeSeq}
       )
     }
 
@@ -118,7 +118,7 @@ class WikiSnippet{
       "name" -> pageName,
       "actions" -> <a href={"/group/" + groupName + "/wiki/" + pageName}>Cancel</a>,
       "metadata" -> {(ns:NodeSeq) =>
-        wikiService.getMetadata(groupName, pageName).flatMap(i => bind("md", ns, "key" --> i._1, "value" --> i._2)).toSeq:NodeSeq}
+        wikiService.getMetadata(groupName, pageName).flatMap(i => bind("md", ns, "key" -> i._1, "value" -> i._2)).toSeq:NodeSeq}
     )
 
   }

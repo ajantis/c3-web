@@ -1,10 +1,9 @@
 package org.aphreet.c3.snippet.group.snippet
 
 import org.aphreet.c3.model.Group
-import net.liftweb.common.{Full, Logger, Box}
-import xml.{Text, NodeSeq}
+import net.liftweb.common.{Logger, Box}
+import xml.NodeSeq
 import org.aphreet.c3.loc.SuffixLoc
-import net.liftweb.util.BindHelpers._
 import org.aphreet.c3.snippet.group.{AbstractGroupPageLoc, GroupPageData}
 import net.liftweb.sitemap.Loc.Link
 
@@ -18,7 +17,7 @@ object GroupPageMessages extends AbstractGroupPageLoc[GroupPageData] with Suffix
   override val pathPrefix = "groups" :: Nil
   override val pathSuffix = "messages" ::  Nil
   override def getItem(id: String) = Group.find(id)
-  override def wrapItem(groupBox: Box[Group]) = groupBox.map(GroupPageData(_))
+  override def wrapItem(groupBox: Box[Group]) = groupBox.map(new GroupPageData(_))
 
   override def link = {
     new Link[GroupPageData](pathPrefix ++ pathSuffix){
