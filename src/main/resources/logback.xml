@@ -6,13 +6,13 @@
         </encoder>
     </appender>
 
-    <logger name="org.apache.commons" level="info"/>
+    <logger name="httpclient" level="info"/>
 
     <logger name="net.liftweb.util" level="warn"/>
 
     <logger name="org.aphreet" level="info"/>
 
-    <root level="debug">
+    <root level="info">
         <appender-ref ref="STDOUT" />
     </root>
 </configuration>
