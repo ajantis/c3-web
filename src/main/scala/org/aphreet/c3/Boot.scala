@@ -5,6 +5,7 @@ import _root_.net.liftweb.common._
 import _root_.net.liftweb.http.provider._
 import _root_.net.liftweb.sitemap._
 import _root_.net.liftweb.sitemap.Loc._
+import apiaccess.C3
 import Helpers._
 import org.aphreet.c3.model._
 import net.liftweb.mapper._
@@ -15,6 +16,7 @@ import net.liftweb.widgets.uploadprogress._
 import net.liftweb.widgets.tablesorter.TableSorter
 import net.liftweb.widgets.autocomplete.AutoComplete
 import net.liftweb.widgets.menu.MenuWidget
+import servlet.HTTPServletContext
 import snippet.categories.CategoriesSection
 import snippet.group.GroupSection
 import snippet.logging.LogLevel
@@ -192,6 +194,14 @@ class Boot extends Bootable{
     //Use HTML5 for rendering
     LiftRules.htmlProperties.default.set((r: Req) =>
       new Html5Properties(r.userAgent))
+
+    LiftRules.context match {
+      case context:HTTPServletContext => context.ctx.getAttribute("osgi-bundlecontext") match {
+        case null =>
+        case value => C3.bundleContext = value
+      }
+      case _ =>
+    }
 
     S.addAround(DB.buildLoanWrapper)
 

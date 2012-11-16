@@ -2,32 +2,43 @@ package org.aphreet.c3.apiaccess
 
 import net.liftweb.util.Props
 import com.ifunsoftware.c3.access.{C3SystemFactory, C3System}
-import com.ifunsoftware.c3.access.impl.C3SystemImpl
+import net.liftweb.common.Logger
 
 object C3 {
 
-  def apply():C3System = {
+  private val log = Logger("C3")
 
-    val host = Props.get("c3_host") openOr("http://localhost:7373")
+  var bundleContext:AnyRef = null
+
+  def apply():C3System = {
 
     val domain = Props.get("c3_domain_name") openOr "anonymous"
 
-    val secret = Props.get("c3_domain_secret") openOr ""
+//    if (bundleContext != null){
+//      log.info("Found bundle context, trying to obtain local C3System instance")
+//
+//      new C3SystemFactory().createLocalSystem(domain, bundleContext)
+//
+//    }else{
+
+      val host = Props.get("c3_host") openOr("http://localhost:7373")
+
+      val secret = Props.get("c3_domain_secret") openOr ""
 
 
-    val proxy = System.getenv("HTTP_PROXY")
+      val proxy = System.getenv("HTTP_PROXY")
 
-    if (proxy != null){
-      val hostAndPort = proxy.replaceFirst("^http://", "").split(":", 2)
+      if (proxy != null){
+        val hostAndPort = proxy.replaceFirst("^http://", "").split(":", 2)
 
-      val proxyHost = hostAndPort(0)
-      val proxyPort = hostAndPort(1).toInt
+        val proxyHost = hostAndPort(0)
+        val proxyPort = hostAndPort(1).toInt
 
-      new C3SystemImpl(host, domain, secret, 100, proxyHost, proxyPort)
-
-    }else{
-      new C3SystemFactory().createSystem(host, domain, secret)
-    }
+        new C3SystemFactory().createSystem(host, domain ,secret, 100, proxyHost, proxyPort)
+      }else{
+        new C3SystemFactory().createSystem(host, domain, secret)
+      }
+//    }
 
   }
   
