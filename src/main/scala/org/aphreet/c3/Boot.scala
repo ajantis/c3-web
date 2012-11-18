@@ -195,14 +195,6 @@ class Boot extends Bootable{
     LiftRules.htmlProperties.default.set((r: Req) =>
       new Html5Properties(r.userAgent))
 
-    LiftRules.context match {
-      case context:HTTPServletContext => context.ctx.getAttribute("osgi-bundlecontext") match {
-        case null =>
-        case value => C3.bundleContext = value
-      }
-      case _ =>
-    }
-
     S.addAround(DB.buildLoanWrapper)
 
 //    if(!Props.productionMode){
