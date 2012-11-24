@@ -5,7 +5,6 @@ import _root_.net.liftweb.common._
 import _root_.net.liftweb.http.provider._
 import _root_.net.liftweb.sitemap._
 import _root_.net.liftweb.sitemap.Loc._
-import apiaccess.C3
 import Helpers._
 import org.aphreet.c3.model._
 import net.liftweb.mapper._
@@ -16,7 +15,6 @@ import net.liftweb.widgets.uploadprogress._
 import net.liftweb.widgets.tablesorter.TableSorter
 import net.liftweb.widgets.autocomplete.AutoComplete
 import net.liftweb.widgets.menu.MenuWidget
-import servlet.HTTPServletContext
 import snippet.categories.CategoriesSection
 import snippet.group.GroupSection
 import snippet.logging.LogLevel
@@ -24,6 +22,7 @@ import snippet.search.SearchSection
 import snippet.user.UserSection
 import util.helpers.C3Streamer
 import util.{DefaultAuthDataLoader, TextileRenderer}
+import javax.mail.{Authenticator, PasswordAuthentication}
 
 /**
  * A class that's instantiated early and run.  It allows the application
@@ -220,4 +219,15 @@ class Boot extends Bootable{
   private def makeUtf8(req: HTTPRequest) {
     req.setCharacterEncoding("UTF-8")
   }
+
+  def configMailer(host: String, user: String, password: String) {
+      // Enable TLS support
+      System.setProperty("mail.smtp.starttls.enable","true")
+      // Set the host name
+      System.setProperty("mail.smtp.host", host) // Enable authentication
+      System.setProperty("mail.smtp.auth", "true") // Provide a means for authentication. Pass it a Can, which can either be Full or Empty
+      Mailer.authenticator = Full(new Authenticator {
+        override def getPasswordAuthentication = new PasswordAuthentication(user, password)
+      })
+    }
 }
