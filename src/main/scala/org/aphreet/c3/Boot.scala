@@ -195,6 +195,13 @@ class Boot extends Bootable{
     LiftRules.htmlProperties.default.set((r: Req) =>
       new Html5Properties(r.userAgent))
 
+    LiftRules.liftRequest.append({
+      case r if (r.path.partPath match {
+        case "dav" :: _ => true
+        case _ => false
+      }) => false
+    })
+
     S.addAround(DB.buildLoanWrapper)
 
 //    if(!Props.productionMode){
