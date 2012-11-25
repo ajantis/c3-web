@@ -22,4 +22,52 @@
         <url-pattern>/*</url-pattern>
     </filter-mapping>
 
+
+    <servlet>
+        <servlet-name>webdav</servlet-name>
+        <servlet-class>
+            net.sf.webdav.WebdavServlet
+        </servlet-class>
+        <init-param>
+            <param-name>ResourceHandlerImplementation</param-name>
+            <param-value>
+                org.aphreet.c3.webdav.C3FileSystemStore
+            </param-value>
+            <description>
+                name of the class that implements
+                net.sf.webdav.WebdavStore
+            </description>
+        </init-param>
+        <init-param>
+            <param-name>rootpath</param-name>
+            <param-value>/Users/aphreet/var/webdav</param-value>
+            <description>
+                place where to store the webdavcontent on the filesystem
+            </description>
+        </init-param>
+
+        <init-param>
+            <param-name>lazyFolderCreationOnPut</param-name>
+            <param-value>0</param-value>
+            <description>
+                Overriding RFC 2518, the folders of resources being
+                created, can be created too if they do not exist.
+            </description>
+        </init-param>
+        <init-param>
+            <param-name>no-content-length-headers</param-name>
+            <param-value>0</param-value>
+        </init-param>
+        <init-param>
+            <param-name>maxUploadSize</param-name>
+            <param-value>2000000000</param-value>
+            <!-- set to 2G -->
+        </init-param>
+
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>webdav</servlet-name>
+        <url-pattern>/dav/*</url-pattern>
+    </servlet-mapping>
+
 </web-app>

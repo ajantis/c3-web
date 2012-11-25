@@ -22,7 +22,7 @@ class GroupServiceImpl extends GroupService{
       dir.createDirectory("files")
       dir.createDirectory("messages")
       dir.createDirectory("wiki")
-      case None =>
+      case None => throw new C3Exception("Failed to create directory for group " + groupId)
     }
   }
 

@@ -2,49 +2,56 @@ package org.aphreet.c3.apiaccess
 
 import net.liftweb.util.Props
 import com.ifunsoftware.c3.access.{C3SystemFactory, C3System}
-import com.ifunsoftware.c3.access.impl.C3SystemImpl
+import net.liftweb.common.Logger
+import net.liftweb.http.LiftRules
+import net.liftweb.http.provider.servlet.HTTPServletContext
 
 object C3 {
 
-  def apply():C3System = {
+  private val log = Logger("C3")
 
-    val host = Props.get("c3_host") openOr("http://localhost:7373")
+  lazy val c3System = createC3System()
+
+  def apply():C3System = {
+    c3System
+  }
+
+  private def createC3System():C3System = {
+
+    val bundleContext = LiftRules.context match {
+      case context:HTTPServletContext => context.ctx.getAttribute("osgi-bundlecontext") match {
+        case null => null
+        case value => value
+      }
+      case _ => null
+    }
 
     val domain = Props.get("c3_domain_name") openOr "anonymous"
 
-    val secret = Props.get("c3_domain_secret") openOr ""
+    if (bundleContext != null){
+      log.info("Found bundle context, trying to obtain local C3System instance")
 
-
-    val proxy = System.getenv("HTTP_PROXY")
-
-    if (proxy != null){
-      val hostAndPort = proxy.replaceFirst("^http://", "").split(":", 2)
-
-      val proxyHost = hostAndPort(0)
-      val proxyPort = hostAndPort(1).toInt
-
-      new C3SystemImpl(host, domain, secret, 100, proxyHost, proxyPort)
+      new C3SystemFactory().createLocalSystem(domain, bundleContext)
 
     }else{
-      new C3SystemFactory().createSystem(host, domain, secret)
+
+      val host = Props.get("c3_host") openOr("http://localhost:7373")
+
+      val secret = Props.get("c3_domain_secret") openOr ""
+
+      val proxy = System.getenv("HTTP_PROXY")
+
+      if (proxy != null){
+        val hostAndPort = proxy.replaceFirst("^http://", "").split(":", 2)
+
+        val proxyHost = hostAndPort(0)
+        val proxyPort = hostAndPort(1).toInt
+
+        new C3SystemFactory().createSystem(host, domain ,secret, 100, proxyHost, proxyPort)
+      }else{
+        new C3SystemFactory().createSystem(host, domain, secret)
+      }
     }
-
   }
-  
-  def createGroupMapping(name:String){
-    
-    val system = C3()
-    
-    val root = system.getFile("/").asDirectory
-    
-    root.createDirectory(name)
 
-    root.getChild(name) match {
-      case Some(node) => val dir = node.asDirectory
-        dir.createDirectory("files")
-        dir.createDirectory("wiki")
-      case None =>
-    }
-
-  }
 }

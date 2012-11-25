@@ -22,6 +22,7 @@ import snippet.search.SearchSection
 import snippet.user.UserSection
 import util.helpers.C3Streamer
 import util.{DefaultAuthDataLoader, TextileRenderer}
+import javax.mail.{Authenticator, PasswordAuthentication}
 
 /**
  * A class that's instantiated early and run.  It allows the application
@@ -193,6 +194,13 @@ class Boot extends Bootable{
     LiftRules.htmlProperties.default.set((r: Req) =>
       new Html5Properties(r.userAgent))
 
+    LiftRules.liftRequest.append({
+      case r if (r.path.partPath match {
+        case "dav" :: _ => true
+        case _ => false
+      }) => false
+    })
+
     S.addAround(DB.buildLoanWrapper)
 
 //    if(!Props.productionMode){
@@ -211,4 +219,15 @@ class Boot extends Bootable{
   private def makeUtf8(req: HTTPRequest) {
     req.setCharacterEncoding("UTF-8")
   }
+
+  def configMailer(host: String, user: String, password: String) {
+      // Enable TLS support
+      System.setProperty("mail.smtp.starttls.enable","true")
+      // Set the host name
+      System.setProperty("mail.smtp.host", host) // Enable authentication
+      System.setProperty("mail.smtp.auth", "true") // Provide a means for authentication. Pass it a Can, which can either be Full or Empty
+      Mailer.authenticator = Full(new Authenticator {
+        override def getPasswordAuthentication = new PasswordAuthentication(user, password)
+      })
+    }
 }
