@@ -1,0 +1,101 @@
+<html>
+
+<head>
+
+
+
+<meta charset="utf-8">
+<link rel="stylesheet" type="text/css" href="upload.css">
+<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+
+
+
+<script src="http://code.jquery.com/jquery-1.8.2.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script src= "js/handlebars.js" type="text/javascript"></script>
+<script src ="upload.js" type="text/javascript"></script>
+
+
+
+<script id="tag-template" type="text/x-handlebars-template">
+	<div class = 'tag' data-tag='{{tag}}'> 
+		{{tag}}
+		<a href="#" class = 'delete'>X</a>
+
+
+	</div>
+</script>
+
+<script id="meta-template" type="text/x-handlebars-template">
+	<tr class = 'metaitem' > 
+		<td class = 'meta-key' contenteditable="true">{{key}}  </td> 
+		<td class = 'meta-value'contenteditable="true">{{value}}</td>
+		<td class = 'deltd'>
+			<a href="#"  class = 'delete'>X</a>
+		</td>
+
+	</tr>
+</script>
+
+</head>
+
+<body>
+
+<p   class = "file" data-fid='123' href="#">
+	file.txt
+</p>
+<div class = ' modal popup' id="myModal">
+<h1 class = "model-header">
+Metadata
+</h1>
+
+	<div class = 'modal-body'>
+		
+		<h2> Filename </h2>
+
+
+		<div class = "filename" data-fid='' contenteditable="true" > 
+
+
+
+		</div>
+		<div hidden='true' id = 'fid'></div>
+		
+		<h2> Tags </h2>
+		<div class = "tags" id='tagContainer'>
+
+
+		</div>
+		<div class ="inpt">
+			<input type="text" id = "tagval"> </input>
+			<a href="#" class = 'btn btn-success' id = "addtag">Add</a>
+		</div>
+
+		<h2> Metadata </h2>
+		<table class = "metadata" id ='metaContaier' cellspacing="5" width="100%">
+
+
+		</table>
+		<div>
+			<input type="text" id = "metakey"> </input>
+			<input type="text" id = "metavalue"> </input>
+
+			<a href="#" class = 'btn btn-success' id = "addmeta">Add</a>
+		</div>
+
+
+
+
+
+	</div>
+
+
+
+<div class ="model-footer">
+<a id="close" href="#" class = 'cl btn  btn-danger'>Close</a>
+<a id="upload"  href="#" class = 'cl btn btn-primary   '>Upload</a>
+</div>
+</div>
+</body>
+
+</html>
