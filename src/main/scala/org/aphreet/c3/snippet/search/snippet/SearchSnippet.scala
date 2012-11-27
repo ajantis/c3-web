@@ -64,7 +64,7 @@ class SearchSnippet {
   }
 
   def result = {
-    var query = S.param("query")
+    val query = S.param("query")
     val results: List[SearchResultEntry] = query.map(c3.search(_)).openOr(Nil)
 
     if (results.isEmpty){
