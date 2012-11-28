@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory
 import org.aphreet.c3.apiaccess.C3
 import com.ifunsoftware.c3.access.fs.C3FileSystemNode
 import java.nio.file.{StandardCopyOption, Files}
-import com.ifunsoftware.c3.access.DataStream
+import com.ifunsoftware.c3.access.{C3AccessException, C3ByteChannel, DataStream}
 
 class C3FileSystemStore(val root:File) extends IWebdavStore{
 
@@ -25,16 +25,20 @@ class C3FileSystemStore(val root:File) extends IWebdavStore{
   }
 
   def checkAuthentication(tx: ITransaction) {
-    log.info("checkAuthentication()")
+    log.debug("checkAuthentication()")
   }
 
   def commit(tx: ITransaction) {
     log.debug("commit()")
     log.debug("Cached nodes: {}", tx.asInstanceOf[C3Transaction].cachedFiles)
+
+    tx.asInstanceOf[C3Transaction].close()
   }
 
   def rollback(tx: ITransaction) {
     log.info("rollback()")
+
+    tx.asInstanceOf[C3Transaction].close()
   }
 
   def createFolder(tx: ITransaction, uri: String) {
@@ -52,10 +56,10 @@ class C3FileSystemStore(val root:File) extends IWebdavStore{
   def setResourceContent(tx: ITransaction, uri: String, content: InputStream, contentType: String, characterEncoding: String) = {
     log.info("setResourceContent() " + uri)
 
-    val tmpFile = File.createTempFile("dav_upload", null).toPath
+    val tmpFile = File.createTempFile("dav_upload-", null).toPath
 
     try{
-      Files.copy(content, tmpFile)
+      Files.copy(content, tmpFile, StandardCopyOption.REPLACE_EXISTING)
       getFSNode(tx, uri).update(DataStream(tmpFile.toFile))
       tmpFile.toFile.length()
     }finally {
@@ -64,7 +68,7 @@ class C3FileSystemStore(val root:File) extends IWebdavStore{
   }
 
   def getChildrenNames(tx: ITransaction, uri: String):Array[String] = {
-    log.info("getChildrenNames() " + uri )
+    log.debug("getChildrenNames() {}", uri )
 
     val file = getFSNode(tx, uri)
 
@@ -80,12 +84,7 @@ class C3FileSystemStore(val root:File) extends IWebdavStore{
 
   def getResourceLength(tx: ITransaction, uri: String) = {
     log.info("getResourceLength() " + uri)
-    val data = getFSNode(tx, uri).versions.last.getData
-    try{
-      data.length
-    }finally {
-      data.close()
-    }
+    use(tx, getFSNode(tx, uri).versions.last.getData).length
   }
 
   def removeObject(tx: ITransaction, uri: String) {
@@ -95,20 +94,20 @@ class C3FileSystemStore(val root:File) extends IWebdavStore{
   def getStoredObject(tx: ITransaction, uri: String) = {
     log.debug("getStoredObject() {}", uri)
 
-    val file = getFSNode(tx, uri)
+    try{
+      val file = getFSNode(tx, uri)
 
-    val storedObject = new StoredObject
-    storedObject.setFolder(file.isDirectory)
-    storedObject.setMimeType(file.systemMetadata.getOrElse("content.type", ""))
+      val storedObject = new StoredObject
+      storedObject.setFolder(file.isDirectory)
+      storedObject.setMimeType(file.systemMetadata.getOrElse("content.type", ""))
+      storedObject.setResourceLength(use(tx, file.versions.last.getData).length)
+      storedObject.setCreationDate(file.date)
+      storedObject.setLastModified(file.versions.last.date)
 
-    val data = file.versions.last.getData
-    storedObject.setResourceLength(data.length)
-    data.close()
-
-    storedObject.setCreationDate(file.date)
-    storedObject.setLastModified(file.versions.last.date)
-
-    storedObject
+      storedObject
+    }catch{
+      case e: C3AccessException => null
+    }
   }
 
   private def getFSNode(tx:ITransaction, uri:String):C3FileSystemNode = {
@@ -124,5 +123,10 @@ class C3FileSystemStore(val root:File) extends IWebdavStore{
   private def cacheNode(tx:ITransaction, uri:String, node:C3FileSystemNode):C3FileSystemNode = {
     tx.asInstanceOf[C3Transaction].cachedFiles.put(uri.replaceAll("/+", "/"), node)
     node
+  }
+
+  private def use(tx:ITransaction, channel:C3ByteChannel):C3ByteChannel = {
+    tx.asInstanceOf[C3Transaction].openedChannels.add(channel)
+    channel
   }
 }
