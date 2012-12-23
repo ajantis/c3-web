@@ -5,10 +5,11 @@ import collection.mutable
 import com.ifunsoftware.c3.access.fs.C3FileSystemNode
 import collection.mutable.ArrayBuffer
 import com.ifunsoftware.c3.access.C3ByteChannel
+import java.security.Principal
 
-class C3Transaction extends ITransaction{
+class C3Transaction(val principal:Principal) extends ITransaction{
 
-  def getPrincipal = null
+  def getPrincipal = principal
 
   val cachedFiles = new mutable.HashMap[String, C3FileSystemNode]
 

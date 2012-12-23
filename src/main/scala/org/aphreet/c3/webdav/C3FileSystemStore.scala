@@ -8,6 +8,7 @@ import org.aphreet.c3.apiaccess.C3
 import com.ifunsoftware.c3.access.fs.C3FileSystemNode
 import java.nio.file.{StandardCopyOption, Files}
 import com.ifunsoftware.c3.access.{C3AccessException, C3ByteChannel, DataStream}
+import javax.servlet.http.HttpServletRequest
 
 class C3FileSystemStore(val root:File) extends IWebdavStore{
 
@@ -15,13 +16,13 @@ class C3FileSystemStore(val root:File) extends IWebdavStore{
 
   val c3System = C3()
 
-  def destroy() {
-    log.info("destroy()")
+  def createPrincipal(request: HttpServletRequest):Principal = {
+    null
   }
 
-  def begin(p1: Principal):ITransaction = {
+  def begin(principal: Principal):ITransaction = {
     log.debug("begin()")
-    new C3Transaction
+    new C3Transaction(principal)
   }
 
   def checkAuthentication(tx: ITransaction) {
@@ -39,6 +40,10 @@ class C3FileSystemStore(val root:File) extends IWebdavStore{
     log.info("rollback()")
 
     tx.asInstanceOf[C3Transaction].close()
+  }
+
+  def destroy() {
+    log.info("destroy()")
   }
 
   def createFolder(tx: ITransaction, uri: String) {
