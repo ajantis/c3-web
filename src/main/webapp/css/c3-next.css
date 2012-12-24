@@ -4,9 +4,9 @@ html,body{
     height: 100%
 }
 
-body{
+body {
   position: relative;
-  padding-top: 60px; /* 40px to make the container go all the way to the bottom of the topbar */
+  padding-top: 0px; /* 40px to make the container go all the way to the bottom of the topbar */
 
 }
 
@@ -468,4 +468,35 @@ body > .navbar .brand:hover {
 }
 /*********************************************************
 * End lift notices part
+*********************************************************/
+
+/*********************************************************
+ * Begin file table part
+ *********************************************************/
+table.file-table {
+	width:100%;
+	font-size:12px;
+	border-collapse:collapse;
+}
+
+.file-table td{
+	border-top:1px solid;
+	border-bottom:1px solid;
+	border-color:#CCC;
+	padding:2px;
+}
+
+tr.file-table-name{
+	width:70%;
+}
+
+td.file-table-date td.file-table-owner{
+	width:15%;
+}
+
+td.file-table-date{
+	text-align:right;
+}
+/*********************************************************
+* End file table part
 *********************************************************/

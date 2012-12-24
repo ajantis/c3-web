@@ -54,6 +54,7 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers with Gr
 
   def render = {
     ".current_path *" #> Text(data.currentAddress) &
+    ".create_dir" #> ((ns: NodeSeq) => new CreateDirectoryDialog().button(ns, Full(data.currentAddress))) &
     (if(data.isDirectoryLoc)
       renderDirectoryLoc
     else
