@@ -65,11 +65,9 @@ object User extends User with MetaMegaProtoUser[User]{
   */
 
   override def lostPassword = {
-
-
       bind("user", lostPasswordXhtml,
         "email" -> SHtml.text("", sendPasswordReset _, ("placeholder" -> S.?("email.placeholder")),("id"->"log inputIcon"),("class"->"username span2")),
-        "submit" -> lostPasswordSubmitButton(S.?("repeat.password")))
+        "submit" -> lostPasswordSubmitButton(S.?("lost_password.send")))
   }
 
   override def lostPasswordXhtml = {
@@ -79,7 +77,7 @@ object User extends User with MetaMegaProtoUser[User]{
             <legend>{S.?("lost_password.legend")}</legend>
             <label for="username">Email</label>
             <div class="div_text">
-              <div class="input-prepend"><span class="add-on"><i class="icon-user"></i></span><user:email/></div>
+              <div class="input-prepend"><span class="add-on"><i class="icon-lock"></i></span><user:email/></div>
             </div>
 
             <div class="button_div">
@@ -100,16 +98,13 @@ object User extends User with MetaMegaProtoUser[User]{
 
             <label for="username">Email</label>
             <div class="div_text">
-              <div class="input-prepend"><span class="add-on"><i class="icon-user"></i></span><user:email/></div>
+              <div class="input-prepend"><span class="add-on"><i class="icon-envelope"></i></span><user:email/></div>
             </div>
-
             <label for="password">Password</label>
             <div class="div_text">
               <div class="input-prepend"><span class="add-on"><i class="icon-lock"></i></span><user:password /></div>
             </div>
-
             <div class="button_div"><input name="rememberme" type="checkbox" id="rememberme" value="forever" />&nbsp;Remember me&nbsp;&nbsp;<user:submit/></div>
-
             <div class="clear"></div>
             <div align="right">Forgot password?&nbsp;<a href={this.lostPasswordMenuLoc.open_!.loc.createDefaultLink.get}>Click here to reset</a></div>
             <div align="right">New User?&nbsp;<a href={this.createUserMenuLoc.open_!.loc.createDefaultLink.get}>Click here to register</a></div>
@@ -119,26 +114,22 @@ object User extends User with MetaMegaProtoUser[User]{
      </div>
     )
   }
-
   override protected def localForm(user: TheUserType, ignorePassword: Boolean, fields: List[FieldPointerType]): NodeSeq = {
     for {
       pointer <- fields
       field <- computeFieldFromPointer(user, pointer).toList
       if field.show_? && (!ignorePassword || !pointer.isPasswordField_?)
       form <- field.toForm.toList
-    } yield <div class="input-prepend"><label for="password">{field.displayName}</label>{form}</div>
+    } yield <div class="div_text">{form}</div>
   }
-
-  override def signupFields: List[FieldPointerType] = List(firstName,lastName,email, password)
+  override def signupFields: List[FieldPointerType] = List(firstName,lastName,email,password)
   override def editFields: List[FieldPointerType] = List(firstName,lastName, email)
-
   override def signupXhtml(user: TheUserType) = {
     (<div class="form-holder signup-form login-form well">
       <form action={S.uri} method="POST" class="form">
         <fieldset>
           <legend>{S.?("signup.legend")}</legend>
             {localForm(user, false, signupFields)}
-
           <div class="button_div">
             <user:submit/>
           </div>
@@ -152,9 +143,7 @@ object User extends User with MetaMegaProtoUser[User]{
         <form action={S.uri} method="POST" class="form">
           <fieldset>
             <legend>{S.?("edit.legend")}</legend>
-            <div class="div_text">
               {localForm(user, true, editFields)}
-            </div>
             <div class="button_div">
             <user:submit/>
               </div>
@@ -162,8 +151,58 @@ object User extends User with MetaMegaProtoUser[User]{
         </form>
       </div>)
   }
+  override def changePasswordXhtml = {
+    (<div class="form-holder edit-form login-form well">
+      <form action={S.uri} method="POST" class="form">
+        <fieldset>
+          <legend>{S.?("changePassword.legend")}</legend>
 
+          <label for="username">{S.?("old.password")}</label>
+          <div class="div_text">
+              <div class="input-prepend">
+                <span class="add-on"><i class="icon-envelope"></i></span><user:old_pwd />
+              </div>
+          </div>
+          <label for="username">{S.?("new.password")}</label>
+          <div class="div_text">
+            <div class="input-prepend">
+              <span class="add-on"><i class="icon-envelope"></i></span><user:new_pwd />
+            </div>
+          </div>
+          <label for="username">{S.?("repeatPassword.label")}</label>
+            <div class="div_text">
+              <div class="input-prepend">
+                <span class="add-on"><i class="icon-envelope"></i></span><user:new_pwd />
+              </div>
+            </div>
+          <div class="button_div">
+            <user:submit />
+          </div>
+        </fieldset>
+        </form>
+      </div>)
+  }
+  override  def changePassword = {
+      val user = currentUser.open_! // we can do this because the logged in test has happened
+      var oldPassword = ""
+      var newPassword: List[String] = Nil
 
+      def testAndSet() {
+        if (!user.testPassword(Full(oldPassword))) S.error(S.??("wrong.old.password"))
+        else {
+          user.setPasswordFromListString(newPassword)
+          user.validate match {
+            case Nil => user.save; S.notice(S.??("password.changed")); S.redirectTo(homePage)
+            case xs => S.error(xs)
+          }
+        }
+      }
+
+      bind("user", changePasswordXhtml,
+        "old_pwd" -> SHtml.password("", s => oldPassword = s,("class","username span2")),
+        "new_pwd" -> SHtml.password_*("", LFuncHolder(s => newPassword = s),("class","username span2")),
+        "submit" -> changePasswordSubmitButton(S.?("changePassword.button"), testAndSet _))
+      }
   override def screenWrap = Full(
     <lift:surround with="default" at="content">
 
@@ -173,7 +212,6 @@ object User extends User with MetaMegaProtoUser[User]{
 
     </lift:surround>
   )
-  
   override def edit = {
     super.edit ++
     <br/>
@@ -181,7 +219,6 @@ object User extends User with MetaMegaProtoUser[User]{
       Change password
     </lift:Menu.item>.toList
   } : NodeSeq
-
   override def signup = {
     val theUser: TheUserType = mutateUserOnSignup(createNewUserInstance())
     val theName = signUpPath.mkString("")
@@ -190,7 +227,6 @@ object User extends User with MetaMegaProtoUser[User]{
       validateSignup(theUser) match {
         case Nil =>
           actionsAfterSignup(theUser, () => S.redirectTo(homePage))
-
         case xs => S.error(xs) ; signupFunc(Full(innerSignup _))
       }
     }
@@ -268,50 +304,73 @@ class User extends MegaProtoUser[User] with ManyToMany {
   }
 
       // this is just a prototype change
+  //<div class="input-prepend"><label for="password">{field.displayName}</label>{form}</div>
   override lazy val email: MappedEmail[T] = new MyEmail(this, 128){
 
     override def _toForm: Box[Elem] =
       fmapFunc({s: List[String] => this.setFromAny(s)}){name =>
-        Full(appendFieldId(<div class="icon-envelope"><span class="add-on"><i class="icon-user"></i></span><input type={formInputType}
+        Full( <div class="input-prepend">
+                <label for="password">{S.?("email.label")}</label>
+                  {appendFieldId(
+                    <div class="input-prepend">
+                      <span class="add-on"><i class="icon-envelope"></i></span>
+                      <input type={formInputType}
                                 name={name}
-                                class="span2"
+                                class="username span2"
                                 placeholder ={S.?("email.placeholder")}
-                                value={is match {case null => "" case s => s.toString}}/></div>))}
+                                value={is match {case null => "" case s => s.toString}}/>
+                    </div>)}
+              </div>)}
 
   }
 
   override lazy val firstName: MappedString[T] = new MyFirstName(this, 32){
     override def _toForm: Box[Elem] =
       fmapFunc({s: List[String] => this.setFromAny(s)}){name =>
-        Full(appendFieldId(<div class="input-prepend"><span class="add-on"><i class="icon-user"></i></span><input type={formInputType} maxlength={maxLen.toString}
+        Full(<div class="input-prepend">
+          <label for="password">{S.?("firstName.label")}</label>
+          {appendFieldId(<div class="input-prepend"><span class="add-on"><i class="icon-user"></i></span><input type={formInputType} maxlength={maxLen.toString}
                                   name={name}
                                   class="username span2"
                                   placeholder ={S.?("firstName.placeholder")}
-                                  value={is match {case null => "" case s => s.toString}}/></div>))}
+                                  value={is match {case null => "" case s => s.toString}}/>
+          </div>)}
+        </div>)}
   }
+
   override lazy val lastName: MappedString[T] = new MyLastName(this, 32) {
     override def _toForm: Box[Elem] =
       fmapFunc({s: List[String] => this.setFromAny(s)}){name =>
-        Full(appendFieldId(<div class="input-prepend"><span class="add-on"><i class="icon-user"></i></span><input type={formInputType} maxlength={maxLen.toString}
+        Full(<div class="input-prepend">
+          <label for="password">{S.?("lastName.label")}</label>
+          {appendFieldId(<div class="input-prepend"><span class="add-on"><i class="icon-user"></i></span><input type={formInputType} maxlength={maxLen.toString}
                                   name={name}
                                   class="username span2"
                                   placeholder ={S.?("lastName.placeholder")}
-                                  value={is match {case null => "" case s => s.toString}}/></div>))}
+                                  value={is match {case null => "" case s => s.toString}}/></div>)}
+        </div>)}
   }
   override lazy val password: MappedPassword[T] = new MyPassword(this){
+   // <div class="input-prepend"><label for="password">{field.displayName}</label>{form}</div>
+
 
     override def _toForm: Box[NodeSeq] = {
       S.fmapFunc({s: List[String] => this.setFromAny(s)}){funcName =>
-        Full(<span>{appendFieldId(<div class="input-prepend"><span class="add-on"><i class="icon-lock"></i></span><input type={formInputType}
-                                         name={funcName}
-                                         class="password span2"
-                                         value={is.toString}/></div>)}
-          <label for="password">{S.?("repeat.password")}</label>
-          <div class="icon-refresh"><span class="add-on"><i class="icon-lock"></i></span><input
-          type={formInputType}
-          name={funcName}
-          class="password span2"
-          value={is.toString}/></div></span>)
+        Full(<div class="input-prepend">
+            <label for="password">{S.?("password.label")}</label>
+            {appendFieldId(
+            <div class="input-prepend">
+              <span class="add-on"><i class="icon-lock"></i></span>
+              <input type={formInputType} name={funcName} class="password span2" value={is.toString}/>
+            </div>)
+            }</div>
+          <div class="input-prepend">
+            <label for="password">{S.?("repeatPassword.label")}</label>
+            <div class="input-prepend">
+              <span class="add-on"><i class="icon-repeat"></i></span>
+              <input type={formInputType} name={funcName} class="password span2" value={is.toString}/>
+            </div>
+          </div>)
       }
     }
   }
