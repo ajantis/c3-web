@@ -966,7 +966,7 @@ input[type="search"],
 input[type="tel"],
 input[type="color"],
 .uneditable-input {
-  margin-top:3px;
+  margin-top:0px;
   display: inline-block;
   height: 20px;
   padding: 4px 6px;
@@ -1538,7 +1538,7 @@ select:focus:required:invalid:focus {
 .input-append,
 .input-prepend {
   margin-bottom: 5px;
-  font-size: 0;
+  font-size: 36px;
   white-space: nowrap;
 }
 
