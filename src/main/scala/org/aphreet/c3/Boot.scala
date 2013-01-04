@@ -201,15 +201,17 @@ class Boot extends Bootable{
       }) => false
     })
 
+    configMailer("smtp.gmail.com", "c3-project@ifunsoftware.com", "myverysecretpassword")
+
     S.addAround(DB.buildLoanWrapper)
 
-//    if(!Props.productionMode){
-//      Category.findAll().foreach(_.delete_!)
-//        (1 to 10).foreach{ i: Int => {
-//        val cat = Category.create.name("Category" + i).saveMe()
-//        (1 to 5).map(i => Tag.create.name("Tag" + i).category(cat).saveMe())
-//      }}
-//    }
+    //    if(!Props.productionMode){
+    //      Category.findAll().foreach(_.delete_!)
+    //        (1 to 10).foreach{ i: Int => {
+    //        val cat = Category.create.name("Category" + i).saveMe()
+    //        (1 to 5).map(i => Tag.create.name("Tag" + i).category(cat).saveMe())
+    //      }}
+    //    }
 
   }
 
@@ -220,14 +222,15 @@ class Boot extends Bootable{
     req.setCharacterEncoding("UTF-8")
   }
 
-  def configMailer(host: String, user: String, password: String) {
-      // Enable TLS support
-      System.setProperty("mail.smtp.starttls.enable","true")
-      // Set the host name
-      System.setProperty("mail.smtp.host", host) // Enable authentication
-      System.setProperty("mail.smtp.auth", "true") // Provide a means for authentication. Pass it a Can, which can either be Full or Empty
-      Mailer.authenticator = Full(new Authenticator {
-        override def getPasswordAuthentication = new PasswordAuthentication(user, password)
-      })
-    }
+  private def configMailer(host: String, user: String, password: String) {
+    // Enable TLS support
+    System.setProperty("mail.smtp.starttls.enable","true")
+    // Set the host name
+    System.setProperty("mail.smtp.host", host) // Enable authentication
+    System.setProperty("mail.smtp.auth", "true") // Provide a means for authentication. Pass it a Can, which can either be Full or Empty
+
+    Mailer.authenticator = Full(new Authenticator {
+      override def getPasswordAuthentication = new PasswordAuthentication(user, password)
+    })
+  }
 }
