@@ -39,5 +39,6 @@ Import-Bundle: javax.servlet;version="[2.5.0,3.1.0]",
 Import-Package: javax.naming,
  javax.activation,
  javax.mail,
+ javax.mail.internet,
  org.apache.commons.logging,
  org.osgi.framework
