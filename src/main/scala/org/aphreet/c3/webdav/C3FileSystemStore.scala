@@ -31,15 +31,15 @@ class C3FileSystemStore(val root:File) extends IWebdavStore{
 
   def commit(tx: ITransaction) {
     log.debug("commit()")
-    log.debug("Cached nodes: {}", tx.asInstanceOf[C3Transaction].cachedFiles)
+    log.debug("Cached nodes: {}", tx.cachedFiles)
 
-    tx.asInstanceOf[C3Transaction].close()
+    tx.close()
   }
 
   def rollback(tx: ITransaction) {
     log.info("rollback()")
 
-    tx.asInstanceOf[C3Transaction].close()
+    tx.close()
   }
 
   def destroy() {
@@ -89,7 +89,7 @@ class C3FileSystemStore(val root:File) extends IWebdavStore{
 
   def getResourceLength(tx: ITransaction, uri: String) = {
     log.info("getResourceLength() " + uri)
-    use(tx, getFSNode(tx, uri).versions.last.getData).length
+    getFSNode(tx, uri).versions.last.length
   }
 
   def removeObject(tx: ITransaction, uri: String) {
@@ -104,8 +104,8 @@ class C3FileSystemStore(val root:File) extends IWebdavStore{
 
       val storedObject = new StoredObject
       storedObject.setFolder(file.isDirectory)
-      storedObject.setMimeType(file.systemMetadata.getOrElse("content.type", ""))
-      storedObject.setResourceLength(use(tx, file.versions.last.getData).length)
+      storedObject.setMimeType(file.metadata.getOrElse("content.type", "application/octet-stream"))
+      storedObject.setResourceLength(file.versions.last.length)
       storedObject.setCreationDate(file.date)
       storedObject.setLastModified(file.versions.last.date)
 
@@ -116,8 +116,7 @@ class C3FileSystemStore(val root:File) extends IWebdavStore{
   }
 
   private def getFSNode(tx:ITransaction, uri:String):C3FileSystemNode = {
-    val c3Tx = tx.asInstanceOf[C3Transaction]
-    c3Tx.cachedFiles.get(uri.replaceAll("/+", "/")) match {
+    tx.cachedFiles.get(uri.replaceAll("/+", "/")) match {
       case Some(node) => node
       case None => {
         cacheNode(tx, uri, c3System.getFile(uri))
@@ -126,12 +125,16 @@ class C3FileSystemStore(val root:File) extends IWebdavStore{
   }
 
   private def cacheNode(tx:ITransaction, uri:String, node:C3FileSystemNode):C3FileSystemNode = {
-    tx.asInstanceOf[C3Transaction].cachedFiles.put(uri.replaceAll("/+", "/"), node)
+    tx.cachedFiles.put(uri.replaceAll("/+", "/"), node)
     node
   }
 
   private def use(tx:ITransaction, channel:C3ByteChannel):C3ByteChannel = {
-    tx.asInstanceOf[C3Transaction].openedChannels.add(channel)
+    tx.openedChannels.add(channel)
     channel
+  }
+
+  implicit def txToc3Tx(tx:ITransaction):C3Transaction = {
+    tx.asInstanceOf[C3Transaction]
   }
 }
