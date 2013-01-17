@@ -7,7 +7,6 @@ import org.aphreet.c3.lib.DependencyFactory._
 import com.ifunsoftware.c3.access.{DataStream, C3System}
 import net.liftweb.common.Box
 import com.ifunsoftware.c3.access.fs.C3Directory
-import net.liftweb.util.TimeHelpers.{now, time}
 import net.liftweb.util.Helpers
 import MessageStorageServiceImpl._
 import org.aphreet.c3.lib.metadata.Metadata._
@@ -19,7 +18,7 @@ import Helpers._
  */
 class MessageStorageServiceImpl extends MessageStorageService with C3Loggable{
 
-  private val metaTags = Set(MSG_CREATOR_META, MSG_DATE_META)
+  private val metaTags = Set(MSG_CREATOR_META)
 
   lazy val c3 = inject[C3System].open_!
 
@@ -39,8 +38,8 @@ class MessageStorageServiceImpl extends MessageStorageService with C3Loggable{
         val md = file. metadata
         Message(group.id.is.toString,
           Box(md.get(MSG_CREATOR_META)).openOr("N/A"),
-          time(Box(md.get(MSG_DATE_META)).map(_.split("-").head.toLong).openOr(now.getTime)),
-          file.versions.head.getData.readContentAsString)
+          file.versions.last.date,
+          file.versions.last.getData.readContentAsString)
       }
 
       messages.sortWith((cd1, cd2) => cd1.creationDate.after(cd2.creationDate))
@@ -53,7 +52,7 @@ class MessageStorageServiceImpl extends MessageStorageService with C3Loggable{
         group <- msg.group ?~ "Group message belongs to is not defined!"
         root <- getGroupMessagesRoot(group)
     } yield {
-      val tagsMap = buildTagsMap(CreatorTag(msg.author.map(_.id.is.toString).openOr("N/A")), DateTag(msg.creationDate.getTime.toString))
+      val tagsMap = buildTagsMap(CreatorTag(msg.author.map(_.id.is.toString).openOr("N/A")))
       root.createFile(msg.creationDate.getTime.toString + "-" + Helpers.md5(msg.content).take(5), tagsMap, DataStream(msg.content))
       msg
     }
@@ -95,4 +94,3 @@ object MessageStorageServiceImpl{
 sealed abstract class MsgMDTag(val name: String, val value: String)
 
 final case class CreatorTag(creator: String) extends MsgMDTag(name = MSG_CREATOR_META, value = creator)
-final case class DateTag(dateStr: String) extends MsgMDTag(name = MSG_DATE_META, value = dateStr)
