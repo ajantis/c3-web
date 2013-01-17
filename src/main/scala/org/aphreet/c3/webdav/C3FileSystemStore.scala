@@ -9,6 +9,11 @@ import com.ifunsoftware.c3.access.fs.C3FileSystemNode
 import java.nio.file.{StandardCopyOption, Files}
 import com.ifunsoftware.c3.access.{C3AccessException, C3ByteChannel, DataStream}
 import javax.servlet.http.HttpServletRequest
+import org.aphreet.c3.model.User
+import net.liftweb.mapper.By
+import org.apache.commons.codec.binary.Base64
+import net.liftweb.common.Full
+import net.sf.webdav.exceptions.{AccessDeniedException, UnauthenticatedException}
 
 class C3FileSystemStore(val root:File) extends IWebdavStore{
 
@@ -17,7 +22,30 @@ class C3FileSystemStore(val root:File) extends IWebdavStore{
   val c3System = C3()
 
   def createPrincipal(request: HttpServletRequest):Principal = {
-    null
+
+    val authHeader = request.getHeader("Authorization")
+
+    if(authHeader != null){
+      val loginPassword = new String(Base64.decodeBase64(authHeader.replaceFirst("Basic\\s+", "") .getBytes("UTF-8")), "UTF-8")
+
+      val credentials = loginPassword.split(":", 2)
+
+      val mail = credentials(0)
+      val password = credentials(1)
+
+      User.find(By(User.email, mail)) match {
+        case Full(user) => {
+          if(user.password.match_?(password)){
+            new C3Principal(user)
+          }
+          else throw new AccessDeniedException()
+        }
+        case _ => throw new AccessDeniedException()
+      }
+
+    }else{
+      throw new UnauthenticatedException()
+    }
   }
 
   def begin(principal: Principal):ITransaction = {
@@ -26,7 +54,9 @@ class C3FileSystemStore(val root:File) extends IWebdavStore{
   }
 
   def checkAuthentication(tx: ITransaction) {
-    log.debug("checkAuthentication()")
+    if(tx.getPrincipal == null){
+      throw new AccessDeniedException()
+    }
   }
 
   def commit(tx: ITransaction) {
@@ -136,5 +166,9 @@ class C3FileSystemStore(val root:File) extends IWebdavStore{
 
   implicit def txToc3Tx(tx:ITransaction):C3Transaction = {
     tx.asInstanceOf[C3Transaction]
+  }
+
+  implicit def principalToC3Princioal(principal: Principal): C3Principal = {
+    principal.asInstanceOf[C3Principal]
   }
 }
