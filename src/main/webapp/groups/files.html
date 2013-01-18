@@ -1,0 +1,61 @@
+<div class="lift:surround?with=default;at=content">
+    <div id="group-tab-wrapper">
+        <div class="tabbable"> <!-- Only required for left/right tabs -->
+            <div class="row-fluid lift:GroupPageFiles.embedTabMenu">
+            </div>
+            <div class="row-fluid">
+                <div class="tab-content">
+
+                    <div id="files" class="lift:GroupPageFiles tag-pane">
+                        <p>We are here <span class="current_path">/this/is/sample/dir/</span></p>
+                        <div class="fs_toolbar well">
+                            <img class="create_dir" src="/images/folder_add_48.png" title="Create directory"/>
+                            <a class="button" href="#upload_form" data-toggle="modal">
+                                <img src="/images/box_upload_48.png" title="Upload files"/>
+                            </a>
+                            <tail>
+                                <link rel="stylesheet" type="text/css" href="/js/file-upload/upload.css"/>
+                                <script  src ="/js/file-upload/upload.js" type="text/javascript"></script>
+                            </tail>
+                        </div>
+
+                        <table class="file-table">
+                            <thead>
+                                <tr>
+                                    <td></td>
+                                    <td class="file-table-name"><b>Name</b></td>
+                                    <td class="file-table-owner"><b>Owner</b></td>
+                                    <td class="file-table-date"><b>Modify date</b></td>
+                                    <td><input type="checkbox" value="false" /></td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="child">
+                                    <td><i class="icon"></i></td>
+                                    <td><a href="#"><span class="name"></span></a></td>
+                                    <td><a href="#">Aphreet</a></td>
+                                    <td class="file-table-date"><span class="created_date"></span></td>
+                                    <td><input type="checkbox" /></td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="upload_form" class='modal popup'>
+        <h1 class = "model-header  my_header">
+            Uploading files
+        </h1>
+        <div class="modal-body">
+            <input type="file" multiple="multiple" class='input'/>
+            <div class= 'dropzone'></div>
+        </div>
+        <div class ="modal-footer">
+            <a id="close" href="#" class = 'cl btn  btn-danger'>Close</a>
+            <a id="upload"  href="#" class = 'cl btn btn-primary   '>Upload</a>
+        </div>
+    </div>
+</div>

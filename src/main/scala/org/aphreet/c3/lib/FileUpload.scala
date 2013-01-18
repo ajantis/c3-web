@@ -8,7 +8,6 @@ package org.aphreet.c3.lib
  * modification, are permitted provided that the following conditions
  * are met:
  *
-
  * 1. Redistributions of source code must retain the above copyright
  * notice, this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above
@@ -30,25 +29,43 @@ package org.aphreet.c3.lib
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
- 
- 
 
 import net.liftweb.http.rest._
 import net.liftweb.json._
 import JsonDSL._
-import net.liftweb.http.{S, InMemoryResponse, JsonResponse}
+import net.liftweb.http.{FileParamHolder, S, InMemoryResponse, JsonResponse}
 import net.liftweb.json.JsonAST.JValue
-import net.liftweb.common.Box
+import net.liftweb.common.{Logger, Box}
+import org.aphreet.c3.lib.DependencyFactory._
+import com.ifunsoftware.c3.access.{DataStream, C3System}
+import org.aphreet.c3.lib.metadata.Metadata._
 
 // for ajax file upload
 object FileUpload extends RestHelper {
+
+  val logger = Logger(FileUpload.getClass)
+  val c3 = inject[C3System].open_!
   serve {
-    case "upload" :: "file" :: Nil Post req => {
-      println("uploaded "+req.uploadedFiles)
+    case "upload" :: "file" :: currentPath Post req => {
+      logger.info("Uploaded files: " + req.uploadedFiles)
+
+      // we imply that currently "metadata" is a list of tags
+      val fileMetadata: Map[String, String] = req param("metadata") map(s => Map((TAGS_META -> s))) openOr Map()
+
+      val filePath: List[String] = currentPath match {
+        case List("index") => Nil
+        case xs => xs
+      }
+
+      logger.info("Path to upload: " + filePath)
+
       val ojv: Box[JValue] =
-        req.uploadedFiles.map(fph => ("name" -> fph.fileName) ~
-                              ("type" -> fph.mimeType) ~
-                              ("size" -> fph.file.length)).headOption
+        req.uploadedFiles.map(fph => {
+            uploadToC3(fph, filePath, fileMetadata)
+            ("name" -> fph.fileName) ~
+            ("type" -> fph.mimeType) ~
+            ("size" -> fph.file.length)
+        }).headOption
 
       val ajv = ("name" -> "n/a") ~ ("type" -> "n/a") ~ ("size" -> 0L) ~ ("yak" -> "brrrr")
 
@@ -60,5 +77,11 @@ object FileUpload extends RestHelper {
                        ("Content-Type", "text/plain") :: S.getHeaders(Nil),
                        S.responseCookies, 200)
     }
+  }
+
+  private def uploadToC3(fph: FileParamHolder, filePath: List[String], metadata: Map[String, String]){
+    logger info String.format("Uploading file %s to C3..", fph.name)
+    c3.getFile(filePath.mkString("/", "/", "")).asDirectory.createFile(fph.fileName, metadata, DataStream(fph.file))
+    logger info String.format("File %s is uploaded to C3!", fph.name)
   }
 }

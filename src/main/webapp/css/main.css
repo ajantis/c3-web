@@ -470,3 +470,53 @@ a.vm_link:hover{
 /*********************************************************
 * End VM service part
 *********************************************************/
+
+/*********************************************************
+* Begin Categories part
+*********************************************************/
+.categories{
+    list-style:none;
+    width:150px;
+    background: #bdbdbd;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+
+}
+.category_tags{
+    list-style:none;
+    position:absolute;
+    display:none;
+    width:140px;
+    min-height:100px;
+    top:0px;
+    right:-195px;
+    background: #bdbdbd;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+
+}
+.category_cont:hover{
+    cursor:pointer;
+
+
+}
+.category_cnt{
+    position:relative;
+
+}
+.cat_tags{
+    margin-left:-25px;
+    float:left;
+
+}
+.cat_tags:hover{
+    cursor:pointer;
+    text-decoration:underline;
+
+
+}
+/*********************************************************
+* End Categories part
+*********************************************************/

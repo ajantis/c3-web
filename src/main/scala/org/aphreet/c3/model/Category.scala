@@ -1,6 +1,8 @@
 package org.aphreet.c3.model
 
 import net.liftweb.mapper._
+import net.liftweb.util.FieldError
+import net.liftweb.common.Full
 
 /**
  * Copyright (c) 2011, Dmitry Ivanov
@@ -32,19 +34,35 @@ import net.liftweb.mapper._
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
- 
- 
- 
-class Category extends LongKeyedMapper[Category] with IdPK {
+
+class Category extends LongKeyedMapper[Category] with IdPK with OneToMany[Long, Category]{
 
   def getSingleton = Category
 
-  object user extends MappedLongForeignKey(this, User)
+   object name extends MappedString(this,64){
+    override def validations = nonEmpty _ :: isUnique _ :: Nil
 
-  object name extends MappedString(this,64)
+    private def isUnique(s: String): List[FieldError] = {
+      if(!Category.find(Cmp(Category.name, OprEnum.Eql, Full(s.toLowerCase), None, Full("LOWER"))).isEmpty)
+        List(FieldError(this, "Category with name " + s + " already exists"))
+      else Nil
+    }
 
-  def tags : List[Tag] = Tag.findAll(By(Tag.category, this))
+    private def nonEmpty(s: String) =
+      if(s.isEmpty) List(FieldError(this, "Category's name cannot be empty"))
+      else Nil
 
+  }
+
+  object tags extends MappedOneToMany(Tag, Tag.category)
+
+  // TODO ajantis: find some standard cascading approach
+  override def delete_! = {
+    this.tags.foreach(_.delete_!)
+    super.delete_!
+  }
+
+  object linkedGroup extends MappedLongForeignKey(this, Group)
 
 }
 

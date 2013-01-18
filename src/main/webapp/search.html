@@ -1,78 +1,49 @@
-<lift:surround with="default">
-
-    <lift:bind-at name="content-header">
-        Search
-    </lift:bind-at>
-
-
-    <lift:bind-at name="content">
-        <lift:SearchSnippet.search form="post">
-
-            <div>
-                <search:query search:size="60"></search:query> <search:submit/>
-            </div>
-
-            <br/>
-
-            <div>
-                <table class="file-table">
-                    <thead>
-                    <tr>
-                        <td></td>
-                        <td class="file-table-name">Name</td>
-                        <td class="file-table-owner">Path</td>
-                        <td class="file-table-date">Modify date</td>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <search:resultSet>
-                        <tr>
-
-                            <td>
-                                <entry:type/>
-                            </td>
-                            <td>
-                                <entry:resource_path/>
-                            </td>
-                            <td>
-                                <entry:full_path/>
-                            </td>
-                            <td class="file-table-date">
-                                <entry:created/>
-                            </td>
-                        </tr>
-                    </search:resultSet>
-                    </tbody>
-                </table>
-            </div>
-
-
-        </lift:SearchSnippet.search>
-    </lift:bind-at>
-
-    <lift:bind-at name="right-panel-content">
-        <div class="right-panel-content">
-            <div class="right-panel-section right-panel-section-first">
-
-                <span>Pick a category or tag</span>
-                <div>
-                    <lift:SearchSnippet.search form="post">
-                        <ul>
-                            <search:user_categories>
-                                <li><a href="#"><category:name/></a>
-                                    <ul>
-                                        <category:tags>
-                                            <li><a href="#"><tag:name/></a></li>
-                                        </category:tags>
-                                    </ul>
-                                </li>
-                            </search:user_categories>
-                        </ul>
-                    </lift:SearchSnippet.search>
+<div class="lift:surround?with=default">
+    <div class="lift:bind-at?name=left-panel">
+        <div class="lift:SearchSnippet.categories">
+            <ul class="categories" role="menu" aria-labelledby="dLabel">
+                <li class="category_cnt dropdown-submenu">
+                    <div class="con_category" tabindex="-1">
+                        <div class="category_cont" >Categories</div>
+                        <a class="linkGroup" href="#">[+]</a>
+                    </div>
+                    <ul class="category_tags">
+                        <span class="label margn">Tags</span>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="lift:bind-at?name=content">
+        <div class="lift:SearchSnippet.result">
+            <div class="conteyner_result">
+                <a class="header_search"></a>
+                <div class="fragment_search">'You ought to be ashamed of yourself for asking such a simple question,' added the Gryphon; and then they both sat silent and looked at poor Alice, who felt ready to sink into the earth. At last the Gryphon said to the Mock Turtle, 'Drive on, old fellow! Don't be all day about it!' and he went on in these words:
+                    'Yes, we went to school in the sea, though you mayn't believe it—'
+                    'I never said I didn't!' interrupted Alice.
+                    'You did,' said the Mock Turtle.
                 </div>
+                <div>
+                    <span class="badge badge-success date_create">Posted 2012-08-02 20:47:04</span>
+                </div>
+                <hr/>
+
             </div>
         </div>
-
-    </lift:bind-at>
-
-</lift:surround>
+    </div>
+    <div class="lift:bind-at?name=categories_search">
+        <div class="lift:SearchSnippet.search">
+            <form class="lift:SearchSnippet.render?form=post form-search search_categories">
+                    <div class="input-append">
+                        <div class="text_size">
+                            <div class="flt">
+                            </div>
+                            <input name="tags" class="disp_none tags_input"/>
+                            <input name="query" type="text" class="span2 text_search" placeholder="Edit text..."/>
+                        </div>
+                        <button type="submit" class="btn btn_search">Search</button>
+                    </div>
+            </form>
+         </div>
+    </div>
+</div>

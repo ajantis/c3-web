@@ -1,0 +1,43 @@
+<html>
+
+<head>
+
+
+
+<meta charset="utf-8">
+<link rel="stylesheet" type="text/css" href="upload.css">
+<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+
+
+
+<script src="http://code.jquery.com/jquery-1.8.2.js"></script>
+<script src="js/bootstrap.min.js"></script>
+
+<script  src ="upload.js" type="text/javascript"></script>
+
+</head>
+
+<body>
+
+<p id = 'pressme'  data-toggle="modal" href="#myModal">
+	press me
+</p>
+<div class = ' modal popup' id="myModal">
+<h1 class = "model-header">
+Uploading files
+</h1>
+
+	<div class="modal-body">
+
+<input type="file" multiple class='input'>
+<div class= 'dropzone'></div>
+
+</div>
+<div class ="model-footer">
+<a id="close" href="#" class = 'cl btn  btn-danger'>Close</a>
+<a id="upload"  href="#" class = 'cl btn btn-primary   '>Upload</a>
+</div>
+</div>
+</body>
+
+</html>

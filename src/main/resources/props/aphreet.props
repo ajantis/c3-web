@@ -1,0 +1,9 @@
+# Properties in this file will be read when running in dev mode
+c3_host=http://node0.c3.ifunsoftware.com
+#c3_context_path=/rest/fs/
+c3_domain_name=anonymous
+c3_domain_secret=
+
+default_admin_email=mikhail@malygin.me
+default_admin_password=admin
+

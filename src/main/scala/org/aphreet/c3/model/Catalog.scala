@@ -1,11 +1,3 @@
-package org.aphreet.c3.model
-
-import org.aphreet.c3.apiaccess.C3Client
-import xml.NodeSeq
-import java.util.Date
-import net.liftweb.util.TimeHelpers
-
-
 /**
  * Copyright (c) 2011, Dmitry Ivanov
  * All rights reserved.
@@ -36,24 +28,23 @@ import net.liftweb.util.TimeHelpers
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+
+package org.aphreet.c3.model
+
+import java.util.Date
+import net.liftweb.util.TimeHelpers
  
- 
- 
-class Catalog(val group : Group, val name : String,val create : Date , val tags : List[String]) extends C3Resource with C3ResourceMapping[Catalog] {
+class Catalog(val group : Group, val name : String,val created : Date , val tags : List[String]) extends C3Resource with C3ResourceMapping[Catalog] {
 
   val resourceType = C3Resource.C3_DIRECTORY
 
   var owner = ""
 
-
   def saveToC3() : Boolean = {
-    C3Client().createDir(group.name+"/files/"+name)
+    false
   }
-
-
-
 }
 
 object Catalog {
-  def apply(group : Group, name : String, createDate : Date = TimeHelpers.now, tags : List[String] = List()) = new Catalog(group = group,name = name, create = createDate, tags = tags)
+  def apply(group : Group, name : String, created : Date = TimeHelpers.now, tags : List[String] = List()) = new Catalog(group = group,name = name, created = created, tags = tags)
 }

@@ -1,8 +1,29 @@
-<div class="lift:surround?with=default;at=content">
-    <div class="content-header">
-		<h1>My categories</h1>
+<div class="lift:surround?with=default">
+    <div class="lift:bind-at?name=content">
+        <div class="CategoryListPage.adm add_cat">
+            <div class="btn" id="category_name_1">+ Add</div>
+            <form id="category_name_2" class="lift:CategoryListPage.render?form=post category_name_hide">
+                <input name="categories" placeholder="Enter category name..."/>
+                <button type="submit" value="submit">Add</button>
+            </form>
+        </div>
+        <div class="lift:CategoryListPage.list">
+            <div class="well table">
+                <h2 class="muted">Economy</h2>
+                <div class="label-info label_tag">
+                    <span class="tags_orient">Tags1</span>
+                    <button type="submit" class="close close_orient">&times;</button>
+                </div>
+                <hr/>
+                <div class="lift:AddTag.adm add_cat">
+                    <div class="btn tagAddButton">+ Add</div>
+                    <form class="lift:AddTag.render?form=post category_name_hide tagNameForm">
+                        <input class="inputCateg disp_none" name="categoryName"/>
+                        <input name="TagName" placeholder="Enter tag name..."/>
+                        <button type="submit" value="submit">Add</button>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
-
-    <h3>List of user's categories</h3>
-
 </div>

@@ -1,0 +1,6 @@
+c3_host=http://node0.c3.ifunsoftware.com
+c3_domain_name=dev-delarko
+c3_domain_secret=1d02ab56fffb585c201ee68de8485773
+
+default_admin_email=admin@admin.com
+default_admin_password=admin

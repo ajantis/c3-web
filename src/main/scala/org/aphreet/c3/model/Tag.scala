@@ -30,17 +30,29 @@ package org.aphreet.c3.model
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
- 
-
 import net.liftweb.mapper._
- 
+import net.liftweb.util.FieldError
+import net.liftweb.common.Full
+
 class Tag extends LongKeyedMapper[Tag] with IdPK {
 
   def getSingleton = Tag
 
   object category extends MappedLongForeignKey(this,Category)
 
-  object name extends MappedString(this, 256)
+  object name extends MappedString(this, 256){
+    override def validations = nonEmpty _ :: isUniqueWithinCategory _ :: Nil
+
+    private def isUniqueWithinCategory(s: String): List[FieldError] = {
+      if(!Tag.find(Cmp(Tag.name, OprEnum.Eql, Full(s.toLowerCase), None, Full("LOWER")), By(Tag.category, category)).isEmpty)
+        List(FieldError(this, "Tag with name " + s + " already exists within category"))
+      else Nil
+    }
+
+    private def nonEmpty(s: String) =
+      if(s.isEmpty) List(FieldError(this, "Tag's name cannot be empty"))
+      else Nil
+  }
 
 
 }

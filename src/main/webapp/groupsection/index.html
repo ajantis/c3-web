@@ -1,47 +1,42 @@
 <lift:surround with="default">
-   <lift:GroupForm.groupOverview>
-    <lift:bind-at name="content-header">
-       <group:name/>
-    </lift:bind-at>
+   <div class="lift:GroupListPage.groupOverview">
+        <lift:bind-at name="content-header">
+           <group:name></group:name>
+        </lift:bind-at>
 
-    <lift:bind-at name="content">
+        <lift:bind-at name="content">
 
-            <div>
-
-
+                <div>
                     <p><b>Description:</b> </p>
-                    <group:description/> <br/>
+                    <group:description></group:description> <br/>
 
                     <p><b>Owner:</b> </p>
-                    <group:owner/> <br/>
+                    <group:owner></group:owner> <br/>
 
                     <p><b>Members:</b> </p>
                     <ul>
                     <group:users>
-                        <li><user:email/></li>
+                        <li><user:email></user:email></li>
                     </group:users>
                     </ul>
-
-            </div>
-
-
-    </lift:bind-at>
-  </lift:GroupForm.groupOverview>
+                 </div>
+        </lift:bind-at>
+    </div>
 
     <lift:bind-at name="right-panel-content">
         <div class="right-panel-content">
             <div class="right-panel-section right-panel-section-first">
-                <lift:GroupForm.groupMenu>
+                <div class="lift:GroupListPage.groupMenu">
                     <span><group:name></group:name></span>
                     <div>
                         <ul>
-                            <li><group:overviewLink></group:overviewLink></li>
-                            <li><group:filesLink></group:filesLink></li>
-                            <li><group:wikiLink></group:wikiLink></li>
-                            <li><group:adminLink></group:adminLink></li>
+                            <li><group:overview_link></group:overview_link></li>
+                            <li><group:files_link></group:files_link></li>
+                            <li><group:wiki_link></group:wiki_link></li>
+                            <li><group:admin_link></group:admin_link></li>
                         </ul>
                     </div>
-                </lift:GroupForm.groupMenu>
+                </div>
             </div>
             <div class="right-panel-section">
                 

@@ -1,5 +1,3 @@
-package org.aphreet.c3.snippet
-
 /**
  * Copyright (c) 2011, Dmitry Ivanov
  * All rights reserved.
@@ -30,14 +28,17 @@ package org.aphreet.c3.snippet
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+package org.aphreet.c3.snippet
+
 import net.liftweb._
 import common.{Logger, Full, Empty, Box}
 import http._
 import util._
 import Helpers._
 import javax.activation.MimetypesFileTypeMap
-import org.aphreet.c3.apiaccess.{C3ClientException, C3Client}
 import org.apache.commons.httpclient.util.URIUtil
+import org.aphreet.c3.lib.DependencyFactory.inject
+import com.ifunsoftware.c3.access.{C3System, C3AccessException, DataStream}
 
 /**
  * Attach a function to the uploaded file.
@@ -46,6 +47,8 @@ import org.apache.commons.httpclient.util.URIUtil
 
 class UploadFileAjax {
 
+  val c3 = inject[C3System].open_!
+  
   val logger = Logger(classOf[UploadFileAjax])
 
   // the request-local variable that hold the upload path (in c3) file parameter
@@ -53,7 +56,7 @@ class UploadFileAjax {
 
   private def uploadFile(fph: FileParamHolder, uploadMethod: (Array[Byte], Map[String,String]) => Unit ) = {
 
-    println("Got a file "+fph.fileName)
+    logger.debug("Got a file "+fph.fileName)
 
     // this simple technique helps to predict uploaded file's type by it's name
     val mimeType: String = new MimetypesFileTypeMap().getContentType(fph.fileName)
@@ -66,13 +69,13 @@ class UploadFileAjax {
 
         }
         catch {
-            case e: C3ClientException => {
+            case e: C3AccessException => {
               S.error(e.toString)
             }
         }
       }
       case _ => {
-        println("Unknown upload c3 path for "+fph.fileName)
+        logger.warn("Unknown upload c3 path for "+fph.fileName)
       }
     }
 
@@ -81,20 +84,28 @@ class UploadFileAjax {
 
   def render = "type=file [name]" #> {
 
-    theUploadPath(if(S.uri.contains("/group/")) Full(S.uri.split("/group/").last+"/") else Empty)
+    theUploadPath(if(S.uri.contains("/group/")) Full(S.uri.split("/group/", 2).last+"/") else Empty)
 
     SHtml.fileUpload(fph => {
-      uploadFile(fph,C3Client().uploadFileToPath(URIUtil.decode(theUploadPath.open_!,"UTF-8") + fph.fileName) )
+      uploadFile(fph, uploadFileToPath(URIUtil.decode(theUploadPath.open_!,"UTF-8"), fph.fileName) )
     }).attribute("name").get
   }
 
   def update = "type=file [name]" #> {
 
-    theUploadPath(if(S.uri.contains("/group/")) Full(S.uri.split("/group/").last) else Empty)
+    theUploadPath(if(S.uri.contains("/group/")) Full(S.uri.split("/group/", 2).last) else Empty)
 
     SHtml.fileUpload(fph => {
-      uploadFile(fph,C3Client().updateFile(URIUtil.decode(theUploadPath.open_!,"UTF-8")) )
+      uploadFile(fph, updateFile(URIUtil.decode(theUploadPath.open_!,"UTF-8")) )
     }).attribute("name").get
+  }
+  
+  def uploadFileToPath(path:String, name:String)(data:Array[Byte], metadata:Map[String, String]){
+    c3.getFile("/" + path).asDirectory.createFile(name, metadata, DataStream(data))
+  }
+  
+  def updateFile(path:String)(data:Array[Byte], metadata:Map[String, String]){
+    c3.getFile("/" + path).update(metadata, DataStream(data))
   }
 
 

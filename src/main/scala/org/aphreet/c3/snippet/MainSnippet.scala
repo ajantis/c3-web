@@ -1,14 +1,3 @@
-package org.aphreet.c3.snippet
-
-import org.aphreet.c3.model.{Group, User}
-import net.liftweb.mapper.MaxRows
-import net.liftweb.sitemap.Loc
-import net.liftweb.http.{GetRequest, Req, SHtml, S}
-import xml.{XML, Text, NodeSeq}
-import net.liftweb.common.Full
-import net.liftweb.widgets.autocomplete.AutoComplete
-import org.apache.commons.httpclient.util.URIUtil
-
 /**
  * Copyright (c) 2011, Dmitry Ivanov
  * All rights reserved.
@@ -40,35 +29,49 @@ import org.apache.commons.httpclient.util.URIUtil
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-import net.liftweb.util.BindHelpers._
- 
- 
-class MainSnippet  {
+package org.aphreet.c3.snippet
 
-  def currentUser(html: NodeSeq) : NodeSeq = {
+import org.aphreet.c3.model.{Group, User}
+import net.liftweb.mapper.MaxRows
+import net.liftweb.sitemap.Loc
+import net.liftweb.http.S
+import xml.{Text, NodeSeq}
+import net.liftweb.common.Full
+import net.liftweb.widgets.autocomplete.AutoComplete
+
+import net.liftweb.util.BindHelpers._
+import net.liftweb.util.PassThru
+
+
+class MainSnippet  {
+  def currentUser = {
     User.currentUser match {
       case Full(user) => {
-        bind("user", html,
-          "email" -> user.email.is
-        )
+        ".username" #> user.shortName &
+        ".user ^*" #> PassThru &
+        ".not_logged_in" #> NodeSeq.Empty
       }
-      case _ => NodeSeq.Empty
+      case _ =>
+        ".user" #> NodeSeq.Empty &
+        ".not_logged_in ^*" #> PassThru
     }
   }
 
   def myGroupsList(html: NodeSeq) : NodeSeq = {
 
-     if(User.loggedIn_?) {
-       bind("myGroupsList", html,
-        "groups" -> { (ns: NodeSeq) => User.currentUser.open_!.groups.flatMap(group => bind("group", ns,
-                          "name" -> group.asInstanceOf[Group].name.is)):NodeSeq
+    if(User.loggedIn_?) {
+      bind("myGroupsList", html,
+        "groups" -> { (ns: NodeSeq) =>
+          User.currentUser.open_!.groups.flatMap(group =>
+            bind("group", ns,
+              "name" -> group.asInstanceOf[Group].name.is)):NodeSeq
         }
 
-       )
-     }
-     else {
-       Text("Please, log in the system or sign up.")
-     }
+      )
+    }
+    else {
+      Text("Please, log in the system or sign up.")
+    }
   }
 
 
@@ -80,13 +83,16 @@ class MainSnippet  {
 
     if(!featuredGroups.isEmpty)
       bind("featuredGroups", html,
-      "groups" -> {(ns: NodeSeq) => featuredGroups.flatMap( group => bind("group", ns,
-        "name" -> <a href={"/group/"+group.name}>{group.name}</a>)):NodeSeq})
-    else Text("There are no groups in db currently.")
+        "groups" -> {(ns: NodeSeq) => featuredGroups.flatMap( group =>
+          bind("group", ns,
+            "name" -> <a href={"/group/"+group.name}>{group.name}</a>)):NodeSeq})
+    else 
+      Text("There are no groups in db currently.")
 
   }
 
-  def breadCrumbs(html: NodeSeq) : NodeSeq = {
+  def breadCrumbs = {
+    /*
     val breadcrumbs: List[Loc[_]] =
       for {
         currentLoc <- S.location.toList
@@ -95,24 +101,31 @@ class MainSnippet  {
       } yield loc
 
 
-    if(S.param("rewrite").isEmpty) {
-      bind("breadCrumbsMenu", html,
-          "breadCrumbs" -> {(ns: NodeSeq) => {breadcrumbs.flatMap( loc =>
-              if(! loc.createDefaultLink.get.text.contains("index"))
-
-                bind("breadCrumb", ns,
-                  "link" -> <a href={loc.createDefaultLink.get}>{loc.title}</a> //SHtml.link(loc.linkText.toString,() => {}, loc.title)
-
-
-                )
-
-              else NodeSeq.Empty
-          ): NodeSeq} }
+    def buildBreadCrumbs(brdCrmbs: List[(String, String)]) = {
+      "bcrumb_item *" #> brdCrmbs.filter(_._2 != "").map(
+        linkWithName =>
+          ".bcrumb_link [href]" #> linkWithName._1 &
+            ".bcrumb_link *" #> linkWithName._2
       )
     }
+
+    if(S.param("rewrite").isEmpty) {
+      User.currentUser match {
+        case Full(user) => {
+          // TODO rewrite
+          ".bcrumb_item *" #> breadcrumbs.
+            filter(loc => !loc.createDefaultLink.get.text.contains("index")).map{ loc =>
+            ".bcrumb_link [href]" #> loc.createDefaultLink.get &
+            ".bcrumb_link *" #> loc.title
+          }
+        }
+        case _ =>{
+          ".breadcrumb" #> NodeSeq.Empty
+        }
+      }
+    }
     else {
-      S.param("rewrite").open_! match
-      {
+      S.param("rewrite").open_! match {
         case "groupFiles" => {
           val groupname = S.param("groupname").open_!
 
@@ -125,47 +138,18 @@ class MainSnippet  {
 
           val brdCrmbList : List[(String,String)] = Tuple2("/group/"+groupname,groupname) :: Tuple2("/group/"+groupname+"/files", "Files") :: groupDirLinkLst
 
-          bind("breadCrumbsMenu", html,
-              "breadCrumbs" -> {(ns: NodeSeq) => {brdCrmbList.filter(_._2 != "").flatMap(linkWithName =>
-                    bind("breadCrumb", ns,
-                      "link" -> <a href={linkWithName._1}>{linkWithName._2}</a>
-                    )
-              ): NodeSeq} }
-          )
+          buildBreadCrumbs(brdCrmbList)
         }
         case "groupOverview" => {
-           val groupname = S.param("groupname").open_!
-           val brdCrmbList : List[(String,String)] = Tuple2("/group/"+groupname,groupname) :: Nil
+          val groupname = S.param("groupname").open_!
+          val brdCrmbList : List[(String,String)] = Tuple2("/group/"+groupname,groupname) :: Nil
 
-           bind("breadCrumbsMenu", html,
-              "breadCrumbs" -> {(ns: NodeSeq) => {brdCrmbList.filter(_._2 != "").flatMap(linkWithName =>
-                    bind("breadCrumb", ns,
-                      "link" -> <a href={linkWithName._1}>{linkWithName._2}</a>
-                    )
-              ): NodeSeq} }
-           )
-        }
-        case "vmOverview" => {
-
-          val vmName = S.param("vmName").open_!
-
-          val brdCrmbList : List[(String,String)] = ("/vmservice/","VM Service") :: ("/vmservice/vm/"+URIUtil.encodeQuery(vmName,"UTF-8"),vmName) :: Nil
-
-          bind("breadCrumbsMenu", html,
-               "breadCrumbs" -> {(ns: NodeSeq) => {
-                 brdCrmbList.flatMap(linkWithName =>
-                    bind("breadCrumb", ns,
-                      "link" -> <a href={linkWithName._1}>{linkWithName._2}</a>
-                    )
-              ): NodeSeq} }
-          )
+          buildBreadCrumbs(brdCrmbList)
         }
         case _ => NodeSeq.Empty // TODO implement
       }
-
-    }
-
-
+    }*/
+    PassThru
   }
 
 

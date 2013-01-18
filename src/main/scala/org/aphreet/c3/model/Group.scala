@@ -1,12 +1,3 @@
-package org.aphreet.c3.model
-
-import net.liftweb.mapper._
-import net.liftweb.util.FieldError
-import xml.Text
-import net.liftweb.common.Box
-import net.liftweb.http.SHtml
-import org.aphreet.c3.apiaccess.{C3Client}
-
 /**
  * Copyright (c) 2011, Dmitry Ivanov
  * All rights reserved.
@@ -37,7 +28,15 @@ import org.aphreet.c3.apiaccess.{C3Client}
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
- 
+package org.aphreet.c3.model
+
+import net.liftweb.mapper._
+import net.liftweb.util.FieldError
+import xml.{NodeSeq, Text}
+import net.liftweb.common.{Full, Box}
+import net.liftweb.http.SHtml
+import org.aphreet.c3.apiaccess.C3
+import net.liftweb.util.Helpers._
 
 class Group extends LongKeyedMapper[Group] with IdPK with ManyToMany{
 
@@ -46,7 +45,7 @@ class Group extends LongKeyedMapper[Group] with IdPK with ManyToMany{
   def getSingleton = Group
 
   object owner extends MappedLongForeignKey(this,User){
-    override def toForm = Box(SHtml.selectObj[User](User.findAll.map(user => (user,user.email.is)),User.currentUser, usr => thisgroup.owner(usr)))
+    override def toForm = Box.!!(SHtml.selectObj[User](User.findAll().map(user => (user,user.email.is)),User.currentUser, usr => thisgroup.owner(usr)))
   }
 
   object users extends MappedManyToMany(UserGroup, UserGroup.group, UserGroup.user, User)
@@ -58,13 +57,18 @@ class Group extends LongKeyedMapper[Group] with IdPK with ManyToMany{
   }
 
   object name extends MappedString(this,64){
+    override def validations = nonEmpty _ :: isUnique _ :: Nil
 
     def isUnique(s: String): List[FieldError] = {
-      if(!Group.find(By(Group.name,s),NotBy(Group.id,thisgroup.id)).isEmpty ) List(FieldError(this,Text("Group with this name already exists")))
+      if(!Group.find(Cmp(Group.name, OprEnum.Eql, Full(s.toLowerCase), None, Full("LOWER"))).isEmpty )
+        List(FieldError(this, "Group with name " + s + " already exists"))
       else Nil
     }
+    private def nonEmpty(s: String) =
+      if(s.isEmpty) List(FieldError(this, "Groups's name cannot be empty"))
+      else Nil
 
-    override def validations = isUnique _ :: super.validations
+
   }
 
   object isOpenRegistration extends MappedBoolean(this){
@@ -75,44 +79,40 @@ class Group extends LongKeyedMapper[Group] with IdPK with ManyToMany{
     override def defaultValue = true
   }
 
-  object plabAccess extends MappedBoolean(this) {
-    override def defaultValue = false
-  }
-
-  def getChildren(): List[C3Resource] = getChildren("")
+  def getChildren: List[C3Resource] = getChildren("")
 
   def getChildren(directory: String) : List[C3Resource] = {
 
     var resources: List[C3Resource] = List()
 
-    for( node <- C3Client().listResources(pathToDirectory = this.name.is+"/files" + directory)) {
-
-      val resName = (node \ "@name") text
-
-      if( ((node \ "@leaf") text).toBoolean ){
-        // File () ?? // TODO
-        resources = File(group = this, fullpath = directory + "/" + resName) :: resources
-      }else{
-        resources = Catalog( name = resName, group = this ) :: resources
+    val children = C3().getFile(baseFilePath + directory).asDirectory.children()
+    
+    for(child <- children){
+      if(child.isDirectory){
+        resources = Catalog( name = child.name, group = this, created = child.versions.head.date) :: resources
+      } else{
+        resources = File(group = this, fullpath = directory + "/" + child.name, created = child.versions.head.date) :: resources
       }
     }
     resources
+  }
 
-  }
-  def createCatalog (catalogName : String) : Boolean = {
-    C3Client().createDir(this.name.is+"/files/"+catalogName)
-  }
+  def getFile(path: String): Box[File] = tryo {
+      C3().getFile(baseFilePath + path)
+      File(group = this, fullpath = path) }
+
 
   override def delete_! : Boolean = {
     for(user <- users) {
-      UserGroup.find(By(UserGroup.user,user),By(UserGroup.group,this)).map(_.delete_!).openOr()
+      UserGroup.find(By(UserGroup.user,user), By(UserGroup.group,this)).map(_.delete_!).openOr()
     }
+    Category.find(By(Category.linkedGroup,this)).map(_.delete_!).openOr()
     super.delete_!
   }
 
+  def baseFilePath = "/" + this.id.is + "/files"
 
-
-
+  def createLink: NodeSeq = Text("/groups/" + id.is)
 }
 
 object Group extends Group with LongKeyedMetaMapper[Group] {
@@ -120,5 +120,7 @@ object Group extends Group with LongKeyedMetaMapper[Group] {
   override def dbTableName = "groups"
 
   override def fieldOrder = name :: Nil
+
+  def findByName(name: String) = find(By(Group.name, name))
 
 }

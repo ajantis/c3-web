@@ -1,72 +1,19 @@
-<lift:surround with="default">
+<lift:surround with="default" at="content">
 
-    <lift:bind-at name="content-header">Welcome to Plab Portal!</lift:bind-at>
+    <div class="hero-unit">
 
-    <lift:bind-at name="content">
-        <div>
-            <p>
-                Plab Portal is based on <b>C3 system</b> storage.
-            </p>
-            <p>
-                <b>Plab</b> is an abbreviation for <b>Performance Laboratory</b>.
-                It is an academic platform for a performance testing and measurements.
-                This site provides access to it's set of services.
-            </p>
-            <!--
-            <p>
-                <strong>C3</strong> is an abbreviation for "<strong>Content</strong>, <strong>Collaboration</strong>, <strong>Communication</strong>".
-            </p>
-            <p>
-                The main goal of the system is to provide access to non-structured information storage
-                and give opportunity to share your knowledge artifacts among others with ease.
-            </p>
-              -->
-            <!--
-            <lift:MainSnippet.sample form="post">
-                    Test for auto complete widget: <br/>
-                    <p>Type a name here: <f:find_name /></p>
-            </lift:MainSnippet.sample> -->
+        <h1><a href="http://csnews.ifmo.ru/" ><img src="/images/vt_logo.png" style="padding-bottom: 50px"/></a> Welcome to CSE vLab!</h1>
 
-            <!--
-            <lift:OpenID.renderForm>
-                         <openId:renderForm/>
-            </lift:OpenID.renderForm> -->
+        <p>
+            <b>CSE vLab</b> is a web portal that uses all C3 system's storage power. Here you can participate in groups or create you own groups, share you files and documents, and search for knowledge.
+        </p>
+        <p>
+            <a class="btn btn-primary btn-large" href="/about.html">
+                Learn more
+            </a>
+        </p>
 
-
-        </div>
-    </lift:bind-at>
-
-    <lift:bind-at name="right-panel-content">
-        <div class="right-panel-content">
-            <div class="right-panel-section right-panel-section-first">
-                <span>Featured groups</span>
-                <div>
-                    <ul>
-                        <lift:snippet type="MainSnippet.featuredGroups">
-                            <featuredGroups:groups>
-                                <li><group:name></group:name></li>
-                            </featuredGroups:groups>
-                        </lift:snippet>
-                    </ul>
-                </div>
-            </div>
-            <div class="right-panel-section">
-                <span>My groups</span>
-                <div>
-                    <ul>
-                        <lift:snippet type="MainSnippet.myGroupsList">
-                            <myGroupsList:groups>
-                                <li>
-                                    <group:name></group:name>
-                                </li>
-                            </myGroupsList:groups>
-                        </lift:snippet>
-                    </ul>
-                </div>
-            </div>
-        </div>
-
-    </lift:bind-at>
+    </div>
 
 </lift:surround>
 

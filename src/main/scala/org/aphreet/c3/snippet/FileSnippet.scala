@@ -1,15 +1,3 @@
-package org.aphreet.c3.snippet
-
-import org.aphreet.c3.model.Group
-import net.liftweb.mapper.By
-import org.aphreet.c3.apiaccess.{C3ClientException, C3Client}
-import net.liftweb.common.{Logger, Empty, Full}
-import net.liftweb.util.BindHelpers._
-import net.liftweb.http.{SHtml, S}
-import xml.{Text, NodeSeq}
-import org.apache.commons.httpclient.util.URIUtil
-
-
 /**
  * Copyright (c) 2011, Dmitry Ivanov
  * All rights reserved.
@@ -18,7 +6,6 @@ import org.apache.commons.httpclient.util.URIUtil
  * modification, are permitted provided that the following conditions
  * are met:
  *
-
  * 1. Redistributions of source code must retain the above copyright
  * notice, this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above
@@ -40,12 +27,25 @@ import org.apache.commons.httpclient.util.URIUtil
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
- 
- 
- 
+package org.aphreet.c3.snippet
+
+import org.aphreet.c3.model.Group
+import net.liftweb.mapper.By
+import net.liftweb.common.{Logger, Full}
+import net.liftweb.util.BindHelpers._
+import net.liftweb.http.S
+import xml.NodeSeq
+import org.apache.commons.httpclient.util.URIUtil
+import org.aphreet.c3.apiaccess.C3
+import com.ifunsoftware.c3.access.C3AccessException
+
 class FileSnippet {
 
   val logger = Logger(classOf[FileSnippet])
+  
+  def fileDirectory(group:String):String = {
+    "/" + group + "/files/"
+  }
 
   def overview(html: NodeSeq) : NodeSeq = {
     S.param("groupname") match {
@@ -57,10 +57,9 @@ class FileSnippet {
             S.param("filepath") match {
               case Full(filepath) => {
                 // TODO C3 get resource
-                //S notice "filepath is full" + filepath
-
                 try{
-                  val resMD = C3Client().getNodeMetadata(groupName+"/files/"+filepath)
+
+                  C3().getFile(fileDirectory(groupName) + filepath).metadata
 
                   val fileName = filepath.split("/").last
                   val url = URIUtil.encodeQuery("/download/"+groupName+"/files/"+filepath,"UTF-8")
@@ -69,13 +68,13 @@ class FileSnippet {
                     "preview" -> <iframe src={url}></iframe>,
                     "group_name" -> groupName,
                     "file_name" -> fileName,
-                    "url" -> ( (ns: NodeSeq) => <a href={url}>{ns}</a> ),
-                    "md" -> resMD
+                    "url" -> ( (ns: NodeSeq) => <a href={url}>{ns}</a> )
+                    //"md" -> resMD
                   )
 
                 }
                 catch {
-                  case e: C3ClientException => {
+                  case e: C3AccessException => {
                     S error e.toString
                     logger error e.toString
                     NodeSeq.Empty
