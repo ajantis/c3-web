@@ -60,6 +60,7 @@ class GroupFormTest  extends TestCase {
 
     Schemifier.schemify(true, Schemifier.infoF _, User, Group, UserGroup)
   }
+
   override def tearDown(){
     // tear down your db here
     User.currentUser.map (user => user.delete_!).openOr(false)

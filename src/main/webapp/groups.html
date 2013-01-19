@@ -25,6 +25,16 @@
                 </label>
             </div>
             <div class="control-group">
+                <label class="control-label">Add users</label>
+                <div class="lift:GroupListPage.listUser" class="controls">
+                    <select class="selectUsers" name="data" id="selusers" multiple="multiple">
+                        <option class="contUser">User1</option>
+                    </select>
+                </div>
+                <input id="listusers" class="hide" name="listusers">
+            </div>
+
+            <div class="control-group">
                 <label class="control-label">Description group</label>
                 <div class="controls">
                     <textarea type="text" name="description" placeholder="" class="input-xlarge"></textarea>
@@ -33,7 +43,7 @@
             <div class="control-group">
                 <!-- Button -->
                 <div class="controls">
-                    <button type="submit" class="btn btn-success">Add</button>
+                    <button type="submit" class="buttonuser btn btn-success">Add</button>
                 </div>
             </div>
         </form>

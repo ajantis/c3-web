@@ -23,58 +23,76 @@ import xml.Text
 class GroupListPage {
 
   val c3 = inject[C3System].open_!
-
   val groupService = inject[GroupService].open_!
-
   val logger = Logger(classOf[GroupListPage])
 
-
+  def listUser = {
+    val users = User.findAll().filter(_.id.is != User.currentUser.open_!.id.is)
+      ".contUser" #> users.map( user =>{
+        val name = user.firstName+" "+user.lastName
+        ".contUser *" #> name  &
+          ".contUser [value]" #> user.email
+      })
+  }
+  //List Groups
   def list = {
     val groupList = User.currentUser.open_!.groups.toList
     ".container_groups" #> groupList.map{ group:Group =>{
-
+      //Del group
       def deleteGroup(): JsCmd = {
         //TODO verify access user
 
         group.delete_!
-        JsCmds.Alert("Group deleted") & JsCmds.Replace(group.id.is.toString, NodeSeq.Empty)
+        JsCmds.Replace(group.id.is.toString, NodeSeq.Empty)
       }
       ".container_groups [id]"#> group.id.is&
-      ".container_groups *" #>
-        ((n: NodeSeq) => SHtml.ajaxForm(
-          ("a *" #> group.name.is &
-           "a [href]" #>("/groups/"+group.id) andThen
-           "* *" #> SHtml.memoize(f => f ++ SHtml.hidden(deleteGroup _))).apply(n)
-        ))
-      }
+        ".container_groups *" #>
+          ((n: NodeSeq) => SHtml.ajaxForm(
+            ("a *" #> group.name.is &
+              "a [href]" #>("/groups/"+group.id) andThen
+              "* *" #> SHtml.memoize(f => f ++ SHtml.hidden(deleteGroup _))).apply(n)
+          ))
+    }
     }
   }
+  //Add new group
   def add = {
-    var group = Group.create
+    var newGroup = Group.create
     var category = Category.create
     var sameCategory = ""
+    var listUserEmails = ""
     def saveMe(){
-      group.validate match {
+      def mapUserWithGroup(user: User){
+        UserGroup.create.group(newGroup).user(user).save()
+      }
+
+      newGroup.validate match {
         case Nil => {
-          group.owner(User.currentUser.open_!)
-          group.save
+          val userEmails = listUserEmails.split('%')
+          userEmails.map(email => {
+            //  group.users(User.find(user))
+            User.findByEmail(email).foreach(mapUserWithGroup _)
+          })
+          mapUserWithGroup(User.currentUser.open_!)
+          newGroup.owner(User.currentUser.open_!)
+          newGroup.save
           // Linking group owner with a new Group in DB
-          UserGroup.join(User.find(By(User.id,group.owner)).open_!,group)
-          groupService.createGroupMapping(group.id.is.toString)
+          UserGroup.join(User.find(By(User.id,newGroup.owner)).open_!,newGroup)
+          groupService.createGroupMapping(newGroup.id.is.toString)
           if(sameCategory!="false"){
-            category.name(group.name.is)
-            category.linkedGroup(group)
+            category.name(newGroup.name.is)
+            category.linkedGroup(newGroup)
             category.validate match {
               case Nil => {
                 category.save()
-                S.notice("Added group and category:"+group.name+ "is added")
+                S.notice("Added group and category:" + newGroup.name+ "is added")
               }
               case xs =>
                 xs.foreach(f => S.error(f.msg))
             }
           }
           else{
-            S.notice("Added group: " + group.name)
+            S.notice("Added group: " + newGroup.name)
           }
         }
 
@@ -82,10 +100,11 @@ class GroupListPage {
           xs.foreach(f => S.error(f.msg))
       }
     }
-    "name=name" #> SHtml.onSubmit(group.name(_))&
-    "name=description" #> SHtml.onSubmit(group.description(_))&
-    "name=sameCategory" #> SHtml.onSubmit(sameCategory = _) &
-    "type=submit" #> SHtml.onSubmitUnit(saveMe)
+    "name=name" #> SHtml.onSubmit(newGroup.name(_))&
+      "name=description" #> SHtml.onSubmit(newGroup.description(_))&
+      "name=sameCategory" #> SHtml.onSubmit(sameCategory = _) &
+      "name=listusers" #> SHtml.onSubmit(listUserEmails = _)&
+      "type=submit" #> SHtml.onSubmitUnit(saveMe)
   }
   object selectedResources extends RequestVar[scala.collection.mutable.Set[String]](scala.collection.mutable.Set())
   object actionCommand extends RequestVar[Command](DeleteSelectedResources)

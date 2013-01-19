@@ -19,6 +19,8 @@ object User extends User with MetaMegaProtoUser[User]{
   override def loginMenuLocParams = LocGroup("loginLogoutMenu") :: super.loginMenuLocParams
   override def createUserMenuLocParams = LocGroup("loginLogoutMenu") :: super.createUserMenuLocParams
 
+  def findByEmail(email: String): Box[User] = this.find(By(User.email, email))
+
   def currentSearchRequests: List[String] = User.currentUser.map(_.searchRequests.get).openOr(Nil)
 
   def addSearchRequest(req : String) = {
@@ -45,24 +47,8 @@ object User extends User with MetaMegaProtoUser[User]{
   override def fieldOrder = List(id, firstName, lastName, email,
   locale, timezone, password, textArea)
 
-
   // comment this line out to require email validations
   override def skipEmailValidation = true
-
-
-  //for some reason this doest not work =(
-  //
-  /*override lazy val password = new MyPassword(this){
-    override def _toForm: Box[NodeSeq] = {
-      S.fmapFunc({s: List[String] => this.setFromAny(s)}){funcName =>
-        Full(<span>
-            <input id={fieldId} type='password' name={funcName} value={is.toString} placeholder="Type password here"/>
-            <input type='password' name={funcName} value={is.toString} placeholder="Type confirmation here"/>
-        </span>)
-      }
-    }
-  }
-  */
 
   override def lostPassword = {
       bind("user", lostPasswordXhtml,
