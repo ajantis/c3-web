@@ -68,13 +68,14 @@ class GroupListPage {
       newGroup.validate match {
         case Nil => {
           val userEmails = listUserEmails.split('%')
+          newGroup.owner(User.currentUser.open_!)
+          newGroup = newGroup.saveMe()
           userEmails.map(email => {
-            //  group.users(User.find(user))
+            //group.users(User.find(user))
             User.findByEmail(email).foreach(mapUserWithGroup _)
           })
           mapUserWithGroup(User.currentUser.open_!)
-          newGroup.owner(User.currentUser.open_!)
-          newGroup.save
+
           // Linking group owner with a new Group in DB
           UserGroup.join(User.find(By(User.id,newGroup.owner)).open_!,newGroup)
           groupService.createGroupMapping(newGroup.id.is.toString)
