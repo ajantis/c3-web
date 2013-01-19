@@ -29,9 +29,8 @@ class GroupListPage {
   def listUser = {
     val users = User.findAll().filter(_.id.is != User.currentUser.open_!.id.is)
       ".contUser" #> users.map( user =>{
-        val name = user.firstName+" "+user.lastName
-        ".contUser *" #> name  &
-          ".contUser [value]" #> user.email
+        ".contUser *" #> user.shortName &
+        ".contUser [value]" #> user.email
       })
   }
   //List Groups
