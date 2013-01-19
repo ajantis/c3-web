@@ -1,4 +1,4 @@
-package org.aphreet.c3.snippet.group.snippet
+package org.aphreet.c3.snippet.groups.snippet
 
 import scala.xml.NodeSeq
 import net.liftweb.http.{S, FileParamHolder, SHtml}

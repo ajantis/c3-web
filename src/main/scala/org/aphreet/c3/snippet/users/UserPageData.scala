@@ -1,4 +1,4 @@
-package org.aphreet.c3.snippet.user
+package org.aphreet.c3.snippet.users
 
 import org.aphreet.c3.loc.PageData
 import org.aphreet.c3.model.User

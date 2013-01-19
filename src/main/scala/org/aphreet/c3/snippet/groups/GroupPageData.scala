@@ -1,4 +1,4 @@
-package org.aphreet.c3.snippet.group
+package org.aphreet.c3.snippet.groups
 
 import org.aphreet.c3.model.Group
 import org.aphreet.c3.loc.PageData

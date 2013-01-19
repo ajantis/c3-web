@@ -1,10 +1,10 @@
-package org.aphreet.c3.snippet.group.snippet
+package org.aphreet.c3.snippet.groups.snippet
 
 import org.aphreet.c3.loc.ItemRewriteLoc
 import org.aphreet.c3.model.Group
 import net.liftweb.sitemap.Loc.{LinkText, Link}
 import net.liftweb.common.{Logger, Full, Box}
-import org.aphreet.c3.snippet.group.GroupPageData
+import org.aphreet.c3.snippet.groups.GroupPageData
 import xml.Text
 import net.liftweb.util.BindHelpers._
 

@@ -112,7 +112,7 @@ class Group extends LongKeyedMapper[Group] with IdPK with ManyToMany{
 
   def baseFilePath = "/" + this.id.is + "/files"
 
-  def createLink: NodeSeq = Text("/groups/" + id.is)
+  def createLink: String = "/groups/" + id.is
 }
 
 object Group extends Group with LongKeyedMetaMapper[Group] {

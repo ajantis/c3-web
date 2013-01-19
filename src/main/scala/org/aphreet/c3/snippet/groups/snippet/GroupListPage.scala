@@ -1,8 +1,8 @@
-package org.aphreet.c3.snippet.group.snippet
+package org.aphreet.c3.snippet.groups.snippet
 
 import com.ifunsoftware.c3.access.C3System
 import org.aphreet.c3.lib.DependencyFactory._
-import org.aphreet.c3.service.GroupService
+import org.aphreet.c3.service.{AddedToGroupMsg, NotificationManager, GroupService}
 import net.liftweb.common.{Empty, Full, Logger}
 import xml.{Text, NodeSeq}
 import org.aphreet.c3.model._
@@ -63,21 +63,20 @@ class GroupListPage {
     var listUserEmails = ""
     def saveMe(){
       def mapUserWithGroup(user: User){
-        UserGroup.create.group(newGroup).user(user).save()
+        UserGroup.join(user, newGroup)
+        NotificationManager ! AddedToGroupMsg(group = newGroup, recipient = user)
       }
 
       newGroup.validate match {
         case Nil => {
           val userEmails = listUserEmails.split('%')
+          newGroup = newGroup.owner(User.currentUser.open_!).saveMe()
           userEmails.map(email => {
             //  group.users(User.find(user))
             User.findByEmail(email).foreach(mapUserWithGroup _)
           })
           mapUserWithGroup(User.currentUser.open_!)
-          newGroup.owner(User.currentUser.open_!)
-          newGroup.save
           // Linking group owner with a new Group in DB
-          UserGroup.join(User.find(By(User.id,newGroup.owner)).open_!,newGroup)
           groupService.createGroupMapping(newGroup.id.is.toString)
           if(sameCategory!="false"){
             category.name(newGroup.name.is)

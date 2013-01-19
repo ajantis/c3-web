@@ -1,9 +1,6 @@
-c3_host=http://node0.c3.ifunsoftware.com
-c3_domain_name=dev-ajantis
-c3_domain_secret=1db8b27ede72ccd0442cfcedf343e65b
-
-#c3_domain_name=anonymous
-#c3_domain_secret=
+c3_host=http://c3-ajantis.rhcloud.com
+c3_domain_name=anonymous
+c3_domain_secret=
 
 default_admin_email=admin@admin.com
 default_admin_password=admin
