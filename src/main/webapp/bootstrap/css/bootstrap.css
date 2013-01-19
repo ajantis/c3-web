@@ -1538,7 +1538,7 @@ select:focus:required:invalid:focus {
 .input-append,
 .input-prepend {
   margin-bottom: 5px;
-  font-size: 36px;
+  font-size: 0px;
   white-space: nowrap;
 }
 
