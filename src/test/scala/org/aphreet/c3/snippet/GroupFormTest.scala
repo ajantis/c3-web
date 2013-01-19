@@ -30,7 +30,7 @@ package org.aphreet.c3.snippet
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-import group.snippet.GroupListPage
+import groups.snippet.GroupListPage
 import net.liftweb.util._
 import net.liftweb.common._
 import junit.framework.TestCase

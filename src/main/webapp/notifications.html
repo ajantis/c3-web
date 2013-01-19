@@ -1,0 +1,20 @@
+<lift:surround with="default">
+
+    <style type="text/css">
+        .active{
+            color: red;
+        }
+    </style>
+
+    <div class="lift:bind-at?name=content">
+        <h2>My notifications</h2>
+        <ol class="lift:NotificationListPage.list">
+            <li class="notification">
+                <a href="#" class="link">
+                    <span class="title">Super notification!</span>
+                </a>
+            </li>
+        </ol>
+    </div>
+
+</lift:surround>

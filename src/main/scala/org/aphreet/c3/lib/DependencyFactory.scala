@@ -4,7 +4,7 @@ import net.liftweb._
 import http._
 import util._
 import org.aphreet.c3.apiaccess.C3
-import org.aphreet.c3.service.impl.{MessageStorageServiceImpl, GroupServiceImpl, WikiServiceImpl}
+import org.aphreet.c3.service.impl.{NotificationServiceImpl, MessageStorageServiceImpl, GroupServiceImpl, WikiServiceImpl}
 
 /**
  * A factory for generating new instances of Date.  You can create
@@ -25,6 +25,8 @@ object DependencyFactory extends Factory {
 
   implicit object groupService extends FactoryMaker(GroupServiceImpl.create _)
 
+  implicit object notificationService extends FactoryMaker(NotificationServiceImpl.create _)
+
   /**
    * objects in Scala are lazily created.  The init()
    * method creates a List of all the objects.  This
@@ -32,7 +34,7 @@ object DependencyFactory extends Factory {
    * registering their types with the dependency injector
    */
   private def init() {
-    List(time, c3, wikiService, messageService, groupService)
+    List(time, c3, wikiService, messageService, groupService, notificationService)
   }
 
   init()

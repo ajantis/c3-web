@@ -16,10 +16,11 @@ import net.liftweb.widgets.tablesorter.TableSorter
 import net.liftweb.widgets.autocomplete.AutoComplete
 import net.liftweb.widgets.menu.MenuWidget
 import snippet.categories.CategoriesSection
-import snippet.group.GroupSection
+import snippet.groups.GroupsSection
 import snippet.logging.LogLevel
+import snippet.notifications.NotificationsSection
 import snippet.search.SearchSection
-import snippet.user.UserSection
+import snippet.users.UsersSection
 import util.helpers.C3Streamer
 import util.{DefaultAuthDataLoader, TextileRenderer}
 import javax.mail.{Authenticator, PasswordAuthentication}
@@ -29,8 +30,8 @@ import javax.mail.{Authenticator, PasswordAuthentication}
  * to modify lift's environment
  */
 class Boot extends Bootable{
-
-  private val sections: List[Section] = List(BaseSection, UserSection, GroupSection, SearchSection, CategoriesSection)
+  private val sections: List[Section] = List(BaseSection, UsersSection, GroupsSection,
+    SearchSection, CategoriesSection, NotificationsSection)
 
   def boot {
     if (!DB.jndiJdbcConnAvailable_?) {
@@ -52,7 +53,7 @@ class Boot extends Bootable{
     // where to search snippets
     sections.foreach(s => LiftRules.addToPackages(s.currentPackage))
 
-    Schemifier.schemify(true, Schemifier.infoF _, User, Group, Category, Tag, UserGroup)
+    Schemifier.schemify(true, Schemifier.infoF _, User, Group, Category, Tag, UserGroup, Notification)
 
     lazy val loginUrl = "/user_mgt/login"
 
@@ -87,17 +88,17 @@ class Boot extends Bootable{
       Menu("Faq") / "faq" >> LocGroup("footerMenu"),
 
       Menu("Groups") / "groups" >> loggedIn >> LocGroup("mainmenu") submenus {
-        GroupSection.menus:_*
+        GroupsSection.menus:_*
       },
-
       Menu("Users") / "users" >> loggedIn >> LocGroup("mainmenu") submenus {
-        UserSection.menus:_*
+        UsersSection.menus:_*
       },
-
       Menu("Categories") / "categories" >> loggedIn >> LocGroup("mainmenu") submenus {
         CategoriesSection.menus:_*
       },
-
+      Menu("Notifications") / "notifications" >> loggedIn >> LocGroup("mainmenu") submenus {
+        NotificationsSection.menus:_*
+      },
       LogLevel.menu, // default log level menu is located at /loglevel/change
 
       Menu("UserEdit") / "users" / "edituser" >> loggedIn >> Hidden,

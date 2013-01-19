@@ -35,7 +35,6 @@ trait GroupService {
   def createGroupMapping(name: String)
 
   def removeGroupMapping(name: String)
-
 }
 
 

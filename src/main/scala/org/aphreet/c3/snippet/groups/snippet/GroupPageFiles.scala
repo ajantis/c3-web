@@ -1,6 +1,6 @@
-package org.aphreet.c3.snippet.group.snippet
+package org.aphreet.c3.snippet.groups.snippet
 
-import org.aphreet.c3.snippet.group.{GroupPageFilesData, GroupPageData}
+import org.aphreet.c3.snippet.groups.{GroupPageFilesData, GroupPageData}
 import org.aphreet.c3.loc.{ItemRewriteLoc, SuffixLoc}
 import org.aphreet.c3.model.{File, Catalog, C3Resource, Group}
 import net.liftweb.common._
@@ -11,7 +11,7 @@ import org.aphreet.c3.lib.DependencyFactory._
 import com.ifunsoftware.c3.access.C3System
 import net.liftweb.http.S
 import net.liftweb.common.Full
-import org.aphreet.c3.snippet.group.GroupPageFilesData
+import org.aphreet.c3.snippet.groups.GroupPageFilesData
 import org.aphreet.c3.snippet.{FileUploadDialog, CreateDirectoryDialog}
 
 /**

@@ -1,4 +1,4 @@
-package org.aphreet.c3.snippet.user.snippet
+package org.aphreet.c3.snippet.users.snippet
 
 import net.liftweb.util.BindHelpers._
 import org.aphreet.c3.model.User

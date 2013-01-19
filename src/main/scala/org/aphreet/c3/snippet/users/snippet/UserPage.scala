@@ -1,4 +1,4 @@
-package org.aphreet.c3.snippet.user.snippet
+package org.aphreet.c3.snippet.users.snippet
 
 import org.aphreet.c3.model.User
 import org.aphreet.c3.loc.ItemRewriteLoc
@@ -7,7 +7,7 @@ import net.liftweb.sitemap.Loc.{Link, LinkText}
 import net.liftweb.common.{Logger, Full, Box}
 import net.liftweb.util.BindHelpers._
 import net.liftweb.util.Helpers._
-import org.aphreet.c3.snippet.user.UserPageData
+import org.aphreet.c3.snippet.users.UserPageData
 
 /**
  * @author Dmitry Ivanov (mailto: Dmitry.Ivanov@reltio.com)

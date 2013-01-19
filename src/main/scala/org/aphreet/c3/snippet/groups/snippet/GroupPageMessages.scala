@@ -1,10 +1,10 @@
-package org.aphreet.c3.snippet.group.snippet
+package org.aphreet.c3.snippet.groups.snippet
 
 import org.aphreet.c3.model.Group
 import net.liftweb.common.{Logger, Box}
 import xml.NodeSeq
 import org.aphreet.c3.loc.SuffixLoc
-import org.aphreet.c3.snippet.group.{AbstractGroupPageLoc, GroupPageData}
+import org.aphreet.c3.snippet.groups.{AbstractGroupPageLoc, GroupPageData}
 import net.liftweb.sitemap.Loc.Link
 
 /**

@@ -1,4 +1,4 @@
-package org.aphreet.c3.snippet.group.snippet
+package org.aphreet.c3.snippet.groups.snippet
 
 import net.liftweb.util.BindHelpers._
 import net.liftweb.http.S
