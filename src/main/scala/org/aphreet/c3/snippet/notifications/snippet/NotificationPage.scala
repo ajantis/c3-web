@@ -8,6 +8,7 @@ import net.liftweb.sitemap.Loc.{Link, LinkText}
 import net.liftweb.common.{Full, Box}
 import net.liftweb.util.BindHelpers._
 import org.aphreet.c3.util.C3Loggable
+import org.aphreet.c3.service.{NotificationManager, MarkAsRead}
 
 
 /**
@@ -34,6 +35,12 @@ object NotificationPage extends ItemRewriteLoc[Notification, NotificationPageDat
 class NotificationPage(data: NotificationPageData) extends C3Loggable{
 
   def view = {
+    val notification = data.notification
+
+    if (!notification.isRead.is){
+      NotificationManager ! MarkAsRead(notification)
+    }
+
     ".notification_title *" #> data.notification.title.is &
     ".notification_body *" #> data.notification.body.toXml
   }

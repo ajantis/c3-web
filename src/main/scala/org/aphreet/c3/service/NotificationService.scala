@@ -18,6 +18,8 @@ trait NotificationService {
   def sendNotification(notifyMsg: NotifyMsg)
 
   def getNotificationsForUser(recipient: User): List[Notification]
+
+  def markAsRead(notification: Notification): Notification
 }
 
 abstract sealed class NotifyMsg {
@@ -36,7 +38,7 @@ case class AddedToGroupMsg(group: Group, recipient: User) extends NotifyMsg {
 case class FileMetaProcessedMsg(file: C3File, recipient: User) extends NotifyMsg {
   val title: String = TemplateManager.fileMetaProcessedTitle(file.name)
   val message: NodeSeq = TemplateManager.fileMetaProcessedTemplate(file.name, file.fullname)
-  val notifyType: NotificationType.Value = NotificationType.AddedToGroup
+  val notifyType: NotificationType.Value = NotificationType.FileMetaUpdated
 }
 
 object TemplateManager{

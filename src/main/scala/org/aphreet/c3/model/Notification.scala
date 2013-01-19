@@ -21,7 +21,12 @@ class Notification extends LongKeyedMapper[Notification] with IdPK{
 
   object notificationType extends MappedEnum(this, NotificationType)
 
+  object isRead extends MappedBoolean(this){
+    override def defaultValue = false
+  }
+
   def createLink: String = "/notifications/" + this.id.is
+
 }
 
 object Notification extends Notification with LongKeyedMetaMapper[Notification] {

@@ -190,7 +190,6 @@ class Boot extends Bootable{
       ret
     }
 
-
     //Use HTML5 for rendering
     LiftRules.htmlProperties.default.set((r: Req) =>
       new Html5Properties(r.userAgent))

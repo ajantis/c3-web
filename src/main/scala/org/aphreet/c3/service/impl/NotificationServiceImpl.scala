@@ -21,6 +21,14 @@ class NotificationServiceImpl extends NotificationService with C3Loggable{
 
   def getNotificationsForUser(recipient: User): List[Notification] = Notification.findByRecipient(recipient)
 
+  def markAsRead(notification: Notification): Notification = {
+    if (!notification.isRead.is){
+      notification.isRead(true).saveMe()
+    } else {
+      logger.error("Notification is already marked as read! " + notification)
+      notification
+    }
+  }
 }
 object NotificationServiceImpl{
   def create: NotificationService = new NotificationServiceImpl

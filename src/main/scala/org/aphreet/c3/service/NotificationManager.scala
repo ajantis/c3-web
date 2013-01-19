@@ -3,6 +3,7 @@ package org.aphreet.c3.service
 import net.liftweb.actor.LiftActor
 import org.aphreet.c3.util.C3Loggable
 import org.aphreet.c3.lib.DependencyFactory._
+import org.aphreet.c3.model.Notification
 
 /**
  * Copyright iFunSoftware 2013
@@ -12,8 +13,15 @@ object NotificationManager extends LiftActor with C3Loggable{
   private val notificationService = inject[NotificationService].open_!
 
   def messageHandler = {
-    case notifyMessage: NotifyMsg => notificationService.sendNotification(notifyMessage)
-    case msg => logger.error("Unkhown message is received: " + msg)
+    case CreateNotification(notifyMessage) => notificationService.sendNotification(notifyMessage)
+    case MarkAsRead(notification) => notificationService.markAsRead(notification)
+
+    case msg => logger.error("Unkhown message is received: " + msg) // default handling
   }
 
 }
+
+abstract sealed class NotificationManagerCmd
+case class CreateNotification(notifyMessage: NotifyMsg)
+case class MarkAsRead(notification: Notification)
+
