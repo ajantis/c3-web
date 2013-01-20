@@ -2,12 +2,11 @@ package org.aphreet.c3.snippet.groups.snippet
 
 import com.ifunsoftware.c3.access.C3System
 import org.aphreet.c3.lib.DependencyFactory._
-import org.aphreet.c3.service.{AddedToGroupMsg, NotificationManager, GroupService}
+import org.aphreet.c3.service.{CreateNotification, AddedToGroupMsg, NotificationManager, GroupService}
 import net.liftweb.common.{Empty, Full, Logger}
 import xml.{Text, NodeSeq}
 import org.aphreet.c3.model._
 import net.liftweb.http.{RequestVar, S, SHtml}
-import net.liftweb.http.js.JsCmds.Alert
 import net.liftweb.util.BindHelpers._
 import net.liftweb.mapper.By
 import net.liftweb.http.js.{JsCmds, JsCmd}
@@ -63,7 +62,7 @@ class GroupListPage {
     def saveMe(){
       def mapUserWithGroup(user: User){
         UserGroup.join(user, newGroup)
-        NotificationManager ! AddedToGroupMsg(group = newGroup, recipient = user)
+        NotificationManager ! CreateNotification(AddedToGroupMsg(group = newGroup, recipient = user))
       }
 
       newGroup.validate match {
@@ -303,7 +302,7 @@ class GroupListPage {
           bind("tag", ns, "name" -> tag)) : NodeSeq
         }
       )
-    }catch{
+    } catch {
       case e => {
         S.error(e.toString)
         NodeSeq.Empty
