@@ -1,11 +1,11 @@
-package org.aphreet.c3.snippet.group.snippet
+package org.aphreet.c3.snippet.groups.snippet
 
-import org.aphreet.c3.loc.{SuffixLoc, ItemRewriteLoc}
-import org.aphreet.c3.model.{UserGroup, User, Group}
-import net.liftweb.sitemap.Loc.{LinkText, Link}
-import net.liftweb.common.{Logger, Full, Box}
-import org.aphreet.c3.snippet.group.{AbstractGroupPageLoc, GroupPageData}
+import org.aphreet.c3.model.{UserGroup, Group}
+import net.liftweb.common.{Logger, Box}
 import xml.Text
+import org.aphreet.c3.loc.SuffixLoc
+import org.aphreet.c3.snippet.groups.{AbstractGroupPageLoc, GroupPageData}
+import net.liftweb.sitemap.Loc.Link
 import net.liftweb.util.BindHelpers._
 /**
  * Created with IntelliJ IDEA.
@@ -23,20 +23,19 @@ object GroupPageMembers extends AbstractGroupPageLoc[GroupPageData] with SuffixL
 
   override def link = {
     new Link[GroupPageData](pathPrefix ++ pathSuffix){
-      override def pathList(value: GroupPageData): List[String] = pathPrefix ::: value.group.id.is.toString :: Nil ::: pathSuffix
-    }
+    override def pathList(value: GroupPageData): List[String] = pathPrefix ::: value.group.id.is.toString :: Nil ::: pathSuffix
+      }
   }
 }
-
 class GroupPageMembers(data: GroupPageData) extends GroupPageHelpers{
   override lazy val group = data.group
   override lazy val activeLocId = "members"
   def listUser = {
     val members = group.users.all
-    val  v = UserGroup.findAll()
+    //val  v = UserGroup.findAll()
     ".ListGroupUser *" #> members.map(user =>{
       "a" #> user.shortName &
-      "a [href]" #> user.createLink
+        "a [href]" #> user.createLink
     })
 
   }
