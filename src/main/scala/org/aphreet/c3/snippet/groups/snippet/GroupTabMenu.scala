@@ -16,7 +16,7 @@ class GroupTabMenu {
     (id: String) => List("about" -> AboutTab(id),
                         "files" -> FilesTab(id),
                         "messages" -> MessagesTab(id),
-                        "wiki" -> WikiTab(id),
+                        //"wiki" -> WikiTab(id),
                         "members" -> MembersTab(id))
 
   def render: CssSel = {
@@ -53,5 +53,5 @@ sealed abstract class GroupTab(val name: String, val path: String)
 case class AboutTab(groupId: String) extends GroupTab("About", "/groups/" + groupId)
 case class FilesTab(groupId: String) extends GroupTab("Files", "/groups/" + groupId + "/files")
 case class MessagesTab(groupId: String) extends GroupTab("Messages", "/groups/" + groupId + "/messages")
-case class WikiTab(groupId: String) extends GroupTab("Wiki", "/groups/" + groupId + "/wiki")
+//case class WikiTab(groupId: String) extends GroupTab("Wiki", "/groups/" + groupId + "/wiki")
 case class MembersTab(groupId: String) extends GroupTab("Members", "/groups/" + groupId + "/members")
