@@ -2,8 +2,8 @@ package org.aphreet.c3.snippet.groups.snippet
 
 import com.ifunsoftware.c3.access.C3System
 import org.aphreet.c3.lib.DependencyFactory._
-import org.aphreet.c3.service.{CreateNotification, AddedToGroupMsg, NotificationManager, GroupService}
-import net.liftweb.common.{Empty, Full, Logger}
+import org.aphreet.c3.service.GroupService
+import net.liftweb.common.{Empty, Logger}
 import xml.{Text, NodeSeq}
 import org.aphreet.c3.model._
 import net.liftweb.http.{RequestVar, S, SHtml}
@@ -36,10 +36,9 @@ class GroupListPage {
   def list = {
     val groupList = User.currentUser.open_!.groups.toList
     ".container_groups" #> groupList.map{ group:Group =>{
-      //Del group
+      //Delete group
       def deleteGroup(): JsCmd = {
         //TODO verify access user
-
         group.delete_!
         JsCmds.Replace(group.id.is.toString, NodeSeq.Empty)
       }
@@ -56,39 +55,28 @@ class GroupListPage {
   //Add new group
   def add = {
     var newGroup = Group.create
-    var category = Category.create
     var sameCategory = ""
     var listUserEmails = ""
-    def saveMe(){
-      def mapUserWithGroup(user: User){
-        UserGroup.join(user, newGroup)
-        NotificationManager ! CreateNotification(AddedToGroupMsg(group = newGroup, recipient = user))
-      }
 
+    def saveMe(){
       newGroup.validate match {
         case Nil => {
           val userEmails = listUserEmails.split('%')
-          newGroup = newGroup.owner(User.currentUser.open_!).saveMe()
-          // Linking group owner with a new Group in DB
-          groupService.createGroupMapping(newGroup.id.is.toString)
-          userEmails.map(email => {
-            //  group.users(User.find(user))
-            User.findByEmail(email).foreach(mapUserWithGroup _)
-          })
-          mapUserWithGroup(User.currentUser.open_!)
-          if(sameCategory!="false"){
-            category.name(newGroup.name.is)
-            category.linkedGroup(newGroup)
-            category.validate match {
+          newGroup = newGroup.owner(User.currentUser.open_!)
+          val members = userEmails.flatMap(User.findByEmail _)
+          groupService.createGroup(newGroup, members)
+
+          if (sameCategory != "false"){
+            val newCategory = Category.create.name(newGroup.name.is).linkedGroup(newGroup)
+            newCategory.validate match {
               case Nil => {
-                category.save()
-                S.notice("Added group and category:" + newGroup.name+ "is added")
+                newCategory.save()
+                S.notice("Added group and category: " + newGroup.name + " is added")
               }
               case xs =>
                 xs.foreach(f => S.error(f.msg))
             }
-          }
-          else{
+          } else{
             S.notice("Added group: " + newGroup.name)
           }
         }
@@ -98,10 +86,10 @@ class GroupListPage {
       }
     }
     "name=name" #> SHtml.onSubmit(newGroup.name(_))&
-      "name=description" #> SHtml.onSubmit(newGroup.description(_))&
-      "name=sameCategory" #> SHtml.onSubmit(sameCategory = _) &
-      "name=listusers" #> SHtml.onSubmit(listUserEmails = _)&
-      "type=submit" #> SHtml.onSubmitUnit(saveMe)
+    "name=description" #> SHtml.onSubmit(newGroup.description(_))&
+    "name=sameCategory" #> SHtml.onSubmit(sameCategory = _) &
+    "name=listusers" #> SHtml.onSubmit(listUserEmails = _) &
+    "type=submit" #> SHtml.onSubmitUnit(saveMe)
   }
   object selectedResources extends RequestVar[scala.collection.mutable.Set[String]](scala.collection.mutable.Set())
   object actionCommand extends RequestVar[Command](DeleteSelectedResources)

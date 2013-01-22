@@ -30,11 +30,15 @@
  */
 package org.aphreet.c3.service
 
+import org.aphreet.c3.model.{User, Group}
+
 trait GroupService {
 
   def createGroupMapping(name: String)
 
   def removeGroupMapping(name: String)
+
+  def createGroup(newGroup: Group, members: Iterable[User]): Group
 }
 
 

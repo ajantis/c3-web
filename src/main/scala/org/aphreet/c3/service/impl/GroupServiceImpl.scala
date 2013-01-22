@@ -1,12 +1,11 @@
 package org.aphreet.c3.service.impl
 
-import org.aphreet.c3.service.GroupService
+import org.aphreet.c3.service.{AddedToGroupMsg, CreateNotification, NotificationManager, GroupService}
 import com.ifunsoftware.c3.access.C3System
 import org.aphreet.c3.lib.DependencyFactory._
-import com.ifunsoftware.c3.access.fs.{C3FileSystemNode, C3File, C3Directory}
-import annotation.tailrec
-import net.liftweb.common.{Box, Full}
+import com.ifunsoftware.c3.access.fs.{C3File, C3Directory}
 import org.aphreet.c3.util.C3Exception
+import org.aphreet.c3.model.{UserGroup, Group, User}
 
 class GroupServiceImpl extends GroupService{
 
@@ -51,6 +50,28 @@ class GroupServiceImpl extends GroupService{
       case _ =>
         throw new C3Exception("Group directory is not found!")
     }
+  }
+
+  def createGroup(newGroup: Group, members: Iterable[User]): Group = {
+    val group = newGroup.saveMe()
+    try {
+      createGroupMapping(group.id.is.toString)
+    } catch {
+      case e: C3Exception => {
+        group.delete_! // rollback all changes
+        throw e
+      }
+    }
+
+    group.owner.foreach(owner => UserGroup.join(owner, group))
+    for {
+      member <- members
+    } {
+      UserGroup.join(member, group)
+      NotificationManager ! CreateNotification(AddedToGroupMsg(group = group, recipient = member))
+    }
+
+    group
   }
 }
 
