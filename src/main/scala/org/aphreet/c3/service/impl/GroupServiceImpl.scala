@@ -62,16 +62,18 @@ class GroupServiceImpl extends GroupService{
         throw e
       }
     }
+    addUserGroup(group,members)
+    group
+  }
 
-    group.owner.foreach(owner => UserGroup.join(owner, group))
+  def addUserGroup(currentGroup:Group, members: Iterable[User]){
+    currentGroup.owner.foreach(owner => UserGroup.join(owner, currentGroup))
     for {
       member <- members
     } {
-      UserGroup.join(member, group)
-      NotificationManager ! CreateNotification(AddedToGroupMsg(group = group, recipient = member))
+      UserGroup.join(member, currentGroup)
+      NotificationManager ! CreateNotification(AddedToGroupMsg(group = currentGroup, recipient = member))
     }
-
-    group
   }
 }
 

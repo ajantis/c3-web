@@ -11,6 +11,12 @@ function SelectAll(sel){
     $('#listusers').val(msg);
 }
 $(document).ready( function(){
+    $('.addnewuser').live("click",function(){
+        $(this).addClass("hide");
+        $(".formaddnewuser").toggleClass("hide");
+    });
+
+
     $('.buttonuser').live("click",function(){
             //alert("balala");
             SelectAll("selusers");

@@ -38,6 +38,8 @@ trait GroupService {
 
   def removeGroupMapping(name: String)
 
+  def addUserGroup(currentGroup: Group, members: Iterable[User])
+
   def createGroup(newGroup: Group, members: Iterable[User]): Group
 }
 
