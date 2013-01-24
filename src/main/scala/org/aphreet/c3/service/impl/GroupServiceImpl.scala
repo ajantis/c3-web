@@ -41,11 +41,24 @@ class GroupServiceImpl extends GroupService with C3Loggable{
     group.delete_!
   }
 
+  override  def removeUserFromGroup(group:Group, user:User) = {
+    try{
+      UserGroup.findAll(By(UserGroup.user, user),By(UserGroup.group, group)).foreach(_.delete_!)
+    } catch {
+      case e: C3Exception => {
+        logger.error("Error while removing user" + e.getMessage, e)
+        false
+      }
+    }
+    true
+  }
+
+
   override def addUsersToGroup(group: Group, members: Iterable[User]): Iterable[Box[User]] = {
     for {
       member <- members
     } yield {
-      if (UserGroup.find(By(UserGroup.user, member), By(UserGroup.group, group)).isEmpty){
+      if (UserGroup.findAll(By(UserGroup.user, member), By(UserGroup.group, group)).isEmpty){
         UserGroup.join(member, group)
         NotificationManager ! CreateNotification(AddedToGroupMsg(group = group, recipient = member))
         Full(member)

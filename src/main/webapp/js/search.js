@@ -8,7 +8,7 @@ function SelectAll(sel){
         if(SelectedOptions.options[i].selected)
             msg +=SelectedOptions.options[i].value+'%';
     }
-    alert(msg);
+    //alert(msg);
     return msg;
 
 }

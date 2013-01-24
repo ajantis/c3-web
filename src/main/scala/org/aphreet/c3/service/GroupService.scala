@@ -40,6 +40,8 @@ trait GroupService {
   def createGroup(newGroup: Group, members: Iterable[User]): Box[Group]
 
   def removeGroup(group: Group): Boolean
+
+  def removeUserFromGroup(group:Group, user:User):Boolean
 }
 
 

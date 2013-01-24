@@ -12,6 +12,7 @@ import net.liftweb.http.{S, SHtml}
 import org.aphreet.c3.lib.DependencyFactory._
 import com.ifunsoftware.c3.access.C3System
 import org.aphreet.c3.service.GroupService
+import net.liftweb.http.js.{JsCmds, JsCmd}
 
 /**
  * @author Serjk (mailto: serjk91@gmail.com)
@@ -54,18 +55,34 @@ class GroupPageMembers(data: GroupPageData) extends GroupPageHelpers{
     else{
       ".contUser" #> users.map( user =>{
         ".contUser *" #> user.shortName &
-          ".contUser [value]" #> user.email
+        ".contUser [value]" #> user.email
       })
     }
-
-
   }
-  def listUser = {
+def listUser = {
     if (User.currentUser.open_!.email.is == group.owner.obj.map(_.email).open_!.is){
-      ".ListGroupUser *" #> members.map(user =>{
-        ".first_name *" #> user.firstName.is &
-          ".last_name *" #> user.lastName.is &
-          ".email *" #> user.email.is
+      ".ListGroupUser" #> members.map(user =>{
+          if (user.email.is != group.owner.obj.map(_.email).open_!.is){
+            def deleteUser():JsCmd = {
+              if(groupService.removeUserFromGroup(group,user)){
+                JsCmds.Replace(user.email.is, NodeSeq.Empty)
+              } else JsCmds.Alert("User is not removed! Please check logs for details")
+            }
+            ".ListGroupUser [id]" #> user.email.is &
+            ".ListGroupUser *" #>
+              ((n: NodeSeq) => SHtml.ajaxForm(
+                (".first_name *" #> user.firstName.is &
+                 ".last_name *" #> user.lastName.is &
+                 ".email *" #> user.email.is andThen
+                 "* *" #> SHtml.memoize(f => f ++ SHtml.hidden(deleteUser _))).apply(n)
+              ))
+          }else{
+            ".first_name *" #> user.firstName.is &
+            ".last_name *" #> user.lastName.is &
+            ".email *" #> user.email.is &
+            ".deluser *" #> NodeSeq.Empty
+          }
+
       })
     }else{
       ".ListGroupUser *" #> members.map(user =>{
