@@ -8,18 +8,21 @@ function SelectAll(sel){
         if(SelectedOptions.options[i].selected)
             msg +=SelectedOptions.options[i].value+'%';
     }
-    $('#listusers').val(msg);
+    alert(msg);
+    return msg;
+
 }
 $(document).ready( function(){
     $('.addnewuser').live("click",function(){
         $(this).addClass("hide");
         $(".formaddnewuser").toggleClass("hide");
     });
-
+    $('.buttonuser').live("click",function(){
+        $('#listusersadd').val(SelectAll("selusersadd"));
+    });
 
     $('.buttonuser').live("click",function(){
-            //alert("balala");
-            SelectAll("selusers");
+        $('#listusers').val(SelectAll("selusers"));
     });
     $('.search-query').focus(function() {
         $(this).stop().animate({width: '400px'}, 'slow');
