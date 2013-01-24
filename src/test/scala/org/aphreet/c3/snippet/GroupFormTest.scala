@@ -29,7 +29,6 @@ package org.aphreet.c3.snippet
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-
 import groups.snippet.GroupListPage
 import net.liftweb.util._
 import net.liftweb.common._

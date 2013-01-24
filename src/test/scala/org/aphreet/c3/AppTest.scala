@@ -24,12 +24,6 @@ object AppTest {
 class AppTest extends TestCase("app") {
 
   /**
-   * Rigourous Tests :-)
-   */
-  def testOK() = assertTrue(true)
-  // def testKO() = assertTrue(false);
-
-  /**
    * Tests to make sure the project's XML files are well-formed.
    *
    * Finds every *.html and *.xml file in src/main/webapp (and its
