@@ -8,6 +8,8 @@ import akka.util.duration._
 import akka.routing.FromConfig
 import akka.actor
 import org.aphreet.c3.util.C3Loggable
+import org.aphreet.c3.lib.metadata.Metadata
+import Metadata._
 
 /**
  * Copyright iFunSoftware 2013
@@ -24,7 +26,7 @@ class MetadataService extends Actor with C3Loggable{
     case CheckForMetadataUpdates => {
       // query C3 for resources with special S4 meta processed tag
       logger.debug("Querying C3 system for S4 processed resources...")
-      c3.query(Map((S4_META_PROCESSED_FLAG -> "true")), res => self ! ProcessC3Resource(res))
+      c3.query(Map((S4_PROCESSED_FLAG_META -> "true")), res => self ! ProcessC3Resource(res))
     }
     case task @ ProcessC3Resource(res) => {
       logger.debug("C3 resource " + res.address + " is retrieved. Forwarding for processing...")
@@ -40,8 +42,4 @@ class MetadataService extends Actor with C3Loggable{
 object MetadataServiceProtocol {
   object CheckForMetadataUpdates
   case class ProcessC3Resource(resource: C3Resource)
-
-  val S4_META_PROCESSED_FLAG = "x-s4-meta-processed"
-  val KEYWORDS_META = "x-c3-tags"
-  val KEYWORDS_SEPARATOR = "x-c3-tags"
 }

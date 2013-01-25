@@ -205,6 +205,7 @@ class Boot extends Bootable{
     })
 
     configMailer("smtp.gmail.com", "c3-project@ifunsoftware.com", "myverysecretpassword")
+    bootAkka()
 
     S.addAround(DB.buildLoanWrapper)
 
@@ -229,7 +230,7 @@ class Boot extends Bootable{
     })
   }
 
-  private def bootAkka() {
+  private def bootAkka(){
     // Create an Akka system
     val system = ActorSystem("C3WebSystem")
     val metadataService = system.actorOf(AkkaProps(new MetadataService), name = "MetadataService")
