@@ -1,9 +1,9 @@
-package org.aphreet.c3.service
+package org.aphreet.c3.service.notifications
 
-import net.liftweb.actor.LiftActor
 import org.aphreet.c3.util.C3Loggable
 import org.aphreet.c3.lib.DependencyFactory._
 import org.aphreet.c3.model.Notification
+import net.liftweb.actor.LiftActor
 
 /**
  * Copyright iFunSoftware 2013

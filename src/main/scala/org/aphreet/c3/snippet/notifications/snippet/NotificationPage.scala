@@ -8,7 +8,7 @@ import net.liftweb.sitemap.Loc.{Link, LinkText}
 import net.liftweb.common.{Full, Box}
 import net.liftweb.util.BindHelpers._
 import org.aphreet.c3.util.C3Loggable
-import org.aphreet.c3.service.{NotificationManager, MarkAsRead}
+import org.aphreet.c3.service.notifications.{MarkAsRead, NotificationManager}
 
 
 /**
