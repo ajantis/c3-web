@@ -8,7 +8,7 @@ function SelectAll(sel){
         if(SelectedOptions.options[i].selected)
             msg +=SelectedOptions.options[i].value+'%';
     }
-    //alert(msg);
+    alert(msg);
     return msg;
 
 }
@@ -21,7 +21,7 @@ $(document).ready( function(){
         $('#listusersadd').val(SelectAll("selusersadd"));
     });
 
-    $('.buttonuser').live("click",function(){
+    $('.buttonuser1').live("click",function(){
         $('#listusers').val(SelectAll("selusers"));
     });
     $('.search-query').focus(function() {
