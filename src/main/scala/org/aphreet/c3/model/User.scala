@@ -57,7 +57,7 @@ object User extends User with MetaMegaProtoUser[User]{
   }
 
   override def lostPasswordXhtml = {
-    (<div class="forgot_password_form form-holder login-form well">
+    (<div class="forgot_password_form form-holder login-form well well_login">
         <form action={S.uri} method="POST" class="form">
           <fieldset>
             <legend>{S.?("lost_password.legend")}</legend>
@@ -77,7 +77,7 @@ object User extends User with MetaMegaProtoUser[User]{
 
   override def loginXhtml = {
     (
-      <div class="form-holder login-form well">
+      <div class="form-holder login-form well well_login">
         <form action={S.uri} method="POST" class="form">
           <fieldset>
             <legend>Existing Users Login</legend>
@@ -111,7 +111,7 @@ object User extends User with MetaMegaProtoUser[User]{
   override def signupFields: List[FieldPointerType] = List(firstName,lastName,email,password)
   override def editFields: List[FieldPointerType] = List(firstName,lastName, email)
   override def signupXhtml(user: TheUserType) = {
-    (<div class="form-holder signup-form login-form well">
+    (<div class="form-holder signup-form login-form well well_login">
       <form action={S.uri} method="POST" class="form">
         <fieldset>
           <legend>{S.?("signup.legend")}</legend>
@@ -125,7 +125,7 @@ object User extends User with MetaMegaProtoUser[User]{
   }
 
   override def editXhtml(user: TheUserType) = {
-    ( <div class="form-holder edit-form login-form well">
+    ( <div class="form-holder edit-form login-form well well_login">
         <form action={S.uri} method="POST" class="form">
           <fieldset>
             <legend>{S.?("edit.legend")}</legend>
@@ -138,7 +138,7 @@ object User extends User with MetaMegaProtoUser[User]{
       </div>)
   }
   override def changePasswordXhtml = {
-    (<div class="form-holder edit-form login-form well">
+    (<div class="form-holder edit-form login-form well well_login">
       <form action={S.uri} method="POST" class="form">
         <fieldset>
           <legend>{S.?("changePassword.legend")}</legend>

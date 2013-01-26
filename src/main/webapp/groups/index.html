@@ -1,24 +1,46 @@
-<div class="lift:surround?with=default;at=content">
-    <div id="group-tab-wrapper">
-        <div class="tabbable"> <!-- Only required for left/right tabs -->
-            <div class="row-fluid lift:GroupPage.embedTabMenu">
-            </div>
-            <div class="row-fluid lift:GroupPage.info">
-                <div id="legend">
-                    <h2 class="GroupName">Group name</h2>
+<div class="lift:surround?with=default">
+    <div class="lift:bind-at?name=left-panel">
+        <div class="well">
+            <div id="main_li_id">
+                <h5><b><span name="who">Dmitry Ivanov</span>:</b></h5>
+                <p>
+                    <span name="body">My Message</span>
+                </p>
+                <div>
+                    <span class="badge badge-success">Posted <span name="when">2012-08-02</span></span><div class="pull-right"><span class="label">tag1</span> <span class="label">tag2</span> <span class="label">tag3</span> <span class="label">tag4</span></div>
                 </div>
-                <div id="tab-content" class="tab-content">
-                    <div class="span2">
-                        <p class="lead">Owner:</p>
-                        <p><strong><a class="GroupOwner">Group</a></strong></p>
+                <hr/>
+            </div>
+            <hr>
+            <a class="btn">Journal</a>
+        </div>
+    </div>
+    <div class="lift:bind-at?name=content">
+        <div id="group-tab-wrapper">
+            <div class="tabbable"> <!-- Only required for left/right tabs -->
+                <div class="row-fluid lift:GroupPage.embedTabMenu">
+                </div>
+                <div class="row-fluid lift:GroupPage.info">
+                    <div id="legend">
+                        <h2 class="GroupName">Group name</h2>
                     </div>
-                    <div class="span4">
-                        <p class="lead">Description: </p>
-                        <p class="GroupDescription">Group description</p>
+                    <div id="tab-content" class="tab-content">
+                        <div class="span2">
+                            <p class="lead">Owner:</p>
+                            <p><strong><a class="GroupOwner">Group</a></strong></p>
+                        </div>
+                        <div class="span4">
+                            <p class="lead">Description: </p>
+                            <p class="GroupDescription">Group description</p>
+                        </div>
+                        <div class="span2">
+                            <p class="lead">Tags: </p>
+                            <span class="label label-info">table</span>
+                            <span class="label label-info">user interface</span>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
 </div>

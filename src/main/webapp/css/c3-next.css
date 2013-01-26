@@ -91,7 +91,7 @@ body > .navbar .brand:hover {
 
 /* Login form
 -------------------------------------------------- */
-.well {
+.well_login {
     width:500px;
     /*height:160px;*/
     outline:1px solid #CCC;
