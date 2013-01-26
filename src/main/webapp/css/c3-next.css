@@ -437,6 +437,28 @@ body > .navbar .brand:hover {
 .show{
     display:block;
 }
+.message_cont{
+    padding:8px!important;
+
+}
+.message_data{
+    float:right;
+    margin-right:3px;
+    font-size:8px;
+    display:block;
+}
+.message_text{
+    font-size:9px;
+    line-height:16px;
+    margin-bottom:5px!important;
+}
+.message_header{
+    font-size:11px;
+}
+.message_button{
+     margin:0 auto;
+
+}
 /*********************************************************
 * End Message part
 *********************************************************/
@@ -446,17 +468,11 @@ body > .navbar .brand:hover {
 .listGroup{
     outline: 1px solid #CCC;
 }
-.delete_group{
-
-
-
-}
 .groupsHeader{
     font-size:18x;
-
 }
 /*********************************************************
-* Begin Add Group part
+* End Add Group part
 *********************************************************/
 
 /*********************************************************
