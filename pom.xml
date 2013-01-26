@@ -34,6 +34,11 @@
             <url>http://scala-tools.org/repo-releases</url>
         </repository>
         <repository>
+            <id>typesafe</id>
+            <name>Typesafe Repository</name>
+            <url>http://repo.typesafe.com/typesafe/releases/</url>
+        </repository>
+        <repository>
             <id>libs-release</id>
             <name>iFunSoftware release repository</name>
             <url>http://repository-ifunsoftware.rhcloud.com/content/repositories/releases</url>
