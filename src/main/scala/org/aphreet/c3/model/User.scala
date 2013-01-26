@@ -178,12 +178,11 @@ object User extends User with MetaMegaProtoUser[User]{
         else {
           user.setPasswordFromListString(newPassword)
           user.validate match {
-            case Nil => user.save; S.notice(S.??("password.changed")); S.redirectTo(homePage)
-            case xs => S.error(xs)
+            case Nil => user.save; S.notice(S.??("changePassword.changed")); S.redirectTo(homePage)
+            case xs => S.error(xs.str)
           }
         }
       }
-
       bind("user", changePasswordXhtml,
         "old_pwd" -> SHtml.password("", s => oldPassword = s,("class","username span2")),
         "new_pwd" -> SHtml.password_*("", LFuncHolder(s => newPassword = s),("class","username span2")),
@@ -212,8 +211,8 @@ object User extends User with MetaMegaProtoUser[User]{
     def testSignup() {
       validateSignup(theUser) match {
         case Nil =>
-          actionsAfterSignup(theUser, () => S.redirectTo(homePage))
-        case xs => S.error(xs) ; signupFunc(Full(innerSignup _))
+          actionsAfterSignup(theUser, () => {S.notice(S.?("signup.user")); S.redirectTo(homePage)})
+        case xs => S.error(xs.str) ;signupFunc(Full(innerSignup _))
       }
     }
 
