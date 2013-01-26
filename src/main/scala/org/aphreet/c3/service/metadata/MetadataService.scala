@@ -19,8 +19,8 @@ class MetadataService extends Actor with C3Loggable{
 
   private val c3 = inject[C3System].open_!
 
-  val workersRouted = context.actorOf(actor.Props[MetadataServiceWorker].withRouter(FromConfig()),
-    name = "metadataServiceWorkerRoutedActor")
+  val workersRouted =
+    context.actorOf(actor.Props[MetadataServiceWorker].withRouter(FromConfig()), name = "metadataServiceWorkerRoutedActor")
 
   def receive = {
     case CheckForMetadataUpdates => {
