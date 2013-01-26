@@ -12,6 +12,7 @@ import net.liftweb.http.js.JsCmds._
 import java.util
 import java.text.SimpleDateFormat
 import net.liftweb.textile.TextileParser
+import org.aphreet.c3.util.helpers.DateTimeHelpers
 
 /**
  * @author Dmitry Ivanov (mailto: id.ajantis@gmail.com)
@@ -118,8 +119,7 @@ class GroupMessagesLog extends CometActor with CometListener {
    */
   def toHtml(msg: String): NodeSeq = TextileParser.paraFixer(TextileParser.toHtml(msg, Empty))
 
-  private val customFormatter = new SimpleDateFormat("dd.MM.yyyy HH:mm")
-  private def formatMsgCreationDate(date: util.Date): String = customFormatter.format(date)
+  private def formatMsgCreationDate(date: util.Date): String = DateTimeHelpers.todayTimeOrPastDate(date)
 
 }
 

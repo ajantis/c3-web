@@ -207,8 +207,14 @@ class Boot extends Bootable{
     configMailer("smtp.gmail.com", "c3-project@ifunsoftware.com", "myverysecretpassword")
     bootAkka()
 
-    S.addAround(DB.buildLoanWrapper)
+    // TODO remove me. It's just a migration hack
+    for {
+      notification <- Notification.findAll()
+    } {
+      notification.created(TimeHelpers.now).save()
+    }
 
+    S.addAround(DB.buildLoanWrapper)
   }
 
   /**

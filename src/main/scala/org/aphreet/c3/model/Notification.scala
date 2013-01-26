@@ -2,6 +2,7 @@ package org.aphreet.c3.model
 
 import net.liftweb.mapper._
 import xml.{NodeSeq, XML}
+import net.liftweb.util.TimeHelpers
 
 /**
  * Copyright iFunSoftware 2013
@@ -25,8 +26,11 @@ class Notification extends LongKeyedMapper[Notification] with IdPK{
     override def defaultValue = false
   }
 
-  def createLink: String = "/notifications/" + this.id.is
+  object created extends MappedDateTime(this){
+    override def defaultValue = TimeHelpers.now
+  }
 
+  def createLink: String = "/notifications/" + this.id.is
 }
 
 object Notification extends Notification with LongKeyedMetaMapper[Notification] {

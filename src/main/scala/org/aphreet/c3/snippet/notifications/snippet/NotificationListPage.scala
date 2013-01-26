@@ -5,6 +5,7 @@ import org.aphreet.c3.model.{Notification, User}
 import net.liftweb.util.BindHelpers._
 import xml.Text
 import org.aphreet.c3.service.notifications.NotificationService
+import org.aphreet.c3.util.helpers.DateTimeHelpers
 
 /**
  * Copyright iFunSoftware 2013
@@ -25,6 +26,7 @@ class NotificationListPage {
           case false => "is_not_read"
           case true => ""
         }) &
+        ".created *" #> DateTimeHelpers.todayTimeOrPastDate(notification.created.is) &
         ".title *" #> notification.title.is &
         ".link [href]" #> notification.createLink
       }
