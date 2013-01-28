@@ -1,12 +1,25 @@
 <lift:surround with="default">
     <div class="lift:bind-at?name=content">
         <h2>My notifications</h2>
-        <ul class="lift:NotificationListPage.list">
-            <li class="notification">
-                <a href="#" class="link">
-                    <span class="title">Super notification!</span>
-                </a> - <span class="created">Jan 15</span>
-            </li>
-        </ul>
+
+        <table class="table table-condensed table-hover lift:NotificationListPage.list" style="width: 100%">
+            <thead>
+                <tr>
+                    <th class="span1"><input type="checkbox"></th>
+                    <th class="span2"></th>
+                    <th class="span2"></th>
+                    <th class="span9"></th>
+                    <th class="span2"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="notification">
+                    <td><input type="checkbox"/> <a href="#"><i class="icon-star-empty"></i></a></td>
+                    <td class="source">C3</td>
+                    <td><span class="label pull-right">Notifications</span></td>
+                    <td><a href="#" class="link title">Super notification!</a></td>
+                    <td class="created">11:23 PM</td>
+                </tr>
+        </table>
     </div>
 </lift:surround>
