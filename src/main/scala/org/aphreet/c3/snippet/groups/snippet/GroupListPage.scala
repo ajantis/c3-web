@@ -16,8 +16,7 @@ import xml.Text
 import org.aphreet.c3.service.groups.GroupService
 
 /**
- * @author Dmitry Ivanov (mailto: id.ajantis@gmail.com)
- *         iFunSoftware
+ * @author Serjk (mailto: serjk91@gmail.com)
  */
 class GroupListPage {
 

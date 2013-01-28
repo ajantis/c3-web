@@ -57,9 +57,9 @@ class GroupMessagesLog extends CometActor with CometListener {
 
   // display a line
   private def line(c: Message) = {
-    ("name=when" #> formatMsgCreationDate(c.creationDate) &
-     "name=who" #> c.author.map(_.shortName) &
-     "name=body" #> toHtml(c.content))(li)
+    ("name=when *" #> formatMsgCreationDate(c.creationDate) &
+     "name=who *" #> c.author.map(_.shortName) &
+     "name=body *" #> toHtml(c.content))(li)
   }
 
   // display a list of messages
