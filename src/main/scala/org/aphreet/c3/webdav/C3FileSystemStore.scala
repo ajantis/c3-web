@@ -109,6 +109,11 @@ class C3FileSystemStore(val root:File) extends IWebdavStore{
 
     if(file.isDirectory){
       val dir = file.asDirectory
+
+//      val filter = if (uri == "/"){
+//        (tx.getPrincipal.groups)
+//      }
+
       dir.children().map(node =>
         cacheNode(tx, node.fullname, node).name
       ).toArray
@@ -152,6 +157,10 @@ class C3FileSystemStore(val root:File) extends IWebdavStore{
         cacheNode(tx, uri, c3System.getFile(uri))
       }
     }
+  }
+
+  private def translateUri(uri:String, tx:ITransaction):String = {
+    null
   }
 
   private def cacheNode(tx:ITransaction, uri:String, node:C3FileSystemNode):C3FileSystemNode = {
