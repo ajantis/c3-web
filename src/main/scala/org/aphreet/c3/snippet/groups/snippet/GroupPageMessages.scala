@@ -32,7 +32,14 @@ class GroupPageMessages(data: GroupPageData) extends GroupPageHelpers{
 
   private val logger = Logger(classOf[GroupPageMessages])
 
-  def putCometMessenger(xml: NodeSeq): NodeSeq = {
+  def linkMessages = {
+//    var links = ""
+//    ".message_button [href]" #> links
+
+
+  }
+
+   def putCometMessenger(xml: NodeSeq): NodeSeq = {
     val actorName = "group-" + group.id.is + "-messages-log-comet-actor"
     logger.debug("Using CometActor with name: %s".format(actorName))
 
