@@ -38,19 +38,25 @@ class GroupListPage {
     ".container_groups" #> groupList.map{ group:Group => {
 
       def deleteGroup(): JsCmd = {
-        //TODO verify access user
         if(groupService.removeGroup(group)){
           JsCmds.Replace(group.id.is.toString, NodeSeq.Empty)
         } else JsCmds.Alert("Group is not removed! Please check logs for details")
       }
+      if (User.currentUser.open_!.email.is == group.owner.obj.map(_.email).open_!.is)
+      {
+        ".container_groups [id]"#> group.id.is &
+          ".container_groups *" #>
+            ((n: NodeSeq) => SHtml.ajaxForm(
+              ("a *" #> group.name.is &
+                "a [href]" #> ("/groups/"+group.id) andThen
+                "* *" #> SHtml.memoize(f => f ++ SHtml.hidden(deleteGroup _))).apply(n)
+            ))
+      }else{
+        "a *" #> group.name.is &
+        "a [href]" #> ("/groups/"+group.id) &
+         ".delete_group" #> NodeSeq.Empty
+      }
 
-      ".container_groups [id]"#> group.id.is &
-      ".container_groups *" #>
-          ((n: NodeSeq) => SHtml.ajaxForm(
-             ("a *" #> group.name.is &
-              "a [href]" #> ("/groups/"+group.id) andThen
-              "* *" #> SHtml.memoize(f => f ++ SHtml.hidden(deleteGroup _))).apply(n)
-          ))
     }
     }
   }
