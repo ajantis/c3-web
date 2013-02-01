@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory
 import org.aphreet.c3.apiaccess.C3
 import com.ifunsoftware.c3.access.fs.C3FileSystemNode
 import java.nio.file.{StandardCopyOption, Files}
-import com.ifunsoftware.c3.access.{C3AccessException, C3ByteChannel, DataStream}
+import com.ifunsoftware.c3.access.{C3AccessException, DataStream}
 import javax.servlet.http.HttpServletRequest
 import org.aphreet.c3.model.User
 import net.liftweb.mapper.By
@@ -110,13 +110,15 @@ class C3FileSystemStore(val root:File) extends IWebdavStore{
     if(file.isDirectory){
       val dir = file.asDirectory
 
-//      val filter = if (uri == "/"){
-//        (tx.getPrincipal.groups)
-//      }
+      val groupFilter = if (uri == "/"){
+        (name: String) => tx.getPrincipal.groups.contains(name)
+      }else{
+        (name: String) => true
+      }
 
       dir.children().map(node =>
         cacheNode(tx, node.fullname, node).name
-      ).toArray
+      ).filter(groupFilter).toArray
     }else{
       Array()
     }
@@ -147,30 +149,50 @@ class C3FileSystemStore(val root:File) extends IWebdavStore{
       storedObject
     }catch{
       case e: C3AccessException => null
+      case e: GroupAccessDeniedException => null
     }
   }
 
   private def getFSNode(tx:ITransaction, uri:String):C3FileSystemNode = {
-    tx.cachedFiles.get(uri.replaceAll("/+", "/")) match {
+
+    val translatedUri = translateUri(uri.replaceAll("/+", "/"), tx)
+
+    tx.cachedFiles.get(translatedUri) match {
       case Some(node) => node
       case None => {
-        cacheNode(tx, uri, c3System.getFile(uri))
+        cacheNode(tx, uri, c3System.getFile(translatedUri))
       }
     }
   }
 
   private def translateUri(uri:String, tx:ITransaction):String = {
-    null
+
+    val splitUri = uri.split("/", 3).filter(!_.isEmpty)
+
+    val translatedUri = splitUri.length match {
+      case 0 => "/"
+      case 1 => "/" + verifyGroupAccess(splitUri(0), tx) + "/files"
+      case _ => "/" + verifyGroupAccess(splitUri(0), tx) + "/files/" + splitUri(1)
+    }
+
+    if (log.isDebugEnabled){
+      log.debug("URI " + uri + " translated to " + translatedUri)
+    }
+
+    translatedUri
+  }
+
+  private def verifyGroupAccess(groupId: String, tx: ITransaction): String = {
+    if (!tx.getPrincipal.groups.contains(groupId)){
+      log.warn("Access denied to group " + groupId + " for principal " + tx.getPrincipal.getName)
+      throw new GroupAccessDeniedException
+    }else
+      groupId
   }
 
   private def cacheNode(tx:ITransaction, uri:String, node:C3FileSystemNode):C3FileSystemNode = {
     tx.cachedFiles.put(uri.replaceAll("/+", "/"), node)
     node
-  }
-
-  private def use(tx:ITransaction, channel:C3ByteChannel):C3ByteChannel = {
-    tx.openedChannels.add(channel)
-    channel
   }
 
   implicit def txToc3Tx(tx:ITransaction):C3Transaction = {
@@ -180,4 +202,6 @@ class C3FileSystemStore(val root:File) extends IWebdavStore{
   implicit def principalToC3Princioal(principal: Principal): C3Principal = {
     principal.asInstanceOf[C3Principal]
   }
+
+  class GroupAccessDeniedException extends Exception
 }

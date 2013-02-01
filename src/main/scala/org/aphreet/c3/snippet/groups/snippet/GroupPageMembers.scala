@@ -65,10 +65,10 @@ def listUser = {
           if (user.email.is != group.owner.obj.map(_.email).open_!.is){
             def deleteUser():JsCmd = {
               if(groupService.removeUserFromGroup(group,user)){
-                JsCmds.Replace(user.email.is, NodeSeq.Empty)
+                JsCmds.Replace(user.id.is.toString, NodeSeq.Empty)
               } else JsCmds.Alert("User is not removed! Please check logs for details")
             }
-            ".ListGroupUser [id]" #> user.email.is &
+            ".ListGroupUser [id]" #> user.id.is &
             ".ListGroupUser *" #>
               ((n: NodeSeq) => SHtml.ajaxForm(
                 (".first_name *" #> user.firstName.is &
