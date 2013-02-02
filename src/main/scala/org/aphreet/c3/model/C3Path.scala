@@ -69,8 +69,8 @@ case class C3Path(path:String){
 
 object C3Path {
 
-  def apply(group:String, path:List[String], extension:String):String = {
-    "/" + group + "/" + path.init.mkString("/") + "/" +
+  def apply(groupId:String, path:List[String], extension:String):String = {
+    "/" + groupId + "/" + path.init.mkString("/") + "/" +
       path.last + {
       extension match {
         case "" => ""

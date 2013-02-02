@@ -34,7 +34,7 @@ package org.aphreet.c3.model
 import java.util.Date
 import net.liftweb.util.TimeHelpers
  
-class Catalog(val group : Group, val name : String,val created : Date , val tags : List[String]) extends C3Resource with C3ResourceMapping[Catalog] {
+class Catalog(val group : Group, val name : String, val created : Date, val tags : List[String]) extends C3Resource with C3ResourceMapping[Catalog] {
 
   val resourceType = C3Resource.C3_DIRECTORY
 

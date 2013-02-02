@@ -7,12 +7,13 @@ import net.liftweb.common._
 import net.liftweb.sitemap.Loc.Link
 import xml.{NodeSeq, Text}
 import net.liftweb.util.BindHelpers._
-import org.aphreet.c3.lib.DependencyFactory._
-import com.ifunsoftware.c3.access.C3System
+import net.liftweb.util.Helpers._
 import net.liftweb.http.S
 import net.liftweb.common.Full
 import org.aphreet.c3.snippet.groups.GroupPageFilesData
 import org.aphreet.c3.snippet.{FileUploadDialog, CreateDirectoryDialog}
+import org.apache.commons.httpclient.util.URIUtil
+import net.liftweb.sitemap.Loc
 
 /**
  * @author Dmitry Ivanov (mailto: id.ajantis@gmail.com)
@@ -54,18 +55,20 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers with Gr
 
   def render = {
     ".current_path *" #> Text(data.currentAddress) &
-    ".create_dir" #> ((ns: NodeSeq) => new CreateDirectoryDialog().button(ns, Full(data.currentAddress))) &
-    (if(data.isDirectoryLoc)
-      renderDirectoryLoc
-    else
+    ".create_dir" #> ((ns: NodeSeq) => new CreateDirectoryDialog().button(ns, Full("/" + data.group.id.is + "/files" + data.currentAddress))) &
+    (if(data.isDirectoryLoc){
+      val hostAndPath = S.uri
+      if(!S.uri.endsWith("/"))
+        S.redirectTo(S.uri + "/")
+      else
+        renderDirectoryLoc
+    } else
       renderFileLoc)
   }
 
   protected def renderDirectoryLoc = {
     ".child *" #> group.getChildren(data.currentAddress).map {
       resource => {
-        logger.error(resource.name)
-        logger.error(resource.resourceType)
         resource match {
           case c: Catalog => toCss(c)
           case f: File => toCss(f)
@@ -79,7 +82,8 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers with Gr
     file match {
       case Full(f) => {
         toCss(f) &
-        ".tag *" #> f.tags
+        ".tag *" #> f.tags &
+        ".download [href]" #> fileDownloadUrl(f)
       }
       case Failure(msg, t, chain) => {
         S.warning("File not found")
@@ -98,13 +102,17 @@ trait C3ResourceHelpers {
 
   def toCss(directory: Catalog) = {
     ".name *" #> directory.name &
+    ".link [href]" #> (directory.name + "/") &
     ".icon [class+]" #> "icon-folder-close" &
     ".created_date *" #> internetDateFormatter.format(directory.created)
   }
 
   def toCss(file: File) = {
     ".name *" #> file.name &
+    ".link [href]" #> file.name &
     ".icon [class+]" #> "icon-file" &
     ".created_date *" #> internetDateFormatter.format(file.created)
   }
+
+  def fileDownloadUrl(file: File): String = urlEncode("/download/" + file.group.id.is + "/files/" + file.path)
 }

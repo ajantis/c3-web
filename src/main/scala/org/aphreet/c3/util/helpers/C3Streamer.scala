@@ -37,13 +37,13 @@ import org.aphreet.c3.lib.DependencyFactory._
 
 object C3Streamer{
 
-  def apply(group:String, path: List[String], extension:String) = {
+  def apply(groupId: String, path: List[String], extension:String) = {
     () => {
 
       val c3 = inject[C3System].open_!
 
       try{
-        val file = c3.getFile(C3Path(group, path, extension))
+        val file = c3.getFile(C3Path(groupId, path, extension))
         val metadata = file.metadata
 
         val stream = file.versions.last.getDataStream
@@ -56,7 +56,7 @@ object C3Streamer{
         case e: Exception => {
           e.printStackTrace()
           S.notice("No file found!")
-          S.redirectTo("/group/"+group+"/files/"+path.init.mkString("/"))
+          S.redirectTo("/groups/" + groupId + "/files/"+path.init.mkString("/"))
         }
       }
     }
