@@ -208,7 +208,19 @@ class Boot extends Bootable{
     bootAkka()
 
     S.addAround(DB.buildLoanWrapper)
+    //создание супер админа
+    val users = User.find(By(User.email, "admin@admin.com"))
+    users.map(user =>{
+      if(!user.superUser){
+        user.superUser(true)
+        user.save
+        S.notice("Super user is Admin")
+      }
+    })
+
+
   }
+
 
   /**
    * Force the request to be UTF-8
