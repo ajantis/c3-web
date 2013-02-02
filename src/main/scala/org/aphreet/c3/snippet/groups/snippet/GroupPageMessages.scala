@@ -6,7 +6,7 @@ import xml.NodeSeq
 import org.aphreet.c3.loc.SuffixLoc
 import org.aphreet.c3.snippet.groups.{AbstractGroupPageLoc, GroupPageData}
 import net.liftweb.sitemap.Loc.Link
-
+import net.liftweb.util.Helpers._
 /**
  * Copyright iFunSoftware 2011
  * @author Dmitry Ivanov
@@ -27,16 +27,16 @@ object GroupPageMessages extends AbstractGroupPageLoc[GroupPageData] with Suffix
 }
 
 class GroupPageMessages(data: GroupPageData) extends GroupPageHelpers{
+  import GroupPageMessages._
+
   override lazy val group = data.group
   override lazy val activeLocId = "messages"
 
   private val logger = Logger(classOf[GroupPageMessages])
 
   def linkMessages = {
-//    var links = ""
-//    ".message_button [href]" #> links
-
-
+    val links = link.pathList(data).drop(1).mkString("/")
+    ".message_button [href]" #> links
   }
 
    def putCometMessenger(xml: NodeSeq): NodeSeq = {
