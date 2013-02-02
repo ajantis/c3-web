@@ -9,7 +9,7 @@ App.uploadModule.Models.fileItem = Backbone.Model.extend({
     defaults:{
         loaded : 0,
         uploadable : false,
-        metadata : "default string",
+        metadata : "",
         status : "Not loaded",
         errortext :"",
         hasError : false
@@ -18,6 +18,7 @@ App.uploadModule.Models.fileItem = Backbone.Model.extend({
         if(this.get('uploadable')){
             var xhr = new XMLHttpRequest();
             try {
+
                 this.set({'hasError': true});
                 this.set({'uploadable':false});
                 var fd = new FormData();
@@ -29,7 +30,7 @@ App.uploadModule.Models.fileItem = Backbone.Model.extend({
 
                 xhr.upload.addEventListener('progress', this.updateProgress, false);
                 xhr.onreadystatechange = this.stateChange;
-                xhr.open('POST', App.uploadModule.Config.uploadUrl);
+                xhr.open('POST', App.uploadModule.Config.getUrl());
                 xhr.setRequestHeader('X-FILE-NAME', this.get('filename'));
                 xhr.send(fd);
                 this.set({'status' : 'loading'});
