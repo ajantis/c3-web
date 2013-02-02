@@ -78,10 +78,20 @@ class C3FileSystemStore(val root:File) extends IWebdavStore{
 
   def createFolder(tx: ITransaction, uri: String) {
     log.info("createFolder() " + uri)
+
+    val splitUri = uri.split("/")
+
+    val parent = splitUri.dropRight(1).mkString("/")
+    val child = splitUri.last
+
+    log.info("Going to create directory \"" + child + "\" in the dir " + parent)
+
+    getFSNode(tx, parent).asDirectory.createDirectory(child)
   }
 
   def createResource(tx: ITransaction, uri: String) {
     log.info("createResource() " + uri)
+    tx.createdFiles.add(uri)
   }
 
   def getResourceContent(tx: ITransaction, uri: String) = {
@@ -95,6 +105,8 @@ class C3FileSystemStore(val root:File) extends IWebdavStore{
 
     try{
       Files.copy(content, tmpFile, StandardCopyOption.REPLACE_EXISTING)
+
+
       getFSNode(tx, uri).update(DataStream(tmpFile.toFile))
       tmpFile.toFile.length()
     }finally {
@@ -130,7 +142,9 @@ class C3FileSystemStore(val root:File) extends IWebdavStore{
   }
 
   def removeObject(tx: ITransaction, uri: String) {
-    log.info("removeObject")
+    log.info("removeObject " + uri)
+    deleteFromCache(tx, uri)
+    c3System.deleteFile(translateUri(uri, tx))
   }
 
   def getStoredObject(tx: ITransaction, uri: String) = {
@@ -184,10 +198,14 @@ class C3FileSystemStore(val root:File) extends IWebdavStore{
 
   private def verifyGroupAccess(groupId: String, tx: ITransaction): String = {
     if (!tx.getPrincipal.groups.contains(groupId)){
-      log.warn("Access denied to group " + groupId + " for principal " + tx.getPrincipal.getName)
+      log.debug("Access denied to group " + groupId + " for principal " + tx.getPrincipal.getName)
       throw new GroupAccessDeniedException
     }else
       groupId
+  }
+
+  private def deleteFromCache(tx:ITransaction, uri:String) = {
+    tx.cachedFiles.remove(uri.replaceAll("/+", "/"))
   }
 
   private def cacheNode(tx:ITransaction, uri:String, node:C3FileSystemNode):C3FileSystemNode = {
@@ -201,6 +219,13 @@ class C3FileSystemStore(val root:File) extends IWebdavStore{
 
   implicit def principalToC3Princioal(principal: Principal): C3Principal = {
     principal.asInstanceOf[C3Principal]
+  }
+
+  def supportsMoveOperation() = true
+
+  def moveResource(tx: ITransaction, source: String, destination: String) {
+    log.debug("Called move from " + source + " to " + destination)
+    getFSNode(tx, source).move(translateUri(destination, tx))
   }
 
   class GroupAccessDeniedException extends Exception

@@ -12,6 +12,8 @@ class C3Transaction(val principal:Principal) extends ITransaction{
 
   val cachedFiles = new mutable.HashMap[String, C3FileSystemNode]
 
+  val createdFiles = new mutable.HashSet[String]()
+
   def close() {
 
   }
