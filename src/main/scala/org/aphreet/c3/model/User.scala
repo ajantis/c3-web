@@ -10,6 +10,8 @@ import net.liftweb.http.S._
 import net.liftweb.sitemap.Loc.LocGroup
 import xml.Text
 import net.liftweb.common.Full
+import net.liftweb.util.Mailer
+import net.liftweb.util.Mailer.{BCC, To, Subject, From}
 
 /**
  * The singleton that has methods for accessing the database
@@ -74,7 +76,94 @@ object User extends User with MetaMegaProtoUser[User]{
         </form>
       </div>)
   }
+  //форма восстановления пароля
+  override def passwordResetXhtml = {
+    (<div class="forgot_password_form form-holder login-form well well_login">
+      <form action={S.uri} method="POST" class="form">
+        <fieldset>
+          <legend>{S.?("reset_your_password.legend")}</legend>
+          <label for="username">New password</label>
+          <div class="div_text">
+            <div class="input-prepend"><span class="add-on"><i class="icon-lock"></i></span><user:pwd/></div>
+          </div>
+          <label for="username">Repeate password</label>
+          <div class="div_text">
+            <div class="input-prepend"><span class="add-on"><i class="icon-repeat"></i></span><user:pwd/></div>
+          </div>
+          <div class="button_div">
+            <user:submit/>
+          </div>
+        </fieldset>
+    </form>
+    </div>)
+  }
 
+  override def passwordReset(id: String) =
+    findUserByUniqueId(id) match {
+      case Full(user) =>
+        def finishSet() {
+          user.validate match {
+            case Nil => S.notice(S.??("password.changed"))
+            user.resetUniqueId().save
+            logUserIn(user, () => S.redirectTo(homePage))
+
+            case xs => S.error(xs.str)
+          }
+        }
+        bind("user", passwordResetXhtml,
+          "pwd" -> SHtml.password_*("",(p: List[String]) =>
+            user.setPasswordFromListString(p)),
+          "submit" -> resetPasswordSubmitButton(S.?("set.password.button"), finishSet _))
+      case _ => S.error(S.??("password.link.invalid")); S.redirectTo(homePage)
+    }
+  //блок генерации письма
+  override def sendPasswordReset(email: String) {
+    findUserByUserName(email) match {
+      case Full(user) if user.validated_? =>
+        user.resetUniqueId().save
+        val resetLink = S.hostAndPath+
+          passwordResetPath.mkString("/", "/", "/")+urlEncode(user.getUniqueId())
+
+        val email: String = user.getEmail
+
+        Mailer.sendMail(From(emailFrom),Subject(S.?("reset.password.request")),
+          (To(user.getEmail) ::
+            generateResetEmailBodies(user, resetLink) :::
+            (bccEmail.toList.map(BCC(_)))) :_*)
+
+        S.notice(S.?("password.reset.email.sent"))
+        S.redirectTo(homePage)
+
+
+      case Full(user) =>
+        sendValidationEmail(user)
+        S.notice(S.??("account.validation.resent"))
+        S.redirectTo(homePage)
+
+      case _ => S.error(userNameNotFoundString)
+    }
+  }
+  override def passwordResetMailBody(user: TheUserType, resetLink: String): Elem = {
+    (<html>
+      <head>
+        <title>{S.??("reset.password.confirmation")}</title>
+      </head>
+      <body>
+        <p>{S.?("dear")} {user.getFirstName},
+          <br/>
+          <br/>
+          {S.?("reset.password.mail.body.line1")}<br/>
+          {S.?("reset.password.mail.body.line2")}<br/>
+          {S.?("reset.password.mail.body.line3")}<br/>
+          <a href={resetLink}>{resetLink}</a><br/>
+          <br/>
+          {S.?("reset.password.mail.body.line4")}<br/>
+          <br/>
+          {S.?("reset.password.mail.end")}
+        </p>
+      </body>
+    </html>)
+  }
   override def loginXhtml = {
     (
       <div class="form-holder login-form well well_login">
@@ -146,19 +235,19 @@ object User extends User with MetaMegaProtoUser[User]{
           <label for="username">{S.?("old.password")}</label>
           <div class="div_text">
               <div class="input-prepend">
-                <span class="add-on"><i class="icon-envelope"></i></span><user:old_pwd />
+                <span class="add-on"><i class="icon-lock"></i></span><user:old_pwd />
               </div>
           </div>
           <label for="username">{S.?("new.password")}</label>
           <div class="div_text">
             <div class="input-prepend">
-              <span class="add-on"><i class="icon-envelope"></i></span><user:new_pwd />
+              <span class="add-on"><i class="icon-lock"></i></span><user:new_pwd />
             </div>
           </div>
           <label for="username">{S.?("repeatPassword.label")}</label>
             <div class="div_text">
               <div class="input-prepend">
-                <span class="add-on"><i class="icon-envelope"></i></span><user:new_pwd />
+                <span class="add-on"><i class="icon-repeat"></i></span><user:new_pwd />
               </div>
             </div>
           <div class="button_div">
