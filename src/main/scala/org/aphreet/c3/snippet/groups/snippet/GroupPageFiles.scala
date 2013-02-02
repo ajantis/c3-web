@@ -57,7 +57,6 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers with Gr
     ".current_path *" #> Text(data.currentAddress) &
     ".create_dir" #> ((ns: NodeSeq) => new CreateDirectoryDialog().button(ns, Full("/" + data.group.id.is + "/files" + data.currentAddress))) &
     (if(data.isDirectoryLoc){
-      val hostAndPath = S.uri
       if(!S.uri.endsWith("/"))
         S.redirectTo(S.uri + "/")
       else
@@ -74,13 +73,16 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers with Gr
           case f: File => toCss(f)
         }
       }
-    }
+    } &
+    ".file-view" #> NodeSeq.Empty
   }
 
   protected def renderFileLoc = {
     val file = group.getFile(data.currentAddress)
     file match {
       case Full(f) => {
+        ".file-table" #> NodeSeq.Empty &
+        ".fs_toolbar" #> NodeSeq.Empty &
         toCss(f) &
         ".tag *" #> f.tags &
         ".download [href]" #> fileDownloadUrl(f)
