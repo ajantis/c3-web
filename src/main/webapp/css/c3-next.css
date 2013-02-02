@@ -486,6 +486,30 @@ body > .navbar .brand:hover {
 #lift__noticesContainer__ p {
     margin: 0px;
 }
+.font_back{
+    border: 1px solid #CACACA;
+    background-color: white;
+}
+.notification_created{
+    margin-left:20px;
+    margin-top:10px;
+}
+.font{
+    color: #666;
+    font-size: 12px;
+}
+.notification_title{
+    padding-left:30px;
+    text-align: left;
+    background: whiteSmoke;
+}
+.notification_body{
+    text-shadow: none;
+    color: #333;
+    font: 13px Helvetica, arial, freesans, clean, sans-serif;
+    margin-left:20px;
+    margin-bottom:15px;
+}
 /*********************************************************
 * End lift notices part
 *********************************************************/
@@ -522,5 +546,4 @@ td.file-table-date{
 *********************************************************/
 
 .is_not_read {
-    font-weight: bold;
-}
+    
