@@ -10,6 +10,7 @@ import net.liftweb.util.BindHelpers._
 import org.aphreet.c3.util.C3Loggable
 import org.aphreet.c3.service.notifications.NotificationManager
 import org.aphreet.c3.service.notifications.NotificationManagerProtocol.MarkAsRead
+import org.aphreet.c3.util.helpers.DateTimeHelpers
 
 
 /**
@@ -41,8 +42,9 @@ class NotificationPage(data: NotificationPageData) extends C3Loggable{
     if (!notification.isRead.is){
       NotificationManager ! MarkAsRead(notification)
     }
-
+    val time = DateTimeHelpers.todayTimeOrPastDate(data.notification.created)
     ".notification_title *" #> data.notification.title.is &
+    ".notification_created *" #> time &
     ".notification_body *" #> data.notification.body.toXml
   }
 }
