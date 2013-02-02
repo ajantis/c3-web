@@ -77,20 +77,20 @@ class C3FileSystemStore(val root:File) extends IWebdavStore{
   }
 
   def createFolder(tx: ITransaction, uri: String) {
-    log.info("createFolder() " + uri)
+    log.debug("createFolder() " + uri)
 
     val splitUri = uri.split("/")
 
     val parent = splitUri.dropRight(1).mkString("/")
     val child = splitUri.last
 
-    log.info("Going to create directory \"" + child + "\" in the dir " + parent)
+    log.debug("Going to create directory \"" + child + "\" in the dir " + parent)
 
     getFSNode(tx, parent).asDirectory.createDirectory(child)
   }
 
   def createResource(tx: ITransaction, uri: String) {
-    log.info("createResource() " + uri)
+    log.debug("createResource() " + uri)
     tx.createdFiles.add(uri)
   }
 
@@ -99,15 +99,27 @@ class C3FileSystemStore(val root:File) extends IWebdavStore{
   }
 
   def setResourceContent(tx: ITransaction, uri: String, content: InputStream, contentType: String, characterEncoding: String) = {
-    log.info("setResourceContent() " + uri)
+    log.debug("setResourceContent() " + uri)
 
     val tmpFile = File.createTempFile("dav_upload-", null).toPath
 
     try{
       Files.copy(content, tmpFile, StandardCopyOption.REPLACE_EXISTING)
 
+      if(tx.createdFiles.contains(uri)){
 
-      getFSNode(tx, uri).update(DataStream(tmpFile.toFile))
+        val splitUri = uri.split("/")
+
+        val parent = splitUri.dropRight(1).mkString("/")
+        val child = splitUri.last
+
+        getFSNode(tx, parent).asDirectory.createFile(child, Map(), DataStream(tmpFile.toFile))
+
+        tx.createdFiles.remove(uri)
+      }else{
+        getFSNode(tx, uri).update(DataStream(tmpFile.toFile))
+      }
+
       tmpFile.toFile.length()
     }finally {
       Files.deleteIfExists(tmpFile)
