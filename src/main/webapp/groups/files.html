@@ -10,9 +10,12 @@
                             <tail>
                                 <link rel="stylesheet" type="text/css" href="/js/file-upload/css/upload.css">
                                 <script id="file-template" type="text/html">
+                                    
+
+                                    <div class="toggler"><i class="icon-tags icon-black"></i></div>
 
                                     <div class="lineContainer"><%=filename.length>30?filename.substr(0,30)+"...":filename%></div>
-                                    <div class="removebutton"><i class="icon-trash icon-black"></i></div>
+                                    <div class="removebutton"><i class="icon-remove icon-black"></i></div>
                                     <div class="barcontainer">
                                         <div class="bartext"><%= status%></div>
                                         <div class="bar" style="width: <%=loaded%>%;"></div>
