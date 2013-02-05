@@ -121,5 +121,5 @@ trait C3ResourceHelpers {
     ".created_date *" #> internetDateFormatter.format(file.created)
   }
 
-  def fileDownloadUrl(file: File): String = urlEncode("/download/" + file.group.id.is + "/files/" + file.path)
+  def fileDownloadUrl(file: File): String = "/download/" + file.group.id.is + "/files" + file.path
 }
