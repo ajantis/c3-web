@@ -45,6 +45,7 @@ import xml.NodeSeq
 import org.aphreet.c3.apiaccess.C3
 import com.ifunsoftware.c3.access.C3AccessException
 import org.aphreet.c3.util.C3Loggable
+import net.liftweb.http.S
 
 trait C3ResourceMetadataForms {
 
@@ -139,7 +140,8 @@ trait AbstractFormDialog {
 
   def unblockForm(xhtml: NodeSeq) =
     bind("form",xhtml,
-      "close" -> ((b: NodeSeq) => <button onclick={Unblock.toJsCmd}>{b}</button>))
+      "close" -> ((b: NodeSeq) => <button onclick={Unblock.toJsCmd}>{b}</button>)
+    )
 
   def button(in: NodeSeq, path: Box[String]) = {
     theCurrentPath.set(path);
@@ -221,7 +223,9 @@ class CreateDirectoryDialog extends AbstractFormDialog with C3ResourceMetadataFo
             }
           }
         }
-        case _ => Alert("Please, enter directory name.")
+        case _ => {
+          S.error("Directory name is empty")
+        }
       }
     else {
       S.error("Internal error: unknown current path.")
