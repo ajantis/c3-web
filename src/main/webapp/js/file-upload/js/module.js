@@ -11,12 +11,13 @@ App.uploadModule = {
     Models:{},
     Views:{},
     Config:{
-        uploadUrl:"/upload/file/groups",
+        uploadUrl:"upload/file/groups",
         popupTemplate: ""   ,
         getUrl:function(){
-            var relUrl = window.location.pathname.split("groups")[1];
+                    var startUrl = window.location.pathname.split("groups")[0];
+                    var relUrl = window.location.pathname.split("groups")[1];
                     if(relUrl == "") relUrl = "/";
-                    return this.uploadUrl + relUrl;
+                    return startUrl + this.uploadUrl + relUrl;
         }
     }
 };

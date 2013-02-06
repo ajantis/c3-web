@@ -64,8 +64,9 @@ object FileUpload extends RestHelper with C3Loggable{
           val fileMetadata: Map[String, String] = req param("metadata") map(s => Map((TAGS_META -> s),
             (OWNER_ID_META -> userId), (GROUP_ID_META -> groupId))) openOr Map()
 
-          val filePath: List[String] = currentPath match {
-            case List("index") => Nil
+          def removeTrailingIndex(path: List[String]) = path.reverse.dropWhile(_ == "index")
+
+          val filePath: List[String] = removeTrailingIndex(currentPath) match {
             case "groups" :: xs => xs
             case xs => xs
           }
