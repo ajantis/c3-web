@@ -42,7 +42,7 @@ class GroupListPage {
           JsCmds.Replace(group.id.is.toString, NodeSeq.Empty)
         } else JsCmds.Alert("Group is not removed! Please check logs for details")
       }
-      if (User.currentUser.open_!.email.is == group.owner.obj.map(_.email).open_!.is)
+      if (User.currentUser.open_!.superUser)
       {
         ".container_groups [id]"#> group.id.is &
           ".container_groups *" #>
