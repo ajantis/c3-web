@@ -541,9 +541,10 @@ td.file-table-date td.file-table-owner{
 td.file-table-date{
 	text-align:right;
 }
+.inf_left{
+    float:left;
+
+}
 /*********************************************************
 * End file table part
 *********************************************************/
-
-.is_not_read {
-    

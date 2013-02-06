@@ -24,12 +24,13 @@ $(document).ready( function(){
     $('.buttonuser1').live("click",function(){
         $('#listusers').val(SelectAll("selusers"));
     });
-    $('.search-query').focus(function() {
-        $(this).stop().animate({width: '400px'}, 'slow');
-    });
-    $('.search-query').blur(function() {
-        $(this).stop().animate({width: '200px'},'fast');
-    });
+
+    //$('.search-query').focus(function() {
+    //    $(this).stop().animate({width: '400px'}, 'slow');
+    //});
+    //$('.search-query').blur(function() {
+    //    $(this).stop().animate({width: '200px'},'fast');
+    //});
     // add tag in search
     $(".margn").live("click",function(){
        $(this).appendTo(".flt");

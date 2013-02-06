@@ -15,6 +15,7 @@ import org.aphreet.c3.snippet.{FileUploadDialog, CreateDirectoryDialog}
 import org.apache.commons.httpclient.util.URIUtil
 import net.liftweb.sitemap.Loc
 
+
 /**
  * @author Dmitry Ivanov (mailto: id.ajantis@gmail.com)
  *         iFunSoftware
@@ -81,11 +82,15 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers with Gr
     val file = group.getFile(data.currentAddress)
     file match {
       case Full(f) => {
+        ".label_file" #> f.tags.map(tag =>{
+          ".label *" #> tag
+        })&
         ".file-table" #> NodeSeq.Empty &
         ".fs_toolbar" #> NodeSeq.Empty &
-        toCss(f) &
-        ".tag *" #> f.tags &
-        ".download [href]" #> fileDownloadUrl(f)
+        "#upload_form" #>NodeSeq.Empty &
+        ".name_file *" #> f.name &
+        ".download_btn [href]" #> fileDownloadUrl(f)&
+        ".data_file *" #> internetDateFormatter.format(f.created)
       }
       case Failure(msg, t, chain) => {
         S.warning("File not found")
@@ -116,5 +121,5 @@ trait C3ResourceHelpers {
     ".created_date *" #> internetDateFormatter.format(file.created)
   }
 
-  def fileDownloadUrl(file: File): String = urlEncode("/download/" + file.group.id.is + "/files/" + file.path)
+  def fileDownloadUrl(file: File): String = "/download/" + file.group.id.is + "/files" + file.path
 }
