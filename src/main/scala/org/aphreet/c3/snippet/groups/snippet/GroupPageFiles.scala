@@ -90,6 +90,7 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers with Gr
         "#upload_form" #>NodeSeq.Empty &
         ".name_file *" #> f.name &
         ".download_btn [href]" #> fileDownloadUrl(f)&
+        ".view_btn [href]" #> fileViewUrl(f)&
         ".data_file *" #> internetDateFormatter.format(f.created)
       }
       case Failure(msg, t, chain) => {
@@ -121,5 +122,6 @@ trait C3ResourceHelpers {
     ".created_date *" #> internetDateFormatter.format(file.created)
   }
 
-  def fileDownloadUrl(file: File): String = "/download/" + file.group.id.is + "/files" + file.path
+  def fileDownloadUrl(file: File): String = "/download/" + file.group.id.is + "/files" + file.path + "?dl=true"
+  def fileViewUrl(file: File): String = "/download/" + file.group.id.is + "/files" + file.path
 }

@@ -48,8 +48,13 @@ object C3Streamer{
 
         val stream = file.versions.last.getDataStream
         val length = stream.length
-        val contentType = metadata.getOrElse("content.type", "application/octet-stream")
-
+        val dl = S.param("dl").openOr("")
+        var contentType = ""
+        if (dl == "true"){
+          contentType = "application/force-download"
+        }else{
+          contentType = metadata.getOrElse("content.type", "application/octet-stream")
+        }
         //If you see an error here, it is an issue of the IDEA scala plugin
         Full(StreamingResponse(stream, ()=> stream.close(), length, List("Content-Type" -> contentType), Nil, 200))
       } catch {
