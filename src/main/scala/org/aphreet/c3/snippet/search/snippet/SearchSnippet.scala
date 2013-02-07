@@ -11,7 +11,9 @@ import xml.NodeSeq
  import java.text.SimpleDateFormat
 import org.aphreet.c3.model.{MessagesType, C3Path, Tag, Category}
 import net.liftweb.mapper.By
-
+/**
+ * @author Serjk (mailto: serjk91@gmail.com)
+ */
 class SearchSnippet {
 
   private val c3 = inject[C3System].open_!
@@ -20,7 +22,7 @@ class SearchSnippet {
 
     def process(query: String){
       if (!query.isEmpty){
-        S.redirectTo("/search?query=" + queryParam(Nil,query))
+        S.redirectTo("/search?query=" + urlEncode(queryParam(Nil,query)))
       }
       else{
         S.notice("Empty search query")

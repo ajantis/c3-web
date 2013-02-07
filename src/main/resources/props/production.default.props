@@ -1,13 +1,13 @@
 # Properties in this file will be read when running in production mode
 c3_host=http://node0.c3.ifunsoftware.com
-c3_domain_name=anonymous
-c3_domain_secret=
+c3_domain_name=c3web-prod
+c3_domain_secret=790dac18da6d3a31b4caafb2476cad1d
 
 ### setting up database ###
 db.driver=org.postgresql.Driver
-db.url=jdbc:postgresql:c3web
-db.user=c3web
-db.password=j0k1ngly
+db.url=jdbc:postgresql://192.168.1.113/c3web_proddb
+db.user=c3web_user
+db.password=rememberfullstack
 
 default_admin_email=admin@admin.com
 default_admin_password=admin

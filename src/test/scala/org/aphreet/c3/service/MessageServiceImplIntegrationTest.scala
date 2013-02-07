@@ -1,6 +1,7 @@
 package org.aphreet.c3.service
 
-import org.aphreet.c3.service.impl.{GroupServiceImpl, MessageStorageServiceImpl}
+import groups.impl.GroupServiceImpl
+import groups.messages.impl.MessageStorageServiceImpl
 import org.aphreet.c3.model.{Message, Group}
 import junit.framework.{Assert, TestCase}
 import net.liftweb.mapper._
@@ -9,6 +10,7 @@ import net.liftweb.util.Props
 import net.liftweb.http.LiftRules
 import net.liftweb.common.Logger
 import org.junit
+import java.util
 
 /**
  * Copyright iFunSoftware 2011
@@ -36,20 +38,18 @@ class MessageServiceImplIntegrationTest extends TestCase {
       LiftRules.unloadHooks.append(vendor.closeAllConnections_! _)
       DB.defineConnectionManager(DefaultConnectionIdentifier, vendor)
     }
-    group = Group.create.name("TestGroup2").saveMe()
-    groupService.createGroupMapping(group.name.is)
+    group = groupService.createGroup(Group.create.name("TestGroup2"), Nil).open_!
   }
 
   override def tearDown(){
-    groupService.removeGroupMapping(group.name.is)
-    group.delete_!
+    groupService.removeGroup(group)
   }
 
   def testMessageCreation(){
 
-    val msg1 = Message(group.id.is.toString, "1", "This is test message!", Nil)
-    val msg2 = Message(group.id.is.toString, "1", "If u don't like C3 get lost", Nil)
-    val msg3 = Message(group.id.is.toString, "1", "This is another testing message!", Nil)
+    val msg1 = Message(group.id.is.toString, "1", "This is test message!", util.UUID.randomUUID().toString, Nil)
+    val msg2 = Message(group.id.is.toString, "1", "If u don't like C3 get lost", util.UUID.randomUUID().toString, Nil)
+    val msg3 = Message(group.id.is.toString, "1", "This is another testing message!", util.UUID.randomUUID().toString, Nil)
 
     logger.debug("Saving messages of group " + msg1.group)
 
@@ -59,19 +59,24 @@ class MessageServiceImplIntegrationTest extends TestCase {
 
     logger.debug("Messages are saved. Retrieving back from storage...")
 
-    val result = service.findAll(group)
+    val result = service.findAll(group).toList.reverse
 
     logger.debug("Retrieved messages: " + result)
 
     Assert.assertEquals(3, result.size)
-    Assert.assertEquals(result, List(msg1, msg2, msg3))
+    List(msg1, msg2, msg3).foreach { msg =>
+      Assert.assertTrue(result.map(_.content).contains(msg.content))
+      Assert.assertTrue(result.map(_.author).contains(msg.author))
+      Assert.assertTrue(result.map(_.group).contains(msg.group))
+    }
+
   }
 
   def testMessageDeletion(){
     // Storing some messages to delete them further
-    service.save(Message(group.id.is.toString, "1", "This is test message!", List()))
-    service.save(Message(group.id.is.toString, "1", "If u don't like C3 get lost", List()))
-    service.save(Message(group.id.is.toString, "1", "This is another testing message!", List()))
+    service.save(Message(group.id.is.toString, "1", "This is test message!", util.UUID.randomUUID().toString, List()))
+    service.save(Message(group.id.is.toString, "1", "If u don't like C3 get lost", util.UUID.randomUUID().toString, List()))
+    service.save(Message(group.id.is.toString, "1", "This is another testing message!", util.UUID.randomUUID().toString, List()))
 
     val messages = service.findAll(group)
 
@@ -81,7 +86,10 @@ class MessageServiceImplIntegrationTest extends TestCase {
 
     messages.foreach(service.delete(_))
 
-    Assert.assertTrue(service.findAll(group).isEmpty)
+    val restMessages = service.findAll(group)
+
+    println(restMessages)
+    Assert.assertTrue(restMessages.isEmpty)
   }
 
 }

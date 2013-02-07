@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory
 import org.aphreet.c3.apiaccess.C3
 import com.ifunsoftware.c3.access.fs.C3FileSystemNode
 import java.nio.file.{StandardCopyOption, Files}
-import com.ifunsoftware.c3.access.{C3AccessException, C3ByteChannel, DataStream}
+import com.ifunsoftware.c3.access.{C3AccessException, DataStream}
 import javax.servlet.http.HttpServletRequest
 import org.aphreet.c3.model.User
 import net.liftweb.mapper.By
@@ -77,11 +77,21 @@ class C3FileSystemStore(val root:File) extends IWebdavStore{
   }
 
   def createFolder(tx: ITransaction, uri: String) {
-    log.info("createFolder() " + uri)
+    log.debug("createFolder() " + uri)
+
+    val splitUri = uri.split("/")
+
+    val parent = splitUri.dropRight(1).mkString("/")
+    val child = splitUri.last
+
+    log.debug("Going to create directory \"" + child + "\" in the dir " + parent)
+
+    getFSNode(tx, parent).asDirectory.createDirectory(child)
   }
 
   def createResource(tx: ITransaction, uri: String) {
-    log.info("createResource() " + uri)
+    log.debug("createResource() " + uri)
+    tx.createdFiles.add(uri)
   }
 
   def getResourceContent(tx: ITransaction, uri: String) = {
@@ -89,13 +99,27 @@ class C3FileSystemStore(val root:File) extends IWebdavStore{
   }
 
   def setResourceContent(tx: ITransaction, uri: String, content: InputStream, contentType: String, characterEncoding: String) = {
-    log.info("setResourceContent() " + uri)
+    log.debug("setResourceContent() " + uri)
 
     val tmpFile = File.createTempFile("dav_upload-", null).toPath
 
     try{
       Files.copy(content, tmpFile, StandardCopyOption.REPLACE_EXISTING)
-      getFSNode(tx, uri).update(DataStream(tmpFile.toFile))
+
+      if(tx.createdFiles.contains(uri)){
+
+        val splitUri = uri.split("/")
+
+        val parent = splitUri.dropRight(1).mkString("/")
+        val child = splitUri.last
+
+        getFSNode(tx, parent).asDirectory.createFile(child, Map(), DataStream(tmpFile.toFile))
+
+        tx.createdFiles.remove(uri)
+      }else{
+        getFSNode(tx, uri).update(DataStream(tmpFile.toFile))
+      }
+
       tmpFile.toFile.length()
     }finally {
       Files.deleteIfExists(tmpFile)
@@ -109,9 +133,16 @@ class C3FileSystemStore(val root:File) extends IWebdavStore{
 
     if(file.isDirectory){
       val dir = file.asDirectory
+
+      val groupFilter = if (uri == "/"){
+        (name: String) => tx.getPrincipal.groups.contains(name)
+      }else{
+        (name: String) => true
+      }
+
       dir.children().map(node =>
         cacheNode(tx, node.fullname, node).name
-      ).toArray
+      ).filter(groupFilter).toArray
     }else{
       Array()
     }
@@ -123,7 +154,9 @@ class C3FileSystemStore(val root:File) extends IWebdavStore{
   }
 
   def removeObject(tx: ITransaction, uri: String) {
-    log.info("removeObject")
+    log.info("removeObject " + uri)
+    deleteFromCache(tx, uri)
+    c3System.deleteFile(translateUri(uri, tx))
   }
 
   def getStoredObject(tx: ITransaction, uri: String) = {
@@ -142,26 +175,54 @@ class C3FileSystemStore(val root:File) extends IWebdavStore{
       storedObject
     }catch{
       case e: C3AccessException => null
+      case e: GroupAccessDeniedException => null
     }
   }
 
   private def getFSNode(tx:ITransaction, uri:String):C3FileSystemNode = {
-    tx.cachedFiles.get(uri.replaceAll("/+", "/")) match {
+
+    val translatedUri = translateUri(uri.replaceAll("/+", "/"), tx)
+
+    tx.cachedFiles.get(translatedUri) match {
       case Some(node) => node
       case None => {
-        cacheNode(tx, uri, c3System.getFile(uri))
+        cacheNode(tx, uri, c3System.getFile(translatedUri))
       }
     }
+  }
+
+  private def translateUri(uri:String, tx:ITransaction):String = {
+
+    val splitUri = uri.split("/", 3).filter(!_.isEmpty)
+
+    val translatedUri = splitUri.length match {
+      case 0 => "/"
+      case 1 => "/" + verifyGroupAccess(splitUri(0), tx) + "/files"
+      case _ => "/" + verifyGroupAccess(splitUri(0), tx) + "/files/" + splitUri(1)
+    }
+
+    if (log.isDebugEnabled){
+      log.debug("URI " + uri + " translated to " + translatedUri)
+    }
+
+    translatedUri
+  }
+
+  private def verifyGroupAccess(groupId: String, tx: ITransaction): String = {
+    if (!tx.getPrincipal.groups.contains(groupId)){
+      log.debug("Access denied to group " + groupId + " for principal " + tx.getPrincipal.getName)
+      throw new GroupAccessDeniedException
+    }else
+      groupId
+  }
+
+  private def deleteFromCache(tx:ITransaction, uri:String) = {
+    tx.cachedFiles.remove(uri.replaceAll("/+", "/"))
   }
 
   private def cacheNode(tx:ITransaction, uri:String, node:C3FileSystemNode):C3FileSystemNode = {
     tx.cachedFiles.put(uri.replaceAll("/+", "/"), node)
     node
-  }
-
-  private def use(tx:ITransaction, channel:C3ByteChannel):C3ByteChannel = {
-    tx.openedChannels.add(channel)
-    channel
   }
 
   implicit def txToc3Tx(tx:ITransaction):C3Transaction = {
@@ -171,4 +232,13 @@ class C3FileSystemStore(val root:File) extends IWebdavStore{
   implicit def principalToC3Princioal(principal: Principal): C3Principal = {
     principal.asInstanceOf[C3Principal]
   }
+
+  def supportsMoveOperation() = true
+
+  def moveResource(tx: ITransaction, source: String, destination: String) {
+    log.debug("Called move from " + source + " to " + destination)
+    getFSNode(tx, source).move(translateUri(destination, tx))
+  }
+
+  class GroupAccessDeniedException extends Exception
 }

@@ -37,26 +37,31 @@ import org.aphreet.c3.lib.DependencyFactory._
 
 object C3Streamer{
 
-  def apply(group:String, path: List[String], extension:String) = {
+  def apply(groupId: String, path: List[String], extension:String) = {
     () => {
 
       val c3 = inject[C3System].open_!
 
       try{
-        val file = c3.getFile(C3Path(group, path, extension))
+        val file = c3.getFile(C3Path(groupId, path, extension))
         val metadata = file.metadata
 
         val stream = file.versions.last.getDataStream
         val length = stream.length
-        val contentType = metadata.getOrElse("content.type", "application/octet-stream")
-
+        val dl = S.param("dl").openOr("")
+        var contentType = ""
+        if (dl == "true"){
+          contentType = "application/force-download"
+        }else{
+          contentType = metadata.getOrElse("content.type", "application/octet-stream")
+        }
         //If you see an error here, it is an issue of the IDEA scala plugin
         Full(StreamingResponse(stream, ()=> stream.close(), length, List("Content-Type" -> contentType), Nil, 200))
       } catch {
         case e: Exception => {
           e.printStackTrace()
           S.notice("No file found!")
-          S.redirectTo("/group/"+group+"/files/"+path.init.mkString("/"))
+          S.redirectTo("/groups/" + groupId + "/files/"+path.init.mkString("/"))
         }
       }
     }

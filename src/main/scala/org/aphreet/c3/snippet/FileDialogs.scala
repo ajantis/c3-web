@@ -44,13 +44,12 @@ import Helpers._
 import xml.NodeSeq
 import org.aphreet.c3.apiaccess.C3
 import com.ifunsoftware.c3.access.C3AccessException
+import org.aphreet.c3.util.C3Loggable
+import net.liftweb.http.S
 
 trait C3ResourceMetadataForms {
 
   protected object tags extends RequestVar[scala.collection.mutable.Set[String]] (scala.collection.mutable.Set()) {
-
-    private val data = List(
-      "History","IT","Programming","Music","Politics","Entertainment","Testing","Performance")
 
     val divTagsName: String = S.attr("id_tags_name") openOr "tags_id"
 
@@ -83,7 +82,7 @@ trait C3ResourceMetadataForms {
   }
 
 
-  protected  object metadata extends RequestVar[scala.collection.mutable.Map[String,String]] (scala.collection.mutable.Map()) {
+  protected object metadata extends RequestVar[scala.collection.mutable.Map[String,String]] (scala.collection.mutable.Map()) {
 
     val divMDName: String = S.attr("id_md_name") openOr "md_id"
 
@@ -141,19 +140,18 @@ trait AbstractFormDialog {
 
   def unblockForm(xhtml: NodeSeq) =
     bind("form",xhtml,
-      "close" -> ((b: NodeSeq) => <button onclick={Unblock.toJsCmd}>{b}</button>))
+      "close" -> ((b: NodeSeq) => <button onclick={Unblock.toJsCmd}>{b}</button>)
+    )
 
   def button(in: NodeSeq, path: Box[String]) = {
     theCurrentPath.set(path);
-
-    <a id="inframe" href={templateName} >Click here </a>
-  /*  SHtml.ajaxButton(in,
+    SHtml.ajaxButton(in,
       () => {
         theCurrentPath.set(path)
         S.runTemplate(List(templateName)).
-          map(ns => FancyDialog(ns)) openOr
+          map(ns => ModalDialog(ns)) openOr
           Alert("Couldn't find "+templateName+" template")
-      }) */
+      })
   }
   def form(xhtml: NodeSeq): NodeSeq
 
@@ -202,31 +200,38 @@ class FileUploadDialog extends AbstractFormDialog with C3ResourceMetadataForms {
 
 }
 
-class CreateDirectoryDialog extends AbstractFormDialog with C3ResourceMetadataForms {
+class CreateDirectoryDialog extends AbstractFormDialog with C3ResourceMetadataForms with C3Loggable{
 
   val templateName = "_jsdialog_createdirectory"
 
-
   private object theDirectoryName extends RequestVar[Box[String]](Empty)
 
-
   private def createDirectory(): JsCmd = {
-    if(!theCurrentPath.isEmpty)
+    if(theCurrentPath.isDefined)
       theDirectoryName.is match {
         case Full(name) => {
           try {
-            C3().getFile("/" + theCurrentPath.get.open_!).asDirectory.createDirectory(theDirectoryName.get.open_!)
-            Unblock & Alert("Directory created.") & RedirectTo("")
-          }catch {
-            case e: C3AccessException => Unblock & Alert("Ooops. Directory wasn't created!")
+            logger.debug("Trying to create a directory " + name + " in directory " + theCurrentPath.get.open_!)
+            C3().getFile(theCurrentPath.get.open_!).asDirectory.createDirectory(name)
+            S.notice("Directory " + name + " created")
+            Unblock & RedirectTo("")
+          } catch {
+            case e: C3AccessException => {
+              logger.error(e.getMessage, e)
+              S.error("Directory " + name + " wasn't created!")
+              Unblock & RedirectTo("")
+            }
           }
         }
-        case _ => Alert("Please, enter directory name.")
+        case _ => {
+          S.error("Directory name is empty")
+        }
       }
-    else Unblock & Alert("Internal error: unknown current path.")
+    else {
+      S.error("Internal error: unknown current path.")
+      Unblock & RedirectTo("")
+    }
   }
-
-
 
   override def form(xhtml: NodeSeq): NodeSeq = {
 
@@ -243,19 +248,5 @@ class CreateDirectoryDialog extends AbstractFormDialog with C3ResourceMetadataFo
       )
     )
   }
-
 }
 
-class FancyDialog(ns: NodeSeq) extends JsCmd
-{
-  override def toJsCmd = "fancybox(){message: {}; ... }" //TODO
-
-  /*
-  "jQuery.blockUI({ message: " + AltXML.toXML(Group(S.session.map(s =>
-  s.fixHtml(s.processSurroundAndInclude("Modal Dialog", html))).openOr(html)), false, true, S.ieMode).encJs +
-    (css.map(",  css: " + _.toJsCmd + " ").openOr("")) + "});" */
-}
-
-object FancyDialog {
-  def apply(ns: NodeSeq): FancyDialog = new FancyDialog(ns)
-}
