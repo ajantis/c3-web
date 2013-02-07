@@ -15,22 +15,26 @@ import net.liftweb.widgets.uploadprogress._
 import net.liftweb.widgets.tablesorter.TableSorter
 import net.liftweb.widgets.autocomplete.AutoComplete
 import net.liftweb.widgets.menu.MenuWidget
+import service.metadata.MetadataService
 import snippet.categories.CategoriesSection
-import snippet.group.GroupSection
+import snippet.groups.GroupsSection
 import snippet.logging.LogLevel
+import snippet.notifications.NotificationsSection
 import snippet.search.SearchSection
-import snippet.user.UserSection
+import snippet.users.UsersSection
 import util.helpers.C3Streamer
 import util.{DefaultAuthDataLoader, TextileRenderer}
 import javax.mail.{Authenticator, PasswordAuthentication}
+import akka.actor.{Props => AkkaProps, ActorSystem}
+import net.liftweb.util.Props
 
 /**
  * A class that's instantiated early and run.  It allows the application
  * to modify lift's environment
  */
 class Boot extends Bootable{
-
-  private val sections: List[Section] = List(BaseSection, UserSection, GroupSection, SearchSection, CategoriesSection)
+  private val sections: List[Section] = List(BaseSection, UsersSection, GroupsSection,
+    SearchSection, CategoriesSection, NotificationsSection)
 
   def boot {
     if (!DB.jndiJdbcConnAvailable_?) {
@@ -52,7 +56,7 @@ class Boot extends Bootable{
     // where to search snippets
     sections.foreach(s => LiftRules.addToPackages(s.currentPackage))
 
-    Schemifier.schemify(true, Schemifier.infoF _, User, Group, Category, Tag, UserGroup)
+    DBSetup.setup()
 
     lazy val loginUrl = "/user_mgt/login"
 
@@ -87,17 +91,17 @@ class Boot extends Bootable{
       Menu("Faq") / "faq" >> LocGroup("footerMenu"),
 
       Menu("Groups") / "groups" >> loggedIn >> LocGroup("mainmenu") submenus {
-        GroupSection.menus:_*
+        GroupsSection.menus:_*
       },
-
       Menu("Users") / "users" >> loggedIn >> LocGroup("mainmenu") submenus {
-        UserSection.menus:_*
+        UsersSection.menus:_*
       },
-
       Menu("Categories") / "categories" >> loggedIn >> LocGroup("mainmenu") submenus {
         CategoriesSection.menus:_*
       },
-
+      Menu("Notifications") / "notifications" >> loggedIn >> LocGroup("mainmenu") submenus {
+        NotificationsSection.menus:_*
+      },
       LogLevel.menu, // default log level menu is located at /loglevel/change
 
       Menu("UserEdit") / "users" / "edituser" >> loggedIn >> Hidden,
@@ -189,7 +193,6 @@ class Boot extends Bootable{
       ret
     }
 
-
     //Use HTML5 for rendering
     LiftRules.htmlProperties.default.set((r: Req) =>
       new Html5Properties(r.userAgent))
@@ -202,18 +205,22 @@ class Boot extends Bootable{
     })
 
     configMailer("smtp.gmail.com", "c3-project@ifunsoftware.com", "myverysecretpassword")
+    bootAkka()
 
     S.addAround(DB.buildLoanWrapper)
+    //создание супер админа
+    val users = User.find(By(User.email, "admin@admin.com"))
+    users.map(user =>{
+      if(!user.superUser){
+        user.superUser(true)
+        user.save
+        S.notice("Super user is Admin")
+      }
+    })
 
-    //    if(!Props.productionMode){
-    //      Category.findAll().foreach(_.delete_!)
-    //        (1 to 10).foreach{ i: Int => {
-    //        val cat = Category.create.name("Category" + i).saveMe()
-    //        (1 to 5).map(i => Tag.create.name("Tag" + i).category(cat).saveMe())
-    //      }}
-    //    }
 
   }
+
 
   /**
    * Force the request to be UTF-8
@@ -232,5 +239,11 @@ class Boot extends Bootable{
     Mailer.authenticator = Full(new Authenticator {
       override def getPasswordAuthentication = new PasswordAuthentication(user, password)
     })
+  }
+
+  private def bootAkka(){
+    // Create an Akka system
+    val system = ActorSystem("C3WebSystem")
+    val metadataService = system.actorOf(AkkaProps(new MetadataService), name = "MetadataService")
   }
 }

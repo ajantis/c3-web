@@ -51,6 +51,6 @@ object UserGroup extends UserGroup with LongKeyedMetaMapper[UserGroup] {
 
    override def fieldOrder = Nil
 
-   def join (usr : User, grp : Group) = this.create.user(usr).group(grp).save
+   def join(usr: User, grp: Group) = this.create.user(usr).group(grp).save()
 
 }

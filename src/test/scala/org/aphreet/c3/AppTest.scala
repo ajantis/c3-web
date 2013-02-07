@@ -24,12 +24,6 @@ object AppTest {
 class AppTest extends TestCase("app") {
 
   /**
-   * Rigourous Tests :-)
-   */
-  def testOK() = assertTrue(true)
-  // def testKO() = assertTrue(false);
-
-  /**
    * Tests to make sure the project's XML files are well-formed.
    *
    * Finds every *.html and *.xml file in src/main/webapp (and its
@@ -48,7 +42,7 @@ class AppTest extends TestCase("app") {
       if (file.isDirectory)
         for (f <- file.listFiles) wellFormed(f)
 
-      /*
+
       if (file.isFile && file.exists && handledXml(file.getName)) {
         try {
           import java.io.FileInputStream
@@ -62,10 +56,9 @@ class AppTest extends TestCase("app") {
           case e: _root_.org.xml.sax.SAXParseException => failed = file :: failed
         }
       }
-      */
 
       if (file.isFile && file.exists && handledXHtml(file.getName)) {
-        PCDataXmlParser(new _root_.java.io.FileInputStream(file.getAbsolutePath)) match {
+        Html5.parse(new _root_.java.io.FileInputStream(file.getAbsolutePath)) match {
           case Full(_) => // file is ok
           case Failure(msg, e, chain) => {
             println(file.getAbsolutePath + ": " + msg)

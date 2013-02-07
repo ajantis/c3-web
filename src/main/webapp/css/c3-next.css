@@ -91,7 +91,7 @@ body > .navbar .brand:hover {
 
 /* Login form
 -------------------------------------------------- */
-.well {
+.well_login {
     width:500px;
     /*height:160px;*/
     outline:1px solid #CCC;
@@ -437,6 +437,28 @@ body > .navbar .brand:hover {
 .show{
     display:block;
 }
+.message_cont{
+    padding:8px!important;
+
+}
+.message_data{
+    float:right;
+    margin-right:3px;
+    font-size:8px;
+    display:block;
+}
+.message_text{
+    font-size:9px;
+    line-height:16px;
+    margin-bottom:5px!important;
+}
+.message_header{
+    font-size:11px;
+}
+.message_button{
+     margin:0 auto;
+
+}
 /*********************************************************
 * End Message part
 *********************************************************/
@@ -446,17 +468,11 @@ body > .navbar .brand:hover {
 .listGroup{
     outline: 1px solid #CCC;
 }
-.delete_group{
-
-
-
-}
 .groupsHeader{
     font-size:18x;
-
 }
 /*********************************************************
-* Begin Add Group part
+* End Add Group part
 *********************************************************/
 
 /*********************************************************
@@ -469,6 +485,30 @@ body > .navbar .brand:hover {
 
 #lift__noticesContainer__ p {
     margin: 0px;
+}
+.font_back{
+    border: 1px solid #CACACA;
+    background-color: white;
+}
+.notification_created{
+    margin-left:20px;
+    margin-top:10px;
+}
+.font{
+    color: #666;
+    font-size: 12px;
+}
+.notification_title{
+    padding-left:30px;
+    text-align: left;
+    background: whiteSmoke;
+}
+.notification_body{
+    text-shadow: none;
+    color: #333;
+    font: 13px Helvetica, arial, freesans, clean, sans-serif;
+    margin-left:20px;
+    margin-bottom:15px;
 }
 /*********************************************************
 * End lift notices part
@@ -500,6 +540,10 @@ td.file-table-date td.file-table-owner{
 
 td.file-table-date{
 	text-align:right;
+}
+.inf_left{
+    float:left;
+
 }
 /*********************************************************
 * End file table part

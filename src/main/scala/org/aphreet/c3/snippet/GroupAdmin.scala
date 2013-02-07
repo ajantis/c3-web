@@ -42,20 +42,19 @@ class GroupAdmin {
 
   def addUsers(html: NodeSeq) : NodeSeq = {
     S.param("groupname") match {
-           case Full(name) => {
-             Group.find(By(Group.name,name)) match {
-               case Full(group) => {
-                 bind("addUsers", html,
-                  "user" -> SHtml.selectObj[User](User.findAll.filter(user => UserGroup.find(By(UserGroup.user,user),By(UserGroup.group,group)).isEmpty).map(user => (user,user.email.is)),Empty, usr => UserGroup.join(usr,group)),
-                  "submit" -> SHtml.submit("Add", ()=> {S.redirectTo(S.uri)})
-
-                 )
-               }
-               case _ => Text("")
-             }
-           }
-           case _ => Text("")
-         }
+      case Full(name) => {
+        Group.find(By(Group.name,name)) match {
+          case Full(group) => {
+            bind("addUsers", html,
+              "user" -> SHtml.selectObj[User](User.findAll.filter(user => UserGroup.find(By(UserGroup.user,user),By(UserGroup.group,group)).isEmpty).map(user => (user,user.email.is)),Empty, usr => UserGroup.join(usr,group)),
+              "submit" -> SHtml.submit("Add", ()=> {S.redirectTo(S.uri)})
+            )
+          }
+          case _ => Text("")
+        }
+      }
+      case _ => Text("")
+    }
 
 
   }
@@ -63,41 +62,41 @@ class GroupAdmin {
   def editGroup(html: NodeSeq) : NodeSeq = {
 
 
-     S.param("groupname") match {
-       case Full(name) => {
-         Group.find(By(Group.name,name)) match {
-           case Full(group) => {
-             bind("groupadmin", html, "groupname" -> SHtml.text(group.name, group.name(_)),
+    S.param("groupname") match {
+      case Full(name) => {
+        Group.find(By(Group.name,name)) match {
+          case Full(group) => {
+            bind("groupadmin", html, "groupname" -> SHtml.text(group.name, group.name(_)),
               "description" -> group.description.toForm,
               "users" -> {(ns: NodeSeq) => {
-                    group.users.flatMap(user => bind("groupuser",ns,"username" -> user.email.is,
-                                                     "selectuser" -> {
-                                                       val isCurrent = if(User.currentUser == user) true
-                                                       else false
+                group.users.flatMap(user => bind("groupuser",ns,"username" -> user.email.is,
+                  "selectuser" -> {
+                    val isCurrent = if(User.currentUser == user) true
+                    else false
 
-                                                       SHtml.checkbox(true,
-                                                       (check) => if(!check && !isCurrent) UserGroup.find(By(UserGroup.user,user),By(UserGroup.group,group)).open_!.delete_! ,
-                                                          // "disable" attribute to disable possibility for user to exclude himself from group
-                                                          if(isCurrent)("disabled" -> "true") else ("enabled" -> "enabled") )
-                                                     }
-                    ))
-                }:NodeSeq },
+                    SHtml.checkbox(true,
+                      (check) => if(!check && !isCurrent) UserGroup.find(By(UserGroup.user,user),By(UserGroup.group,group)).open_!.delete_! ,
+                      // "disable" attribute to disable possibility for user to exclude himself from group
+                      if(isCurrent)("disabled" -> "true") else ("enabled" -> "enabled") )
+                  }
+                ))
+              }:NodeSeq },
               "submitGroup" -> SHtml.submit("Save", () => {
-                      group.validate match {
-                        case Nil => {
-                          group.save
-                          S.redirectTo(S.uri)
-                        }
-                        case xs => S.error(xs)
-                      }
-                  })
-             )
-           }
-           case _ => Text("")
-         }
-       }
-       case _ => Text("")
-     }
+                group.validate match {
+                  case Nil => {
+                    group.save
+                    S.redirectTo(S.uri)
+                  }
+                  case xs => S.error(xs)
+                }
+              })
+            )
+          }
+          case _ => Text("")
+        }
+      }
+      case _ => Text("")
+    }
 
   }
 

@@ -9,7 +9,6 @@ import net.liftweb.http.provider.servlet.HTTPServletContext
 object C3 {
 
   private val log = Logger("C3")
-
   lazy val c3System = createC3System()
 
   def apply():C3System = {
@@ -17,7 +16,6 @@ object C3 {
   }
 
   private def createC3System():C3System = {
-
     val bundleContext = LiftRules.context match {
       case context:HTTPServletContext => context.ctx.getAttribute("osgi-bundlecontext") match {
         case null => null
@@ -32,8 +30,7 @@ object C3 {
       log.info("Found bundle context, trying to obtain local C3System instance")
 
       new C3SystemFactory().createLocalSystem(domain, bundleContext)
-
-    }else{
+    } else {
 
       val host = Props.get("c3_host") openOr("http://localhost:7373")
 
@@ -43,7 +40,6 @@ object C3 {
 
       if (proxy != null){
         val hostAndPort = proxy.replaceFirst("^http://", "").split(":", 2)
-
         val proxyHost = hostAndPort(0)
         val proxyPort = hostAndPort(1).toInt
 
