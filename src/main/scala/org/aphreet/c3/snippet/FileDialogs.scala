@@ -49,6 +49,7 @@ import org.aphreet.c3.apiaccess.C3
 import com.ifunsoftware.c3.access.C3AccessException
 import org.aphreet.c3.util.C3Loggable
 import net.liftweb.http.S
+import org.aphreet.c3.model.User
 
 trait C3ResourceMetadataForms {
 
@@ -218,7 +219,7 @@ class CreateDirectoryDialog extends AbstractFormDialog with C3ResourceMetadataFo
       tryo((theDirectoryName.is.open_!, currentUser.map(_.id.is.toString).open_!)) match {
         case Full((name, userId)) => {
           try {
-            val dirMetadata: Map[String, String] = Map(OWNER_ID_META -> userId)
+            val dirMetadata: Map[String, String] = Map("OWNER_ID_META" -> userId)
 
             C3().getFile(theCurrentPath.get.open_!).asDirectory.createDirectory(name)
             S.notice("Directory " + name + " created")

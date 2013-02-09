@@ -87,7 +87,7 @@ object C3Path {
   }
 }
 
-sealed trait ResourceType;
+sealed trait ResourceType
 object FileType extends ResourceType
 object WikiType extends ResourceType
 object UnknownType extends ResourceType
