@@ -1,19 +1,19 @@
 package org.aphreet.c3.snippet.groups.snippet
 
-import org.aphreet.c3.snippet.groups.{GroupPageFilesData, GroupPageData}
 import org.aphreet.c3.loc.{ItemRewriteLoc, SuffixLoc}
-import org.aphreet.c3.model.{File, Catalog, C3Resource, Group}
+import org.aphreet.c3.model.Group
 import net.liftweb.common._
 import net.liftweb.sitemap.Loc.Link
 import xml.{NodeSeq, Text}
-import net.liftweb.util.BindHelpers._
 import net.liftweb.util.Helpers._
 import net.liftweb.http.S
 import net.liftweb.common.Full
 import org.aphreet.c3.snippet.groups.GroupPageFilesData
-import org.aphreet.c3.snippet.{FileUploadDialog, CreateDirectoryDialog}
-import org.apache.commons.httpclient.util.URIUtil
-import net.liftweb.sitemap.Loc
+import org.aphreet.c3.snippet.CreateDirectoryDialog
+import com.ifunsoftware.c3.access.fs.{C3File, C3Directory}
+import org.aphreet.c3.lib.metadata.Metadata
+import Metadata._
+import net.liftweb.util.{CssSel, PassThru}
 
 
 /**
@@ -55,73 +55,73 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers with Gr
   lazy val path = data.path
 
   def render = {
+    val file = group.getFile(data.currentAddress)
+
     ".current_path *" #> Text(data.currentAddress) &
     ".create_dir" #> ((ns: NodeSeq) => new CreateDirectoryDialog().button(ns, Full("/" + data.group.id.is + "/files" + data.currentAddress))) &
-    (if(data.isDirectoryLoc){
-      if(!S.uri.endsWith("/"))
-        S.redirectTo(S.uri + "/")
-      else
-        renderDirectoryLoc
-    } else
-      renderFileLoc)
+    (file match {
+      case Empty => S.redirectTo("/404.html"); "* *" #> PassThru
+      case Failure(msg, t, chain) => {
+        logger.error("Error accessing file: " + msg, t)
+        S.redirectTo("/404.html")
+        "* *" #> PassThru
+      }
+      case Full(f: C3File) => renderFileLoc(f)
+      case Full(d: C3Directory) => {
+        if(!S.uri.endsWith("/"))
+          S.redirectTo(S.uri + "/")
+        else
+          renderDirectoryLoc(d)
+      }
+      case _ => "* *" #> PassThru
+    })
   }
 
-  protected def renderDirectoryLoc = {
+  protected def renderDirectoryLoc(d: C3Directory): CssSel = {
     ".child *" #> group.getChildren(data.currentAddress).map {
       resource => {
         resource match {
-          case c: Catalog => toCss(c)
-          case f: File => toCss(f)
+          case c: C3File => toCss(c)
+          case f: C3Directory => toCss(f)
         }
       }
     } &
     ".file-view" #> NodeSeq.Empty
   }
 
-  protected def renderFileLoc = {
-    val file = group.getFile(data.currentAddress)
-    file match {
-      case Full(f) => {
-        ".label_file" #> f.tags.map(tag =>{
-          ".label *" #> tag
-        })&
-        ".file-table" #> NodeSeq.Empty &
-        ".fs_toolbar" #> NodeSeq.Empty &
-        "#upload_form" #>NodeSeq.Empty &
-        ".name_file *" #> f.name &
-        ".download_btn [href]" #> fileDownloadUrl(f)&
-        ".view_btn [href]" #> fileViewUrl(f)&
-        ".data_file *" #> internetDateFormatter.format(f.created)
-      }
-      case Failure(msg, t, chain) => {
-        S.warning("File not found")
-        "* *" #> NodeSeq.Empty
-      }
-      case _ => {
-        S.error("Oops, something bad is happened")
-        "* *" #> NodeSeq.Empty
-      }
-    }
+  protected def renderFileLoc(f: C3File): CssSel = {
+    ".label_file" #> f.metadata.get(TAGS_META).map(_.split(TAGS_SEPARATOR).toList).getOrElse(Nil).map((tag: String) => {
+      ".label *" #> tag
+    }) &
+      ".file-table" #> NodeSeq.Empty &
+      ".fs_toolbar" #> NodeSeq.Empty &
+      "#upload_form" #> NodeSeq.Empty &
+      ".name_file *" #> f.name &
+      ".download_btn [href]" #> fileDownloadUrl(f) &
+      ".view_btn [href]" #> fileViewUrl(f) &
+      ".data_file *" #> internetDateFormatter.format(f.date)
   }
 }
 
 trait C3ResourceHelpers {
   import net.liftweb.util.TimeHelpers._
 
-  def toCss(directory: Catalog) = {
+  val group: Group
+
+  def toCss(directory: C3Directory) = {
     ".name *" #> directory.name &
     ".link [href]" #> (directory.name + "/") &
     ".icon [class+]" #> "icon-folder-close" &
-    ".created_date *" #> internetDateFormatter.format(directory.created)
+    ".created_date *" #> internetDateFormatter.format(directory.date)
   }
 
-  def toCss(file: File) = {
+  def toCss(file: C3File) = {
     ".name *" #> file.name &
     ".link [href]" #> file.name &
     ".icon [class+]" #> "icon-file" &
-    ".created_date *" #> internetDateFormatter.format(file.created)
+    ".created_date *" #> internetDateFormatter.format(file.date)
   }
 
-  def fileDownloadUrl(file: File): String = "/download/" + file.group.id.is + "/files" + file.path + "?dl=true"
-  def fileViewUrl(file: File): String = "/download/" + file.group.id.is + "/files" + file.path
+  def fileDownloadUrl(file: C3File): String = "/download" + file.fullname + "?dl=true"
+  def fileViewUrl(file: C3File): String = "/download" + file.fullname
 }
