@@ -1,7 +1,7 @@
 package org.aphreet.c3.snippet.groups.snippet
 
 import org.aphreet.c3.loc.{ItemRewriteLoc, SuffixLoc}
-import org.aphreet.c3.model.Group
+import org.aphreet.c3.model.{User, Group}
 import net.liftweb.common._
 import net.liftweb.sitemap.Loc.Link
 import xml.{NodeSeq, Text}
@@ -14,6 +14,7 @@ import com.ifunsoftware.c3.access.fs.{C3File, C3Directory}
 import org.aphreet.c3.lib.metadata.Metadata
 import Metadata._
 import net.liftweb.util.{CssSel, PassThru}
+import net.liftweb.mapper.By
 
 
 /**
@@ -109,6 +110,12 @@ trait C3ResourceHelpers {
   val group: Group
 
   def toCss(directory: C3Directory) = {
+    val owner: Box[User] = directory.metadata.get("x-c3-web-owner") match {
+      case Some(id) => User.find(By(User.id, id.toLong))
+      case _ => Empty
+    }
+    ".owner *" #> owner.map(_.shortName).getOrElse("Unknown") &
+    ".owner [href]" #> owner.map(_.createLink) &
     ".name *" #> directory.name &
     ".link [href]" #> (directory.name + "/") &
     ".icon [class+]" #> "icon-folder-close" &
@@ -116,6 +123,12 @@ trait C3ResourceHelpers {
   }
 
   def toCss(file: C3File) = {
+    val owner: Box[User] = file.metadata.get("x-c3-web-owner") match {
+      case Some(id) => User.find(By(User.id,id.toLong))
+      case _ => Empty
+    }
+    ".owner *" #> owner.map(_.shortName).getOrElse("Unknown") &
+    ".owner [href]" #> owner.map(_.createLink) &
     ".name *" #> file.name &
     ".link [href]" #> file.name &
     ".icon [class+]" #> "icon-file" &

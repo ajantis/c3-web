@@ -33,8 +33,11 @@
 package org.aphreet.c3.snippet
 
 import _root_.net.liftweb._
+import common.Full
 import http._
 import js._
+import js.JsCmds.Alert
+import js.JsCmds.SetHtml
 import JsCmds._
 import js.jquery.JqJsCmds
 import JqJsCmds._
@@ -206,19 +209,24 @@ class CreateDirectoryDialog extends AbstractFormDialog with C3ResourceMetadataFo
 
   private object theDirectoryName extends RequestVar[Box[String]](Empty)
 
+  val currentUser = User.currentUser
+
+
   private def createDirectory(): JsCmd = {
     if(theCurrentPath.isDefined)
-      theDirectoryName.is match {
-        case Full(name) => {
+
+      tryo((theDirectoryName.is.open_!, currentUser.map(_.id.is.toString).open_!)) match {
+        case Full((name, userId)) => {
           try {
-            logger.debug("Trying to create a directory " + name + " in directory " + theCurrentPath.get.open_!)
+            val dirMetadata: Map[String, String] = Map(OWNER_ID_META -> userId)
+
             C3().getFile(theCurrentPath.get.open_!).asDirectory.createDirectory(name)
             S.notice("Directory " + name + " created")
             Unblock & RedirectTo("")
           } catch {
             case e: C3AccessException => {
               if(e.code == 400) {
-                S.error(("Directory " + name + " is exists!"))
+                S.error("Directory " + name + " is exists!")
               } else{
                 S.error("Directory " + name + " wasn't created!")
               }
