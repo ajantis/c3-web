@@ -217,9 +217,12 @@ class CreateDirectoryDialog extends AbstractFormDialog with C3ResourceMetadataFo
             Unblock & RedirectTo("")
           } catch {
             case e: C3AccessException => {
-              logger.error(e.getMessage, e)
-              S.error("Directory " + name + " wasn't created!")
-              Unblock & RedirectTo("")
+              if(e.code == 400) {
+                S.error(("Directory " + name + " is exists!"))
+              } else{
+                S.error("Directory " + name + " wasn't created!")
+              }
+              Unblock
             }
           }
         }
@@ -238,12 +241,13 @@ class CreateDirectoryDialog extends AbstractFormDialog with C3ResourceMetadataFo
     SHtml.ajaxForm(
       bind("dir", xhtml,
         "name" -> SHtml.text("", (name: String) => if(name != "") theDirectoryName.set(Full(name)) ),
-        "metadata" -> ( (ns: NodeSeq) =>
-          metadata.toForm(ns)
-          ),
-        "tags" -> ( (ns: NodeSeq) =>
-          tags.toForm(ns)
-          ),
+//        "metadata" -> ( (ns: NodeSeq) =>
+//          metadata.toForm(ns)
+//          ),
+//        "tags" -> ( (ns: NodeSeq) =>
+//          tags.toForm(ns)
+//          ),
+        "close" -> ((ns: NodeSeq) => SHtml.ajaxButton(ns, () =>{Unblock})),
         "submit" ->((ns: NodeSeq) => SHtml.hidden(createDirectory _) ++ SHtml.submit(ns.text, () => {} ))
       )
     )

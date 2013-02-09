@@ -1,14 +1,14 @@
 package org.aphreet.c3.snippet.search.snippet
 
 import xml.NodeSeq
-import net.liftweb.http.js.JsCmds._
-import net.liftweb.http.js.JsCmds
-import net.liftweb.util.Helpers._
-import net.liftweb.http.{S, SHtml}
-import org.aphreet.c3.lib.DependencyFactory._
-import com.ifunsoftware.c3.access.{C3System, SearchResultEntry}
-
-import java.text.SimpleDateFormat
+ import net.liftweb.http.js.JsCmds._
+ import net.liftweb.http.js.JsCmds
+ import net.liftweb.util.Helpers._
+ import net.liftweb.http.{S, SHtml}
+ import org.aphreet.c3.lib.DependencyFactory._
+ import com.ifunsoftware.c3.access.{C3System, SearchResultEntry}
+ import org.apache.commons.httpclient.util.URIUtil
+ import java.text.SimpleDateFormat
 import org.aphreet.c3.model.{MessagesType, C3Path, Tag, Category}
 import net.liftweb.mapper.By
 /**
@@ -31,7 +31,7 @@ class SearchSnippet {
     val query = S.param("query").openOr("")
 
     "name=query [value]" #> query &
-      "name=query" #> SHtml.onSubmit(process _)
+    "name=query" #> SHtml.onSubmit(process _)
   }
 
   private def queryParam(tags: List[String],query:String) = {
@@ -60,9 +60,9 @@ class SearchSnippet {
     }
 
     "name=query [value]" #> query &
-      "name=tags" #> SHtml.onSubmit(v => tags = v.split(tagSeparator).toList)&
-      "name=query" #> SHtml.onSubmit(query = _)&
-      "type=submit" #> SHtml.onSubmitUnit(process)
+    "name=tags" #> SHtml.onSubmit(v => tags = v.split(tagSeparator).toList)&
+    "name=query" #> SHtml.onSubmit(query = _)&
+    "type=submit" #> SHtml.onSubmitUnit(process)
   }
 
   def result = {
@@ -77,10 +77,10 @@ class SearchSnippet {
       }
     }
   }
-  private lazy val dateFormat: SimpleDateFormat = new SimpleDateFormat("dd/MM/yyyy")
-  private def toCss(entry: SearchResultEntry) = {
+private lazy val dateFormat: SimpleDateFormat = new SimpleDateFormat("dd/MM/yyyy")
+ private def toCss(entry: SearchResultEntry) = {
     val resource = c3.getResource(entry.address, List("c3.ext.fs.path"))
-    //    val metadata = resource.metadata
+//    val metadata = resource.metadata
     val path = resource.systemMetadata.getOrElse("c3.ext.fs.path", "")
     var fragment = ""
     entry.fragments.map(f=> fragment = fragment+f.strings.headOption.getOrElse("") )
@@ -91,11 +91,11 @@ class SearchSnippet {
       case _ => {resourceName= c3Path.resourceName}
     }
     ".header_search *" #> resourceName&
-      ".address *" #> entry.address &
-      ".fragment_search *" #>  fragment &
-      ".header_search [href]" #> c3Path.resourceUri &
-      ".date_create *" #> dateFormat.format(resource.date)
-  }
+    ".address *" #> entry.address &
+    ".fragment_search *" #>  fragment &
+    ".header_search [href]" #> c3Path.resourceUri &
+    ".date_create *" #> dateFormat.format(resource.date)
+ }
   def categories = {
     val categories = Category.findAll()
     var flag2 = 0
@@ -108,21 +108,21 @@ class SearchSnippet {
         if (!cat.linkedGroup.isEmpty){
           val group=cat.linkedGroup.open_!
           ".linkGroup [href]" #>("/groups/"+group.id)&
-            ".category_cont [class+]" #> "floatLeft" &
-            ".category_cont *" #> cat.name.is
+          ".category_cont [class+]" #> "floatLeft" &
+          ".category_cont *" #> cat.name.is
         }
         else{
           ".category_cont *" #> cat.name.is &
-            ".linkGroup" #> NodeSeq.Empty
+          ".linkGroup" #> NodeSeq.Empty
         }
       }
       "span" #> tagNames.map{tg:Tag =>{
         id_span+=1
         "span *" #> tg.name &
-          "span [id]" #> (id+"_"+id_span)
+        "span [id]" #> (id+"_"+id_span)
       }}&
-        "ul [id]" #> id &
-        ".con_category" #> groupCat(cat)
+       "ul [id]" #> id &
+       ".con_category" #> groupCat(cat)
     }
     ".category_cnt *" #> categories.map{ cat:Category =>  categoryContents(cat) }
   }

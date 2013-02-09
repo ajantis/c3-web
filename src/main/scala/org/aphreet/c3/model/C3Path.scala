@@ -39,17 +39,20 @@ case class C3Path(path:String){
 
   var resourceUri = ""
 
+  var resourceParentDir = ""
+
   {
     path.split("/").toList.filter(!_.isEmpty) match {
       case fullpath @ (group :: "files" :: filePath) => {
         groupName = group
         resourceName = filePath.last
+        resourceUri = filePath.mkString("/")
         var resourceLink = filePath.filter(_!=resourceName).mkString("/")
         if (!resourceLink.isEmpty){
           resourceLink+='/'
         }
         resourceType = FileType
-        resourceUri = "/groups/" + group + "/files/" + resourceLink
+        resourceParentDir = "/groups/" + group + "/files/" + resourceLink
       }
 
       case fullpath @ (group :: "wiki" :: filePath) => {
