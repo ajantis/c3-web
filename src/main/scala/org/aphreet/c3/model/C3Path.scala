@@ -46,7 +46,7 @@ case class C3Path(path:String){
       case fullpath @ (group :: "files" :: filePath) => {
         groupName = group
         resourceName = filePath.last
-        resourceUri = filePath.mkString("/")
+        resourceUri = "/groups/" + group + "/files/" + filePath.mkString("/")
         var resourceLink = filePath.filter(_!=resourceName).mkString("/")
         if (!resourceLink.isEmpty){
           resourceLink+='/'

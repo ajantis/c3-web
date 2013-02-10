@@ -3,17 +3,19 @@ package org.aphreet.c3.snippet.groups.snippet
 import org.aphreet.c3.loc.{ItemRewriteLoc, SuffixLoc}
 import org.aphreet.c3.model.{User, Group}
 import net.liftweb.common._
-import net.liftweb.sitemap.Loc.Link
+import net.liftweb.sitemap.Loc.{Hidden, LinkText, Link}
 import xml.{NodeSeq, Text}
 import net.liftweb.util.Helpers._
 import net.liftweb.http.S
 import net.liftweb.common.Full
 import org.aphreet.c3.snippet.groups.GroupPageFilesData
-import org.aphreet.c3.snippet.CreateDirectoryDialog
+import org.aphreet.c3.snippet.{Breadcrumbs, CreateDirectoryDialog}
 import com.ifunsoftware.c3.access.fs.{C3File, C3Directory}
 import org.aphreet.c3.lib.metadata.Metadata
 import Metadata._
 import net.liftweb.util.{CssSel, PassThru}
+import net.liftweb.sitemap.{Menu, SiteMap, Loc}
+import annotation.tailrec
 import net.liftweb.mapper.By
 
 
@@ -47,7 +49,7 @@ object GroupPageFiles extends ItemRewriteLoc[Group, GroupPageFilesData] with Suf
   }
 }
 
-class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers with GroupPageHelpers {
+class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers with GroupPageHelpers with FSHelpers{
 
   private val logger = Logger(classOf[GroupPageFiles])
 
@@ -58,6 +60,22 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers with Gr
   def render = {
     val file = group.getFile(data.currentAddress)
 
+    val pathLocs = buildPathLocs
+
+    ".base_files_path *" #> (
+      ".link [href]" #> (group.createLink + "/files/") &
+      ".link *" #> group.name.is
+    ) &
+    ".bcrumb *" #> (pathLocs.map{ (loc: Loc[_]) =>
+      ".link [href]" #> loc.createDefaultLink &
+      ".link *" #> loc.title &
+      ".divider" #> (
+        data.isDirectoryLoc match {
+          case false if loc == pathLocs.last => (_:NodeSeq) => NodeSeq.Empty // if it is a file then we want to skip last "/" divider
+          case _ => PassThru
+        }
+      )
+    }) &
     ".current_path *" #> Text(data.currentAddress) &
     ".create_dir" #> ((ns: NodeSeq) => new CreateDirectoryDialog().button(ns, Full("/" + data.group.id.is + "/files" + data.currentAddress))) &
     (file match {
@@ -102,6 +120,31 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers with Gr
       ".view_btn [href]" #> fileViewUrl(f) &
       ".data_file *" #> internetDateFormatter.format(f.date)
   }
+
+  def buildPathLocs: List[Loc[_]] = {
+    val locs: List[Loc[_]] = (transformToPathLists(data.path)).map { thisPath =>
+
+      new Loc[List[String]] {
+        private val __sitemap = SiteMap.build(Array(Menu(this)))
+
+        override def name: String = thisPath.lastOption.getOrElse("N/A")
+
+        override def link: Loc.Link[List[String]] = new Link[List[String]](List("groups", data.group.id.is.toString, "files") ::: thisPath)
+
+        override def text: Loc.LinkText[List[String]] = new LinkText[List[String]](v => Text(v.lastOption.getOrElse("N/A")))
+
+        override def defaultValue: Box[List[String]] = Full(thisPath)
+
+        override def params = Hidden :: Nil
+
+        override def siteMap: SiteMap = __sitemap
+
+        override def defaultRequestValue: Box[List[String]] = Full(thisPath)
+      }
+    }
+
+    locs
+  }
 }
 
 trait C3ResourceHelpers {
@@ -137,4 +180,27 @@ trait C3ResourceHelpers {
 
   def fileDownloadUrl(file: C3File): String = "/download" + file.fullname + "?dl=true"
   def fileViewUrl(file: C3File): String = "/download" + file.fullname
+}
+
+trait FSHelpers {
+
+  case class FSLoc(path: List[String]){
+    def title: String = path.lastOption.getOrElse("N/A")
+  }
+
+  def transformToPathLists(fullPath: List[String]): List[List[String]] = {
+    @tailrec
+    def transform(acc: List[List[String]], fullPath: List[String]): List[List[String]] = {
+      fullPath match {
+        case x :: Nil => acc
+        case _ :: tail => transform(tail.reverse :: acc, tail)
+        case Nil => acc
+      }
+    }
+
+    if (fullPath.isEmpty) Nil
+    else transform(List(fullPath), fullPath.reverse)
+  }
+
+
 }
