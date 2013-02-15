@@ -1,12 +1,13 @@
 package org.aphreet.c3.service.metadata
 
-import akka.actor.Actor
 import org.aphreet.c3.service.metadata.MetadataServiceProtocol._
 import org.aphreet.c3.lib.DependencyFactory._
 import com.ifunsoftware.c3.access.{C3Resource, C3System}
 import akka.util.duration._
 import akka.routing.FromConfig
 import akka.actor
+import actor.{Actor, OneForOneStrategy}
+import actor.SupervisorStrategy.Resume
 import org.aphreet.c3.util.C3Loggable
 import org.aphreet.c3.lib.metadata.Metadata
 import Metadata._
@@ -20,7 +21,11 @@ class MetadataService extends Actor with C3Loggable{
   private val c3 = inject[C3System].open_!
 
   val workersRouted =
-    context.actorOf(actor.Props[MetadataServiceWorker].withRouter(FromConfig()), name = "metadataServiceWorkerRoutedActor")
+    context.actorOf(actor.Props(creator = new MetadataServiceWorker(c3)).withRouter(FromConfig()), name = "metadataServiceWorkerRoutedActor")
+
+  override def supervisorStrategy() = OneForOneStrategy(){
+    case _: Exception => Resume
+  }
 
   def receive = {
     case CheckForMetadataUpdates => {

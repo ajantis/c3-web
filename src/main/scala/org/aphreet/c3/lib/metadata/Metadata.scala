@@ -9,9 +9,8 @@ object Metadata {
   val MSG_CREATOR_META: String = "x-c3-msg-creator"
   val MSG_DATE_META: String = "x-c3-msg-date"
   val S4_PROCESSED_FLAG_META = "x-s4-meta-processed"
-
   val OWNER_ID_META = "x-c3-web-owner"
   val GROUP_ID_META = "x-c3-web-group"
-
+  val FS_PATH_META = "c3.ext.fs.path"
   val TAGS_SEPARATOR = ","
 }
