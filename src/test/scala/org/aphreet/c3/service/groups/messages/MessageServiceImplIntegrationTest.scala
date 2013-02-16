@@ -1,7 +1,6 @@
-package org.aphreet.c3.service
+package org.aphreet.c3.service.groups.messages
 
-import groups.impl.GroupServiceImpl
-import groups.messages.impl.MessageStorageServiceImpl
+import impl.MessageStorageServiceImpl
 import org.aphreet.c3.model.{Message, Group}
 import junit.framework.{Assert, TestCase}
 import net.liftweb.mapper._
@@ -11,12 +10,12 @@ import net.liftweb.http.LiftRules
 import net.liftweb.common.Logger
 import org.junit
 import java.util
+import org.aphreet.c3.service.groups.impl.GroupServiceImpl
 
 /**
  * Copyright iFunSoftware 2011
  * @author Dmitry Ivanov
  */
-
 @junit.Ignore
 class MessageServiceImplIntegrationTest extends TestCase {
 

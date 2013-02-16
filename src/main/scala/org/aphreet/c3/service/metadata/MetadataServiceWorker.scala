@@ -1,6 +1,6 @@
 package org.aphreet.c3.service.metadata
 
-import akka.actor.Actor
+import akka.actor.{ActorRef, Actor}
 import org.aphreet.c3.util.C3Loggable
 import org.aphreet.c3.service.metadata.MetadataServiceProtocol._
 import org.aphreet.c3.lib.metadata.Metadata
@@ -19,11 +19,9 @@ import org.aphreet.c3.lib.{NotificationManagerRef, DependencyFactory}
  * Copyright iFunSoftware 2013
  * @author Dmitry Ivanov
  */
-class MetadataServiceWorker(c3system: C3System) extends Actor with C3Loggable{
+class MetadataServiceWorker(c3system: C3System, notificationManager: ActorRef) extends Actor with C3Loggable{
 
   import DependencyFactory._
-
-  val notificationManager = inject[NotificationManagerRef].open_!.actorRef
 
   def receive = {
     case ProcessC3Resource(res) => {

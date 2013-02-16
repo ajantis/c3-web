@@ -12,12 +12,18 @@ import Helpers._
  * Copyright iFunSoftware 2013
  * @author Dmitry Ivanov
  */
-trait NotificationStorage {
-  def saveNotification(notifyMsg: NotifyMsg)
+trait NotificationStorageComponent{
 
-  def getNotificationsForUser(recipient: User): List[Notification]
+  val notificationStorage: NotificationStorage
 
-  def markAsRead(notification: Notification): Notification
+  trait NotificationStorage {
+    def saveNotification(notifyMsg: NotifyMsg)
+
+    def getNotificationsForUser(recipient: User): List[Notification]
+
+    def markAsRead(notification: Notification): Notification
+  }
+
 }
 
 abstract sealed class NotifyMsg {

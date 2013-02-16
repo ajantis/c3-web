@@ -10,6 +10,7 @@ import org.aphreet.c3.service.groups.wiki.impl.WikiServiceImpl
 import akka.actor.{ActorRef, Props, ActorSystem}
 import org.aphreet.c3.service.metadata.MetadataService
 import org.aphreet.c3.service.notifications.NotificationManager
+import org.aphreet.c3.service.notifications.impl.NotificationStorageComponentImpl
 
 /**
  * A factory for generating new instances of Date.  You can create
@@ -56,8 +57,8 @@ object DependencyFactory extends Factory {
 
   private def bootAkkaSystem: ActorSystem = {
     val actorSystem = ActorSystem("C3WebSystem")
-    val metadataService = actorSystem.actorOf(Props(new MetadataService), name = metadataServiceName)
-    val notificationManager = actorSystem.actorOf(Props(new NotificationManager), name = notificationManagerName)
+    val notificationManager = actorSystem.actorOf(Props(new NotificationManager with NotificationStorageComponentImpl), name = notificationManagerName)
+    val metadataService = actorSystem.actorOf(Props(new MetadataService(notificationManager)), name = metadataServiceName)
 
     actorSystem
   }
