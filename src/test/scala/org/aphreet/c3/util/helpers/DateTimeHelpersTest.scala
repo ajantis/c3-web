@@ -6,8 +6,8 @@ import DateTimeHelpers._
 import java.text.SimpleDateFormat
 
 /**
- * @author Dmitry Ivanov (dmitry.ivanov@reltio.com)
- *         Reltio, Inc.
+ * @author Dmitry Ivanov (mailto: id.ajantis@gmail.com)
+ *         iFunSoftware
  */
 object DateTimeHelpersTest extends Specification{
 

@@ -3,10 +3,9 @@ package org.aphreet.c3.snippet.groups.snippet
 import org.specs.Specification
 
 /**
- * @author Dmitry Ivanov (dmitry.ivanov@reltio.com)
- *         Reltio, Inc.
+ * @author Dmitry Ivanov (mailto: id.ajantis@gmail.com)
+ *         iFunSoftware
  */
-
 object FSHelpersTest extends Specification{
 
   val helpers = new FSHelpers {}

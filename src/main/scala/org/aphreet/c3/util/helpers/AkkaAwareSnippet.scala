@@ -6,8 +6,8 @@ import org.aphreet.c3.lib.DependencyFactory
 import akka.actor.ActorSystem
 
 /**
- * @author Dmitry Ivanov (dmitry.ivanov@reltio.com)
- *         Reltio, Inc.
+ * @author Dmitry Ivanov (mailto: id.ajantis@gmail.com)
+ *         iFunSoftware
  */
 trait AkkaAwareSnippet {
 
