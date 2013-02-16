@@ -13,12 +13,17 @@ import net.liftweb.mapper.By
 import net.liftweb.util.Helpers._
 import com.ifunsoftware.c3.access.C3System
 import com.ifunsoftware.c3.access.fs.C3File
+import org.aphreet.c3.lib.{NotificationManagerRef, DependencyFactory}
 
 /**
  * Copyright iFunSoftware 2013
  * @author Dmitry Ivanov
  */
 class MetadataServiceWorker(c3system: C3System) extends Actor with C3Loggable{
+
+  import DependencyFactory._
+
+  val notificationManager = inject[NotificationManagerRef].open_!.actorRef
 
   def receive = {
     case ProcessC3Resource(res) => {
@@ -40,7 +45,7 @@ class MetadataServiceWorker(c3system: C3System) extends Actor with C3Loggable{
                 // TODO we do 2 requests to C3... make it in 1
                 fsPath(res.address).map(c3system.getFile _) match {
                   case Some(f: C3File) => {
-                    NotificationManager ! CreateNotification(FileMetaProcessedMsg(f, owner))
+                    notificationManager ! CreateNotification(FileMetaProcessedMsg(f, owner))
                     res.update(res.metadata - S4_PROCESSED_FLAG_META) // updating metadata with s4-meta flag removed
                   }
                   case _ => logger.error("Resource " + res.address + " is not found in virtual FS... Skipping")

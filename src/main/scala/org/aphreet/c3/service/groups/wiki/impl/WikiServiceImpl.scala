@@ -67,6 +67,8 @@ class WikiServiceImpl extends WikiService{
 
 object WikiServiceImpl{
 
-  def create():WikiService = new WikiServiceImpl
+  private lazy val wikiService = new WikiServiceImpl
+
+  def apply(): WikiService = wikiService
 
 }

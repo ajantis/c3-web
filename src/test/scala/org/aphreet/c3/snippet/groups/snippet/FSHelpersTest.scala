@@ -1,9 +1,6 @@
 package org.aphreet.c3.snippet.groups.snippet
 
 import org.specs.Specification
-import net.liftweb.util.TimeHelpers
-import org.aphreet.c3.util.helpers.DateTimeHelpers._
-import java.text.SimpleDateFormat
 
 /**
  * @author Dmitry Ivanov (dmitry.ivanov@reltio.com)

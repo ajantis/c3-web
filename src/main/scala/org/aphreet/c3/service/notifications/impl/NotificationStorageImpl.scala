@@ -2,15 +2,15 @@ package org.aphreet.c3.service.notifications.impl
 
 import org.aphreet.c3.util.C3Loggable
 import org.aphreet.c3.model.{NotificationType, Notification, User}
-import org.aphreet.c3.service.notifications.{NotifyMsg, NotificationService}
+import org.aphreet.c3.service.notifications.{NotifyMsg, NotificationStorage}
 import net.liftweb.util.FieldError
 
 /**
  * Copyright iFunSoftware 2013
  * @author Dmitry Ivanov
  */
-class NotificationServiceImpl extends NotificationService with C3Loggable{
-  def sendNotification(notifyMsg: NotifyMsg){
+class NotificationStorageImpl extends NotificationStorage with C3Loggable{
+  def saveNotification(notifyMsg: NotifyMsg){
     val newNotification = Notification.create.recipient(notifyMsg.recipient).title(notifyMsg.title).body(notifyMsg.message.toString())
     newNotification.validate match {
       case Nil => newNotification.save()
@@ -29,6 +29,7 @@ class NotificationServiceImpl extends NotificationService with C3Loggable{
     }
   }
 }
-object NotificationServiceImpl{
-  def create: NotificationService = new NotificationServiceImpl
+
+object NotificationStorageImpl{
+  def create: NotificationStorage = new NotificationStorageImpl
 }

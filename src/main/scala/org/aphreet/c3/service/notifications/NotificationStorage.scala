@@ -12,8 +12,8 @@ import Helpers._
  * Copyright iFunSoftware 2013
  * @author Dmitry Ivanov
  */
-trait NotificationService {
-  def sendNotification(notifyMsg: NotifyMsg)
+trait NotificationStorage {
+  def saveNotification(notifyMsg: NotifyMsg)
 
   def getNotificationsForUser(recipient: User): List[Notification]
 

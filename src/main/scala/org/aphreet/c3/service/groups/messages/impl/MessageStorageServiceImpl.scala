@@ -93,7 +93,10 @@ class MessageStorageServiceImpl extends MessageStorageService with C3Loggable{
 
 object MessageStorageServiceImpl{
   val GROUP_MESSAGES_ROOT = "messages"
-  def apply: MessageStorageService = new MessageStorageServiceImpl
+
+  private lazy val storage = new MessageStorageServiceImpl
+
+  def apply: MessageStorageService = storage
 }
 
 sealed abstract class MsgMDTag(val name: String, val value: String)
