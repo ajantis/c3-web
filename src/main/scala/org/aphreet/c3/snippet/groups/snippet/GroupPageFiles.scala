@@ -6,7 +6,7 @@ import net.liftweb.common._
 import net.liftweb.sitemap.Loc.{Hidden, LinkText, Link}
 import xml.{NodeSeq, Text}
 import net.liftweb.util.Helpers._
-import net.liftweb.http.S
+import net.liftweb.http.{SHtml, S}
 import net.liftweb.common.Full
 import org.aphreet.c3.snippet.groups.GroupPageFilesData
 import org.aphreet.c3.snippet.{Breadcrumbs, CreateDirectoryDialog}
@@ -67,8 +67,12 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers with Gr
       ".link *" #> group.name.is
     ) &
     ".bcrumb *" #> (pathLocs.map{ (loc: Loc[_]) =>
-      ".link [href]" #> loc.createDefaultLink &
-      ".link *" #> loc.title &
+      (if(isLocCurrent(pathLocs, loc)){
+        ".link" #> <strong>{loc.title}</strong>
+      } else {
+        ".link [href]" #> loc.createDefaultLink &
+        ".link *" #> loc.title
+      }) &
       ".divider" #> (
         data.isDirectoryLoc match {
           case false if loc == pathLocs.last => (_:NodeSeq) => NodeSeq.Empty // if it is a file then we want to skip last "/" divider
@@ -77,7 +81,6 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers with Gr
       )
     }) &
     ".current_path *" #> Text(data.currentAddress) &
-    ".create_dir" #> ((ns: NodeSeq) => new CreateDirectoryDialog().button(ns, Full("/" + data.group.id.is + "/files" + data.currentAddress))) &
     (file match {
       case Empty => S.redirectTo("/404.html"); "* *" #> PassThru
       case Failure(msg, t, chain) => {
@@ -105,7 +108,8 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers with Gr
         }
       }
     } &
-    ".file-view" #> NodeSeq.Empty
+    ".file-view" #> NodeSeq.Empty &
+    "#new-directory" #> newDirectoryForm(d, currentPath = data.group.createLink + "/files" + data.currentAddress)
   }
 
   protected def renderFileLoc(f: C3File): CssSel = {
@@ -119,6 +123,24 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers with Gr
       ".download_btn [href]" #> fileDownloadUrl(f) &
       ".view_btn [href]" #> fileViewUrl(f) &
       ".data_file *" #> internetDateFormatter.format(f.date)
+  }
+
+  protected def newDirectoryForm(currentDirectory: C3Directory, currentPath: String): CssSel = {
+    var name = ""
+    var tags = ""
+
+    def createDirectory(){
+      // TODO send metadata for new dir to c3 (need accesslib support)
+      val metadata = Map((OWNER_ID_META -> User.currentUser.map(_.id.is.toString).open_!),
+        (GROUP_ID_META -> data.group.id.is),
+        (TAGS_META -> tags.trim))
+      currentDirectory.createDirectory(name.trim)
+      S.redirectTo(currentPath) // redirect on the same page
+    }
+
+    "name=name" #> SHtml.onSubmit(name = _) &
+    "name=tags" #> SHtml.onSubmit(tags = _) &
+    "type=submit" #> SHtml.onSubmitUnit(createDirectory)
   }
 
   def buildPathLocs: List[Loc[_]] = {
@@ -145,6 +167,8 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers with Gr
 
     locs
   }
+
+  def isLocCurrent(allLocs: List[Loc[_]], loc: Loc[_]) = allLocs.lastOption.map(_ == loc).getOrElse(false)
 }
 
 trait C3ResourceHelpers {
