@@ -81,6 +81,7 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers with Gr
       )
     }) &
     ".current_path *" #> Text(data.currentAddress) &
+    //".back_btn [href]" #> Text(data.currentAddress) &
     (file match {
       case Empty => S.redirectTo("/404.html"); "* *" #> PassThru
       case Failure(msg, t, chain) => {
@@ -185,7 +186,7 @@ trait C3ResourceHelpers {
     ".owner [href]" #> owner.map(_.createLink) &
     ".name *" #> directory.name &
     ".link [href]" #> (directory.name + "/") &
-    ".icon [class+]" #> "icon-folder-close" &
+    ".icon [src]" #> "/images/folder_classic.png" &
     ".created_date *" #> internetDateFormatter.format(directory.date)
   }
 
@@ -198,7 +199,7 @@ trait C3ResourceHelpers {
     ".owner [href]" #> owner.map(_.createLink) &
     ".name *" #> file.name &
     ".link [href]" #> file.name &
-    ".icon [class+]" #> "icon-file" &
+    ".icon [src]" #> "/images/document_letter.png" &
     ".created_date *" #> internetDateFormatter.format(file.date)
   }
 
