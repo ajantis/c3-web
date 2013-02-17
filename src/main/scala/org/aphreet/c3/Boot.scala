@@ -179,6 +179,9 @@ class Boot extends Bootable{
 
     DefaultAuthDataLoader.init
 
+    // Table sorter widget init
+    TableSorter.init()
+
     LiftRules.statelessDispatchTable.append(TextileRenderer)
 
     // for ajax file upload
