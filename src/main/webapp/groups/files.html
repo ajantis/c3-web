@@ -75,39 +75,6 @@
                                 <td><input type="checkbox" /></td>
                             </tr>
                             </tbody>
-
-                            <div class="modal fade" id="new-directory">
-                                <div class="modal-header">
-                                    <a class="close" data-dismiss="modal">&times;</a>
-                                    <h3>New directory</h3>
-                                </div>
-                                <div class="modal-body">
-                                    <form id="new_directory_form" class="form-horizontal">
-                                        <fieldset>
-                                            <div class="control-group">
-                                                <!-- Text input-->
-                                                <label class="control-label" for="input01">Name</label>
-                                                <div class="controls">
-                                                    <input type="text" name="name" id="input01" placeholder="name your directory..." class="input-xlarge">
-                                                    <p class="help-block"></p>
-                                                </div>
-                                            </div>
-                                            <div class="control-group">
-                                                <!-- Text input-->
-                                                <label class="control-label" id="input02" for="input02">Tags</label>
-                                                <div class="controls">
-                                                    <input type="text" name="tags" placeholder="docs, main, etc..." class="input-xlarge">
-                                                    <p class="help-block">tags must be comma-separated</p>
-                                                </div>
-                                            </div>
-                                        </fieldset>
-                                    </form>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" data-dismiss="modal" class="btn">Cancel</button>
-                                    <button type="submit" class="btn btn-success" form="new_directory_form">Create</button>
-                                </div>
-                            </div>
                         </table>
 
                         <div class="file-view">
@@ -130,15 +97,49 @@
                             </div>
                         </div>
 
-                        <div id="upload_form" class="modal fade">
+                        <div id="upload_form" class="modal hide fade">
                             <h1 class = "modal-header">Upload files</h1>
                             <div class="modal-body  my_body">
                                 <input type="file" class='input' />
                                 <div class='dropzone' id="dropzone"></div>
                             </div>
                             <div class ="modal-footer">
-                                <a id="close" href="#" class='cl btn  btn-danger'>Close</a>
-                                <a id="upload"  href="#" class='cl btn btn-primary'>Upload</a>
+                                <a id="close" data-dismiss="modal" href="#" class='cl btn'>Close</a>
+                                <a id="upload"  href="#" class='cl btn btn-success'>Upload</a>
+                            </div>
+                        </div>
+
+                        <div class="modal hide fade" id="new-directory">
+                            <div class="modal-header">
+                                <a class="close" data-dismiss="modal">&times;</a>
+                                <h3>New directory</h3>
+                            </div>
+
+                            <div class="modal-body">
+                                <form id="new_directory_form" class="form-horizontal">
+                                    <fieldset>
+                                        <div class="control-group">
+                                            <!-- Text input-->
+                                            <label class="control-label" for="input01">Name</label>
+                                            <div class="controls">
+                                                <input type="text" name="name" id="input01" placeholder="name your directory..." class="input-xlarge">
+                                                <p class="help-block"></p>
+                                            </div>
+                                        </div>
+                                        <div class="control-group">
+                                            <!-- Text input-->
+                                            <label class="control-label" id="input02" for="input02">Tags</label>
+                                            <div class="controls">
+                                                <input type="text" name="tags" placeholder="docs, main, etc..." class="input-xlarge">
+                                                <p class="help-block">tags must be comma-separated</p>
+                                            </div>
+                                        </div>
+                                    </fieldset>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" data-dismiss="modal" class="btn">Cancel</button>
+                                <button type="submit" class="btn btn-success" form="new_directory_form">Create</button>
                             </div>
                         </div>
 

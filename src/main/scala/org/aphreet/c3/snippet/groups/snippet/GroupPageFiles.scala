@@ -61,9 +61,10 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers with Gr
     val file = group.getFile(data.currentAddress)
 
     val pathLocs = buildPathLocs
+    val groupFilesLink = group.createLink + "/files/"
 
     ".base_files_path *" #> (
-      ".link [href]" #> (group.createLink + "/files/") &
+      ".link [href]" #> groupFilesLink &
       ".link *" #> group.name.is
     ) &
     ".bcrumb *" #> (pathLocs.map{ (loc: Loc[_]) =>
@@ -81,7 +82,11 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers with Gr
       )
     }) &
     ".current_path *" #> Text(data.currentAddress) &
-    //".back_btn [href]" #> Text(data.currentAddress) &
+    ".back_btn [href]" #> (pathLocs.reverse match {
+      case Nil => Text(groupFilesLink)
+      case xs => xs.tail.headOption.map((l: Loc[_]) => l.createDefaultLink.get)
+        .getOrElse(Text(groupFilesLink))
+    }) &
     (file match {
       case Empty => S.redirectTo("/404.html"); "* *" #> PassThru
       case Failure(msg, t, chain) => {
