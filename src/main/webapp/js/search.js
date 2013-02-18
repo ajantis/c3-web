@@ -13,6 +13,36 @@ function SelectAll(sel){
 
 }
 $(document).ready( function(){
+     //add metadata
+    $(".btn_add_metadata").live("click",function(){
+        var keyExist = true;
+        var key = $("#key").val();
+        var value = $("#value").val();
+        key = $.trim(key);
+        value = $.trim(value);
+        $(".metadata_key").each(function(index,el){
+            console.log(el);
+            if(el.value==key) keyExist = false;
+        });
+        if(key!="" && value!="" && keyExist){
+            $("#key").val("");
+            $("#value").val("");
+            $(".metadata_form").append('<tr>'+
+                                            '<td><input name="metadata_key" readonly class="metadata_key" value="'+ key + '"/></td>'+
+                                            '<td><input name="metadata_value" class="metadata_value" value="'+ value + '"/></td>'+
+                                            '<td><button class="close remove_metadata">&times;</button></td>'+
+                                       '</tr>');
+
+        }
+        if(!keyExist){
+            alert("This key is exists");
+        }
+
+    });
+     $(".remove_metadata").live("click",function(){
+        $(this).parent().parent().remove();
+
+     });
     $('.addnewuser').live("click",function(){
         $(this).addClass("hide");
         $(".formaddnewuser").toggleClass("hide");

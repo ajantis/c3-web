@@ -41,7 +41,7 @@ class GroupPageMembers(data: GroupPageData) extends GroupPageHelpers{
 
   def owner = {
     ".GroupOwner *" #> group.owner.obj.map(_.shortName).openOr("N/A")&
-      ".GroupOwner [href]" #> group.owner.obj.map(_.createLink)
+    ".GroupOwner [href]" #> group.owner.obj.map(_.createLink)
 
   }
   def listUserAdd = {
@@ -104,10 +104,10 @@ def listUser = {
       val (added, notAdded) = groupService.addUsersToGroup(group,members).partition(_.isDefined)
 
       if(!added.isEmpty)
-        S.notice("Users are added to group " + group.name.is + ": " + added.mkString(","))
+        S.notice("Users are added to group " + group.name.is)
       if(!notAdded.isEmpty)
         // normally shouldn't happen
-        S.error("Users are not added to group: " + group.name.is + ": " + notAdded.mkString(","))
+        S.error("Users are not added to group: " + group.name.is)
     }
 
     "name=listusers" #> SHtml.onSubmit(listUserEmails = _) &

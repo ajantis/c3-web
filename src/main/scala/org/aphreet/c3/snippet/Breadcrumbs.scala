@@ -13,36 +13,43 @@ import net.liftweb.util.Helpers._
  */
 
 class Breadcrumbs {
+  import Breadcrumbs._
 
-  def breadcrumb = "*" #> {
+  def breadcrumb = {
     val allLocs: List[Loc[_]] =
       for {
         currentLoc <- S.location.toList
         loc <- currentLoc.breadCrumbs
       } yield loc
 
-    val currentLoc = allLocs.lastOption
+    breadcrumbsForLocs(allLocs)
+  }
+
+}
+
+object Breadcrumbs {
+  def breadcrumbsForLocs(locs: List[Loc[_]]) = "*" #> {
+    val currentLoc = locs.lastOption
 
     def setActiveClass(loc: Loc[_]) = {
       if(loc == currentLoc.get)
         ".link [class+]" #> "active" & // attach class
-        ".divider" #> NodeSeq.Empty // remove last divider
+          ".divider" #> NodeSeq.Empty // remove last divider
       else
         ".link [class!]" #> "active" // remove class
     }
 
 
-    "li *" #> allLocs.map {
+    "li *" #> locs.map {
       loc => {
-        val propsBuilder = new LocPropertiesBuilder(loc, allLocs)
+        val propsBuilder = new LocPropertiesBuilder(loc, locs)
 
         ".link *" #> propsBuilder.buildLocTitle() &
-        ".link [href]" #> propsBuilder.buildLocLink() &
-        setActiveClass(loc)
+          ".link [href]" #> propsBuilder.buildLocLink() &
+          setActiveClass(loc)
       }
     }
   }
-
 }
 
 class LocPropertiesBuilder[T](loc: Loc[T], allLocs: List[Loc[_]])(implicit manifest : Manifest[T]){

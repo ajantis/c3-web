@@ -545,6 +545,22 @@ td.file-table-date{
     float:left;
 
 }
+.edit_meta{
+    width: 90%;
+    margin: 0 auto;
+}
+.table_meta{
+    border-collapse: separate!important;
+
+}
+.input_tags{
+    margin-top: 5px;
+
+}
+.btn_add_metadata{
+    margin-top:-10px!important;
+}
+
 /*********************************************************
 * End file table part
 *********************************************************/

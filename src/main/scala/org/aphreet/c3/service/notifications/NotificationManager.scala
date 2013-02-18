@@ -1,30 +1,34 @@
 package org.aphreet.c3.service.notifications
 
 import org.aphreet.c3.util.C3Loggable
-import org.aphreet.c3.lib.DependencyFactory._
-import org.aphreet.c3.model.Notification
-import net.liftweb.actor.LiftActor
-import org.aphreet.c3.service.notifications.NotificationManagerProtocol.{CreateNotification, MarkAsRead}
+import org.aphreet.c3.model.{User, Notification}
+import org.aphreet.c3.service.notifications.NotificationManagerProtocol.{GetUserNotifications, CreateNotification, MarkAsRead}
+import akka.actor.Actor
 
 /**
  * Copyright iFunSoftware 2013
  * @author Dmitry Ivanov
  */
-object NotificationManager extends LiftActor with C3Loggable{
-  private val notificationService = inject[NotificationService].open_!
+trait NotificationManager extends Actor with C3Loggable{
+  self: NotificationStorageComponent =>
 
-  def messageHandler = {
-    case CreateNotification(notifyMessage) => notificationService.sendNotification(notifyMessage)
-    case MarkAsRead(notification) => notificationService.markAsRead(notification)
+  def receive = {
+    case CreateNotification(notifyMessage)  => notificationStorage.saveNotification(notifyMessage)
 
-    case msg => logger.error("Unkhown message is received: " + msg) // default handling
+    case MarkAsRead(notification)           => notificationStorage.markAsRead(notification)
+
+    case GetUserNotifications(user)         => sender ! notificationStorage.getNotificationsForUser(user)
   }
-
 }
 
 object NotificationManagerProtocol {
+
   abstract sealed class NotificationManagerCmd
+
   case class CreateNotification(notifyMessage: NotifyMsg)
+
   case class MarkAsRead(notification: Notification)
+
+  case class GetUserNotifications(user: User)
 }
 

@@ -37,6 +37,7 @@ import net.liftweb.common.{Full, Box}
 import net.liftweb.http.SHtml
 import org.aphreet.c3.apiaccess.C3
 import net.liftweb.util.Helpers._
+import com.ifunsoftware.c3.access.fs.{C3File, C3FileSystemNode}
 
 class Group extends LongKeyedMapper[Group] with IdPK with ManyToMany{
 
@@ -79,28 +80,14 @@ class Group extends LongKeyedMapper[Group] with IdPK with ManyToMany{
     override def defaultValue = true
   }
 
-  def getChildren: List[C3Resource] = getChildren("")
+  def getChildren: List[C3FileSystemNode] = getChildren("")
 
-  def getChildren(directory: String) : List[C3Resource] = {
+  def getChildren(directory: String) : List[C3FileSystemNode] =
+    C3().getFile(baseFilePath + directory).asDirectory.children()
 
-    var resources: List[C3Resource] = List()
-
-    val children = C3().getFile(baseFilePath + directory).asDirectory.children()
-    
-    for(child <- children){
-      if(child.isDirectory){
-        resources = Catalog( name = child.name, group = this, created = child.versions.head.date) :: resources
-      } else{
-        resources = File(group = this, fullpath = directory + "/" + child.name, created = child.versions.head.date) :: resources
-      }
-    }
-    resources
-  }
-
-  def getFile(path: String): Box[File] = tryo {
+  def getFile(path: String): Box[C3FileSystemNode] = tryo {
       C3().getFile(baseFilePath + path)
-      File(group = this, fullpath = path) }
-
+  }
 
   override def delete_! : Boolean = {
     UserGroup.findAll(By(UserGroup.group, this)).foreach(_.delete_!)
