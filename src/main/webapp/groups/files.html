@@ -1,152 +1,204 @@
 <div class="lift:surround?with=default;at=content" xmlns="http://www.w3.org/1999/html">
-    <div id="group-tab-wrapper">
-        <div class="tabbable"> <!-- Only required for left/right tabs -->
-            <div class="row-fluid lift:GroupPageFiles.embedTabMenu">
-            </div>
+<div id="group-tab-wrapper">
+<div class="tabbable"> <!-- Only required for left/right tabs -->
+    <div class="row-fluid lift:GroupPageFiles.embedTabMenu">
+    </div>
 
-            <div class="lift:TableSorters.defaultTableSorter"></div>
+    <div class="lift:TableSorters.defaultTableSorter"></div>
 
-            <div class="row-fluid">
-                <div class="tab-content">
-                    <div id="files" class="lift:GroupPageFiles tag-pane">
-                        <ul class="breadcrumbs breadcrumb" style="background-color: white; font-size: 20px;">
-                            <li class="base_files_path">
-                                <a class="link" href="#">Group</a> <span class="divider">/</span>
-                            </li>
-                            <li class="bcrumb">
-                                <a class="link" href="#">dir</a> <span class="divider">/</span>
-                            </li>
-                        </ul>
+    <div class="row-fluid">
+        <div class="tab-content">
+            <div id="files" class="lift:GroupPageFiles tag-pane">
+                <ul class="breadcrumbs breadcrumb" style="background-color: white; font-size: 20px;">
+                    <li class="base_files_path">
+                        <a class="link" href="#">Group</a> <span class="divider">/</span>
+                    </li>
+                    <li class="bcrumb">
+                        <a class="link" href="#">dir</a> <span class="divider">/</span>
+                    </li>
+                </ul>
 
-                        <div class="fs_toolbar">
-                            <tail>
-                                <link rel="stylesheet" type="text/css" href="/js/file-upload/css/upload.css">
-                                <script id="file-template" type="text/html">
+                <div class="fs_toolbar">
+                    <tail>
+                        <link rel="stylesheet" type="text/css" href="/js/file-upload/css/upload.css">
+                        <script id="file-template" type="text/html">
 
-                                    <div class="toggler"><i class="icon-tags icon-black"></i></div>
+                            <div class="toggler"><i class="icon-tags icon-black"></i></div>
 
-                                    <div class="lineContainer"><%=filename.length>30?filename.substr(0,30)+"...":filename%></div>
-                                    <div class="removebutton"><i class="icon-remove icon-black"></i></div>
-                                    <div class="barcontainer">
-                                        <div class="bartext"><%= status%></div>
-                                        <div class="bar" style="width: <%=loaded%>%;"></div>
-                                    </div>
-                                    <% if (hasError){ %>
-                                    <div class id=" error"><%=errortext%></div>
-                                    <% } %>
-                                    <textarea  hidden="true" class="area" placeholder = "Enter description" style="display: block;"><%=metadata%></textarea>
-
-                                </script>
-                                <script src="/js/lib/appinit.js" type="text/javascript"></script>
-                                <script src="/js/lib/underscore.js" type="text/javascript"></script>
-                                <script src="/js/lib/backbone.js" type="text/javascript"></script>
-                                <script  src ="/js/file-upload/js/logger.js" type="text/javascript"></script>
-                                <script  src ="/js/file-upload/js/module.js" type="text/javascript"></script>
-                                <script  src ="/js/file-upload/js/models.js" type="text/javascript"></script>
-                                <script  src ="/js/file-upload/js/collections.js" type="text/javascript"></script>
-                                <script  src ="/js/file-upload/js/views.js" type="text/javascript"></script>
-                            </tail>
-                            <p>
-                                <a type="button" class="btn back_btn" href="#back" data-toggle="modal">
-                                    <img src="/images/arrow_large_left.png" title="Back"/>
-                                </a>
-                                <a type="button" class="btn" href="#new-directory" data-toggle="modal">
-                                    <img src="/images/folder_classic_add.png" title="Create directory"/>
-                                </a>
-                                <a type="button" class="btn" href="#upload_form" data-toggle="modal">
-                                    <img src="/images/folder_classic_down.png" title="Upload files"/>
-                                </a>
-                            </p>
-                        </div>
-                        <table class="file-table tablesorter" id="table-sort">
-                            <thead>
-                            <tr>
-                                <th></th>
-                                <th class="file-table-name"><b>Name</b></th>
-                                <th class="file-table-owner"><b>Owner</b></th>
-                                <th class="file-table-date"><b>Modify date</b></th>
-                                <th><input type="checkbox" value="false" /></th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr class="child">
-                                <td><img class="icon"/></td>
-                                <td><a class="link" href="#"><span class="name"></span></a></td>
-                                <td><a class="owner" href="#">Aphreet</a></td>
-                                <td class="file-table-date"><span class="created_date"></span></td>
-                                <td><input type="checkbox" /></td>
-                            </tr>
-                            </tbody>
-                        </table>
-                        <div class="file-view">
-                            <a href="#" class="btn download_btn"><img src="/images/folder_classic_up.png"/><strong>Download</strong></a>
-                            <a href="#" class="btn view_btn"><img src="/images/zoom.png"/><strong>View</strong></a>
-
-                            <h4 class="name_file">Name</h4>
-                            <div>
-                                <div class="">
-                                    <i class="icon-calendar inf_left"></i>
-                                    <p class="data_file">Sept 16th, 2012</p>
-                                </div>
-                                <div>
-                                    <i class="icon-tags inf_left "></i>
-                                    <p class="inf_left">Tags :</p>
-                                    <div class="file_tags inf_left">
-                                        <span class="label label-info inf_left">Snipp</span>
-                                    </div>
-                                </div>
+                            <div class="lineContainer"><%=filename.length>30?filename.substr(0,30)+"...":filename%></div>
+                            <div class="removebutton"><i class="icon-remove icon-black"></i></div>
+                            <div class="barcontainer">
+                                <div class="bartext"><%= status%></div>
+                                <div class="bar" style="width: <%=loaded%>%;"></div>
                             </div>
-                        </div>
+                            <% if (hasError){ %>
+                            <div class id=" error"><%=errortext%></div>
+                            <% } %>
+                            <textarea  hidden="true" class="area" placeholder = "Enter description" style="display: block;"><%=metadata%></textarea>
 
-                        <div id="upload_form" class="modal hide fade">
-                            <h1 class = "modal-header">Upload files</h1>
-                            <div class="modal-body  my_body">
-                                <input type="file" class='input' />
-                                <div class='dropzone' id="dropzone"></div>
-                            </div>
-                            <div class ="modal-footer">
-                                <a id="close" data-dismiss="modal" href="#" class='cl btn'>Close</a>
-                                <a id="upload"  href="#" class='cl btn btn-success'>Upload</a>
+                        </script>
+                        <script src="/js/lib/appinit.js" type="text/javascript"></script>
+                        <script src="/js/lib/underscore.js" type="text/javascript"></script>
+                        <script src="/js/lib/backbone.js" type="text/javascript"></script>
+                        <script  src ="/js/file-upload/js/logger.js" type="text/javascript"></script>
+                        <script  src ="/js/file-upload/js/module.js" type="text/javascript"></script>
+                        <script  src ="/js/file-upload/js/models.js" type="text/javascript"></script>
+                        <script  src ="/js/file-upload/js/collections.js" type="text/javascript"></script>
+                        <script  src ="/js/file-upload/js/views.js" type="text/javascript"></script>
+                    </tail>
+                    <p>
+                        <a type="button" class="btn back_btn" href="#back"">
+                        <img src="/images/arrow_large_left.png" title="Back"/>
+                        </a>
+                        <a type="button" class="btn" href="#new-directory" data-toggle="modal">
+                            <img src="/images/folder_classic_add.png" title="Create directory"/>
+                        </a>
+                        <a type="button" class="btn" href="#upload_form" data-toggle="modal">
+                            <img src="/images/folder_classic_down.png" title="Upload files"/>
+                        </a>
+                    </p>
+                </div>
+                <table class="file-table tablesorter" id="table-sort">
+                    <thead>
+                    <tr>
+                        <th></th>
+                        <th class="file-table-name"><b>Name</b></th>
+                        <th class="file-table-owner"><b>Owner</b></th>
+                        <th class="file-table-date"><b>Modify date</b></th>
+                        <th><input type="checkbox" value="false" /></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr class="child">
+                        <td><img class="icon"/></td>
+                        <td><a class="link" href="#"><span class="name"></span></a></td>
+                        <td><a class="owner" href="#">Aphreet</a></td>
+                        <td class="file-table-date"><span class="created_date"></span></td>
+                        <td><input type="checkbox" /></td>
+                    </tr>
+                    </tbody>
+                </table>
+                <div class="file-view">
+                    <a href="#" class="btn download_btn"><img src="/images/folder_classic_up.png"/><strong>Download</strong></a>
+                    <a href="#" class="btn view_btn"><img src="/images/zoom.png"/><strong>View</strong></a>
+                    <a type="button" href="#meta" class="btn" data-toggle="modal" title="Edit metadata"><img src="/images/pencil.png"/><strong>Metadata</strong></a>
+                    <a type="button" href="#tags" class="btn" data-toggle="modal" title="Edit tags"><img src="/images/pencil.png"/><strong>Tags</strong></a>
+
+
+                    <h4 class="name_file">Name</h4>
+                    <div>
+                        <div class="">
+                            <i class="icon-calendar inf_left"></i>
+                            <p class="data_file">Sept 16th, 2012</p>
+                        </div>
+                        <div>
+                            <i class="icon-tags inf_left "></i>
+                            <p class="inf_left">Tags :</p>
+                            <div class="file_tags inf_left">
+                                <span class="label label-info">Snipp</span>
                             </div>
                         </div>
+                    </div>
 
-                        <div class="modal hide fade" id="new-directory">
-                            <div class="modal-header">
-                                <a class="close" data-dismiss="modal">&times;</a>
-                                <h3>New directory</h3>
-                            </div>
-
-                            <div class="modal-body">
-                                <form id="new_directory_form" class="form-horizontal">
-                                    <fieldset>
-                                        <div class="control-group">
-                                            <!-- Text input-->
-                                            <label class="control-label" for="input01">Name</label>
-                                            <div class="controls">
-                                                <input type="text" name="name" id="input01" placeholder="name your directory..." class="input-xlarge">
-                                                <p class="help-block"></p>
-                                            </div>
-                                        </div>
-                                        <div class="control-group">
-                                            <!-- Text input-->
-                                            <label class="control-label" id="input02" for="input02">Tags</label>
-                                            <div class="controls">
-                                                <input type="text" name="tags" placeholder="docs, main, etc..." class="input-xlarge">
-                                                <p class="help-block">tags must be comma-separated</p>
-                                            </div>
-                                        </div>
-                                    </fieldset>
-                                </form>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" data-dismiss="modal" class="btn">Cancel</button>
-                                <button type="submit" class="btn btn-success" form="new_directory_form">Create</button>
+                    <div id="tags" class="modal hide fade">
+                        <h4 class = "modal-header">Edit</h4>
+                        <div class="edit_meta">
+                            <label class="control-label">Tags</label>
+                            <div class="input_tags">
+                                <input type="text" name="tags" placeholder="docs, main, etc..." class="current_tags input-xlarge">
+                                <p class="help-block">tags must be comma-separated</p>
                             </div>
                         </div>
+                        <div class="modal-footer">
+                            <button type="button" data-dismiss="modal" class="btn">Cancel</button>
+                            <button type="submit" class="btn btn-success" form="new_directory_form">Save</button>
+                        </div>
+                    </div>
+                    <div id="meta" class="modal hide fade">
+                        <h4 class = "modal-header">Edit</h4>
+                        <div class="edit_meta">
+                            <label class="control-label">Metadata</label>
+                            <table class="tablesorter table_meta">
+                                <thead>
+                                <tr>
+                                    <th>Key</th>
+                                    <th>Value</th>
+                                    <th style="width:10px;"></th>
+                                </tr>
+                                </thead>
+                                <tbody  class="metadata_form">
+                                <tr>
+                                    <td><input name="metadata_key" class="metadata_key" value="" readonly/></td>
+                                    <td><input name="metadata_value" class="metadata_value" value=""/></td>
+                                    <td><button class="close remove_metadata">&times;</button></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                            <hr/>
+                            <div class="add_metadata">
+                                <input id="key" class="span5" type="text"  placeholder="Keyword" >
+                                <input id="value" class="span5" type="text"  placeholder="Value">
+                                <button name="btn_add_metadata" class="btn_add_metadata btn btn-primary">Add</button>
+                            </div>
 
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" data-dismiss="modal" class="btn">Cancel</button>
+                            <button type="submit" class="btn btn-success" form="new_directory_form">Save</button>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div id="upload_form" class="modal hide fade">
+                    <h1 class = "modal-header">Upload files</h1>
+                    <div class="modal-body  my_body">
+                        <input type="file" class='input' />
+                        <div class='dropzone' id="dropzone"></div>
+                    </div>
+                    <div class ="modal-footer">
+                        <a id="close" data-dismiss="modal" href="#" class='cl btn'>Close</a>
+                        <a id="upload"  href="#" class='cl btn btn-success'>Upload</a>
                     </div>
                 </div>
+
+                <div class="modal hide fade" id="new-directory">
+                    <div class="modal-header">
+                        <a class="close" data-dismiss="modal">&times;</a>
+                        <h3>New directory</h3>
+                    </div>
+
+                    <div class="modal-body">
+                        <form id="new_directory_form" class="form-horizontal">
+                            <fieldset>
+                                <div class="control-group">
+                                    <!-- Text input-->
+                                    <label class="control-label" for="input01">Name</label>
+                                    <div class="controls">
+                                        <input type="text" name="name" id="input01" placeholder="name your directory..." class="input-xlarge">
+                                        <p class="help-block"></p>
+                                    </div>
+                                </div>
+                                <div class="control-group">
+                                    <!-- Text input-->
+                                    <label class="control-label" id="input02" for="input02">Tags</label>
+                                    <div class="controls">
+                                        <input type="text" name="tags" placeholder="docs, main, etc..." class="input-xlarge">
+                                        <p class="help-block">tags must be comma-separated</p>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" data-dismiss="modal" class="btn">Cancel</button>
+                        <button type="submit" class="btn btn-success" form="new_directory_form">Create</button>
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
+</div>
+</div>
 </div>

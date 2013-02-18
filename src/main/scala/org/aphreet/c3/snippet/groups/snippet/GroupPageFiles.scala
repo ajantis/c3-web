@@ -17,6 +17,7 @@ import net.liftweb.util.{CssSel, PassThru}
 import net.liftweb.sitemap.{Menu, SiteMap, Loc}
 import annotation.tailrec
 import net.liftweb.mapper.By
+import net.liftweb.http.js.{JsCmds, JsCmd}
 
 
 /**
@@ -119,18 +120,43 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers with Gr
   }
 
   protected def renderFileLoc(f: C3File): CssSel = {
+    var key = ""
+    var value = ""
+    def addTag(){
+      if(key!="" && value!=""){
+        val meta = Map(key -> value)
+        f.update(meta)
+
+      }
+    }
     ".label_file" #> f.metadata.get(TAGS_META).map(_.split(TAGS_SEPARATOR).toList).getOrElse(Nil).map((tag: String) => {
       ".label *" #> tag
     }) &
       ".file-table" #> NodeSeq.Empty &
       ".fs_toolbar" #> NodeSeq.Empty &
       "#upload_form" #> NodeSeq.Empty &
+      ".current_tags [value]" #> f.metadata.get(TAGS_META).getOrElse("")&
       ".name_file *" #> f.name &
       ".download_btn [href]" #> fileDownloadUrl(f) &
       ".view_btn [href]" #> fileViewUrl(f) &
-      ".data_file *" #> internetDateFormatter.format(f.date)
+      ".data_file *" #> internetDateFormatter.format(f.date)&
+      "#tags" #> editTags(f) &
+      ".metadata_form" #> (f.metadata.filterNot { case (k, v) => keySet.contains(k) }).map{case (k, v) =>{
+        ".metadata_form [id]" #> (k + v)&
+        ".metadata_key [value]" #> k &
+        ".metadata_value [value]" #> v
+      }}
   }
+  protected def editTags(f: C3File): CssSel = {
+    var tags = ""
+    def saveTags() {
+      val metadata = Map((TAGS_META -> tags.split(",").map(_.trim).mkString(",")))
+      //TODO edit metadata "tags" on c3 storage
 
+    }
+    "name=tags" #> SHtml.onSubmit(tags = _) &
+    "type=submit" #> SHtml.onSubmitUnit(saveTags)
+  }
   protected def newDirectoryForm(currentDirectory: C3Directory, currentPath: String): CssSel = {
     var name = ""
     var tags = ""
@@ -139,7 +165,7 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers with Gr
       // TODO send metadata for new dir to c3 (need accesslib support)
       val metadata = Map((OWNER_ID_META -> User.currentUser.map(_.id.is.toString).open_!),
         (GROUP_ID_META -> data.group.id.is),
-        (TAGS_META -> tags.trim))
+        (TAGS_META -> tags.split(",").map(_.trim).mkString(",")))
       currentDirectory.createDirectory(name.trim)
       S.redirectTo(currentPath) // redirect on the same page
     }
