@@ -33,8 +33,14 @@
 package org.aphreet.c3.snippet
 
 import _root_.net.liftweb._
+import common.Full
+import common.Full
 import http._
 import js._
+import js.JsCmds.Alert
+import js.JsCmds.Alert
+import js.JsCmds.SetHtml
+import js.JsCmds.SetHtml
 import JsCmds._
 import js.jquery.JqJsCmds
 import JqJsCmds._
@@ -46,6 +52,8 @@ import org.aphreet.c3.apiaccess.C3
 import com.ifunsoftware.c3.access.C3AccessException
 import org.aphreet.c3.util.C3Loggable
 import net.liftweb.http.S
+import org.aphreet.c3.model.User
+import org.aphreet.c3.lib.metadata.Metadata._
 
 trait C3ResourceMetadataForms {
 
@@ -206,20 +214,29 @@ class CreateDirectoryDialog extends AbstractFormDialog with C3ResourceMetadataFo
 
   private object theDirectoryName extends RequestVar[Box[String]](Empty)
 
+  val currentUser = User.currentUser
+
+
   private def createDirectory(): JsCmd = {
     if(theCurrentPath.isDefined)
-      theDirectoryName.is match {
-        case Full(name) => {
+
+      tryo((theDirectoryName.is.open_!, currentUser.map(_.id.is.toString).open_!)) match {
+        case Full((name, userId)) => {
           try {
-            logger.debug("Trying to create a directory " + name + " in directory " + theCurrentPath.get.open_!)
-            C3().getFile(theCurrentPath.get.open_!).asDirectory.createDirectory(name)
+            val metadata = Map((OWNER_ID_META -> User.currentUser.map(_.id.is.toString).open_!))
+                            /*(GROUP_ID_META -> group.id.is.toString)*/  // TODO set group id if we want to use this form
+
+            C3().getFile(theCurrentPath.get.open_!).asDirectory.createDirectory(name, metadata)
             S.notice("Directory " + name + " created")
             Unblock & RedirectTo("")
           } catch {
             case e: C3AccessException => {
-              logger.error(e.getMessage, e)
-              S.error("Directory " + name + " wasn't created!")
-              Unblock & RedirectTo("")
+              if(e.code == 400) {
+                S.error("Directory " + name + " is exists!")
+              } else{
+                S.error("Directory " + name + " wasn't created!")
+              }
+              Unblock
             }
           }
         }
@@ -238,12 +255,13 @@ class CreateDirectoryDialog extends AbstractFormDialog with C3ResourceMetadataFo
     SHtml.ajaxForm(
       bind("dir", xhtml,
         "name" -> SHtml.text("", (name: String) => if(name != "") theDirectoryName.set(Full(name)) ),
-        "metadata" -> ( (ns: NodeSeq) =>
-          metadata.toForm(ns)
-          ),
-        "tags" -> ( (ns: NodeSeq) =>
-          tags.toForm(ns)
-          ),
+//        "metadata" -> ( (ns: NodeSeq) =>
+//          metadata.toForm(ns)
+//          ),
+//        "tags" -> ( (ns: NodeSeq) =>
+//          tags.toForm(ns)
+//          ),
+        "close" -> ((ns: NodeSeq) => SHtml.ajaxButton(ns, () =>{Unblock})),
         "submit" ->((ns: NodeSeq) => SHtml.hidden(createDirectory _) ++ SHtml.submit(ns.text, () => {} ))
       )
     )

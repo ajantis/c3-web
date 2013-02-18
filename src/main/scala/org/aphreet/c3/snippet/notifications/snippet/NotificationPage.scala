@@ -11,6 +11,7 @@ import org.aphreet.c3.util.C3Loggable
 import org.aphreet.c3.service.notifications.NotificationManager
 import org.aphreet.c3.service.notifications.NotificationManagerProtocol.MarkAsRead
 import org.aphreet.c3.util.helpers.DateTimeHelpers
+import org.aphreet.c3.lib.NotificationManagerRef
 
 
 /**
@@ -36,11 +37,15 @@ object NotificationPage extends ItemRewriteLoc[Notification, NotificationPageDat
 
 class NotificationPage(data: NotificationPageData) extends C3Loggable{
 
+  import org.aphreet.c3.lib.DependencyFactory._
+
+  val notificationManager = inject[NotificationManagerRef].open_!.actorRef
+
   def view = {
     val notification = data.notification
 
     if (!notification.isRead.is){
-      NotificationManager ! MarkAsRead(notification)
+      notificationManager ! MarkAsRead(notification)
     }
     val time = DateTimeHelpers.todayTimeOrPastDate(data.notification.created)
     ".notification_title *" #> data.notification.title.is &

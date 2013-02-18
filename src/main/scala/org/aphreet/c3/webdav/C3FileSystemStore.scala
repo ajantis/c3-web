@@ -86,7 +86,7 @@ class C3FileSystemStore(val root:File) extends IWebdavStore{
 
     log.debug("Going to create directory \"" + child + "\" in the dir " + parent)
 
-    getFSNode(tx, parent).asDirectory.createDirectory(child)
+    getFSNode(tx, parent).asDirectory.createDirectory(child, Map())
   }
 
   def createResource(tx: ITransaction, uri: String) {

@@ -10,10 +10,14 @@ import net.liftweb.common.{Box, Empty, Full, Failure}
 import com.ifunsoftware.c3.access.fs.{C3File, C3Directory}
 import net.liftweb.mapper.By
 import org.aphreet.c3.service.notifications.NotificationManagerProtocol.CreateNotification
+import org.aphreet.c3.lib.NotificationManagerRef
+import org.aphreet.c3.lib.metadata.Metadata
 
 class GroupServiceImpl extends GroupService with C3Loggable{
 
   lazy val c3 = inject[C3System].open_!
+
+  lazy val notificationManager = inject[NotificationManagerRef].open_!.actorRef
 
   override def createGroup(newGroup: Group, members: Iterable[User]): Box[Group] = {
     val group = newGroup.saveMe()
@@ -62,7 +66,7 @@ class GroupServiceImpl extends GroupService with C3Loggable{
     } yield {
       if (UserGroup.findAll(By(UserGroup.user, member), By(UserGroup.group, group)).isEmpty){
         UserGroup.join(member, group)
-        NotificationManager ! CreateNotification(AddedToGroupMsg(group = group, recipient = member))
+        notificationManager ! CreateNotification(AddedToGroupMsg(group = group, recipient = member))
         Full(member)
       } else Failure("User " + member.email + " is already a member of this group!")
     }
@@ -71,13 +75,15 @@ class GroupServiceImpl extends GroupService with C3Loggable{
   private def createGroupMapping(groupId: String){
     val root = c3.getFile("/").asDirectory
 
-    root.createDirectory(groupId)
+    val metadata = Map((Metadata.GROUP_ID_META -> groupId))
+
+    root.createDirectory(groupId, metadata)
 
     root.getChild(groupId) match {
       case Some(node) => val dir = node.asDirectory
-      dir.createDirectory("files")
-      dir.createDirectory("messages")
-      dir.createDirectory("wiki")
+      dir.createDirectory("files", metadata)
+      dir.createDirectory("messages", metadata)
+      dir.createDirectory("wiki", metadata)
       case None => throw new C3Exception("Failed to create directory for group " + groupId)
     }
   }
@@ -111,6 +117,9 @@ class GroupServiceImpl extends GroupService with C3Loggable{
 }
 
 object GroupServiceImpl{
-  def create: GroupService = new GroupServiceImpl
+
+  lazy val service = new GroupServiceImpl
+
+  def apply: GroupService = service
 }
 

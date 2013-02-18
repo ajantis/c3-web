@@ -5,7 +5,7 @@ Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.aphreet.c3.web
 Web-ContextPath: /c3
 Bundle-ClassPath: WEB-INF/classes,
- WEB-INF/lib/accesslib-1.0.9.jar,
+ WEB-INF/lib/accesslib-1.0.11.jar,
  WEB-INF/lib/webdav-servlet-2.0.3.jar,
  WEB-INF/lib/derby-10.7.1.1.jar,
  WEB-INF/lib/h2-1.2.138.jar,

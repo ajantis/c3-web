@@ -1,23 +1,34 @@
 package org.aphreet.c3.snippet.notifications.snippet
 
-import org.aphreet.c3.lib.DependencyFactory._
 import org.aphreet.c3.model.{Notification, User}
 import net.liftweb.util.BindHelpers._
 import xml.{NodeSeq, Text}
-import org.aphreet.c3.service.notifications.NotificationService
-import org.aphreet.c3.util.helpers.DateTimeHelpers
+import akka.pattern.ask
+import org.aphreet.c3.util.helpers.{AkkaAwareSnippet, DateTimeHelpers}
 import net.liftweb.util.PassThru
+import org.aphreet.c3.service.notifications.NotificationManagerProtocol.GetUserNotifications
+import akka.dispatch.{Await, Future}
+import net.liftweb.common.{Empty, Box, Full}
+import org.aphreet.c3.lib.DependencyFactory._
+import org.aphreet.c3.lib.{NotificationManagerRef, MetadataServiceRef}
+import akka.util.duration._
 
 /**
  * Copyright iFunSoftware 2013
  * @author Dmitry Ivanov
  */
-class NotificationListPage {
-  private val notificationService = inject[NotificationService].open_!
+class NotificationListPage extends AkkaAwareSnippet{
+
+  val notificationManager = inject[NotificationManagerRef].open_!.actorRef
 
   def list = {
     val currentUser = User.currentUser
-    val notifications: List[Notification] = currentUser.map(notificationService.getNotificationsForUser _).getOrElse(Nil)
+    val notifications = {
+      val result: Box[Future[List[Notification]]] = currentUser.map(notificationManager ? GetUserNotifications(_))
+        .map(_.mapTo[List[Notification]])
+
+      result
+    }
 
     def asNotViewed(xml: NodeSeq): NodeSeq = {
       <strong>{xml}</strong>
@@ -26,7 +37,7 @@ class NotificationListPage {
     if (notifications.isEmpty)
       ".notification" #> Text("You have no notifications yet.")
     else
-      ".notification *" #> notifications.reverse.map { notification =>
+      ".notification *" #> notifications.map(Await.result(_, 2 seconds)).openOr(Nil).reverse.map { notification =>
         ".created *" #> DateTimeHelpers.todayTimeOrPastDate(notification.created.is) &
         ".link [href]" #> notification.createLink &
         ".title *" #> notification.title.is andThen

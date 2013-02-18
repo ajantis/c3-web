@@ -15,7 +15,6 @@ import net.liftweb.widgets.uploadprogress._
 import net.liftweb.widgets.tablesorter.TableSorter
 import net.liftweb.widgets.autocomplete.AutoComplete
 import net.liftweb.widgets.menu.MenuWidget
-import service.metadata.MetadataService
 import snippet.categories.CategoriesSection
 import snippet.groups.GroupsSection
 import snippet.logging.LogLevel
@@ -25,7 +24,6 @@ import snippet.users.UsersSection
 import util.helpers.C3Streamer
 import util.{DefaultAuthDataLoader, TextileRenderer}
 import javax.mail.{Authenticator, PasswordAuthentication}
-import akka.actor.{Props => AkkaProps, ActorSystem}
 import net.liftweb.util.Props
 
 /**
@@ -181,6 +179,9 @@ class Boot extends Bootable{
 
     DefaultAuthDataLoader.init
 
+    // Table sorter widget init
+    TableSorter.init()
+
     LiftRules.statelessDispatchTable.append(TextileRenderer)
 
     // for ajax file upload
@@ -205,10 +206,9 @@ class Boot extends Bootable{
     })
 
     configMailer("smtp.gmail.com", "c3-project@ifunsoftware.com", "myverysecretpassword")
-    bootAkka()
 
     S.addAround(DB.buildLoanWrapper)
-    //создание супер админа
+    // create a super admin user
     val users = User.find(By(User.email, "admin@admin.com"))
     users.map(user =>{
       if(!user.superUser){
@@ -239,11 +239,5 @@ class Boot extends Bootable{
     Mailer.authenticator = Full(new Authenticator {
       override def getPasswordAuthentication = new PasswordAuthentication(user, password)
     })
-  }
-
-  private def bootAkka(){
-    // Create an Akka system
-    val system = ActorSystem("C3WebSystem")
-    val metadataService = system.actorOf(AkkaProps(new MetadataService), name = "MetadataService")
   }
 }
