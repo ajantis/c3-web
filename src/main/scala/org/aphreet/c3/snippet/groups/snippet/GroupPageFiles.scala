@@ -65,44 +65,44 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers with Gr
 
     ".base_files_path *" #> (
       ".link [href]" #> groupFilesLink &
-      ".link *" #> group.name.is
-    ) &
-    ".bcrumb *" #> (pathLocs.map{ (loc: Loc[_]) =>
-      (if(isLocCurrent(pathLocs, loc)){
-        ".link" #> <strong>{loc.title}</strong>
-      } else {
-        ".link [href]" #> loc.createDefaultLink &
-        ".link *" #> loc.title
+        ".link *" #> group.name.is
+      ) &
+      ".bcrumb *" #> (pathLocs.map{ (loc: Loc[_]) =>
+        (if(isLocCurrent(pathLocs, loc)){
+          ".link" #> <strong>{loc.title}</strong>
+        } else {
+          ".link [href]" #> loc.createDefaultLink &
+            ".link *" #> loc.title
+        }) &
+          ".divider" #> (
+            data.isDirectoryLoc match {
+              case false if loc == pathLocs.last => (_:NodeSeq) => NodeSeq.Empty // if it is a file then we want to skip last "/" divider
+              case _ => PassThru
+            }
+            )
       }) &
-      ".divider" #> (
-        data.isDirectoryLoc match {
-          case false if loc == pathLocs.last => (_:NodeSeq) => NodeSeq.Empty // if it is a file then we want to skip last "/" divider
-          case _ => PassThru
+      ".current_path *" #> Text(data.currentAddress) &
+      ".back_btn [href]" #> (pathLocs.reverse match {
+        case Nil => Text(groupFilesLink)
+        case xs => xs.tail.headOption.map((l: Loc[_]) => l.createDefaultLink.get)
+          .getOrElse(Text(groupFilesLink))
+      }) &
+      (file match {
+        case Empty => S.redirectTo("/404.html"); "* *" #> PassThru
+        case Failure(msg, t, chain) => {
+          logger.error("Error accessing file: " + msg, t)
+          S.redirectTo("/404.html")
+          "* *" #> PassThru
         }
-      )
-    }) &
-    ".current_path *" #> Text(data.currentAddress) &
-    ".back_btn [href]" #> (pathLocs.reverse match {
-      case Nil => Text(groupFilesLink)
-      case xs => xs.tail.headOption.map((l: Loc[_]) => l.createDefaultLink.get)
-        .getOrElse(Text(groupFilesLink))
-    }) &
-    (file match {
-      case Empty => S.redirectTo("/404.html"); "* *" #> PassThru
-      case Failure(msg, t, chain) => {
-        logger.error("Error accessing file: " + msg, t)
-        S.redirectTo("/404.html")
-        "* *" #> PassThru
-      }
-      case Full(f: C3File) => renderFileLoc(f)
-      case Full(d: C3Directory) => {
-        if(!S.uri.endsWith("/"))
-          S.redirectTo(S.uri + "/")
-        else
-          renderDirectoryLoc(d)
-      }
-      case _ => "* *" #> PassThru
-    })
+        case Full(f: C3File) => renderFileLoc(f)
+        case Full(d: C3Directory) => {
+          if(!S.uri.endsWith("/"))
+            S.redirectTo(S.uri + "/")
+          else
+            renderDirectoryLoc(d)
+        }
+        case _ => "* *" #> PassThru
+      })
   }
 
   protected def renderDirectoryLoc(d: C3Directory): CssSel = {
@@ -114,39 +114,74 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers with Gr
         }
       }
     } &
-    ".file-view" #> NodeSeq.Empty &
-    "#new-directory" #> newDirectoryForm(d, currentPath = data.group.createLink + "/files" + data.currentAddress)
+      ".file-view" #> NodeSeq.Empty &
+      "#new-directory" #> newDirectoryForm(d, currentPath = data.group.createLink + "/files" + data.currentAddress)
   }
 
   protected def renderFileLoc(f: C3File): CssSel = {
+    var key = ""
+    var value = ""
+    def addTag(){
+      if(key!="" && value!=""){
+        val meta = Map(key -> value)
+        f.update(meta)
+
+      }
+    }
     ".label_file" #> f.metadata.get(TAGS_META).map(_.split(TAGS_SEPARATOR).toList).getOrElse(Nil).map((tag: String) => {
       ".label *" #> tag
     }) &
       ".file-table" #> NodeSeq.Empty &
       ".fs_toolbar" #> NodeSeq.Empty &
       "#upload_form" #> NodeSeq.Empty &
+      ".current_tags [value]" #> f.metadata.get(TAGS_META).getOrElse("")&
       ".name_file *" #> f.name &
       ".download_btn [href]" #> fileDownloadUrl(f) &
       ".view_btn [href]" #> fileViewUrl(f) &
-      ".data_file *" #> internetDateFormatter.format(f.date)
+      ".data_file *" #> internetDateFormatter.format(f.date)&
+      "#tags" #> editTags(f) &
+      ".metadata_form" #> (f.metadata.filterNot { case (k, v) => keySet.contains(k) }).map{case (k, v) =>{
+        ".metadata_form [id]" #> (k + v)&
+          ".metadata_key [value]" #> k &
+          ".metadata_value [value]" #> v
+      }}
   }
+  protected def editTags(f: C3File): CssSel = {
+    var tags = ""
+    def saveTags() {
+      val metadata = Map((TAGS_META -> tags.split(",").map(_.trim).mkString(",")))
+      //TODO edit metadata "tags" on c3 storage
 
+    }
+    "name=tags" #> SHtml.onSubmit(tags = _) &
+      "type=submit" #> SHtml.onSubmitUnit(saveTags)
+  }
   protected def newDirectoryForm(currentDirectory: C3Directory, currentPath: String): CssSel = {
     var name = ""
     var tags = ""
 
     def createDirectory(){
-      // TODO send metadata for new dir to c3 (need accesslib support)
-      val metadata = Map((OWNER_ID_META -> User.currentUser.map(_.id.is.toString).open_!),
-        (GROUP_ID_META -> data.group.id.is),
-        (TAGS_META -> tags.trim))
-      currentDirectory.createDirectory(name.trim)
-      S.redirectTo(currentPath) // redirect on the same page
+      if (name.trim.isEmpty){
+
+        S.error("Directory name cannot be empty")
+
+      } else {
+
+        val metadata = Map((OWNER_ID_META -> User.currentUser.map(_.id.is.toString).open_!),
+
+          (GROUP_ID_META -> data.group.id.is.toString),
+
+          (TAGS_META -> tags.trim))
+
+        currentDirectory.createDirectory(name.trim, metadata)
+
+        S.redirectTo(currentPath) // redirect on the same page
+      }
     }
 
     "name=name" #> SHtml.onSubmit(name = _) &
-    "name=tags" #> SHtml.onSubmit(tags = _) &
-    "type=submit" #> SHtml.onSubmitUnit(createDirectory)
+      "name=tags" #> SHtml.onSubmit(tags = _) &
+      "type=submit" #> SHtml.onSubmitUnit(createDirectory)
   }
 
   def buildPathLocs: List[Loc[_]] = {
@@ -188,11 +223,11 @@ trait C3ResourceHelpers {
       case _ => Empty
     }
     ".owner *" #> owner.map(_.shortName).getOrElse("Unknown") &
-    ".owner [href]" #> owner.map(_.createLink) &
-    ".name *" #> directory.name &
-    ".link [href]" #> (directory.name + "/") &
-    ".icon [src]" #> "/images/folder_classic.png" &
-    ".created_date *" #> internetDateFormatter.format(directory.date)
+      ".owner [href]" #> owner.map(_.createLink) &
+      ".name *" #> directory.name &
+      ".link [href]" #> (directory.name + "/") &
+      ".icon [src]" #> "/images/folder_classic.png" &
+      ".created_date *" #> internetDateFormatter.format(directory.date)
   }
 
   def toCss(file: C3File) = {
@@ -201,11 +236,11 @@ trait C3ResourceHelpers {
       case _ => Empty
     }
     ".owner *" #> owner.map(_.shortName).getOrElse("Unknown") &
-    ".owner [href]" #> owner.map(_.createLink) &
-    ".name *" #> file.name &
-    ".link [href]" #> file.name &
-    ".icon [src]" #> "/images/document_letter.png" &
-    ".created_date *" #> internetDateFormatter.format(file.date)
+      ".owner [href]" #> owner.map(_.createLink) &
+      ".name *" #> file.name &
+      ".link [href]" #> file.name &
+      ".icon [src]" #> "/images/document_letter.png" &
+      ".created_date *" #> internetDateFormatter.format(file.date)
   }
 
   def fileDownloadUrl(file: C3File): String = "/download" + file.fullname + "?dl=true"
