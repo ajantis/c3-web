@@ -11,6 +11,7 @@ import com.ifunsoftware.c3.access.fs.{C3File, C3Directory}
 import net.liftweb.mapper.By
 import org.aphreet.c3.service.notifications.NotificationManagerProtocol.CreateNotification
 import org.aphreet.c3.lib.NotificationManagerRef
+import org.aphreet.c3.lib.metadata.Metadata
 
 class GroupServiceImpl extends GroupService with C3Loggable{
 
@@ -74,13 +75,15 @@ class GroupServiceImpl extends GroupService with C3Loggable{
   private def createGroupMapping(groupId: String){
     val root = c3.getFile("/").asDirectory
 
-    root.createDirectory(groupId)
+    val metadata = Map((Metadata.GROUP_ID_META -> groupId))
+
+    root.createDirectory(groupId, metadata)
 
     root.getChild(groupId) match {
       case Some(node) => val dir = node.asDirectory
-      dir.createDirectory("files")
-      dir.createDirectory("messages")
-      dir.createDirectory("wiki")
+      dir.createDirectory("files", metadata)
+      dir.createDirectory("messages", metadata)
+      dir.createDirectory("wiki", metadata)
       case None => throw new C3Exception("Failed to create directory for group " + groupId)
     }
   }

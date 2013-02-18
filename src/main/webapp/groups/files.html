@@ -53,6 +53,9 @@
                                 <a type="button" class="btn" href="#upload_form" data-toggle="modal">
                                     <img src="/images/folder_classic_down.png" title="Upload files"/>
                                 </a>
+                                <a type="button" class="btn" href="#delete_selected_form" data-toggle="modal">
+                                    <img src="/images/remove.png" title="Delete files"/>
+                                </a>
                             </p>
                         </div>
 
@@ -72,7 +75,7 @@
                                 <td><a class="link" href="#"><span class="name"></span></a></td>
                                 <td><a class="owner" href="#">Aphreet</a></td>
                                 <td class="file-table-date"><span class="created_date"></span></td>
-                                <td><input type="checkbox" /></td>
+                                <td><input class="select_resource" type="checkbox" /></td>
                             </tr>
                             </tbody>
                         </table>
@@ -140,6 +143,17 @@
                             <div class="modal-footer">
                                 <button type="button" data-dismiss="modal" class="btn">Cancel</button>
                                 <button type="submit" class="btn btn-success" form="new_directory_form">Create</button>
+                            </div>
+                        </div>
+
+                        <div id="delete_selected_form" class="modal hide fade">
+                            <h1 class="modal-header">Delete files</h1>
+                            <div class="modal-body">
+                                <p>Are you sure you want to delete selected files?</p>
+                            </div>
+                            <div class ="modal-footer">
+                                <button type="button" data-dismiss="modal" class="btn">Cancel</button>
+                                <button type="button" onclick="" class="delete_selected_btn btn btn-danger">Delete</button>
                             </div>
                         </div>
 
