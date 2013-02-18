@@ -34,9 +34,12 @@ package org.aphreet.c3.snippet
 
 import _root_.net.liftweb._
 import common.Full
+import common.Full
 import http._
 import js._
 import js.JsCmds.Alert
+import js.JsCmds.Alert
+import js.JsCmds.SetHtml
 import js.JsCmds.SetHtml
 import JsCmds._
 import js.jquery.JqJsCmds
@@ -50,6 +53,7 @@ import com.ifunsoftware.c3.access.C3AccessException
 import org.aphreet.c3.util.C3Loggable
 import net.liftweb.http.S
 import org.aphreet.c3.model.User
+import org.aphreet.c3.lib.metadata.Metadata._
 
 trait C3ResourceMetadataForms {
 
@@ -219,9 +223,10 @@ class CreateDirectoryDialog extends AbstractFormDialog with C3ResourceMetadataFo
       tryo((theDirectoryName.is.open_!, currentUser.map(_.id.is.toString).open_!)) match {
         case Full((name, userId)) => {
           try {
-            val dirMetadata: Map[String, String] = Map("OWNER_ID_META" -> userId)
+            val metadata = Map((OWNER_ID_META -> User.currentUser.map(_.id.is.toString).open_!))
+                            /*(GROUP_ID_META -> group.id.is.toString)*/  // TODO set group id if we want to use this form
 
-            C3().getFile(theCurrentPath.get.open_!).asDirectory.createDirectory(name)
+            C3().getFile(theCurrentPath.get.open_!).asDirectory.createDirectory(name, metadata)
             S.notice("Directory " + name + " created")
             Unblock & RedirectTo("")
           } catch {
