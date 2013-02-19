@@ -10,7 +10,7 @@ import net.liftweb.http.{SHtml, S}
 import net.liftweb.common.Full
 import org.aphreet.c3.snippet.groups.GroupPageFilesData
 import org.aphreet.c3.snippet.{Breadcrumbs, CreateDirectoryDialog}
-import com.ifunsoftware.c3.access.fs.{C3File, C3Directory}
+import com.ifunsoftware.c3.access.fs.{C3FileSystemNode, C3File, C3Directory}
 import org.aphreet.c3.lib.metadata.Metadata
 import Metadata._
 import net.liftweb.util.{CssSel, PassThru}
@@ -162,26 +162,19 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers with Gr
 
     def createDirectory(){
       if (name.trim.isEmpty){
-
         S.error("Directory name cannot be empty")
-
       } else {
-
         val metadata = Map((OWNER_ID_META -> User.currentUser.map(_.id.is.toString).open_!),
-
           (GROUP_ID_META -> data.group.id.is.toString),
-
           (TAGS_META -> tags.trim))
-
         currentDirectory.createDirectory(name.trim, metadata)
-
         S.redirectTo(currentPath) // redirect on the same page
       }
     }
 
     "name=name" #> SHtml.onSubmit(name = _) &
-      "name=tags" #> SHtml.onSubmit(tags = _) &
-      "type=submit" #> SHtml.onSubmitUnit(createDirectory)
+    "name=tags" #> SHtml.onSubmit(tags = _) &
+    "type=submit" #> SHtml.onSubmitUnit(createDirectory)
   }
 
   def buildPathLocs: List[Loc[_]] = {
@@ -218,10 +211,9 @@ trait C3ResourceHelpers {
   val group: Group
 
   def toCss(directory: C3Directory) = {
-    val owner: Box[User] = directory.metadata.get("x-c3-web-owner") match {
-      case Some(id) => User.find(By(User.id, id.toLong))
-      case _ => Empty
-    }
+
+    val owner = nodeOwner(directory)
+
     ".owner *" #> owner.map(_.shortName).getOrElse("Unknown") &
       ".owner [href]" #> owner.map(_.createLink) &
       ".name *" #> directory.name &
@@ -231,10 +223,8 @@ trait C3ResourceHelpers {
   }
 
   def toCss(file: C3File) = {
-    val owner: Box[User] = file.metadata.get("x-c3-web-owner") match {
-      case Some(id) => User.find(By(User.id,id.toLong))
-      case _ => Empty
-    }
+    val owner = nodeOwner(file)
+
     ".owner *" #> owner.map(_.shortName).getOrElse("Unknown") &
       ".owner [href]" #> owner.map(_.createLink) &
       ".name *" #> file.name &
@@ -244,7 +234,13 @@ trait C3ResourceHelpers {
   }
 
   def fileDownloadUrl(file: C3File): String = "/download" + file.fullname + "?dl=true"
+
   def fileViewUrl(file: C3File): String = "/download" + file.fullname
+
+  def nodeOwner(node: C3FileSystemNode): Box[User] = node.metadata.get(OWNER_ID_META) match {
+    case Some(id) if !id.isEmpty => User.find(By(User.id, id.toLong))
+    case _ => Empty
+  }
 }
 
 trait FSHelpers {
