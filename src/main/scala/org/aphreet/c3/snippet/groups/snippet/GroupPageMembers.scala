@@ -13,6 +13,7 @@ import org.aphreet.c3.lib.DependencyFactory._
 import com.ifunsoftware.c3.access.C3System
 import net.liftweb.http.js.{JsCmds, JsCmd}
 import org.aphreet.c3.service.groups.GroupService
+import net.liftweb.util.CssSel
 
 /**
  * @author Serjk (mailto: serjk91@gmail.com)
@@ -50,11 +51,12 @@ class GroupPageMembers(data: GroupPageData) extends GroupPageHelpers{
       users = users.filter(_.id.is != user.id.is)
     })
     if(users.isEmpty || User.currentUser.open_!.email.is != group.owner.obj.map(_.email).open_!.is){
-      ".btn-toolbar" #> NodeSeq.Empty
+      ".btn_add_user" #> NodeSeq.Empty
     }
     else{
+      "#add_user" #> addUserToGroup &
       ".contUser" #> users.map( user =>{
-        ".contUser *" #> user.shortName &
+        ".contUser *" #> user.niceName &
         ".contUser [value]" #> user.email
       })
     }
@@ -95,7 +97,7 @@ def listUser = {
     }
   }
 
-  def addUserToGroup = {
+   protected def addUserToGroup: CssSel = {
     var listUserEmails = ""
     def saveMe(){
       val userEmails = listUserEmails.split('%')

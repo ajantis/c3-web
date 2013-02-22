@@ -56,11 +56,7 @@ $(document).ready( function(){
         $(this).parent().parent().remove();
 
      });
-    $('.addnewuser').live("click",function(){
-        $(this).addClass("hide");
-        $(".formaddnewuser").toggleClass("hide");
-    });
-    $('.buttonuser').live("click",function(){
+     $('.btn_add_user').live("click",function(){
         $('#listusersadd').val(SelectAll("selusersadd"));
     });
 

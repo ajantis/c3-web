@@ -1,5 +1,4 @@
 <div class="lift:surround?with=default;at=content">
-
     <div id="group-tab-wrapper">
         <div class="tabbable"> <!-- Only required for left/right tabs -->
             <div class="row-fluid lift:GroupPageMembers.embedTabMenu">
@@ -32,22 +31,24 @@
                         </tbody>
                     </table>
                 </div>
-                <div class="adduser lift:GroupPageMembers.listUserAdd">
-                    <div class="btn-toolbar">
-                        <a class="btn addnewuser">New User</a>
-                    </div>
-                    <form class="lift:GroupPageMembers.addUserToGroup formaddnewuser hide control-group">
-                        <label class="control-label">Add users</label>
+                <div class="lift:GroupPageMembers.listUserAdd">
+                    <a type="button" href="#add_user_div" class="btn btn_add_user" data-toggle="modal" title="Add User"><strong>Add User</strong></a>
+                    <div id="add_user_div" class="modal hide fade">
+                        <h4 class = "modal-header">Add User</h4>
                         <div class="controls">
                             <select class="selectUsers" name="data" id="selusersadd" multiple="multiple">
                                 <option class="contUser">User1</option>
                             </select>
                         </div>
-                        <input id="listusersadd" class="hide" name="listusers" />
-                        <button type="submit" class="btn buttonuser">Add</button>
-                    </form>
+                        <div id="add_user" class="modal-footer">
+                            <form id="add_user_form">
+                                <input id="listusersadd" class="hide" name="listusers" />
+                            </form>
+                            <button type="button" data-dismiss="modal" class="btn">Cancel</button>
+                            <button type="submit" class="btn_add_user btn btn-success" form="add_user_form">Add</button>
+                        </div>
+                    </div>
                 </div>
-
             </div>
         </div>
     </div>
