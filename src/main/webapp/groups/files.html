@@ -103,14 +103,14 @@
                             <h4 class = "modal-header">Edit</h4>
                             <div class="edit_meta">
                                 <label class="control-label">Tags</label>
-                                <div class="input_tags">
-                                    <input type="text" name="tags" placeholder="docs, main, etc..." class="current_tags input-xlarge">
-                                    <p class="help-block">tags must be comma-separated</p>
-                                </div>
+                                <form id="edit_tags_from"  class="input_tags">
+                                    <input type="text" name="tags_edit" placeholder="docs, main, etc..." class="current_tags input-xlarge">
+                                    <p class="help-block">tags must be comma-separated "docs, main, etc..."</p>
+                                </form>
                             </div>
                             <div class="modal-footer">
                                 <button type="button" data-dismiss="modal" class="btn">Cancel</button>
-                                <button type="submit" class="btn btn-success" form="new_directory_form">Save</button>
+                                <button type="submit" class="btn btn-success" form="edit_tags_from">Save</button>
                             </div>
                         </div>
                         <div id="meta" class="modal hide fade">
@@ -127,9 +127,9 @@
                                     </thead>
                                     <tbody  class="metadata_form">
                                     <tr>
-                                        <td><input name="metadata_key" class="metadata_key" value="" readonly/></td>
-                                        <td><input name="metadata_value" class="metadata_value" value=""/></td>
-                                        <td><button class="close remove_metadata">&times;</button></td>
+                                        <td><input class="metadata_key" value="" readonly/></td>
+                                        <td><input class="metadata_value" value=""/></td>
+                                        <td><a class="close remove_metadata">&times;</a></td>
                                     </tr>
                                     </tbody>
                                 </table>
@@ -137,13 +137,18 @@
                                 <div class="add_metadata">
                                     <input id="key" class="span5" type="text"  placeholder="Keyword" >
                                     <input id="value" class="span5" type="text"  placeholder="Value">
-                                    <button name="btn_add_metadata" class="btn_add_metadata btn btn-primary">Add</button>
+                                    <a name="btn_add_metadata" class="btn_add_metadata btn btn-primary">Add</a>
                                 </div>
 
                             </div>
-                            <div class="modal-footer">
+                            <div id="meta_edit" class="modal-footer">
+                                <form id="edit_metadata_form">
+                                    <input name="metadata_key"  value="k" id="key_cont" class="hide"/>
+                                    <input name="metadata_value" value="v" id="value_cont" class="hide"/>
+                                </form>
                                 <button type="button" data-dismiss="modal" class="btn">Cancel</button>
-                                <button type="submit" class="btn btn-success" form="new_directory_form">Save</button>
+                                <button type="submit" class="btn_save_metadata btn btn-success" form="edit_metadata_form">Save</button>
+
                             </div>
                         </div>
 

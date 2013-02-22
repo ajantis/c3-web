@@ -543,6 +543,7 @@ td.file-table-date{
 }
 .inf_left{
     float:left;
+    margin-left:2px;
 
 }
 .edit_meta{

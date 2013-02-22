@@ -17,6 +17,7 @@ import net.liftweb.util.{CssSel, PassThru}
 import net.liftweb.sitemap.{Menu, SiteMap, Loc}
 import annotation.tailrec
 import net.liftweb.mapper.By
+import net.liftweb.http.js.JsCmds
 
 
 /**
@@ -119,41 +120,45 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers with Gr
   }
 
   protected def renderFileLoc(f: C3File): CssSel = {
-    var key = ""
-    var value = ""
-    def addTag(){
-      if(key!="" && value!=""){
-        val meta = Map(key -> value)
-        f.update(meta)
-
-      }
-    }
-    ".label_file" #> f.metadata.get(TAGS_META).map(_.split(TAGS_SEPARATOR).toList).getOrElse(Nil).map((tag: String) => {
+    ".file_tags" #> f.metadata.get(TAGS_META).map(_.split(TAGS_SEPARATOR).toList).getOrElse(Nil).map((tag: String) => {
       ".label *" #> tag
     }) &
       ".file-table" #> NodeSeq.Empty &
       ".fs_toolbar" #> NodeSeq.Empty &
       "#upload_form" #> NodeSeq.Empty &
-      ".current_tags [value]" #> f.metadata.get(TAGS_META).getOrElse("")&
       ".name_file *" #> f.name &
       ".download_btn [href]" #> fileDownloadUrl(f) &
       ".view_btn [href]" #> fileViewUrl(f) &
       ".data_file *" #> internetDateFormatter.format(f.date)&
       "#tags" #> editTags(f) &
+      "#meta_edit" #> saveMetadata(f) &
       ".metadata_form" #> (f.metadata.filterNot { case (k, v) => keySet.contains(k) }).map{case (k, v) =>{
         ".metadata_form [id]" #> (k + v)&
           ".metadata_key [value]" #> k &
           ".metadata_value [value]" #> v
       }}
   }
+  protected def saveMetadata(f: C3File): CssSel ={
+    var key = ""
+    var value = ""
+    def save (){
+      val  keyMetadata= key.split("%")
+      val  valueMetadata= value.split("%")
+      val metadata = keyMetadata.zip(valueMetadata).toMap
+      f.update(metadata)
+    }
+    "name=metadata_key" #> SHtml.onSubmit(key = _) &
+      "name=metadata_value" #> SHtml.onSubmit(value = _) &
+      "type=submit" #> SHtml.onSubmitUnit(save)
+  }
   protected def editTags(f: C3File): CssSel = {
     var tags = ""
     def saveTags() {
       val metadata = Map((TAGS_META -> tags.split(",").map(_.trim).mkString(",")))
-      //TODO edit metadata "tags" on c3 storage
-
+      f.update(metadata)
     }
-    "name=tags" #> SHtml.onSubmit(tags = _) &
+    ".current_tags [value]" #> f.metadata.get(TAGS_META).getOrElse("")&
+    "name=tags_edit" #> SHtml.onSubmit(tags = _) &
       "type=submit" #> SHtml.onSubmitUnit(saveTags)
   }
   protected def newDirectoryForm(currentDirectory: C3Directory, currentPath: String): CssSel = {
@@ -173,8 +178,8 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers with Gr
     }
 
     "name=name" #> SHtml.onSubmit(name = _) &
-    "name=tags" #> SHtml.onSubmit(tags = _) &
-    "type=submit" #> SHtml.onSubmitUnit(createDirectory)
+      "name=tags" #> SHtml.onSubmit(tags = _) &
+      "type=submit" #> SHtml.onSubmitUnit(createDirectory)
   }
 
   def buildPathLocs: List[Loc[_]] = {

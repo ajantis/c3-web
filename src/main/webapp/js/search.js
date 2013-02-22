@@ -21,16 +21,15 @@ $(document).ready( function(){
         key = $.trim(key);
         value = $.trim(value);
         $(".metadata_key").each(function(index,el){
-            console.log(el);
             if(el.value==key) keyExist = false;
         });
         if(key!="" && value!="" && keyExist){
             $("#key").val("");
             $("#value").val("");
             $(".metadata_form").append('<tr>'+
-                                            '<td><input name="metadata_key" readonly class="metadata_key" value="'+ key + '"/></td>'+
-                                            '<td><input name="metadata_value" class="metadata_value" value="'+ value + '"/></td>'+
-                                            '<td><button class="close remove_metadata">&times;</button></td>'+
+                                            '<td><input readonly class="metadata_key" value="'+ key + '"/></td>'+
+                                            '<td><input class="metadata_value" value="'+ value + '"/></td>'+
+                                            '<td><a class="close remove_metadata">&times;</a></td>'+
                                        '</tr>');
 
         }
@@ -39,6 +38,20 @@ $(document).ready( function(){
         }
 
     });
+    //select metadata from table
+     $(".btn_save_metadata").live("click",function(){
+        var key = ""
+        var value = ""
+        $(".metadata_key").each(function(index,el){
+            key += el.value +"%"
+
+        });
+        $(".metadata_value").each(function(index,el){
+                    value += el.value +"%"
+        });
+        $("#key_cont").val(key);
+        $("#value_cont").val(value);
+     });
      $(".remove_metadata").live("click",function(){
         $(this).parent().parent().remove();
 
