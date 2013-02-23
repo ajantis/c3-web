@@ -6,10 +6,9 @@ import net.liftweb.common._
 import net.liftweb.sitemap.Loc.{Hidden, LinkText, Link}
 import xml.{NodeSeq, Text}
 import net.liftweb.util.Helpers._
-import net.liftweb.http.{SHtml, S}
+import net.liftweb.http.{RequestVar, SHtml, S}
 import net.liftweb.common.Full
 import org.aphreet.c3.snippet.groups.GroupPageFilesData
-import org.aphreet.c3.snippet.{Breadcrumbs, CreateDirectoryDialog}
 import com.ifunsoftware.c3.access.fs.{C3FileSystemNode, C3File, C3Directory}
 import org.aphreet.c3.lib.metadata.Metadata
 import Metadata._
@@ -18,6 +17,8 @@ import net.liftweb.sitemap.{Menu, SiteMap, Loc}
 import annotation.tailrec
 import net.liftweb.mapper.By
 import net.liftweb.http.js.JsCmds
+import org.aphreet.c3.lib.DependencyFactory
+import com.ifunsoftware.c3.access.C3System
 
 
 /**
@@ -52,7 +53,10 @@ object GroupPageFiles extends ItemRewriteLoc[Group, GroupPageFilesData] with Suf
 
 class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers with GroupPageHelpers with FSHelpers{
 
+  import DependencyFactory._
+
   private val logger = Logger(classOf[GroupPageFiles])
+  private val c3 = inject[C3System].open_!
 
   override lazy val activeLocId = "files"
   override lazy val group = data.group
@@ -60,7 +64,6 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers with Gr
 
   def render = {
     val file = group.getFile(data.currentAddress)
-
     val pathLocs = buildPathLocs
     val groupFilesLink = group.createLink + "/files/"
 
@@ -107,16 +110,30 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers with Gr
   }
 
   protected def renderDirectoryLoc(d: C3Directory): CssSel = {
+
+    object selectedResourcePaths extends RequestVar[Set[String]](Set())
+
+    val currentPathLink = data.group.createLink + "/files" + data.currentAddress
+
     ".child *" #> group.getChildren(data.currentAddress).map {
       resource => {
-        resource match {
+        (resource match {
           case c: C3File => toCss(c)
           case f: C3Directory => toCss(f)
-        }
+        }) &
+        ".select_resource" #> SHtml.ajaxCheckbox(false, (value: Boolean) => {
+          if(value)
+            selectedResourcePaths.set(selectedResourcePaths.get + resource.fullname)
+          else
+            selectedResourcePaths.set(selectedResourcePaths.get - resource.fullname)
+          JsCmds.Noop
+        })
       }
     } &
-      ".file-view" #> NodeSeq.Empty &
-      "#new-directory" #> newDirectoryForm(d, currentPath = data.group.createLink + "/files" + data.currentAddress)
+    ".delete_selected_btn [onclick]" #> SHtml.ajaxInvoke(() =>
+      { selectedResourcePaths.foreach(c3.deleteFile _); JsCmds.RedirectTo(currentPathLink) }) &
+    ".file-view" #> NodeSeq.Empty &
+    "#new-directory" #> newDirectoryForm(d, currentPath = currentPathLink)
   }
 
   protected def renderFileLoc(f: C3File): CssSel = {
