@@ -115,6 +115,13 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers with Gr
 
     val currentPathLink = data.group.createLink + "/files" + data.currentAddress
 
+    ".directory_tags *" #> {
+      d.metadata.get(TAGS_META) match {
+        case Some(tagsMeta) =>
+          ".directory_tag *" #> tagsMeta.split(",").toList
+        case _ => "* *" #> NodeSeq.Empty
+      }
+    } &
     ".child *" #> group.getChildren(data.currentAddress).map {
       resource => {
         (resource match {
@@ -137,12 +144,13 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers with Gr
   }
 
   protected def renderFileLoc(f: C3File): CssSel = {
-    ".file_tags" #> f.metadata.get(TAGS_META).map(_.split(TAGS_SEPARATOR).toList).getOrElse(Nil).map((tag: String) => {
-      ".label *" #> tag
-    }) &
+      ".file_tags" #> f.metadata.get(TAGS_META).map(_.split(TAGS_SEPARATOR).toList).getOrElse(Nil).map((tag: String) => {
+        ".label *" #> tag
+      }) &
       ".file-table" #> NodeSeq.Empty &
       ".fs_toolbar" #> NodeSeq.Empty &
       "#upload_form" #> NodeSeq.Empty &
+      ".directory_tags" #> NodeSeq.Empty &
       ".name_file *" #> f.name &
       ".download_btn [href]" #> fileDownloadUrl(f) &
       ".view_btn [href]" #> fileViewUrl(f) &
@@ -236,7 +244,7 @@ trait C3ResourceHelpers {
 
     val owner = nodeOwner(directory)
 
-    ".owner *" #> owner.map(_.shortName).getOrElse("Unknown") &
+      ".owner *" #> owner.map(_.shortName).getOrElse("Unknown") &
       ".owner [href]" #> owner.map(_.createLink) &
       ".name *" #> directory.name &
       ".link [href]" #> (directory.name + "/") &
