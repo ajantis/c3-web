@@ -10,7 +10,6 @@ import xml.NodeSeq
 import js.jquery.JqJsCmds.PrependHtml
 import net.liftweb.http.js.JsCmds._
 import java.util
-import java.text.SimpleDateFormat
 import net.liftweb.textile.TextileParser
 import org.aphreet.c3.util.helpers.DateTimeHelpers
 
@@ -18,9 +17,10 @@ import org.aphreet.c3.util.helpers.DateTimeHelpers
  * @author Dmitry Ivanov (mailto: id.ajantis@gmail.com)
  *         iFunSoftware
  */
-class GroupMessagesLog extends CometActor with CometListener {
+trait GroupMessagesLog extends CometActor with CometListener {
 
-  private val logger = Logger(classOf[GroupMessagesLog])
+  private val logger: Logger = Logger(classOf[GroupMessagesLog])
+
   private val group: Box[Group] = S.attr("group_id").flatMap(Group.find(_))
   private val messageServer: Box[MessageServer] = group.map(MessageServerFactory(_))
 

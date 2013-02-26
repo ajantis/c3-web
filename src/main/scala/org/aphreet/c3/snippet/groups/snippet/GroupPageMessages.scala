@@ -11,7 +11,7 @@ import net.liftweb.util.Helpers._
  * Copyright iFunSoftware 2011
  * @author Dmitry Ivanov
  */
- 
+
 object GroupPageMessages extends AbstractGroupPageLoc[GroupPageData] with SuffixLoc {
   override val name = "Messages"
   override val pathPrefix = "groups" :: Nil
@@ -39,12 +39,16 @@ class GroupPageMessages(data: GroupPageData) extends GroupPageHelpers{
     ".message_button [href]" #> links
   }
 
-   def putCometMessenger(xml: NodeSeq): NodeSeq = {
-    val actorName = "group-" + group.id.is + "-messages-log-comet-actor"
-    logger.debug("Using CometActor with name: %s".format(actorName))
+  def putCometJournal(xml: NodeSeq): NodeSeq = putCometMessender("GroupJournal")(xml)
 
-    <div class={"lift:comet?type=GroupMessagesLog;name=" + actorName + ";group_id="+ group.id.is +";ul_id=main_ul_id;li_id=main_li_id;input_container_id=input_container"}>
+  def putCometChat(xml: NodeSeq): NodeSeq = putCometMessender("GroupChat")(xml)
+
+  private def putCometMessender(cometActorName: String)(xml: NodeSeq): NodeSeq = {
+    val actorName = "group-" + group.id.is + "-messages-log-comet-actor"
+
+    <div class={"lift:comet?type=" + cometActorName + ";name=" + actorName + ";group_id="+ group.id.is +";ul_id=main_ul_id;li_id=main_li_id;input_container_id=input_container"}>
       {xml}
     </div>
   }
+
 }
