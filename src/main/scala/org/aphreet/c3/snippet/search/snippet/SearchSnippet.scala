@@ -11,6 +11,7 @@ import xml.NodeSeq
  import java.text.SimpleDateFormat
 import org.aphreet.c3.model.{MessagesType, C3Path, Tag, Category}
 import net.liftweb.mapper.By
+import org.aphreet.c3.lib.metadata.Metadata._
 /**
  * @author Serjk (mailto: serjk91@gmail.com)
  */
@@ -22,7 +23,7 @@ class SearchSnippet {
 
     def process(query: String){
       if (!query.isEmpty){
-        S.redirectTo("/search?query=" + urlEncode(queryParam(Nil,query)))
+        S.redirectTo("/search?query=" + urlEncode(query))
       }
       else{
         S.notice("Empty search query")
@@ -34,11 +35,6 @@ class SearchSnippet {
     "name=query" #> SHtml.onSubmit(process _)
   }
 
-  private def queryParam(tags: List[String],query:String) = {
-    //TODO:query params =  tags + query text
-    query
-  }
-
   def search = {
     "* *" #> ((x: NodeSeq) => x ++ Script(OnLoad(JsCmds.JsShowId("categories_s"))))
   }
@@ -46,13 +42,13 @@ class SearchSnippet {
   val tagSeparator = ","
 
   def render = {
-    var tags: List[String] = Nil
+    var tags=""
     var query = S.param("query").openOr("")
 
     def process(){
 
       if (!tags.isEmpty || !query.isEmpty){
-        S.redirectTo("/search?query=" + queryParam(tags,query))
+        S.redirectTo("/search?query=" + query +"tags="+tags)
       }
       else{
         S.notice("Entry param search")
@@ -60,15 +56,27 @@ class SearchSnippet {
     }
 
     "name=query [value]" #> query &
-    "name=tags" #> SHtml.onSubmit(v => tags = v.split(tagSeparator).toList)&
+    "name=tags" #> SHtml.onSubmit(tags = _)&
     "name=query" #> SHtml.onSubmit(query = _)&
     "type=submit" #> SHtml.onSubmitUnit(process)
   }
 
+//  private def queryParam(tags: List[String],query:String) = {
+//    var query_string = """+ query + """
+//    var
+//    if (!tags.isEmpty){
+//      tags.map(tag=>{
+//
+//      })
+//    }
+//
+// }
+
   def result = {
     val query = S.param("query")
-    val results: List[SearchResultEntry] = query.map(c3.search(_)).openOr(Nil)
+    val tags = S.param("tags").openOr("")
 
+    val results: List[SearchResultEntry] = query.map(c3.search(_)).openOr(Nil)
     if (results.isEmpty){
       ".conteyner_result" #> NodeSeq.Empty
     }else{

@@ -14,6 +14,7 @@ import com.ifunsoftware.c3.access.C3System
 import net.liftweb.http.js.{JsCmds, JsCmd}
 import org.aphreet.c3.service.groups.GroupService
 import net.liftweb.util.CssSel
+import net.liftweb.widgets.autocomplete.AutoComplete
 
 /**
  * @author Serjk (mailto: serjk91@gmail.com)
@@ -53,13 +54,7 @@ class GroupPageMembers(data: GroupPageData) extends GroupPageHelpers{
     if(users.isEmpty || User.currentUser.open_!.email.is != group.owner.obj.map(_.email).open_!.is){
       ".btn_add_user" #> NodeSeq.Empty
     }
-    else{
-      "#add_user" #> addUserToGroup &
-      ".contUser" #> users.map( user =>{
-        ".contUser *" #> user.niceName &
-        ".contUser [value]" #> user.email
-      })
-    }
+
   }
 def listUser = {
     if (User.currentUser.open_!.email.is == group.owner.obj.map(_.email).open_!.is){
@@ -97,23 +92,26 @@ def listUser = {
     }
   }
 
-   protected def addUserToGroup: CssSel = {
-    var listUserEmails = ""
-    def saveMe(){
-      val userEmails = listUserEmails.split('%')
-      val members = userEmails.flatMap(User.findByEmail _)
+  def addUser = {
+    var users = User.findAll().filter(_.id.is != User.currentUser.open_!.id.is)
+    members.map(user =>{
+      users = users.filter(_.id.is != user.id.is)
+    })
+    val data:List[String] = users.map(user=> user.email.is)
+    ".list_users" #>  AutoComplete("", (current,limit) =>
+      data.filter(_.toLowerCase.startsWith(current.toLowerCase)),
+      value => addUserToGroup(value))
+   }
+  protected def addUserToGroup(userEmails:String) = {
 
-      val (added, notAdded) = groupService.addUsersToGroup(group,members).partition(_.isDefined)
+    val members = User.findByEmail(userEmails)
+    val (added, notAdded) = groupService.addUsersToGroup(group,members).partition(_.isDefined)
 
-      if(!added.isEmpty)
-        S.notice("Users are added to group " + group.name.is)
-      if(!notAdded.isEmpty)
-        // normally shouldn't happen
-        S.error("Users are not added to group: " + group.name.is)
-    }
-
-    "name=listusers" #> SHtml.onSubmit(listUserEmails = _) &
-    "type=submit" #> SHtml.onSubmitUnit(saveMe)
+    if(!added.isEmpty)
+      S.notice(userEmails +" is added to group " + group.name.is)
+    if(!notAdded.isEmpty)
+    // normally shouldn't happen
+      S.error(userEmails +" is not added to group: " + group.name.is)
   }
 
 }

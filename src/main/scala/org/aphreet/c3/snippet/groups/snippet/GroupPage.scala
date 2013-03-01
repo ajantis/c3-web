@@ -7,6 +7,13 @@ import net.liftweb.common.{Logger, Full, Box}
 import org.aphreet.c3.snippet.groups.GroupPageData
 import xml.Text
 import net.liftweb.util.BindHelpers._
+import org.aphreet.c3.lib.DependencyFactory._
+import xml.Text
+import net.liftweb.common.Full
+import com.ifunsoftware.c3.access.C3System
+import org.aphreet.c3.lib.metadata.Metadata._
+import xml.Text
+import net.liftweb.common.Full
 
 /**
  * Copyright iFunSoftware 2011
@@ -33,7 +40,12 @@ object GroupPage extends ItemRewriteLoc[Group, GroupPageData] {
 class GroupPage(data: GroupPageData) extends GroupPageHelpers{
   override lazy val group = data.group
   override lazy val activeLocId = "about"
+  lazy val c3 = inject[C3System].open_!
   def info = {
+//    val groupInfo = c3.getFile(data.).asDirectory
+//    ".tags_group" #> groupInfo.metadata.get(TAGS_META).map(_.split(TAGS_SEPARATOR).toList).getOrElse(Nil).map((tag: String) => {
+//      ".tags_group *" #> tag
+//    }) &
     ".GroupOwner *" #> group.owner.obj.map(_.shortName).openOr("N/A")&
     ".GroupOwner [href]" #> group.owner.obj.map(_.createLink)&
     ".GroupName *" #> group.name.is&

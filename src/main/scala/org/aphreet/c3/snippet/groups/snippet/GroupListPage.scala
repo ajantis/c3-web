@@ -24,13 +24,6 @@ class GroupListPage {
   lazy val groupService = inject[GroupService].open_!
   lazy val logger = Logger(classOf[GroupListPage])
 
-  def listUser = {
-    val users = User.findAll().filter(_.id.is != User.currentUser.open_!.id.is)
-    ".contUser" #> users.map( user =>{
-      ".contUser *" #> user.shortName &
-      ".contUser [value]" #> user.email
-    })
-  }
 
   def list = {
     val groupList = User.currentUser.open_!.groups.toList
@@ -64,15 +57,13 @@ class GroupListPage {
   def add = {
     var newGroup = Group.create
     var sameCategory = ""
-    var listUserEmails = ""
+    var tags = ""
 
     def saveMe(){
       newGroup.validate match {
         case Nil => {
-          val userEmails = listUserEmails.split('%')
           newGroup = newGroup.owner(User.currentUser.open_!)
-          val members = userEmails.flatMap(User.findByEmail _)
-          groupService.createGroup(newGroup, members)
+          groupService.createGroup(newGroup,tags)
 
           if (sameCategory != "false"){
             val newCategory = Category.create.name(newGroup.name.is).linkedGroup(newGroup)
@@ -96,7 +87,7 @@ class GroupListPage {
     "name=name" #> SHtml.onSubmit(newGroup.name(_))&
       "name=description" #> SHtml.onSubmit(newGroup.description(_))&
       "name=sameCategory" #> SHtml.onSubmit(sameCategory = _) &
-      "name=listusers" #> SHtml.onSubmit(listUserEmails = _) &
+      "name=tags_edit" #> SHtml.onSubmit(tags = _) &
       "type=submit" #> SHtml.onSubmitUnit(saveMe)
   }
 }

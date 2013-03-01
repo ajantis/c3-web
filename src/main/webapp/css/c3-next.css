@@ -565,3 +565,15 @@ td.file-table-date{
 /*********************************************************
 * End file table part
 *********************************************************/
+.metadata_key{
+    border: 0;
+    background: none!important;
+    cursor: default!important;
+
+}
+.metadata_value{
+    width:220px!important;
+}
+.input_meta{
+    width:220px!important;
+}

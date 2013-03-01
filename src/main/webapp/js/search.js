@@ -38,6 +38,7 @@ $(document).ready( function(){
         }
 
     });
+
     //select metadata from table
      $(".btn_save_metadata").live("click",function(){
         var key = ""
@@ -55,14 +56,15 @@ $(document).ready( function(){
      $(".remove_metadata").live("click",function(){
         $(this).parent().parent().remove();
 
-     });
-     $('.btn_add_user').live("click",function(){
-        $('#listusersadd').val(SelectAll("selusersadd"));
     });
 
-    $('.buttonuser1').live("click",function(){
-        $('#listusers').val(SelectAll("selusers"));
-    });
+//    $('.btn_add_user').live("click",function(){
+//        $('#listusersadd').val(SelectAll("selusersadd"));
+//    });
+//
+//    $('.buttonuser1').live("click",function(){
+//        $('#listusers').val(SelectAll("selusers"));
+//    });
 
     //$('.search-query').focus(function() {
     //    $(this).stop().animate({width: '400px'}, 'slow');

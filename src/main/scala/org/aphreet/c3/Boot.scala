@@ -182,6 +182,9 @@ class Boot extends Bootable{
     // Table sorter widget init
     TableSorter.init()
 
+    //Init auto complete input
+    AutoComplete.init()
+
     LiftRules.statelessDispatchTable.append(TextileRenderer)
 
     // for ajax file upload

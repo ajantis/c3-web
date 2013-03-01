@@ -12,6 +12,12 @@ import net.liftweb.mapper.By
 import org.aphreet.c3.service.notifications.NotificationManagerProtocol.CreateNotification
 import org.aphreet.c3.lib.NotificationManagerRef
 import org.aphreet.c3.lib.metadata.Metadata
+import org.aphreet.c3.lib.metadata.Metadata._
+import net.liftweb.common.Full
+import scala.Some
+import org.aphreet.c3.service.notifications.NotificationManagerProtocol.CreateNotification
+import org.aphreet.c3.service.notifications.AddedToGroupMsg
+import org.aphreet.c3.lib.NotificationManagerRef
 
 class GroupServiceImpl extends GroupService with C3Loggable{
 
@@ -19,10 +25,11 @@ class GroupServiceImpl extends GroupService with C3Loggable{
 
   lazy val notificationManager = inject[NotificationManagerRef].open_!.actorRef
 
-  override def createGroup(newGroup: Group, members: Iterable[User]): Box[Group] = {
+  override def createGroup(newGroup: Group, members: Iterable[User],tags:String): Box[Group] = {
+    val metadata = Map((TAGS_META -> tags.split(",").map(_.trim).mkString(",")))
     val group = newGroup.saveMe()
     try {
-      createGroupMapping(group.id.is.toString)
+      createGroupMapping(group.id.is.toString,metadata)
     } catch {
       case e: C3Exception => {
         group.delete_! // rollback
@@ -31,6 +38,20 @@ class GroupServiceImpl extends GroupService with C3Loggable{
     }
     group.owner.foreach(owner => UserGroup.join(owner, group))
     addUsersToGroup(group,members)
+    Full(group)
+  }
+  override def createGroup(newGroup: Group,tags:String): Box[Group] = {
+    val metadata = Map((TAGS_META -> tags.split(",").map(_.trim).mkString(",")))
+    val group = newGroup.saveMe()
+    try {
+      createGroupMapping(group.id.is.toString,metadata)
+    } catch {
+      case e: C3Exception => {
+        group.delete_! // rollback
+        Failure("Couldn't create group C3 FS mapping", Full(e), Empty)
+      }
+    }
+    group.owner.foreach(owner => UserGroup.join(owner, group))
     Full(group)
   }
 
@@ -72,13 +93,12 @@ class GroupServiceImpl extends GroupService with C3Loggable{
     }
   }
 
-  private def createGroupMapping(groupId: String){
+  private def createGroupMapping(groupId: String,tags:Map[String,String]){
     val root = c3.getFile("/").asDirectory
 
     val metadata = Map((Metadata.GROUP_ID_META -> groupId))
-
-    root.createDirectory(groupId, metadata)
-
+    val metadataGroup = tags ++ metadata
+    root.createDirectory(groupId, metadataGroup)
     root.getChild(groupId) match {
       case Some(node) => val dir = node.asDirectory
       dir.createDirectory("files", metadata)

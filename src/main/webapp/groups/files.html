@@ -106,9 +106,8 @@
                         </div>
 
                         <div id="tags" class="modal hide fade">
-                            <h4 class = "modal-header">Edit</h4>
+                            <h4 class = "modal-header">Edit tags</h4>
                             <div class="edit_meta">
-                                <label class="control-label">Tags</label>
                                 <form id="edit_tags_from"  class="input_tags">
                                     <input type="text" name="tags_edit" placeholder="docs, main, etc..." class="current_tags input-xlarge">
                                     <p class="help-block">tags must be comma-separated "docs, main, etc..."</p>
@@ -120,29 +119,28 @@
                             </div>
                         </div>
                         <div id="meta" class="modal hide fade">
-                            <h4 class = "modal-header">Edit</h4>
+                            <h4 class = "modal-header">Edit metadata</h4>
                             <div class="edit_meta">
-                                <label class="control-label">Metadata</label>
                                 <table class="tablesorter table_meta">
                                     <thead>
                                     <tr>
                                         <th>Key</th>
                                         <th>Value</th>
-                                        <th style="width:10px;"></th>
+                                        <th style="width:25px;"></th>
                                     </tr>
                                     </thead>
                                     <tbody  class="metadata_form">
                                     <tr>
                                         <td><input class="metadata_key" value="" readonly/></td>
-                                        <td><input class="metadata_value" value=""/></td>
+                                        <td><input type="text" class="metadata_value" value=""/></td>
                                         <td><a class="close remove_metadata">&times;</a></td>
                                     </tr>
                                     </tbody>
                                 </table>
                                 <hr/>
                                 <div class="add_metadata">
-                                    <input id="key" class="span5" type="text"  placeholder="Keyword" >
-                                    <input id="value" class="span5" type="text"  placeholder="Value">
+                                    <input id="key" class="span5 input_meta" type="text"  placeholder="Keyword" >
+                                    <input id="value" class="span5 input_meta" type="text"  placeholder="Value">
                                     <a name="btn_add_metadata" class="btn_add_metadata btn btn-primary">Add</a>
                                 </div>
 
