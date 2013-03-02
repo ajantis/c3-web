@@ -41,18 +41,7 @@ class GroupServiceImpl extends GroupService with C3Loggable{
     Full(group)
   }
   override def createGroup(newGroup: Group,tags:String): Box[Group] = {
-    val metadata = Map((TAGS_META -> tags.split(",").map(_.trim).mkString(",")))
-    val group = newGroup.saveMe()
-    try {
-      createGroupMapping(group.id.is.toString,metadata)
-    } catch {
-      case e: C3Exception => {
-        group.delete_! // rollback
-        Failure("Couldn't create group C3 FS mapping", Full(e), Empty)
-      }
-    }
-    group.owner.foreach(owner => UserGroup.join(owner, group))
-    Full(group)
+    createGroup(newGroup, List(), tags)
   }
 
   override def removeGroup(group: Group): Boolean = {
