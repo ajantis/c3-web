@@ -12,6 +12,15 @@ import xml.Text
 import net.liftweb.common.Full
 import net.liftweb.util.Mailer
 import net.liftweb.util.Mailer.{BCC, To, Subject, From}
+import java.nio.MappedByteBuffer
+import xml.Group
+import net.liftweb.util.Mailer.Subject
+import net.liftweb.sitemap.Loc.LocGroup
+import xml.Text
+import net.liftweb.util.Mailer.From
+import net.liftweb.util.Mailer.To
+import net.liftweb.common.Full
+import net.liftweb.util.Mailer.BCC
 
 /**
  * The singleton that has methods for accessing the database
@@ -375,6 +384,10 @@ class User extends MegaProtoUser[User] with ManyToMany {
       }
       else Text("No groups.")
     }
+  }
+
+  object enabled extends MappedBoolean(this){
+    override def defaultValue = true
   }
 
       // this is just a prototype change
