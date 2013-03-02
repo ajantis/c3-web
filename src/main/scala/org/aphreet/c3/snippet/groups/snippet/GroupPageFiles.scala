@@ -21,6 +21,7 @@ import org.aphreet.c3.lib.DependencyFactory
 import com.ifunsoftware.c3.access.C3System
 import net.liftweb.http.js.JsCmds.OnLoad
 import net.liftweb.http.js.JE.JsRaw
+import org.aphreet.c3.util.helpers.ByteCalculatorHelpers
 
 
 /**
@@ -151,7 +152,10 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers with Gr
   }
 
   protected def renderFileLoc(f: C3File): CssSel = {
-    ".file_tags" #> f.metadata.get(TAGS_META).map(_.split(TAGS_SEPARATOR).toList).getOrElse(Nil).map((tag: String) => {
+    val meta = f.metadata
+    val owner = nodeOwner(f)
+    f.versions.lastOption.map(_.length).getOrElse("None")
+    ".file_tags" #> meta.get(TAGS_META).map(_.split(TAGS_SEPARATOR).toList).getOrElse(Nil).map((tag: String) => {
       ".label *" #> tag
     }) &
       ".file-table" #> NodeSeq.Empty &
@@ -162,6 +166,8 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers with Gr
       ".download_btn [href]" #> fileDownloadUrl(f) &
       ".view_btn [href]" #> fileViewUrl(f) &
       ".data_file *" #> internetDateFormatter.format(f.date)&
+      ".owner_file *" #>  owner.map(_.shortName).getOrElse("Unknown") &
+      ".size_file *" #> ByteCalculatorHelpers.convert(f.versions.lastOption.map(_.length.toString).getOrElse("None")) &
       "#tags" #> editTags(f) &
       "#meta_edit" #> saveMetadata(f) &
       ".metadata_form" #> (f.metadata.filterNot { case (k, v) => keySet.contains(k) }).map{case (k, v) =>{
