@@ -132,9 +132,9 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers with Gr
     } &
       ".child *" #> group.getChildren(data.currentAddress).map {
         resource => {
-          (resource match {
-            case c: C3File => toCss(c)
-            case f: C3Directory => toCss(f)
+          (resource.isDirectory match {
+            case true => toCss(resource.asDirectory)
+            case _ => toCss(resource.asFile)
           }) &
             ".select_resource" #> SHtml.ajaxCheckbox(false, (value: Boolean) => {
               if(value)
