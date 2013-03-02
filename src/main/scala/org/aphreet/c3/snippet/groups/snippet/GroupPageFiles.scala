@@ -19,6 +19,8 @@ import net.liftweb.mapper.By
 import net.liftweb.http.js.JsCmds
 import org.aphreet.c3.lib.DependencyFactory
 import com.ifunsoftware.c3.access.C3System
+import net.liftweb.http.js.JsCmds.OnLoad
+import net.liftweb.http.js.JE.JsRaw
 
 
 /**
@@ -112,132 +114,132 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers with Gr
         }
         case _ => "* *" #> PassThru
       })
-}
+  }
 
-protected def renderDirectoryLoc(d: C3Directory): CssSel = {
+  protected def renderDirectoryLoc(d: C3Directory): CssSel = {
 
-object selectedResourcePaths extends RequestVar[Set[String]](Set())
+    object selectedResourcePaths extends RequestVar[Set[String]](Set())
 
-val currentPathLink = data.group.createLink + "/files" + data.currentAddress
+    val currentPathLink = data.group.createLink + "/files" + data.currentAddress
 
-".directory_tags *" #> {
-d.metadata.get(TAGS_META) match {
-case Some(tagsMeta) =>
-".directory_tag *" #> tagsMeta.split(",").toList
-case _ => "* *" #> NodeSeq.Empty
-}
-} &
-".child *" #> group.getChildren(data.currentAddress).map {
-resource => {
-(resource match {
-case c: C3File => toCss(c)
-case f: C3Directory => toCss(f)
-}) &
-".select_resource" #> SHtml.ajaxCheckbox(false, (value: Boolean) => {
-if(value)
-selectedResourcePaths.set(selectedResourcePaths.get + resource.fullname)
-else
-selectedResourcePaths.set(selectedResourcePaths.get - resource.fullname)
-JsCmds.Noop
-})
-}
-} &
-".delete_selected_btn [onclick]" #> SHtml.ajaxInvoke(() =>
-{ selectedResourcePaths.foreach(c3.deleteFile _); JsCmds.RedirectTo(currentPathLink) }) &
-".file-view" #> NodeSeq.Empty &
-"#new-directory" #> newDirectoryForm(d, currentPath = currentPathLink)
-}
+    "#directory-tags" #> { (xml: NodeSeq) =>
+      xml ++ JsCmds.Script(OnLoad(JsRaw(
+        """$('#directory-tags').tags( {
+            tagData : [""" + d.metadata.get(TAGS_META).getOrElse("") + """],
+            tagClass : 'btn-success'
+        });""").cmd))
+    } &
+      ".child *" #> group.getChildren(data.currentAddress).map {
+        resource => {
+          (resource match {
+            case c: C3File => toCss(c)
+            case f: C3Directory => toCss(f)
+          }) &
+            ".select_resource" #> SHtml.ajaxCheckbox(false, (value: Boolean) => {
+              if(value)
+                selectedResourcePaths.set(selectedResourcePaths.get + resource.fullname)
+              else
+                selectedResourcePaths.set(selectedResourcePaths.get - resource.fullname)
+              JsCmds.Noop
+            })
+        }
+      } &
+      ".delete_selected_btn [onclick]" #> SHtml.ajaxInvoke(() =>
+      { selectedResourcePaths.foreach(c3.deleteFile _); JsCmds.RedirectTo(currentPathLink) }) &
+      ".file-view" #> NodeSeq.Empty &
+      "#new-directory" #> newDirectoryForm(d, currentPath = currentPathLink)
+  }
 
-protected def renderFileLoc(f: C3File): CssSel = {
-".file_tags" #> f.metadata.get(TAGS_META).map(_.split(TAGS_SEPARATOR).toList).getOrElse(Nil).map((tag: String) => {
-".label *" #> tag
-}) &
-".file-table" #> NodeSeq.Empty &
-".fs_toolbar" #> NodeSeq.Empty &
-"#upload_form" #> NodeSeq.Empty &
-".directory_tags" #> NodeSeq.Empty &
-".name_file *" #> f.name &
-".download_btn [href]" #> fileDownloadUrl(f) &
-".view_btn [href]" #> fileViewUrl(f) &
-".data_file *" #> internetDateFormatter.format(f.date)&
-"#tags" #> editTags(f) &
-"#meta_edit" #> saveMetadata(f) &
-".metadata_form" #> (f.metadata.filterNot { case (k, v) => keySet.contains(k) }).map{case (k, v) =>{
-".metadata_form [id]" #> (k + v)&
-".metadata_key [value]" #> k &
-".metadata_value [value]" #> v
-}}
-}
-protected def saveMetadata(f: C3File): CssSel ={
-var key = ""
-var value = ""
-def save (){
-val  keyMetadata= key.split("%")
-val  valueMetadata= value.split("%")
-val metadata = keyMetadata.zip(valueMetadata).toMap
-f.update(metadata)
-}
-"name=metadata_key" #> SHtml.onSubmit(key = _) &
-"name=metadata_value" #> SHtml.onSubmit(value = _) &
-"type=submit" #> SHtml.onSubmitUnit(save)
-}
-protected def editTags(f: C3File): CssSel = {
-var tags = ""
-def saveTags() {
-val metadata = Map((TAGS_META -> tags.split(",").map(_.trim).mkString(",")))
-f.update(metadata)
-}
-".current_tags [value]" #> f.metadata.get(TAGS_META).getOrElse("")&
-"name=tags_edit" #> SHtml.onSubmit(tags = _) &
-"type=submit" #> SHtml.onSubmitUnit(saveTags)
-}
-protected def newDirectoryForm(currentDirectory: C3Directory, currentPath: String): CssSel = {
-var name = ""
-var tags = ""
+  protected def renderFileLoc(f: C3File): CssSel = {
+    ".file_tags" #> f.metadata.get(TAGS_META).map(_.split(TAGS_SEPARATOR).toList).getOrElse(Nil).map((tag: String) => {
+      ".label *" #> tag
+    }) &
+      ".file-table" #> NodeSeq.Empty &
+      ".fs_toolbar" #> NodeSeq.Empty &
+      "#upload_form" #> NodeSeq.Empty &
+      "#directory_tags" #> NodeSeq.Empty &
+      ".name_file *" #> f.name &
+      ".download_btn [href]" #> fileDownloadUrl(f) &
+      ".view_btn [href]" #> fileViewUrl(f) &
+      ".data_file *" #> internetDateFormatter.format(f.date)&
+      "#tags" #> editTags(f) &
+      "#meta_edit" #> saveMetadata(f) &
+      ".metadata_form" #> (f.metadata.filterNot { case (k, v) => keySet.contains(k) }).map{case (k, v) =>{
+        ".metadata_form [id]" #> (k + v)&
+          ".metadata_key [value]" #> k &
+          ".metadata_value [value]" #> v
+      }}
+  }
+  protected def saveMetadata(f: C3File): CssSel ={
+    var key = ""
+    var value = ""
+    def save (){
+      val  keyMetadata= key.split("%")
+      val  valueMetadata= value.split("%")
+      val metadata = keyMetadata.zip(valueMetadata).toMap
+      f.update(metadata)
+    }
+    "name=metadata_key" #> SHtml.onSubmit(key = _) &
+      "name=metadata_value" #> SHtml.onSubmit(value = _) &
+      "type=submit" #> SHtml.onSubmitUnit(save)
+  }
+  protected def editTags(f: C3File): CssSel = {
+    var tags = ""
+    def saveTags() {
+      val metadata = Map((TAGS_META -> tags.split(",").map(_.trim).mkString(",")))
+      f.update(metadata)
+    }
+    ".current_tags [value]" #> f.metadata.get(TAGS_META).getOrElse("")&
+      "name=tags_edit" #> SHtml.onSubmit(tags = _) &
+      "type=submit" #> SHtml.onSubmitUnit(saveTags)
+  }
+  protected def newDirectoryForm(currentDirectory: C3Directory, currentPath: String): CssSel = {
+    var name = ""
+    var tags = ""
 
-def createDirectory(){
-if (name.trim.isEmpty){
-S.error("Directory name cannot be empty")
-} else {
-val metadata = Map((OWNER_ID_META -> User.currentUser.map(_.id.is.toString).open_!),
-(GROUP_ID_META -> data.group.id.is.toString),
-(TAGS_META -> tags.trim))
-currentDirectory.createDirectory(name.trim, metadata)
-S.redirectTo(currentPath) // redirect on the same page
-}
-}
+    def createDirectory(){
+      if (name.trim.isEmpty){
+        S.error("Directory name cannot be empty")
+      } else {
+        val metadata = Map((OWNER_ID_META -> User.currentUser.map(_.id.is.toString).open_!),
+          (GROUP_ID_META -> data.group.id.is.toString),
+          (TAGS_META -> tags.trim))
+        currentDirectory.createDirectory(name.trim, metadata)
+        S.redirectTo(currentPath) // redirect on the same page
+      }
+    }
 
-"name=name" #> SHtml.onSubmit(name = _) &
-"name=tags" #> SHtml.onSubmit(tags = _) &
-"type=submit" #> SHtml.onSubmitUnit(createDirectory)
-}
+    "name=name" #> SHtml.onSubmit(name = _) &
+      "name=tags" #> SHtml.onSubmit(tags = _) &
+      "type=submit" #> SHtml.onSubmitUnit(createDirectory)
+  }
 
-def buildPathLocs: List[Loc[_]] = {
-val locs: List[Loc[_]] = (transformToPathLists(data.path)).map { thisPath =>
+  def buildPathLocs: List[Loc[_]] = {
+    val locs: List[Loc[_]] = (transformToPathLists(data.path)).map { thisPath =>
 
-new Loc[List[String]] {
-private val __sitemap = SiteMap.build(Array(Menu(this)))
+      new Loc[List[String]] {
+        private val __sitemap = SiteMap.build(Array(Menu(this)))
 
-override def name: String = thisPath.lastOption.getOrElse("N/A")
+        override def name: String = thisPath.lastOption.getOrElse("N/A")
 
-override def link: Loc.Link[List[String]] = new Link[List[String]](List("groups", data.group.id.is.toString, "files") ::: thisPath)
+        override def link: Loc.Link[List[String]] = new Link[List[String]](List("groups", data.group.id.is.toString, "files") ::: thisPath)
 
-override def text: Loc.LinkText[List[String]] = new LinkText[List[String]](v => Text(v.lastOption.getOrElse("N/A")))
+        override def text: Loc.LinkText[List[String]] = new LinkText[List[String]](v => Text(v.lastOption.getOrElse("N/A")))
 
-override def defaultValue: Box[List[String]] = Full(thisPath)
+        override def defaultValue: Box[List[String]] = Full(thisPath)
 
-override def params = Hidden :: Nil
+        override def params = Hidden :: Nil
 
-override def siteMap: SiteMap = __sitemap
+        override def siteMap: SiteMap = __sitemap
 
-override def defaultRequestValue: Box[List[String]] = Full(thisPath)
-}
-}
+        override def defaultRequestValue: Box[List[String]] = Full(thisPath)
+      }
+    }
 
-locs
-}
+    locs
+  }
 
-def isLocCurrent(allLocs: List[Loc[_]], loc: Loc[_]) = allLocs.lastOption.map(_ == loc).getOrElse(false)
+  def isLocCurrent(allLocs: List[Loc[_]], loc: Loc[_]) = allLocs.lastOption.map(_ == loc).getOrElse(false)
 }
 
 trait C3ResourceHelpers {

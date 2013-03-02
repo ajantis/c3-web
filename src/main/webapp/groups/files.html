@@ -1,8 +1,11 @@
 <div class="lift:surround?with=default;at=content" xmlns="http://www.w3.org/1999/html">
 <div id="group-tab-wrapper">
     <div class="tabbable"> <!-- Only required for left/right tabs -->
-        <div class="row-fluid lift:GroupPageFiles.embedTabMenu">
-        </div>
+
+        <div class="row-fluid lift:GroupPageFiles.embedTabMenu"></div>
+
+        <script src="/js/bootstrap-tags/js/bootstrap-tags.js" type="text/javascript"></script>
+        <link rel="stylesheet" type="text/css" href="/js/bootstrap-tags/css/bootstrap-tags.css">
 
         <div class="lift:TableSorters.defaultTableSorter"></div>
 
@@ -61,9 +64,11 @@
                             </a>
                         </p>
                     </div>
-                    <ul class="directory_tags">
-                        <li class="directory_tag">Sample_tag</li>
-                    </ul>
+
+                    <div id="directory-tags" class="tag-list">
+                        <div class="tags"></div>
+                    </div>
+
                     <table class="file-table tablesorter" id="table-sort">
                         <thead>
                         <tr>
