@@ -38,6 +38,9 @@ import net.liftweb.http.SHtml
 import org.aphreet.c3.apiaccess.C3
 import net.liftweb.util.Helpers._
 import com.ifunsoftware.c3.access.fs.{C3File, C3FileSystemNode}
+import org.aphreet.c3.lib.metadata.Metadata._
+import net.liftweb.common.Full
+import net.liftweb.mapper.Cmp
 
 class Group extends LongKeyedMapper[Group] with IdPK with ManyToMany{
 
@@ -89,6 +92,9 @@ class Group extends LongKeyedMapper[Group] with IdPK with ManyToMany{
       C3().getFile(baseFilePath + path)
   }
 
+  def getTags() = {
+     C3().getFile(baseGroupDirectory).metadata.get(TAGS_META).map(_.split(TAGS_SEPARATOR).toList).getOrElse(Nil)
+  }
   override def delete_! : Boolean = {
     UserGroup.findAll(By(UserGroup.group, this)).foreach(_.delete_!)
     Category.findAll(By(Category.linkedGroup,this)).foreach(_.delete_!)
@@ -96,6 +102,8 @@ class Group extends LongKeyedMapper[Group] with IdPK with ManyToMany{
   }
 
   def baseFilePath = "/" + this.id.is + "/files"
+
+  def baseGroupDirectory = "/" + this.id.is
 
   def createLink: String = "/groups/" + id.is
 }

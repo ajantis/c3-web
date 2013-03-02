@@ -42,10 +42,10 @@ class GroupPage(data: GroupPageData) extends GroupPageHelpers{
   override lazy val activeLocId = "about"
   lazy val c3 = inject[C3System].open_!
   def info = {
-//    val groupInfo = c3.getFile(data.).asDirectory
-//    ".tags_group" #> groupInfo.metadata.get(TAGS_META).map(_.split(TAGS_SEPARATOR).toList).getOrElse(Nil).map((tag: String) => {
-//      ".tags_group *" #> tag
-//    }) &
+    val groupTags = group.getTags()
+    ".tags_group" #> groupTags.map((tag: String) => {
+      ".tags_group *" #> tag
+    }) &
     ".GroupOwner *" #> group.owner.obj.map(_.shortName).openOr("N/A")&
     ".GroupOwner [href]" #> group.owner.obj.map(_.createLink)&
     ".GroupName *" #> group.name.is&
