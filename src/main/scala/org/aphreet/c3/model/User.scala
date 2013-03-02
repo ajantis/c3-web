@@ -328,7 +328,7 @@ object User extends User with MetaMegaProtoUser[User]{
     if (S.post_?) {
       S.param("username").
         flatMap(username => findUserByUserName(username)) match {
-        case Full(user) if user.validated_? &&
+        case Full(user) if user.validated_? && user.enabled.is &&
           user.testPassword(S.param("password")) => {
           logUserIn(user, () => {
             S.notice(S.??("logged.in"))
