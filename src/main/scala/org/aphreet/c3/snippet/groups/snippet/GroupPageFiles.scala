@@ -4,6 +4,7 @@ import org.aphreet.c3.loc.{ItemRewriteLoc, SuffixLoc}
 import org.aphreet.c3.model.{User, Group}
 import net.liftweb.common._
 import net.liftweb.sitemap.Loc.{Hidden, LinkText, Link}
+import tags.TagForms
 import xml.{NodeSeq, Text}
 import net.liftweb.util.Helpers._
 import net.liftweb.http.{RequestVar, SHtml, S}
@@ -28,7 +29,7 @@ import org.aphreet.c3.util.helpers.ByteCalculatorHelpers
  * @author Dmitry Ivanov (mailto: id.ajantis@gmail.com)
  *         iFunSoftware
  */
-object GroupPageFiles extends ItemRewriteLoc[Group, GroupPageFilesData] with SuffixLoc {
+object GroupPageFiles extends ItemRewriteLoc[Group, GroupPageFilesData] with SuffixLoc{
 
   override val name = "Files"
   override val pathPrefix = "groups" :: Nil
@@ -54,7 +55,7 @@ object GroupPageFiles extends ItemRewriteLoc[Group, GroupPageFilesData] with Suf
   }
 }
 
-class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers with GroupPageHelpers with FSHelpers{
+class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers with GroupPageHelpers with FSHelpers with TagForms{
 
   import DependencyFactory._
 
@@ -123,13 +124,7 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers with Gr
 
     val currentPathLink = data.group.createLink + "/files" + data.currentAddress
 
-    "#directory-tags" #> { (xml: NodeSeq) =>
-      xml ++ JsCmds.Script(OnLoad(JsRaw(
-        """$('#directory-tags').tags( {
-            tagData : [""" + d.metadata.get(TAGS_META).getOrElse("") + """],
-            tagClass : 'btn-success'
-        });""").cmd))
-    } &
+      tagsForm(d) &
       ".child *" #> group.getChildren(data.currentAddress).map {
         resource => {
           (resource.isDirectory match {
@@ -176,6 +171,7 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers with Gr
           ".metadata_value [value]" #> v
       }}
   }
+
   protected def saveMetadata(f: C3File): CssSel ={
     var key = ""
     var value = ""
@@ -189,6 +185,7 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers with Gr
       "name=metadata_value" #> SHtml.onSubmit(value = _) &
       "type=submit" #> SHtml.onSubmitUnit(save)
   }
+
   protected def editTags(f: C3File): CssSel = {
     var tags = ""
     def saveTags() {
@@ -199,6 +196,7 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers with Gr
       "name=tags_edit" #> SHtml.onSubmit(tags = _) &
       "type=submit" #> SHtml.onSubmitUnit(saveTags)
   }
+
   protected def newDirectoryForm(currentDirectory: C3Directory, currentPath: String): CssSel = {
     var name = ""
     var tags = ""
