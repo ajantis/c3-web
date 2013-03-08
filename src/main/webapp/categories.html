@@ -1,27 +1,44 @@
-<div class="lift:surround?with=default">
+<div class="lift:surround?with=default" xmlns="http://www.w3.org/1999/html">
     <div class="lift:bind-at?name=content">
-        <div class="CategoryListPage.adm add_cat">
-            <div class="btn" id="category_name_1">+ Add</div>
-            <form id="category_name_2" class="lift:CategoryListPage.render?form=post category_name_hide">
-                <input name="categories" placeholder="Enter category name..."/>
-                <button type="submit" value="submit">Add</button>
-            </form>
+        <div class="lift:CategoryListPage.adm">
+            <a type="button" href="#new_category" class="btn btn-success add_cat" data-toggle="modal" title="New Category">New category</a>
+            <div id="new_category" class="modal hide fade">
+                <h4 class = "modal-header">New category</h4>
+                <div class="edit_meta">
+                    <form id="category_name">
+                        <input name="new_category_name" placeholder="Enter category name..."/>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" data-dismiss="modal" class="btn">Cancel</button>
+                    <button type="submit" class="btn btn-success" form="category_name">Accept</button>
+                </div>
+            </div>
         </div>
         <div class="lift:CategoryListPage.list">
             <div class="well table">
-                <h2 class="muted">Economy</h2>
-                <div class="label-info label_tag">
+                <h4 class="muted">Economy</h4>
+                <hr class="border_none">
+                <div class="lift:AddTag.adm add_tags">
+                    <button data-toggle="modal" href="#new_tags" class="btn btn-success inf_left tagAddButton">Add</button>
+                </div>
+                <div class="label label-info inf_left label_tag">
                     <span class="tags_orient">Tags1</span>
                     <button type="submit" class="close close_orient">&times;</button>
                 </div>
-                <hr/>
-                <div class="lift:AddTag.adm add_cat">
-                    <div class="btn tagAddButton">+ Add</div>
-                    <form class="lift:AddTag.render?form=post category_name_hide tagNameForm">
-                        <input class="inputCateg disp_none" name="categoryName"/>
-                        <input name="TagName" placeholder="Enter tag name..."/>
-                        <button type="submit" value="submit">Add</button>
+            </div>
+            <div id="new_tags" class="modal hide fade">
+                <h4 class = "modal-header">New tags</h4>
+                <div class="edit_meta">
+                    <form id="tags_name" class="tagNameForm">
+                        <input class="input_categoty disp_none" name="category_id"/>
+                        <input type="text" name="tags_add" placeholder="docs, main, etc..." class="current_tags input-xlarge">
+                        <p class="help-block">tags must be comma-separated "docs, main, etc..."</p>
                     </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" data-dismiss="modal" class="btn">Cancel</button>
+                    <button type="submit" class="btn btn-success" form="tags_name">Accept</button>
                 </div>
             </div>
         </div>

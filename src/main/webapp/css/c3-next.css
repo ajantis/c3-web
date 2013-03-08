@@ -177,7 +177,7 @@ body > .navbar .brand:hover {
     margin-right: 50px;
     display:inline-block;
     vertical-align:top;
-    width: 150px;
+    width: 233px;
     zoom:1 !ie;
     display:inline !ie;
 }
@@ -186,14 +186,11 @@ body > .navbar .brand:hover {
     display: block;
 }
 .label_tag{
-    background-color:#999!important;
     text-align:center;
     margin-left:5px;
-    height:25px;
-    font-size:16px;
-    color:white;
+    font-size:14px;
     margin-top:5px;
-    padding-top:3px;
+    padding-top:7px;
     padding-left:5px;
     padding-right:5px;
     -webkit-border-radius: 3px;
@@ -201,13 +198,23 @@ body > .navbar .brand:hover {
     border-radius: 3px;
 }
 .close_orient{
-    margin-bottom:1px;
-
-
+    margin-top:-2px;
+    margin-left:2px;
 }
 .tags_orient{
     display:inline-block;
+    float:left;
+}
+.border_none{
+    margin:0;
 
+}
+.add_cat{
+    margin-bottom:5px;
+
+}
+.tagAddButton{
+    margin-top:4px;
 
 }
 
