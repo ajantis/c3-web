@@ -16,7 +16,6 @@ trait UserHelpers {
     ".link [href]" #> user.createLink &
     ".name *" #> user.shortName &
     ".name [class+]" #> (if(user.superUser.is) "admin" else "") &
-    ".is_admin *" #> (if(user.superUser.is) "Yes" else "No") &
-    ".enabled *" #> (if(user.enabled.is) "Yes" else "No")
+    ".is_admin *" #> (if(user.superUser.is) "Yes" else "No")
   }
 }

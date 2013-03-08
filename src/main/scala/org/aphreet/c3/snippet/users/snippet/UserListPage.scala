@@ -30,12 +30,15 @@ class UserListPage extends UserHelpers{
         ".user *" #>
           ((n: NodeSeq) =>  SHtml.ajaxForm(
             (toCssBindings(user)&
+              ".enabled *" #> (if(user.enabled.is) "Yes" else "No") &
               ".deluser *" #> SHtml.memoize(f => f ++ SHtml.hidden(deleteUser _))).apply(n)
           ))
+
       }
       else
       {
         toCssBindings(user)&
+        ".enabled *" #> NodeSeq.Empty &
         ".deluser *" #> NodeSeq.Empty
       }
     }

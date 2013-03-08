@@ -221,6 +221,13 @@ class Boot extends Bootable{
       }
     })
 
+    val allUsers = User.findAll()
+    allUsers.map(user=>{
+      if (user.enabled.toString().isEmpty())
+      {
+        user.enabled.set(true)
+      }
+    })
 
   }
 
