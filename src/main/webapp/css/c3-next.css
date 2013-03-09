@@ -584,7 +584,10 @@ td.file-table-date{
 .input_meta{
     width:220px!important;
 }
-.file_tags{
-    margin-top:2px!important;
 
+.description_box{
+                 font-family:Arial;
+                 font-size:9pt!important;
+                 height:75px!important;
+                 width:950px!important;
 }

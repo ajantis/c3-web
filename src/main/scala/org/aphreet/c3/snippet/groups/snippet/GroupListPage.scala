@@ -26,7 +26,7 @@ class GroupListPage {
 
 
   def list = {
-    val groupList = User.currentUser.open_!.groups.toList
+    val groupList =if(User.currentUser.open_!.superUser.is) Group.findAll().toList else User.currentUser.open_!.groups.toList
 
     ".container_groups" #> groupList.map{ group:Group => {
 
