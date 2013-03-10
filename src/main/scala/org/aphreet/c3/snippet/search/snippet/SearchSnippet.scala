@@ -78,9 +78,9 @@ class SearchSnippet {
 
     val results: List[SearchResultEntry] = query.map(c3.search(_)).openOr(Nil)
     if (results.isEmpty){
-      ".conteyner_result" #> NodeSeq.Empty
+      ".container_result" #> NodeSeq.Empty
     }else{
-      ".conteyner_result *" #> results.map {
+      ".container_result *" #> results.map {
         entry => toCss(entry)
       }
     }
