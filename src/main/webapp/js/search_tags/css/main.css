@@ -41,8 +41,6 @@ i.icon-black{
 }
 
 .tag {
-
-
     /*
 
     background-color: #555;
@@ -51,19 +49,10 @@ i.icon-black{
  */   
     margin-bottom:3px ;
     border-radius: 4px;
-   
 
     padding-left: 4px;
     padding-right: 4px;
-
-
     float: left;
-
-
-
-
-
-
 }
 
 .tag a{
