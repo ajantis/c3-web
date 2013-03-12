@@ -54,6 +54,8 @@ import org.aphreet.c3.util.C3Loggable
 import net.liftweb.http.S
 import org.aphreet.c3.model.User
 import org.aphreet.c3.lib.metadata.Metadata._
+import com.ifunsoftware.c3.access.C3System._
+
 
 trait C3ResourceMetadataForms {
 

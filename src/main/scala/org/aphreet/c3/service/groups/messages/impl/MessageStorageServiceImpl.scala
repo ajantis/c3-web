@@ -9,6 +9,7 @@ import net.liftweb.util.Helpers
 import Helpers._
 import org.aphreet.c3.service.groups.messages.{MessageStorageException, MessageStorageService}
 import com.ifunsoftware.c3.access.{DataStream, C3System}
+import com.ifunsoftware.c3.access.C3System._
 import net.liftweb.common.Box
 import com.ifunsoftware.c3.access.fs.C3Directory
 

@@ -38,6 +38,7 @@ import net.liftweb.json.JsonAST.JValue
 import net.liftweb.common.{Full, Logger, Box}
 import org.aphreet.c3.lib.DependencyFactory._
 import com.ifunsoftware.c3.access.{DataStream, C3System}
+import com.ifunsoftware.c3.access.C3System._
 import org.aphreet.c3.lib.metadata.Metadata._
 import org.aphreet.c3.util.C3Loggable
 import org.aphreet.c3.model.User

@@ -4,13 +4,11 @@ import org.aphreet.c3.lib.DependencyFactory._
 import org.aphreet.c3.util.{C3Loggable, C3Exception}
 import org.aphreet.c3.model.{UserGroup, Group, User}
 import org.aphreet.c3.service.groups.GroupService
-import org.aphreet.c3.service.notifications.{AddedToGroupMsg, NotificationManager}
 import com.ifunsoftware.c3.access.C3System
-import net.liftweb.common.{Box, Empty, Full, Failure}
+import com.ifunsoftware.c3.access.C3System._
+import net.liftweb.common.{Box, Empty, Failure}
 import com.ifunsoftware.c3.access.fs.{C3File, C3Directory}
 import net.liftweb.mapper.By
-import org.aphreet.c3.service.notifications.NotificationManagerProtocol.CreateNotification
-import org.aphreet.c3.lib.NotificationManagerRef
 import org.aphreet.c3.lib.metadata.Metadata
 import org.aphreet.c3.lib.metadata.Metadata._
 import net.liftweb.common.Full

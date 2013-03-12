@@ -6,14 +6,13 @@ import org.aphreet.c3.service.metadata.MetadataServiceProtocol._
 import org.aphreet.c3.lib.metadata.Metadata
 import Metadata._
 import net.liftweb.common.{Box, Failure, Full}
-import org.aphreet.c3.service.notifications.{FileMetaProcessedMsg, NotificationManager}
+import org.aphreet.c3.service.notifications.FileMetaProcessedMsg
 import org.aphreet.c3.service.notifications.NotificationManagerProtocol.CreateNotification
 import org.aphreet.c3.model.{Group, User}
 import net.liftweb.mapper.By
 import net.liftweb.util.Helpers._
-import com.ifunsoftware.c3.access.C3System
+import com.ifunsoftware.c3.access.{MetadataRemove, C3System}
 import com.ifunsoftware.c3.access.fs.C3File
-import org.aphreet.c3.lib.{NotificationManagerRef, DependencyFactory}
 
 /**
  * Copyright iFunSoftware 2013
@@ -21,7 +20,6 @@ import org.aphreet.c3.lib.{NotificationManagerRef, DependencyFactory}
  */
 class MetadataServiceWorker(c3system: C3System, notificationManager: ActorRef) extends Actor with C3Loggable{
 
-  import DependencyFactory._
 
   def receive = {
     case ProcessC3Resource(res) => {
@@ -44,7 +42,7 @@ class MetadataServiceWorker(c3system: C3System, notificationManager: ActorRef) e
                 fsPath(res.address).map(c3system.getFile _) match {
                   case Some(f: C3File) => {
                     notificationManager ! CreateNotification(FileMetaProcessedMsg(f, owner))
-                    res.update(res.metadata - S4_PROCESSED_FLAG_META) // updating metadata with s4-meta flag removed
+                    res.update(MetadataRemove(List(S4_PROCESSED_FLAG_META))) // updating metadata with s4-meta flag removed
                   }
                   case _ => logger.error("Resource " + res.address + " is not found in virtual FS... Skipping")
                 }

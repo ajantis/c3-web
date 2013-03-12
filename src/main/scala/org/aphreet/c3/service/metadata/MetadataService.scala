@@ -3,6 +3,7 @@ package org.aphreet.c3.service.metadata
 import org.aphreet.c3.service.metadata.MetadataServiceProtocol._
 import org.aphreet.c3.lib.DependencyFactory._
 import com.ifunsoftware.c3.access.{C3Resource, C3System}
+import com.ifunsoftware.c3.access.C3System._
 import akka.util.duration._
 import akka.routing.FromConfig
 import akka.actor

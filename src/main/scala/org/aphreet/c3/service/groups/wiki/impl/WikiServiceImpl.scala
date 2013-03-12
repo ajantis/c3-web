@@ -4,6 +4,7 @@ import org.aphreet.c3.model.Wiki
 import org.aphreet.c3.lib.DependencyFactory._
 import org.aphreet.c3.service.groups.wiki.WikiService
 import com.ifunsoftware.c3.access.{DataStream, C3System}
+import com.ifunsoftware.c3.access.C3System._
 import net.liftweb.common.{Box, Logger}
 import org.apache.commons.httpclient.util.URIUtil
 import net.liftweb.util.Helpers
@@ -33,7 +34,7 @@ class WikiServiceImpl extends WikiService{
     tryo {
       val file = c3.getFile(pageLocation(group, name))
       val content = file.versions.last.getData.readContentAsString
-      new Wiki(name, content, file.metadata)
+      new Wiki(name, content, file.metadata.toMap)
     }
 
   def createPage(group:String, page:Wiki) {
@@ -55,7 +56,7 @@ class WikiServiceImpl extends WikiService{
 
   def getMetadata(group:String, name:String):Map[String, String] = {
     try {
-      c3.getFile(pageLocation(group, name)).metadata
+      c3.getFile(pageLocation(group, name)).metadata.toMap
     } catch {
       case e: Exception => {
         e.printStackTrace()

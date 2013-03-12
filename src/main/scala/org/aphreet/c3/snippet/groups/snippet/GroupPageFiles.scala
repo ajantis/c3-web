@@ -19,7 +19,8 @@ import annotation.tailrec
 import net.liftweb.mapper.By
 import net.liftweb.http.js.JsCmds
 import org.aphreet.c3.lib.DependencyFactory
-import com.ifunsoftware.c3.access.C3System
+import com.ifunsoftware.c3.access.{MetadataUpdate, C3System}
+import com.ifunsoftware.c3.access.C3System._
 import net.liftweb.http.js.JsCmds.OnLoad
 import net.liftweb.http.js.JE.JsRaw
 import org.aphreet.c3.util.helpers.ByteCalculatorHelpers
@@ -179,7 +180,7 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers with Gr
       val  keyMetadata= key.split("%")
       val  valueMetadata= value.split("%")
       val metadata = keyMetadata.zip(valueMetadata).toMap
-      f.update(metadata)
+      f.update(MetadataUpdate(metadata))
     }
     "name=metadata_key" #> SHtml.onSubmit(key = _) &
       "name=metadata_value" #> SHtml.onSubmit(value = _) &
@@ -190,7 +191,7 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers with Gr
     var tags = ""
     def saveTags() {
       val metadata = Map((TAGS_META -> tags.split(",").map(_.trim).mkString(",")))
-      f.update(metadata)
+      f.update(MetadataUpdate(metadata))
     }
     ".current_tags [value]" #> f.metadata.get(TAGS_META).getOrElse("")&
       "name=tags_edit" #> SHtml.onSubmit(tags = _) &
