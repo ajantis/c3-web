@@ -199,13 +199,13 @@ body > .navbar .brand:hover {
 }
 .close_orient{
     opacity: 0.6;
-    margin-top:-2px;
     margin-left:2px;
     font-size:15px!important;
 }
 .tags_orient{
     display:inline-block;
     float:left;
+    margin-top:2px;
 }
 .border_none{
     margin:0;
@@ -220,7 +220,7 @@ body > .navbar .brand:hover {
 
 }
 .new_category_cont{
-    background-color:#2F96B4;
+    border: 2px dotted #2F96B4;
 }
 
 #categories_s{
