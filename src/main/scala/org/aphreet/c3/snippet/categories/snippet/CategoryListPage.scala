@@ -18,7 +18,7 @@ class CategoryListPage {
 
     def categoryContents(cat: Category) = {
       val tags: List[Tag] = cat.tags.toList
-      ".label_tag" #> tags.map {
+      ".tag" #> tags.map {
         tag: Tag => {
           val formId = "tag_" + tag.id.is
 
@@ -27,8 +27,8 @@ class CategoryListPage {
             JsCmds.Replace(formId, NodeSeq.Empty)
           }
 
-          ".label_tag [id]" #> formId &
-            ".label_tag *" #>
+          ".tag [id]" #> formId &
+            ".tag *" #>
               ((n: NodeSeq) => SHtml.ajaxForm(
                 ("span *" #> tag.name.is andThen
                   "* *" #> SHtml.memoize(f => f ++ SHtml.hidden(deleteTag _))).apply(n)
@@ -39,7 +39,7 @@ class CategoryListPage {
         ".tagAddButton [id]" #> cat.id.is
     }
 
-    ".well *" #> categories.map{ cat:Category =>  categoryContents(cat) } &
+    ".tags_cont *" #> categories.map{ cat:Category =>  categoryContents(cat) } &
       "#new_tags" #> AddTag.addTags   andThen
       "* *" #> ((x: NodeSeq) => x ++ Script(OnLoad(JsCmds.JsHideId("left-panel"))))
   }

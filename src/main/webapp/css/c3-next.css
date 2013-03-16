@@ -198,8 +198,10 @@ body > .navbar .brand:hover {
     border-radius: 3px;
 }
 .close_orient{
+    opacity: 0.6;
     margin-top:-2px;
     margin-left:2px;
+    font-size:15px!important;
 }
 .tags_orient{
     display:inline-block;
@@ -214,8 +216,11 @@ body > .navbar .brand:hover {
 
 }
 .tagAddButton{
-    margin-top:4px;
+    margin-top:0px!important;
 
+}
+.new_category_cont{
+    background-color:#2F96B4;
 }
 
 #categories_s{
@@ -550,8 +555,12 @@ td.file-table-date{
 }
 .inf_left{
     float:left;
-    margin-left:2px;
+    margin-left:3px;
+    margin-top:3px;
 
+}
+.inf_left form{
+    margin:0!important;
 }
 .edit_meta{
     width: 90%;

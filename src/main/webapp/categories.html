@@ -1,30 +1,32 @@
 <div class="lift:surround?with=default" xmlns="http://www.w3.org/1999/html">
     <div class="lift:bind-at?name=content">
-        <div class="lift:CategoryListPage.adm">
-            <a type="button" href="#new_category" class="btn btn-success add_cat" data-toggle="modal" title="New Category">New category</a>
-            <div id="new_category" class="modal hide fade">
-                <h4 class = "modal-header">New category</h4>
-                <div class="edit_meta">
-                    <form id="category_name">
-                        <input name="new_category_name" placeholder="Enter category name..."/>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" data-dismiss="modal" class="btn">Cancel</button>
-                    <button type="submit" class="btn btn-success" form="category_name">Accept</button>
-                </div>
-            </div>
-        </div>
         <div class="lift:CategoryListPage.list">
-            <div class="well table">
+            <div class="well table tags_cont">
                 <h4 class="muted">Economy</h4>
                 <hr class="border_none">
-                <div class="lift:AddTag.adm add_tags">
-                    <button data-toggle="modal" href="#new_tags" class="btn btn-success inf_left tagAddButton">Add</button>
-                </div>
-                <div class="label label-info inf_left label_tag">
+                <div class="tag label btn-info inf_left">
                     <span class="tags_orient">Tags1</span>
-                    <button type="submit" class="close close_orient">&times;</button>
+                    <button type="submit" class="close close_orient"><i class="icon-remove-sign icon-white"></i></button>
+                </div>
+                <div class="lift:AddTag.adm add_tags">
+                    <a data-toggle="modal" href="#new_tags" class="inf_left tagAddButton"><img src="/images/add.png" title="Back"/></a>
+                </div>
+            </div>
+            <div class="well table new_category_cont">
+                <div class="lift:CategoryListPage.adm">
+                    <a type="button" href="#new_category" class="btn btn-success add_cat" data-toggle="modal" title="New Category">New Category</a>
+                    <div id="new_category" class="modal hide fade">
+                        <h4 class = "modal-header">New category</h4>
+                        <div class="edit_meta">
+                            <form id="category_name">
+                                <input name="new_category_name" placeholder="Enter category name..."/>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" data-dismiss="modal" class="btn">Cancel</button>
+                            <button type="submit" class="btn btn-success" form="category_name">Accept</button>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div id="new_tags" class="modal hide fade">
