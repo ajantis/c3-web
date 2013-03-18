@@ -12,11 +12,12 @@ import com.ifunsoftware.c3.access.{SearchResultEntry, C3System}
 import net.liftweb.util.CssSel
 import java.text.SimpleDateFormat
 import org.aphreet.c3.lib.metadata.Metadata
+import org.aphreet.c3.util.C3Loggable
 
 /**
  * @author Serjk (mailto: serjk91@gmail.com)
  */
-class SearchForm {
+class SearchForm extends C3Loggable{
 
   private val c3 = inject[C3System].open_!
   private val dateFormat = new SimpleDateFormat("MMM dd, yyyy")
@@ -24,17 +25,15 @@ class SearchForm {
   val selectedTagsContainerId = "selected_tags"
   val tagTemplate = <li class="tag"><a href="#" class="label btn-info name">Sample tag</a></li>
 
-  def miniSearch ={
+  def miniSearch = {
     def process(query: String){
       if (!query.isEmpty){
         S.redirectTo("/search?query=" + urlEncode(query))
       }
-      else{
-        S.notice("Empty search query")
-      }
+      else S.notice("Empty search query")
     }
     "name=query [value]" #> S.param("query") &
-      "name=query" #> SHtml.onSubmit(process _)
+    "name=query" #> SHtml.onSubmit(process _)
   }
 
   def render = {
@@ -54,13 +53,13 @@ class SearchForm {
             <i class="icon-remove-sign icon-white"></i>
           </a>
         </li>
-      )
+      ) & doSearch
     }
 
     def unselectTag(tag: Tag): JsCmd = {
       tags = tags - tag.name.is
       JqJsCmds.AppendHtml("category_" + tag.category.get + "_tags", tagToCss(tag)(tagTemplate)) &
-      JsCmds.Replace("sel_tag_" + tag.id.is, NodeSeq.Empty)
+      JsCmds.Replace("sel_tag_" + tag.id.is, NodeSeq.Empty) & doSearch
     }
 
     def tagToCss(tag: Tag) = {
@@ -72,7 +71,7 @@ class SearchForm {
     def doSearch(): JsCmd = {
       val results: List[SearchResultEntry] = query match {
         case "" => Nil
-        case s => c3.search(s)
+        case s => c3.search(createC3SearchQuery(s, tags))
       }
       val t = entryHtml
       JsCmds.SetHtml("results", results.flatMap(entry => toCss(entry).apply(entryHtml)))
@@ -83,10 +82,10 @@ class SearchForm {
       val c3Path = C3Path(resource.metadata.getOrElse("c3.ext.fs.path", ""))
       val nodeName = resource.systemMetadata.getOrElse("c3.fs.nodename", "<Unknown>")
       val content = result.fragments.headOption.flatMap(_.strings.headOption)
-      val resourceName = c3Path.resourceType match {
-        case MessagesType => "Message in group: " + c3Path.groupName
-        case _ => c3Path.resourceName
-      }
+//      val resourceName = c3Path.resourceType match {
+//        case MessagesType => "Message in group: " + c3Path.groupName
+//        case _ => c3Path.resourceName
+//      }
       val tags = resource.metadata.get(Metadata.TAGS_META).map(_.split(",").toList).getOrElse(Nil)
 
       ".result_header *" #> nodeName &
@@ -118,10 +117,19 @@ class SearchForm {
     } &
     "#results *" #> {
       ".entry" #> (xml => { entryHtml = xml; xml }) &
-      ".entry *" #> (if(query.isEmpty) Nil else c3.search(query)).map { res: SearchResultEntry =>
+      ".entry *" #> (if(query.isEmpty) Nil else c3.search(createC3SearchQuery(query, tags))).map { res: SearchResultEntry =>
         toCss(res)
       }
     }
+  }
+
+  private def createC3SearchQuery(contentQuery: String, tags: Iterable[String]) = {
+    "(content:\"" + contentQuery + "\")" +
+    (if (!tags.isEmpty){
+      " AND (" +
+        tags.map { t => "(" + Metadata.TAGS_META + ":\"" + t + "\")" }.mkString("AND") +
+      ")"
+    } else "")
   }
 
 }
