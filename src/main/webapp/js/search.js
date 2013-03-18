@@ -53,10 +53,6 @@ $(document).ready( function(){
         $("#key_cont").val(key);
         $("#value_cont").val(value);
      });
-     $(".remove_metadata").live("click",function(){
-        $(this).parent().parent().remove();
-
-    });
 
 //    $('.btn_add_user').live("click",function(){
 //        $('#listusersadd').val(SelectAll("selusersadd"));

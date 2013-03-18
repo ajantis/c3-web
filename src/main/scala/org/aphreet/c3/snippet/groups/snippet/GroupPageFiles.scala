@@ -17,11 +17,11 @@ import net.liftweb.util.{CssSel, PassThru}
 import net.liftweb.sitemap.{Menu, SiteMap, Loc}
 import annotation.tailrec
 import net.liftweb.mapper.By
-import net.liftweb.http.js.JsCmds
+import net.liftweb.http.js.{JsCmds, JsCmd}
 import org.aphreet.c3.lib.DependencyFactory
-import com.ifunsoftware.c3.access.{MetadataUpdate, C3System}
+import com.ifunsoftware.c3.access.{MetadataRemove, MetadataUpdate, C3System}
 import com.ifunsoftware.c3.access.C3System._
-import net.liftweb.http.js.JsCmds.OnLoad
+import net.liftweb.http.js.JsCmds.{Alert, OnLoad}
 import net.liftweb.http.js.JE.JsRaw
 import org.aphreet.c3.util.helpers.ByteCalculatorHelpers
 
@@ -125,7 +125,7 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers with Gr
 
     val currentPathLink = data.group.createLink + "/files" + data.currentAddress
 
-      tagsForm(d) &
+    tagsForm(d) &
       ".child *" #> group.getChildren(data.currentAddress).map {
         resource => {
           (resource.isDirectory match {
@@ -166,10 +166,23 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers with Gr
       ".size_file *" #> ByteCalculatorHelpers.convert(f.versions.lastOption.map(_.length.toString).getOrElse("None")) &
       "#tags" #> editTags(f) &
       "#meta_edit" #> saveMetadata(f) &
-      ".metadata_form" #> (f.metadata.filterNot { case (k, v) => keySet.contains(k) }).map{case (k, v) =>{
+      ".metadata_form" #> (f.metadata.filterNot { case (k, v) => systemKeySet.contains(k) }).map{ case (k, v) => {
+        def removeMeta():JsCmd = {
+          try{
+            val kkk = k
+            f.update(MetadataRemove(List(k)))
+            JsCmds.Replace((k+v),NodeSeq.Empty)
+          }catch{
+            case e:Exception => JsCmds.Alert("User is not removed! Please check logs for details")
+          }
+        }
         ".metadata_form [id]" #> (k + v)&
-          ".metadata_key [value]" #> k &
-          ".metadata_value [value]" #> v
+          ".metadata_form *" #>
+            ((n: NodeSeq) => SHtml.ajaxForm(
+              (".metadata_key [value]" #> k &
+                ".metadata_value [value]" #> v &
+                ".remove_metadata *" #> SHtml.memoize(t => t ++ SHtml.hidden(removeMeta _))).apply(n)
+            ))
       }}
   }
 
@@ -179,6 +192,9 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers with Gr
     def save (){
       val  keyMetadata= key.split("%")
       val  valueMetadata= value.split("%")
+      //      var metaKey =  (f.metadata.filterNot{case (k, v) => keySet.contains(k)})
+      //      metaKey = metaKey.filterNot{case(k,v)=>keyMetadata.contains(k)}
+      //      f.update(MetadataRemove())
       val metadata = keyMetadata.zip(valueMetadata).toMap
       f.update(MetadataUpdate(metadata))
     }
