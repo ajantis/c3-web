@@ -3,46 +3,6 @@
     <lift:snippet type="SearchForm">
 
         <div class="lift:bind-at?name=left-panel">
-            <head>
-                <link href="/css/search.css" type="text/css" rel="stylesheet"/>
-                <script type="text/javascript">
-                    $(document).ready(function(){
-                        $( '.root ul' ).hide();
-                        $( 'li.branch > a' ).prepend( '<i class="icon-chevron-up"></i>' );
-
-                        $( 'li.branch > a' ).click( function ( event ) {
-                            event.preventDefault();
-
-                            var leaves = $( this ).parent( 'li' ).children( 'ul' );
-
-                            if ( leaves.is( ':visible' ) ) {
-                                $( 'i.icon-chevron-down', this ).removeClass( 'icon-chevron-down' ).addClass( 'icon-chevron-up' );
-                                leaves.slideUp();
-                            }
-                            else {
-                                $( 'i.icon-chevron-up', this ).removeClass( 'icon-chevron-up' ).addClass( 'icon-chevron-down' );
-                                leaves.slideDown();
-                            }
-                        } );
-
-                        $( '.collapse-all' ).click( function ( event ) {
-                            event.preventDefault();
-                            $( '.root ul' ).slideUp();
-                            $( 'li.branch > a > i.icon-chevron-down' ).removeClass( 'icon-chevron-down' ).addClass( 'icon-chevron-up' );
-
-                        } );
-
-                        $( '.expand-all' ).click( function ( event ) {
-                            event.preventDefault();
-                            $( '.root ul' ).slideDown();
-                            $( 'li.branch > a > i.icon-chevron-up' ).removeClass( 'icon-chevron-up' ).addClass( 'icon-chevron-down' );
-
-                        } );
-
-                    });
-                </script>
-            </head>
-
             <h3>Categories</h3>
             <p>
                 <a href="#" class="btn btn-mini expand-all"><i class="icon-plus-sign"></i> Expand</a>

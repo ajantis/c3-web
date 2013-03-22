@@ -1,48 +1,47 @@
 <div class="lift:surround?with=default">
     <div class="lift:bind-at?name=left-panel">
         <div class="lift:GroupListPage.list">
-            <p class="nav-header groupsHeader">Groups</p>
-            <ul class="listGroup nav nav-list">
-                <li class="container_groups"><a></a><button class="delete_group close">&times;</button></li>
+            <h3 class="nav-header groupsHeader">Groups</H3>
+            <ul class="listGroup root nav nav-list affix-top">
+                <li class="container_groups"><img class="inf_left_groups" src="/images/box_edit.png"> <a href="#" class="name"></a><button class="delete_group close">&times;</button></li>
             </ul>
         </div>
     </div>
     <div class="lift:bind-at?name=content">
-        <form class="lift:GroupListPage.add">
-            <div id="legend">
-                <legend class="">Add group</legend>
-            </div>
-            <div class="control-group">
-                <label class="control-label">Group Name</label>
-                <div class="controls">
-                    <input type="text" name="name" placeholder="" class="input-xlarge"/>
+        <a type="button" href="#add_group" class="btn btn_add_user" data-toggle="modal" title="Add User"><strong>Add Group</strong></a>
+        <div id="add_group" class="modal hide fade lift:GroupListPage.action">
+            <h4 class = "modal-header">Add Group</h4>
+            <form id="add_group_form" class="" form="post">
+                <div class="control-group">
+                    <label class="control-label">Group Name</label>
+                    <div class="controls">
+                        <input type="text" name="name" placeholder="" class="input-xlarge"/>
+                    </div>
                 </div>
-            </div>
-            <div class="control-group">
-                <label class="checkbox">
-                    <input name="sameCategory" type="checkbox" value="true"/>
-                    Do the same name category
-                </label>
-            </div>
-            <div class="control-group">
-                <label class="control-label">Tags</label>
-                <div class="controls">
-                    <input type="text" name="tags_edit" placeholder="docs, main, etc..." class="current_tags input-xlarge">
+                <div class="control-group">
+                    <label class="checkbox">
+                        <input name="sameCategory" type="checkbox" value="true"/>
+                        Do the same name category
+                    </label>
                 </div>
-            </div>
-            <div class="control-group">
-                <label class="control-label">Description group</label>
-                <div class="controls">
-                    <textarea type="text" name="description" placeholder="" class="input-xlarge"></textarea>
+                <div class="control-group">
+                    <label class="control-label">Tags</label>
+                    <div class="controls">
+                        <input type="text" name="tags_edit" placeholder="docs, main, etc..." class="current_tags input-xlarge">
+                    </div>
                 </div>
-            </div>
-            <div class="control-group">
-                <!-- Button -->
-                <div class="controls">
-                    <button type="submit" class="buttonuser1 btn btn-success">Add</button>
+                <div class="control-group">
+                    <label class="control-label">Description group</label>
+                    <div class="controls">
+                        <textarea type="text" name="description" placeholder="" class="input-xlarge"></textarea>
+                    </div>
                 </div>
+            </form>
+            <div id="add_user" class="modal-footer">
+                <button type="button" data-dismiss="modal" class="btn">Cancel</button>
+                <button type="submit" class="btn_add_user btn btn-success" form="add_group_form">Add</button>
             </div>
-        </form>
+        </div>
     </div>
 
 

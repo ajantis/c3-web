@@ -117,4 +117,41 @@ $(document).ready( function(){
         function(){
         $(this).css("display","none");
      });
+
+     $( '.root ul' ).hide();
+                             $( 'li.branch > a' ).prepend( '<i class="icon-chevron-up"></i>' );
+
+                             $( 'li.branch > a' ).click( function ( event ) {
+                                 event.preventDefault();
+
+                                 var leaves = $( this ).parent( 'li' ).children( 'ul' );
+
+                                 if ( leaves.is( ':visible' ) ) {
+                                     $( 'i.icon-chevron-down', this ).removeClass( 'icon-chevron-down' ).addClass( 'icon-chevron-up' );
+                                     leaves.slideUp();
+                                 }
+                                 else {
+                                     $( 'i.icon-chevron-up', this ).removeClass( 'icon-chevron-up' ).addClass( 'icon-chevron-down' );
+                                     leaves.slideDown();
+                                 }
+                             } );
+
+                             $( '.collapse-all' ).click( function ( event ) {
+                                 event.preventDefault();
+                                 $( '.root ul' ).slideUp();
+                                 $( 'li.branch > a > i.icon-chevron-down' ).removeClass( 'icon-chevron-down' ).addClass( 'icon-chevron-up' );
+
+                             } );
+
+                             $( '.expand-all' ).click( function ( event ) {
+                                 event.preventDefault();
+                                 $( '.root ul' ).slideDown();
+                                 $( 'li.branch > a > i.icon-chevron-up' ).removeClass( 'icon-chevron-up' ).addClass( 'icon-chevron-down' );
+
+                             } );
+
+
+
+
+
 });

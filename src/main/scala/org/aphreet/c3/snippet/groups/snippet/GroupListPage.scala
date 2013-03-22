@@ -10,6 +10,8 @@ import org.aphreet.c3.service.groups.GroupService
 import net.liftweb.util.Helpers._
 import net.liftweb.util.BindHelpers._
 import org.aphreet.c3.lib.DependencyFactory
+import net.liftweb.util.CssSel
+
 /**
  * @author Serjk (mailto: serjk91@gmail.com)
  */
@@ -26,30 +28,42 @@ class GroupListPage {
 
     ".container_groups" #> groupList.map{ group:Group => {
 
-      def deleteGroup(): JsCmd = {
-        if(groupService.removeGroup(group)){
-          JsCmds.Replace(group.id.is.toString, NodeSeq.Empty)
-        } else JsCmds.Alert("Group is not removed! Please check logs for details")
-      }
-      if (User.currentUser.open_!.superUser){
-        ".container_groups [id]"#> group.id.is &
-          ".container_groups *" #>
-            ((n: NodeSeq) => SHtml.ajaxForm(
-              ("a *" #> group.name.is &
-                "a [href]" #> ("/groups/"+group.id) andThen
-                "* *" #> SHtml.memoize(f => f ++ SHtml.hidden(deleteGroup _))).apply(n)
-            ))
-      } else{
-        "a *" #> group.name.is &
-        "a [href]" #> ("/groups/"+group.id) &
-         ".delete_group" #> NodeSeq.Empty
-      }
+      //      def deleteGroup(): JsCmd = {
+      //        if(groupService.removeGroup(group)){
+      //          JsCmds.Replace(group.id.is.toString, NodeSeq.Empty)
+      //        } else JsCmds.Alert("Group is not removed! Please check logs for details")
+      //      }
+      //      if (User.currentUser.open_!.superUser){
+      //        ".container_groups [id]"#> group.id.is &
+      //          ".container_groups *" #>
+      //            ((n: NodeSeq) => SHtml.ajaxForm(
+      //              ("a *" #> group.name.is &
+      //                "a [href]" #> ("/groups/"+group.id) andThen
+      ////                "* *" #> SHtml.memoize(f => f ++ SHtml.hidden(deleteGroup _))).apply(n)
+      //            ))
+      //      }
+      if(User.currentUser.open_!.email == group.owner.open_!.email ){
+        ".inf_left_groups [src]"#> ("/images/box_edit.png")&
+          "a *" #> group.name.is &
+          "a [href]" #> ("/groups/"+group.id) &
+          ".delete_group" #> NodeSeq.Empty
 
+      }else{
+        ".inf_left_groups [src]"#> ("/images/box_share.png")&
+          "a *" #> group.name.is &
+          "a [href]" #> ("/groups/"+group.id) &
+          ".delete_group" #> NodeSeq.Empty
+      }
     }
     }
   }
 
-  def add = {
+  def action = {
+    "#add_group" #> add
+
+  }
+
+  def add:CssSel = {
     var newGroup = Group.create
     var sameCategory = ""
     var tags = ""
