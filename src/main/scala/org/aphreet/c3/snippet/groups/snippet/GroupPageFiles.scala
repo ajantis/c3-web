@@ -149,6 +149,7 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers with Gr
 
   protected def renderFileLoc(f: C3File): CssSel = {
     val meta = f.metadata
+    val metadataUser = Metadata.filterSystemKey(meta)
     val owner = nodeOwner(f)
     f.versions.lastOption.map(_.length).getOrElse("None")
     ".file_tags" #> meta.get(TAGS_META).map(_.split(TAGS_SEPARATOR).toList).getOrElse(Nil).map((tag: String) => {
@@ -166,10 +167,9 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers with Gr
       ".size_file *" #> ByteCalculatorHelpers.convert(f.versions.lastOption.map(_.length.toString).getOrElse("None")) &
       "#tags" #> editTags(f) &
       "#meta_edit" #> saveMetadata(f) &
-      ".metadata_form" #> (f.metadata.filterNot { case (k, v) => systemKeySet.contains(k) }).map{ case (k, v) => {
+      ".metadata_form" #> metadataUser.map{ case (k, v) => {
         def removeMeta():JsCmd = {
           try{
-            val kkk = k
             f.update(MetadataRemove(List(k)))
             JsCmds.Replace((k+v),NodeSeq.Empty)
           }catch{
