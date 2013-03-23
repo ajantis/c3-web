@@ -699,11 +699,35 @@ td.file-table-date{
 .inf_left_groups{
    float: left;
    margin-left: 5px;
-   margin-top: 11px;
+   margin-top: 2px;
    margin-right: 5px;
 
 }
-
+.add_group_form{
+    margin-left:20px;
+}
+.name_group{
+    font-size: 20px;
+    letter-spacing: -1px;
+    line-height: 32px;
+    white-space: nowrap;
+}
+.last_changed{
+    margin-left: 25px;
+    font-size: 11px;
+    color: #999999;
+}
+.description_group{
+    margin-left: 25px;
+    color: #333333;
+    font-size: 14px;
+}
+.container_groups{
+    width:80%;
+}
+.hr_group{
+    margin:0!important;
+}
 
 
 

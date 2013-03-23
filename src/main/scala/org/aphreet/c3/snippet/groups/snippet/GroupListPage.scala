@@ -42,19 +42,19 @@ class GroupListPage {
       ////                "* *" #> SHtml.memoize(f => f ++ SHtml.hidden(deleteGroup _))).apply(n)
       //            ))
       //      }
-      if(User.currentUser.open_!.email == group.owner.open_!.email ){
-        ".inf_left_groups [src]"#> ("/images/box_edit.png")&
-          "a *" #> group.name.is &
-          "a [href]" #> ("/groups/"+group.id) &
-          ".delete_group" #> NodeSeq.Empty
 
-      }else{
-        ".inf_left_groups [src]"#> ("/images/box_share.png")&
+        val groupTags = group.getTags()
+        ".tags_group" #> groupTags.map((tag: String) => {
+          ".tags_group *" #> tag
+        }) &
+        ".inf_left_groups [src]"#> ("/images/glyphicons_043_group.png")&
           "a *" #> group.name.is &
-          "a [href]" #> ("/groups/"+group.id) &
-          ".delete_group" #> NodeSeq.Empty
+          "a [href]" #> ("/groups/"+group.id)&
+          ".description_group *"#> group.description
+
+
+
       }
-    }
     }
   }
 
