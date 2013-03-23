@@ -230,11 +230,14 @@
             </plugin>
             <plugin>
                 <groupId>org.mortbay.jetty</groupId>
-                <artifactId>maven-jetty-plugin</artifactId>
-                <version>6.1.25</version>
+                <artifactId>jetty-maven-plugin</artifactId>
+                <version>8.1.10.v20130312</version>
                 <configuration>
-                    <reload>manual</reload>
-                    <contextPath>/</contextPath>
+                    <jvmArgs>-XX:PermSize=256M -XX:MaxPermSize=512M -Xms256M -Xmx800M</jvmArgs>
+                    <scanIntervalSeconds>5</scanIntervalSeconds>
+                    <webApp>
+                        <contextPath>/</contextPath>
+                    </webApp>
                 </configuration>
             </plugin>
             <plugin>
