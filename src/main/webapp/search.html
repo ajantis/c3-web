@@ -4,10 +4,10 @@
 
         <div class="lift:bind-at?name=left-panel">
             <h3>Categories</h3>
-            <p>
-                <a href="#" class="btn btn-mini expand-all"><i class="icon-plus-sign"></i> Expand</a>
-                <a href="#" class="btn btn-mini collapse-all"><i class="icon-minus-sign"></i> Collapse</a>
-            </p>
+            <!--<p>-->
+                <!--<a href="#" class="btn btn-mini expand-all"><i class="icon-plus-sign"></i> Expand</a>-->
+                <!--<a href="#" class="btn btn-mini collapse-all"><i class="icon-minus-sign"></i> Collapse</a>-->
+            <!--</p>-->
             <ul class="root nav nav-list affix-top">
                 <li class="branch category"><a href="#" class="name">Scala</a>
                     <ul>
@@ -19,10 +19,10 @@
 
         <div class="lift:bind-at?name=content">
             <h3 class="span10">Search</h3>
-            <div class="span4 search_form">
+            <div class="span7 search_form form-search well">
                 <div class="input-append">
                     <input class="span6 search_query" type="text" placeholder="Enter a search query...">
-                    <button class="btn search_btn" type="submit"><i class="icon-search"></i></button>
+                    <button class="btn search_btn btn-primary" type="submit"><i class="icon-search icon-white"></i> Go</button>
                 </div>
                 <div class="selected-tags-container span6">
                     <ul id="selected_tags">
@@ -30,7 +30,7 @@
                 </div>
             </div>
 
-            <div id="results" class="span10 search_results">
+            <div id="results" class="span7 search_results">
                 <div class="entry">
                     <h4><a href="#" class="result_header">Some interesting file</a></h4>
                     <p class="entry-datetime result_date">Feb 2, 2013</p>
@@ -43,7 +43,26 @@
                         </li>
                     </ul>
                 </div>
+                <div class="no_results">
+                    <p>Your search - <strong><span class="query">Sample query</span></strong> - did not match any documents.</p>
+                    <p>Suggestions:</p>
+                    <ul>
+                        <li>Make sure that all words are spelled correctly.</li>
+                        <li>Try different keywords.</li>
+                        <li>Try more general keywords.</li>
+                        <li>Try fewer tags or keywords.</li>
+                    </ul>
+                </div>
+            </div>
 
+            <div id="pagination" class="span7 pagination">
+                <ul>
+                    <nav:first></nav:first>
+                    <nav:prev></nav:prev>
+                    <nav:allpages></nav:allpages>
+                    <nav:next></nav:next>
+                    <nav:last></nav:last>
+                </ul>
             </div>
         </div>
 

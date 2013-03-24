@@ -155,6 +155,7 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers with Gr
     ".file_tags" #> meta.get(TAGS_META).map(_.split(TAGS_SEPARATOR).toList).getOrElse(Nil).map((tag: String) => {
       ".label *" #> tag
     }) &
+      "#node-tags-form" #> NodeSeq.Empty &
       ".file-table" #> NodeSeq.Empty &
       ".fs_toolbar" #> NodeSeq.Empty &
       "#upload_form" #> NodeSeq.Empty &

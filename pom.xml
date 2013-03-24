@@ -234,7 +234,6 @@
                 <version>8.1.10.v20130312</version>
                 <configuration>
                     <jvmArgs>-XX:PermSize=256M -XX:MaxPermSize=512M -Xms256M -Xmx800M</jvmArgs>
-                    <scanIntervalSeconds>5</scanIntervalSeconds>
                     <webApp>
                         <contextPath>/</contextPath>
                     </webApp>
