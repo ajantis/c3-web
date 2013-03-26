@@ -1,11 +1,11 @@
 package org.aphreet.c3.snippet
 
-import net.liftweb.util.BindHelpers._
 import net.liftweb.sitemap.Loc
 import net.liftweb.http.S
 import xml.{NodeSeq, Text}
 import net.liftweb.common.{Box, Empty, Full}
 import net.liftweb.util.Helpers._
+import net.liftweb.util._
 
 /**
  * Copyright iFunSoftware 2011

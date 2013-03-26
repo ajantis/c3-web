@@ -31,7 +31,7 @@ package org.aphreet.c3.snippet.logging
  */
  
 
-import net.liftweb.widgets.logchanger._
+import net.liftmodules.widgets.logchanger._
 import net.liftweb.sitemap.Loc
 import org.aphreet.c3.model.User
 import net.liftweb.util.Props

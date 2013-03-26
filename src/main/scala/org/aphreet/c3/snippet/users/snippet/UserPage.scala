@@ -5,7 +5,7 @@ import org.aphreet.c3.loc.ItemRewriteLoc
 import xml.Text
 import net.liftweb.sitemap.Loc.{Link, LinkText}
 import net.liftweb.common.{Logger, Full, Box}
-import net.liftweb.util.BindHelpers._
+import net.liftweb.util._
 import net.liftweb.util.Helpers._
 import org.aphreet.c3.snippet.users.UserPageData
 

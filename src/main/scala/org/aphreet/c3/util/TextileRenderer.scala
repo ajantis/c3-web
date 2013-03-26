@@ -1,7 +1,7 @@
 package org.aphreet.c3.util
 
 import net.liftweb.http.rest.RestHelper
-import net.liftweb.textile.TextileParser
+import net.liftmodules.textile.TextileParser
 import net.liftweb.http.S
 
 /**

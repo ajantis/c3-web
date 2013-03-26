@@ -1,6 +1,7 @@
 package org.aphreet.c3.snippet.search.snippet
 
-import net.liftweb.util.Helpers._
+import net.liftweb.util._
+import Helpers._
 import org.aphreet.c3.model.{C3Path, Tag, Category}
 import net.liftweb.http._
 import net.liftweb.http.js.{JE, JsCmd, JsCmds}

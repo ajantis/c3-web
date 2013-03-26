@@ -37,7 +37,7 @@ import net.liftweb.sitemap.Loc
 import net.liftweb.http.S
 import xml.{Text, NodeSeq}
 import net.liftweb.common.Full
-import net.liftweb.widgets.autocomplete.AutoComplete
+import net.liftmodules.widgets.autocomplete.AutoComplete
 
 import net.liftweb.util.BindHelpers._
 import net.liftweb.util.PassThru
