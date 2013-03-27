@@ -22,22 +22,32 @@
                 <div id="tab-content" class="tab-content">
                     <div class="lift:GroupPageMessages.putCometJournal">
                         <div id="messages_toolbar">
-                            <a id="show_input_msg" href="#add_messages" data-toggle="modal" class="btn btn-primary" rel="tooltip" title="Compose new message">
+                            <a href="#" id="show_input_msg" class="btn btn-primary" rel="tooltip" title="Compose new message">
                                 <i class="icon-pencil icon-white"></i>
                             </a>
                         </div>
-                        <div id="add_messages" class="modal hide fade">
-                            <h4 class = "modal-header">New message</h4>
-                            <form id="add_messages_form">
-                                <div id="input_container" style="display: none;">
-                                    <textarea id="postit" placeholder="Enter text"></textarea>
-                                </div>
-                            </form>
-                            <div class="modal-footer">
-                                <button type="button" data-dismiss="modal" class="btn">Cancel</button>
-                                <button type="submit" class="btn btn-success" id="send_btn" form="add_messages_form">Save</button>
-                            </div>
+                        <div id="input_container" style="display: none;">
+                            <textarea id="postit" placeholder="Enter text"></textarea>
+                            <button class="btn btn-success" type="submit" id="send_btn">Send</button>
+                            <a id="hide_input_msg" class="btn btn-danger">Cancel</a>
                         </div>
+                        <!--<div id="messages_toolbar">-->
+                            <!--<a id="show_input_msg" href="#add_messages" data-toggle="modal" class="btn btn-primary" rel="tooltip" title="Compose new message">-->
+                                <!--<i class="icon-pencil icon-white"></i>-->
+                            <!--</a>-->
+                        <!--</div>-->
+                        <!--<div id="add_messages" class="modal hide fade">-->
+                            <!--<h4 class = "modal-header">New message</h4>-->
+                            <!--<form id="add_messages_form">-->
+                                <!--<div id="input_container" style="display: none;">-->
+                                    <!--<textarea id="postit" placeholder="Enter text"></textarea>-->
+                                <!--</div>-->
+                            <!--</form>-->
+                            <!--<div class="modal-footer">-->
+                                <!--<button type="button" data-dismiss="modal" class="btn">Cancel</button>-->
+                                <!--<button type="submit" class="btn btn-success" id="send_btn" form="add_messages_form">Save</button>-->
+                            <!--</div>-->
+                        <!--</div>-->
                         <div id="main_ul_id">
                             <div id="main_li_id">
                                 <h5><b><span name="who">Dmitry Ivanov</span>:</b></h5>
