@@ -78,11 +78,13 @@ class SearchForm extends PaginatorSnippet[SearchResultEntry] with C3Loggable{
 
     results.set(search(createC3SearchQuery(queryString, tags)))
 
-    val resultsHtml =
+    val resultsHtml: NodeSeq = {
       if (results.isEmpty)
-        (".query *" #> queryString).apply(noResultsHtml)
+        (".query *" #> queryString.get).apply(noResultsHtml)
       else
         page.flatMap(entry => toCss(entry).apply(entryHtml))
+    }
+
 
     JsCmds.SetHtml("results", resultsHtml) &
     JsCmds.SetHtml(paginationBarId, renderPagination(paginationHtml))
@@ -163,14 +165,14 @@ class SearchForm extends PaginatorSnippet[SearchResultEntry] with C3Loggable{
         }
       }
     } &
-    ".search_form *" #> { xml =>
+    ".search_form *" #> { (xml: NodeSeq) =>
       SHtml.ajaxForm(
         (".search_query [id]" #> queryInputId &
-         ".search_query [value]" #> queryString &
+         ".search_query [value]" #> queryString.get &
          ".search_query" #> SHtml.onSubmit(s => {
           queryString.set(s)
          }) &
-         "type=submit" #> (xml =>
+         "type=submit" #> ( (xml: NodeSeq) =>
            xml ++ SHtml.hidden{ () =>
              if(queryString.isEmpty)
                JsCmds.Noop
@@ -182,19 +184,19 @@ class SearchForm extends PaginatorSnippet[SearchResultEntry] with C3Loggable{
     "#results *" #> {
       val results = page
       if (results.isEmpty){
-        ".entry *" #> (xml => { entryHtml = xml; NodeSeq.Empty }) &
-        ".no_results" #> { xml =>
-          { noResultsHtml = xml; (".query *" #> queryString).apply(xml) }
+        ".entry *" #> ((xml: NodeSeq) => { entryHtml = xml; NodeSeq.Empty }) &
+        ".no_results" #> { (xml: NodeSeq) =>
+          { noResultsHtml = xml; (".query *" #> queryString.get).apply(xml) }
         }
       } else {
-        ".entry" #> (xml => { entryHtml = xml; xml }) &
+        ".entry" #> ((xml: NodeSeq) => { entryHtml = xml; xml }) &
         ".entry *" #> page.map { res: SearchResultEntry =>
           toCss(res)
         } &
-        ".no_results" #> (xml => { noResultsHtml = xml; (".no_results *" #> NodeSeq.Empty).apply(xml) })
+        ".no_results" #> ((xml: NodeSeq) => { noResultsHtml = xml; (".no_results *" #> NodeSeq.Empty).apply(xml) })
       }
     } &
-    ("#" + paginationBarId + " *") #> { xml => { paginationHtml = xml; renderPagination(paginationHtml) } }
+    ("#" + paginationBarId + " *") #> { (xml: NodeSeq) => { paginationHtml = xml; renderPagination(paginationHtml) } }
   }
 
   private def createC3SearchQuery(contentQuery: String, tags: Iterable[String]) = {

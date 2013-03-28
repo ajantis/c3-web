@@ -1,8 +1,8 @@
 package org.aphreet.c3.service.notifications.impl
 
 import org.aphreet.c3.util.C3Loggable
-import org.aphreet.c3.model.{NotificationType, Notification, User}
-import org.aphreet.c3.service.notifications.{NotificationStorageComponent, NotifyMsg}
+import org.aphreet.c3.model.{Notification, User}
+import org.aphreet.c3.service.notifications.{NotifyMsg, NotificationStorageComponent}
 import net.liftweb.util.FieldError
 
 /**

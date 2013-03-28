@@ -94,7 +94,7 @@ trait GroupMessagesLog extends CometActor with CometListener {
           ("#" + hideInputBtnId + " [onclick]") #> SHtml.ajaxInvoke(hideInput _) &
           "#postit" #> SHtml.onSubmit((s: String) => content = s.trim) &
           "#tags_input" #> SHtml.onSubmit((s: String) => tagsInput = s.trim) &
-          "type=submit" #> (xml => xml ++ SHtml.hidden(sendMessage _)) apply(xml)
+          "type=submit" #> ((xml: NodeSeq) => xml ++ SHtml.hidden(sendMessage _)) apply(xml)
       }
     }}
   }

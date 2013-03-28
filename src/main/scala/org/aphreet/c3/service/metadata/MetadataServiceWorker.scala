@@ -6,13 +6,13 @@ import org.aphreet.c3.service.metadata.MetadataServiceProtocol._
 import org.aphreet.c3.lib.metadata.Metadata
 import Metadata._
 import net.liftweb.common.{Box, Failure, Full}
-import org.aphreet.c3.service.notifications.FileMetaProcessedMsg
 import org.aphreet.c3.service.notifications.NotificationManagerProtocol.CreateNotification
 import org.aphreet.c3.model.{Group, User}
 import net.liftweb.mapper.By
 import net.liftweb.util.Helpers._
 import com.ifunsoftware.c3.access.{MetadataRemove, C3System}
 import com.ifunsoftware.c3.access.fs.C3File
+import org.aphreet.c3.service.notifications.FileMetaProcessedMsg
 
 /**
  * Copyright iFunSoftware 2013

@@ -29,7 +29,7 @@ trait ItemRewriteLoc[S, T <: PageData] extends Loc[T] {
 
   def getDefault: Box[S] = Empty
   def getItem(id: String): Box[S]
-  def wrapItem(itemBox: Box[MyS]): Box[T]
+  def wrapItem(itemBox: Box[MyS]): Box[MyT]
 
   /**
    * Override this function to provide a canonical URL
@@ -47,7 +47,7 @@ trait ItemRewriteLoc[S, T <: PageData] extends Loc[T] {
    */
   def finishPath(itemBox: => Box[MyS],
                  restPath: List[String],
-                 suffix: String = ""): Box[T] = {
+                 suffix: String = ""): Box[MyT] = {
     if (restPath == Nil) wrapItem(itemBox) else Empty
   }
 

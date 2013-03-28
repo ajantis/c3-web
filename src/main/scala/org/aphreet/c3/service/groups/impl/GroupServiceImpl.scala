@@ -14,9 +14,9 @@ import org.aphreet.c3.lib.metadata.Metadata._
 import net.liftweb.common.Full
 import scala.Some
 import org.aphreet.c3.service.notifications.NotificationManagerProtocol.CreateNotification
-import org.aphreet.c3.service.notifications.AddedToGroupMsg
 import org.aphreet.c3.lib.NotificationManagerRef
 import java.lang.Exception
+import org.aphreet.c3.service.notifications.AddedToGroupMsg
 
 class GroupServiceImpl extends GroupService with C3Loggable{
 
