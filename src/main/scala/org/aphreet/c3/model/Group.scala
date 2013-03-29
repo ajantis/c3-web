@@ -100,7 +100,13 @@ class Group extends LongKeyedMapper[Group] with IdPK with ManyToMany{
   }
 
   def getTags() = {
-     c3.getFile(baseGroupDirectory).metadata.get(TAGS_META).map(_.split(TAGS_SEPARATOR).toList).getOrElse(Nil)
+    try{
+      c3.getFile(baseGroupDirectory).metadata.get(TAGS_META).map(_.split(TAGS_SEPARATOR).toList).getOrElse(Nil)
+    }
+    catch {
+      case x:Exception=>Nil
+    }
+
   }
   override def delete_! : Boolean = {
     UserGroup.findAll(By(UserGroup.group, this)).foreach(_.delete_!)
