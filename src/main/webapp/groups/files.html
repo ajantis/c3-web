@@ -1,5 +1,7 @@
 <div class="lift:surround?with=default;at=content" xmlns="http://www.w3.org/1999/html">
-<div id="group-tab-wrapper">
+<div class="lift:bind-at?name=left-panel">
+</div>
+<div id="group-tab-wrapperwell message_cont">
     <div class="tabbable"> <!-- Only required for left/right tabs -->
 
         <div class="row-fluid lift:GroupPageFiles.embedTabMenu"></div>
@@ -12,130 +14,117 @@
         <div class="row-fluid">
             <div class="tab-content">
                 <div id="files" class="lift:GroupPageFiles tag-pane">
-                    <ul class="breadcrumbs breadcrumb" style="background-color: white; font-size: 20px;">
-                        <li class="base_files_path">
-                            <a class="link" href="#">Group</a> <span class="divider">/</span>
-                        </li>
-                        <li class="bcrumb">
-                            <a class="link" href="#">dir</a> <span class="divider">/</span>
-                        </li>
-                    </ul>
-
-                    <div class="fs_toolbar">
-                        <tail>
-                            <link rel="stylesheet" type="text/css" href="/js/file-upload/css/upload.css">
-                            <script id="file-template" type="text/html">
-
-                                <div class="toggler"><i class="icon-tags icon-black"></i></div>
-
-                                <div class="lineContainer"><%=filename.length>30?filename.substr(0,30)+"...":filename%></div>
-                                <div class="removebutton"><i class="icon-remove icon-black"></i></div>
-                                <div class="barcontainer">
-                                    <div class="bartext"><%= status%></div>
-                                    <div class="bar" style="width: <%=loaded%>%;"></div>
-                                </div>
-                                <% if (hasError){ %>
-                                <div class id=" error"><%=errortext%></div>
-                                <% } %>
-                                <textarea  hidden="true" class="area" placeholder = "Enter description" style="display: block;"><%=metadata%></textarea>
-
-                            </script>
-                            <script src="/js/lib/appinit.js" type="text/javascript"></script>
-                            <script src="/js/lib/underscore.js" type="text/javascript"></script>
-                            <script src="/js/lib/backbone.js" type="text/javascript"></script>
-                            <script  src ="/js/file-upload/js/logger.js" type="text/javascript"></script>
-                            <script  src ="/js/file-upload/js/module.js" type="text/javascript"></script>
-                            <script  src ="/js/file-upload/js/models.js" type="text/javascript"></script>
-                            <script  src ="/js/file-upload/js/collections.js" type="text/javascript"></script>
-                            <script  src ="/js/file-upload/js/views.js" type="text/javascript"></script>
-                        </tail>
-                        <p>
-                            <a type="button" class="btn back_btn" href="#back" data-toggle="modal">
-                                <img src="/images/arrow_large_left.png" title="Back"/>
-                            </a>
-                            <a type="button" class="btn" href="#new-directory" data-toggle="modal">
-                                <img src="/images/folder_classic_add.png" title="Create directory"/>
-                            </a>
-                            <a type="button" class="btn" href="#upload_form" data-toggle="modal">
-                                <img src="/images/folder_classic_down.png" title="Upload files"/>
-                            </a>
-                            <a type="button" class="btn" href="#delete_selected_form" data-toggle="modal">
-                                <img src="/images/remove.png" title="Delete files"/>
-                            </a>
-                        </p>
+                    <div>
+                        <ul class="breadcrumbs breadcrumb" style="background-color: white; font-size: 20px;">
+                            <li class="base_files_path">
+                                <a class="link" href="#">Group</a> <span class="divider">/</span>
+                            </li>
+                            <li class="bcrumb">
+                                <a class="link" href="#">dir</a> <span class="divider">/</span>
+                            </li>
+                            <li>
+                            <div class="file-table">
+                                <!--<a type="button" class="btn back_btn" href="#back" data-toggle="modal">-->
+                                <!--<img src="/images/copy_file.png" title="Copy"/>-->
+                                <!--<strong>Copy file</strong>-->
+                                <!--</a>-->
+                                <!--<a type="button" class="" href="#back" data-toggle="modal">-->
+                                <!--<img src="/images/arrow_large_left.png" title="Back"/>-->
+                                <!--</a>-->
+                                <a type="button" href="#new-directory" data-toggle="modal">
+                                    <img src="/images/folder_plus.png" title="Create directory"/>
+                                </a>
+                                <a type="button"  href="#upload_form" data-toggle="modal">
+                                    <img src="/images/cloud_upload_2.png" title="Upload files"/>
+                                </a>
+                                <!--<a type="button" href="#delete_selected_form" data-toggle="modal">-->
+                                    <!--<img src="/images/remove.png" title="Delete files"/>-->
+                                <!--</a>-->
+                            </div>
+                            <div class="file-view">
+                                <a href="#meta" class="" data-toggle="modal" title="Edit metadata"><img src="/images/pencil.png"/></a>
+                            </div>
+                            </li>
+                        </ul>
                     </div>
-
-                    <div id="node-tags-form">
-                        <!--<i class="icon-tags inf_left"></i>-->
-                        <img class="inf_left" src="/images/tag_add.png"/>
-                        <p class="inf_left">Tags: </p>
-                        <div id="node-tags" class="tag-list inf_left">
-                            <div class="tags"></div>
+                    <div class="file-table">
+                        <div id="node-tags-form">
+                            <i class="icon-tags inf_left"></i>
+                            <!--<img class="inf_left" src="/images/tag_add.png"/>-->
+                            <p class="inf_left">Tags: </p>
+                            <div id="node-tags" class="tag-list inf_left">
+                                <div class="tags"></div>
+                            </div>
                         </div>
+
+                        <table class="tablesorter" id="table-sort">
+                            <thead>
+                            <tr>
+                                <th></th>
+                                <th class="file-table-name"><b>Name</b></th>
+                                <th class="file-table-owner"><b>Owner</b></th>
+                                <th class="file-table-date"><b>Modify date</b></th>
+                                <th class="file-table-rules"><b>Rules</b></th>
+                                <th> <input type="checkbox" value="false" /></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr class="child">
+                                <td><img class="icon"/></td>
+                                <td><a class="link" href="#"><span class="name"></span></a></td>
+                                <td><a class="owner" href="#">Aphreet</a></td>
+                                <td class="file-table-date"><span class="created_date"></span></td>
+                                <td class="file-table-rules"><a href="#" class="" data-toggle="modal"><span class="rules">rw-r--r--</span></a></td>
+                                <td><input class="select_resource" type="checkbox" /></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <a type="button" href="#delete_selected_form" class="btn btn-danger inf_right" data-toggle="modal">Delete</a>
                     </div>
-
-                    <table class="file-table tablesorter" id="table-sort">
-                        <thead>
-                        <tr>
-                            <th></th>
-                            <th class="file-table-name"><b>Name</b></th>
-                            <th class="file-table-owner"><b>Owner</b></th>
-                            <th class="file-table-date"><b>Modify date</b></th>
-                            <th><input type="checkbox" value="false" /></th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr class="child">
-                            <td><img class="icon"/></td>
-                            <td><a class="link" href="#"><span class="name"></span></a></td>
-                            <td><a class="owner" href="#">Aphreet</a></td>
-                            <td class="file-table-date"><span class="created_date"></span></td>
-                            <td><input class="select_resource" type="checkbox" /></td>
-                        </tr>
-                        </tbody>
-                    </table>
                     <div class="file-view">
-                        <a href="#" class="btn download_btn"><img src="/images/folder_classic_up.png"/><strong>Download</strong></a>
-                        <a href="#" class="btn view_btn"><img src="/images/zoom.png"/><strong>View</strong></a>
-                        <a type="button" href="#meta" class="btn" data-toggle="modal" title="Edit metadata"><img src="/images/pencil.png"/><strong>Metadata</strong></a>
-                        <a type="button" href="#tags" class="btn" data-toggle="modal" title="Edit tags"><img src="/images/pencil.png"/><strong>Tags</strong></a>
-                        <h4 class="name_file">Name</h4>
-
+                        <!--<h4 class="name_file">Name</h4>-->
                         <div>
-                            <div>
-                                <i class="icon-calendar inf_left"></i>
-                                <p class="data_file">Sept 16th, 2012</p>
-                            </div>
-                            <div>
-                                <i class="icon-user inf_left"></i>
-                                <p class="inf_left">Owner/Creater :</p>
-                                <div>
-                                    <p class="owner_file">Kobtsev Sergey</p>
-                                </div>
-                            </div>
-                            <div>
-                                <i class="icon-hdd inf_left"></i>
-                                <p class="inf_left">Size : </p>
-                                <div>
-                                    <p class="size_file">196,8 Мб</p>
-                                </div>
-                            </div>
-                            <br/>
-                            <div >
-                                <i class="icon-align-justify inf_left"></i>
-                                <p>Description</p>
-                                <div class="inf_left">
-                                    <p class="inf_left description_box" rows="20" cols="150">Engineering Science is a comprehensive textbook suitable for all vocational and pre-degree courses. Taking a generic approach, the essential scientific principles engineering students need for their studies are presented topic by topic. Unlike the majority of texts available on this subject, Bill Bolton goes beyond the core science to include the mechanical, electrical and electronic principles needed in the majority of courses.</p>
-                                </div>
-                            </div>
                             <div class="inf_left">
-                                <i class="icon-tags inf_left "></i>
-                                <p class="inf_left">Tags: </p>
-                                <div class="file_tags inf_left">
-                                    <span class="label label-info inf_left">Snipp</span>
-                                </div>
+                                <div>
+                                <!--<img class="inf_left" src="/images/calendar.png"/>-->
+                                <i class="icon-calendar inf_left"></i>
+                                <span class="data_file">Sept 16th, 2012</span>
                             </div>
+                                <div>
+                                    <!--<img class="inf_left" src="/images/user.png"/>-->
+                                    <i class="icon-user inf_left"></i>
+                                    Owner/Creater :
+                                    <span class="owner_file">Kobtsev Sergey</span>
+                                </div>
+                                <div>
+                                    <!--<img class="inf_left" src="/images/hdd.png"/>-->
+                                    <i class="icon-hdd inf_left"></i>
+                                    Size :
+                                    <span class="size_file">196,8 Мб</span>
+                                </div>
+                                <div>
+                                    <!--<img class="inf_left" src="/images/description.png"/>-->
+                                    <i class="icon-align-justify inf_left"></i>
+                                    <p>Description</p>
+                                    <div class="inf_left">
+                                        <p class="inf_left description_box" rows="20" cols="150">Engineering Science is a comprehensive textbook suitable for all vocational and pre-degree courses. Taking a generic approach, the essential scientific principles engineering students need for their studies are presented topic by topic. Unlike the majority of texts available on this subject, Bill Bolton goes beyond the core science to include the mechanical, electrical and electronic principles needed in the majority of courses.
+                                            <a href="#" data-toggle="modal" title="Edit description"><img src="/images/pencil.png"/></a>
+                                        </p>
 
+                                    </div>
+                                </div>
+                                <div>
+                                    <!--<img class="inf_left" src="/images/tag.png"/>-->
+                                    <i class="icon-tags inf_left"></i>
+                                    <p class="inf_left">Tags: </p>
+                                    <div class="file_tags label btn-info inf_left">
+                                        <span class="label label-info inf_left">Snipp</span>
+                                    </div>
+                                    <a href="#tags" class="inf_left" data-toggle="modal" title="Edit tags"><img src="/images/tag_add.png"/></a>
+                            </div>
+                            </div>
+                            <a type="button" href="#" class="btn btn-success download_btn inf_left"/><i class="icon-white icon-download-alt"></i>  Download</a>
+                            <!--<a href="#" class=" view_btn inf_left "><img src="/images/style2/search.png" title="Show file"/></a>-->
                         </div>
 
                         <div id="tags" class="modal hide fade">
@@ -197,7 +186,7 @@
                             <div class='dropzone' id="dropzone"></div>
                         </div>
                         <div class ="modal-footer">
-                            <a id="close" data-dismiss="modal" href="#" class='cl btn'>Close</a>
+                            <a id="close" data-dismiss="modal" href="#" class='cl btn'>Cancel</a>
                             <a id="upload"  href="#" class='cl btn btn-success'>Upload</a>
                         </div>
                     </div>
@@ -236,17 +225,47 @@
                             </div>
                         </div>
 
-                        <div id="delete_selected_form" class="modal hide fade">
-                            <h1 class="modal-header">Delete files</h1>
-                            <div class="modal-body">
-                                <p>Are you sure you want to delete selected files?</p>
-                            </div>
-                            <div class ="modal-footer">
-                                <button type="button" data-dismiss="modal" class="btn">Cancel</button>
-                                <button type="button" onclick="" class="delete_selected_btn btn btn-danger">Delete</button>
+                    <div id="delete_selected_form" class="modal hide fade">
+                        <h1 class="modal-header">Delete files</h1>
+                        <div class="modal-body">
+                            <p>Are you sure you want to delete selected files?</p>
+                        </div>
+                        <div class ="modal-footer">
+                            <button type="button" data-dismiss="modal" class="btn">Cancel</button>
+                            <button type="button" onclick="" class="delete_selected_btn btn btn-danger">Delete</button>
                         </div>
                     </div>
+                    <div class="fs_toolbar">
+                        <tail>
+                            <link rel="stylesheet" type="text/css" href="/js/file-upload/css/upload.css">
+                            <script id="file-template" type="text/html">
 
+                                <div class="toggler"><i class="icon-tags icon-black"></i></div>
+
+                                <div class="lineContainer"><%=filename.length>30?filename.substr(0,30)+"...":filename%></div>
+                                <div class="removebutton"><i class="icon-remove icon-black"></i></div>
+                                <div class="barcontainer">
+                                    <div class="bartext"><%= status%></div>
+                                    <div class="bar" style="width: <%=loaded%>%;"></div>
+                                </div>
+                                <% if (hasError){ %>
+                                <div class id=" error"><%=errortext%></div>
+                                <% } %>
+                                <textarea  hidden="true" class="area" placeholder = "Enter description" style="display: block;"><%=metadata%></textarea>
+
+                            </script>
+                            <script src="/js/lib/appinit.js" type="text/javascript"></script>
+                            <script src="/js/lib/underscore.js" type="text/javascript"></script>
+                            <script src="/js/lib/backbone.js" type="text/javascript"></script>
+                            <script  src ="/js/file-upload/js/logger.js" type="text/javascript"></script>
+                            <script  src ="/js/file-upload/js/module.js" type="text/javascript"></script>
+                            <script  src ="/js/file-upload/js/models.js" type="text/javascript"></script>
+                            <script  src ="/js/file-upload/js/collections.js" type="text/javascript"></script>
+                            <script  src ="/js/file-upload/js/views.js" type="text/javascript"></script>
+
+                        </tail>
+
+                    </div>
                 </div>
             </div>
         </div>
