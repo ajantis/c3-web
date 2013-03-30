@@ -219,20 +219,8 @@ class Boot extends Bootable{
         S.notice("Super user is Admin")
       }
     })
-
-    val allUsers = User.findAll()
-    allUsers.map(user=> {
-      if (!user.enabled.dbNotNull_?){
-        user.enabled(true).save
-      }
-    })
     val allGroups = Group.findAll()
-    allGroups.map(group =>{
-      if (!group.isOpen.dbNotNull_?){
-        group.isOpen(false).save
-      }
-      }
-    )
+    allGroups.filter(!_.isOpen.dbNotNull_?).foreach(_.isOpen(false).save)
 
   }
 

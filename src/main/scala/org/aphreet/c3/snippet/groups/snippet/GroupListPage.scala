@@ -42,9 +42,9 @@ class GroupListPage {
       ////                "* *" #> SHtml.memoize(f => f ++ SHtml.hidden(deleteGroup _))).apply(n)
       //            ))
       //      }
-        var picName = "glyphicons_203_lock.png"
-        if(group.isOpen) picName = "glyphicons_043_group.png"
-         val groupTags = group.getTags()
+        val picName = if(group.isOpen.is) "glyphicons_203_lock.png" else "glyphicons_043_group.png"
+
+        val groupTags = group.getTags()
         ".tags_group" #> groupTags.map((tag: String) => {
           ".tags_group *" #> tag
         }) &
