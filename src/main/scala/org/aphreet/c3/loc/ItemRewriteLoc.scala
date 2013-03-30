@@ -79,13 +79,13 @@ trait PageData {
 /**
  * For URLs of the for /foo/[ID]/suffix
  */
-trait SuffixLoc {
-  self: ItemRewriteLoc[_, _] =>
+trait SuffixLoc[S, T <: PageData]{
+  self: ItemRewriteLoc[S, T] =>
 
   val pathSuffix: List[String]
   override lazy val pathList: List[String] = pathPrefix ++ pathSuffix
 
-  override def link = {
+  override def link: Link[MyT] = {
     new Link[MyT](pathList)
   }
 

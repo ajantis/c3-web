@@ -37,7 +37,9 @@ import net.liftweb.http.{LiftRules, S, LiftSession}
 import net.liftweb.mapper._
 import org.aphreet.c3.model._
 import org.aphreet.c3.DBSetup
+import org.junit
 
+@junit.Ignore
 class GroupFormTest extends TestCase {
 
   private val session : LiftSession = new LiftSession("", StringHelpers.randomString(20), Empty)
@@ -102,7 +104,7 @@ class GroupFormTest extends TestCase {
     // Initialize session state if it is not already
     S.initIfUninitted(session) {
       // Create and log-in the user
-      val user : User = User.create
+      val user: User = User.create
       user.firstName("test")
       user.lastName("user")
       user.save

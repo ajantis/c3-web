@@ -1,6 +1,6 @@
 package org.aphreet.c3.snippet.groups.snippet
 
-import org.aphreet.c3.loc.{ItemRewriteLoc, SuffixLoc}
+import org.aphreet.c3.loc.{SuffixLoc, ItemRewriteLoc}
 import org.aphreet.c3.model.{User, Group}
 import net.liftweb.common._
 import net.liftweb.sitemap.Loc.{Hidden, LinkText, Link}
@@ -30,7 +30,7 @@ import org.aphreet.c3.util.helpers.ByteCalculatorHelpers
  * @author Dmitry Ivanov (mailto: id.ajantis@gmail.com)
  *         iFunSoftware
  */
-object GroupPageFiles extends ItemRewriteLoc[Group, GroupPageFilesData] with SuffixLoc{
+object GroupPageFiles extends ItemRewriteLoc[Group, GroupPageFilesData] with SuffixLoc[Group, GroupPageFilesData]{
 
   override val name = "Files"
   override val pathPrefix = "groups" :: Nil
@@ -38,7 +38,7 @@ object GroupPageFiles extends ItemRewriteLoc[Group, GroupPageFilesData] with Suf
   override def getItem(id: String) = Group.find(id)
 
   // we don't use it here
-  override def wrapItem(groupBox: Box[Group]) = Empty
+  override def wrapItem(groupBox: Box[Group]): Box[GroupPageFilesData] = Empty
   def wrapItemWithPath(groupBox: Box[Group], path: List[String]) = groupBox.map(GroupPageFilesData(_, path))
 
   override def link = {

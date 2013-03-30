@@ -19,7 +19,7 @@ import net.liftmodules.widgets.autocomplete.AutoComplete
 /**
  * @author Serjk (mailto: serjk91@gmail.com)
  */
-object GroupPageMembers extends AbstractGroupPageLoc[GroupPageData] with SuffixLoc {
+object GroupPageMembers extends AbstractGroupPageLoc[GroupPageData] with SuffixLoc[Group, GroupPageData]{
   override val name = "Members"
   override val pathPrefix = "groups" :: Nil
   override val pathSuffix = "members" ::  Nil

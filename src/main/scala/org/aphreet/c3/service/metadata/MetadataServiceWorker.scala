@@ -41,7 +41,7 @@ class MetadataServiceWorker(c3system: C3System, notificationManager: ActorRef) e
                 // TODO we do 2 requests to C3... make it in 1
                 fsPath(res.address).map(c3system.getFile _) match {
                   case Some(f: C3File) => {
-                    notificationManager ! CreateNotification(FileMetaProcessedMsg(f, owner))
+                    notificationManager ! CreateNotification(FileMetaProcessedMsg(f, owner.id.is))
                     res.update(MetadataRemove(List(S4_PROCESSED_FLAG_META))) // updating metadata with s4-meta flag removed
                   }
                   case _ => logger.error("Resource " + res.address + " is not found in virtual FS... Skipping")

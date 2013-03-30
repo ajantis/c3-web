@@ -11,7 +11,7 @@
     <inceptionYear>2010</inceptionYear>
     <properties>
         <scala.version>2.10</scala.version>
-        <scala.version.full>${scala.version}.1</scala.version.full>
+        <scala.version.full>${scala.version}.0</scala.version.full>
         <lift.version>2.5-RC2</lift.version>
         <akka.version>2.1.2</akka.version>
         <!-- Common plugin settings -->
@@ -94,6 +94,12 @@
             <groupId>com.ifunsoftware.c3</groupId>
             <artifactId>accesslib</artifactId>
             <version>1.0.20</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-codec</groupId>
+                    <artifactId>commons-codec</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>net.liftweb</groupId>

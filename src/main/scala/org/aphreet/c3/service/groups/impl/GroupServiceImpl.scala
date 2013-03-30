@@ -76,7 +76,7 @@ class GroupServiceImpl extends GroupService with C3Loggable{
     } yield {
       if (UserGroup.findAll(By(UserGroup.user, member), By(UserGroup.group, group)).isEmpty){
         UserGroup.join(member, group)
-        notificationManager ! CreateNotification(AddedToGroupMsg(group = group, recipient = member))
+        notificationManager ! CreateNotification(AddedToGroupMsg(group = group, recipientId = member.id.is))
         Full(member)
       } else Failure("User " + member.email + " is already a member of this group!")
     }

@@ -5,7 +5,8 @@ import org.scalatest.matchers.ShouldMatchers
 import akka.testkit.TestKit
 import akka.actor.{Props, ActorSystem}
 import org.aphreet.c3.model.{Notification, User}
-import akka.util.duration._
+import concurrent.duration
+import duration._
 import org.scalatest.mock.MockitoSugar
 import org.mockito.Mockito._
 
