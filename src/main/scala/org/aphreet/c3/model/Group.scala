@@ -81,13 +81,8 @@ class Group extends LongKeyedMapper[Group] with IdPK with ManyToMany{
 
 
   }
-
-  object isOpenRegistration extends MappedBoolean(this){
-    override def defaultValue = true
-  }
-
-  object isOpenView extends MappedBoolean(this) {
-    override def defaultValue = true
+  object isOpen extends MappedBoolean(this) {
+    override def defaultValue = false
   }
 
   def getChildren: List[C3FileSystemNode] = getChildren("")
