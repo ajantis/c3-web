@@ -29,6 +29,8 @@ object UserPage extends ItemRewriteLoc[User, UserPageData] {
   override def canonicalUrl(data: UserPageData) = {
     Full((pathPrefix:::List(data.user.id.is.toString)).mkString("/","/",""))
   }
+
+  def isAccessiblePage(page: UserPageData): Boolean = true
 }
 
 class UserPage(data: UserPageData) extends UserHelpers{

@@ -1,17 +1,12 @@
 package org.aphreet.c3.snippet.groups.snippet
 
-import org.aphreet.c3.loc.ItemRewriteLoc
 import org.aphreet.c3.model.Group
 import net.liftweb.sitemap.Loc.{LinkText, Link}
-import net.liftweb.common.{Logger, Full, Box}
-import org.aphreet.c3.snippet.groups.GroupPageData
-import xml.Text
+import net.liftweb.common.Box
+import org.aphreet.c3.snippet.groups.{AbstractGroupPageLoc, GroupPageData}
 import net.liftweb.util.BindHelpers._
 import org.aphreet.c3.lib.DependencyFactory._
-import xml.Text
-import net.liftweb.common.Full
 import com.ifunsoftware.c3.access.C3System
-import org.aphreet.c3.lib.metadata.Metadata._
 import xml.Text
 import net.liftweb.common.Full
 
@@ -19,7 +14,7 @@ import net.liftweb.common.Full
  * Copyright iFunSoftware 2011
  * @author Dmitry Ivanov
  */
-object GroupPage extends ItemRewriteLoc[Group, GroupPageData] {
+object GroupPage extends AbstractGroupPageLoc[GroupPageData] {
 
   override val name = "Group"
   override def title = Text(currentValue.map(_.group.name.is).openOr("Group"))

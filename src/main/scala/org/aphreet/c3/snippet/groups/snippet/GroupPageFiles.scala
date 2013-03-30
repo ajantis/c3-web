@@ -9,7 +9,7 @@ import xml.{NodeSeq, Text}
 import net.liftweb.util.Helpers._
 import net.liftweb.http.{RequestVar, SHtml, S}
 import net.liftweb.common.Full
-import org.aphreet.c3.snippet.groups.GroupPageFilesData
+import org.aphreet.c3.snippet.groups.{AbstractGroupPageLoc, GroupPageFilesData}
 import com.ifunsoftware.c3.access.fs.{C3FileSystemNode, C3File, C3Directory}
 import org.aphreet.c3.lib.metadata.Metadata
 import Metadata._
@@ -30,7 +30,7 @@ import org.aphreet.c3.util.helpers.ByteCalculatorHelpers
  * @author Dmitry Ivanov (mailto: id.ajantis@gmail.com)
  *         iFunSoftware
  */
-object GroupPageFiles extends ItemRewriteLoc[Group, GroupPageFilesData] with SuffixLoc{
+object GroupPageFiles extends AbstractGroupPageLoc[GroupPageFilesData] with SuffixLoc{
 
   override val name = "Files"
   override val pathPrefix = "groups" :: Nil

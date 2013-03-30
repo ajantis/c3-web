@@ -31,15 +31,24 @@ trait ItemRewriteLoc[S, T <: PageData] extends Loc[T] {
   def getItem(id: String): Box[S]
   def wrapItem(itemBox: Box[MyS]): Box[T]
 
+  def isAccessiblePage(page: T): Boolean
+
   /**
    * Override this function to provide a canonical URL
    */
   def canonicalUrl(data: T): Box[String] = Empty
   override def params: List[LocParam[T]] =
     Hidden ::
-    TestValueAccess[T](_.flatMap(canonicalUrl(_))
-                        .filter(_ != S.uri)
-                        .map(RedirectResponse(_))) :: Nil
+    TestValueAccess[T]{ (page: Box[T]) =>
+      page.flatMap { p: T =>
+        if (isAccessiblePage(p))
+          canonicalUrl(p).filter(v => v != S.uri).map(RedirectResponse(_))
+        else
+          Full(RedirectWithState("/index", RedirectState( () => {}, "You don't have access to this group" -> NoticeType.Notice )))
+      }
+    } :: Nil
+
+//      ) :: Nil
 
   /**
    * By default the path must end after the item id.
