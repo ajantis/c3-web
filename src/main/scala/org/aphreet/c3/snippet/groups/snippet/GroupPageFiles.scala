@@ -37,6 +37,13 @@ object GroupPageFiles extends AbstractGroupPageLoc[GroupPageFilesData] with Suff
   override val pathSuffix = "files" ::  Nil
   override def getItem(id: String) = Group.find(id)
 
+  override def isAccessiblePage(page: GroupPageFilesData): Boolean = {
+    if (!page.isDirectoryLoc) {
+      true
+    }else {
+      super.isAccessiblePage(page)
+    }
+  }
   // we don't use it here
   override def wrapItem(groupBox: Box[Group]) = Empty
   def wrapItemWithPath(groupBox: Box[Group], path: List[String]) = groupBox.map(GroupPageFilesData(_, path))

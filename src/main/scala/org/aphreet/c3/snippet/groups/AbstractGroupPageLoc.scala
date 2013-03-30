@@ -1,6 +1,6 @@
 package org.aphreet.c3.snippet.groups
 
-import org.aphreet.c3.model.Group
+import org.aphreet.c3.model.{User, Group}
 import org.aphreet.c3.loc.{PageData, ItemRewriteLoc}
 import xml.{Text, NodeSeq}
 import net.liftweb.sitemap.Loc.Link
@@ -11,7 +11,7 @@ import net.liftweb.sitemap.Loc.Link
  */
 trait AbstractGroupPageLoc[Data <: GroupPageData]
   extends ItemRewriteLoc[Group, Data] {
-
-  // TODO Here we want to check if group is accessible by current user
-  def isAccessiblePage(page: Data): Boolean = true
+  def isAccessiblePage(page: Data): Boolean = {
+    page.group.isOpen || User.currentUser.open_!.groups.find(_.name.is == page.group.name.is).isDefined
+  }
 }

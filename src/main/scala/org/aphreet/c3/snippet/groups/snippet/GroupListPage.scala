@@ -42,12 +42,13 @@ class GroupListPage {
       ////                "* *" #> SHtml.memoize(f => f ++ SHtml.hidden(deleteGroup _))).apply(n)
       //            ))
       //      }
-
-        val groupTags = group.getTags()
+        var picName = "glyphicons_203_lock.png"
+        if(group.isOpen) picName = "glyphicons_043_group.png"
+         val groupTags = group.getTags()
         ".tags_group" #> groupTags.map((tag: String) => {
           ".tags_group *" #> tag
         }) &
-        ".inf_left_groups [src]"#> ("/images/glyphicons_043_group.png")&
+        ".inf_left_groups [src]"#> ("/images/"+picName)&
           "a *" #> group.name.is &
           "a [href]" #> ("/groups/"+group.id)&
           ".description_group *"#> group.description
@@ -65,28 +66,31 @@ class GroupListPage {
 
   def add:CssSel = {
     var newGroup = Group.create
-    var sameCategory = ""
+//    var sameCategory = "true"
+    var public = ""
     var tags = ""
 
     def saveMe(){
       newGroup.validate match {
         case Nil => {
           newGroup = newGroup.owner(User.currentUser.open_!)
+          if (public != "false") newGroup.isOpen(true)
           groupService.createGroup(newGroup,tags) match {
             case Full(g) => {
-              if (sameCategory != "false"){
-                val newCategory = Category.create.name(g.name.is).linkedGroup(g)
-                newCategory.validate match {
-                  case Nil => {
-                    newCategory.save()
-                    S.notice("Added group and category: " + g.name + " is added")
-                  }
-                  case xs =>
-                    xs.foreach(f => S.error(f.msg))
-                }
-              } else{
-                S.notice("Added group: " + g.name)
-              }
+              S.notice("Added group: " + g.name)
+//              if (sameCategory != "false"){
+//                val newCategory = Category.create.name(g.name.is).linkedGroup(g)
+//                newCategory.validate match {
+//                  case Nil => {
+//                    newCategory.save()
+//                    S.notice("Added group and category: " + g.name + " is added")
+//                  }
+//                  case xs =>
+//                    xs.foreach(f => S.error(f.msg))
+//                }
+//              } else{
+//                S.notice("Added group: " + g.name)
+//              }
             }
             case Failure(msg, _, _) => S.error(msg)
             case _ => S.error("Group is not created")
@@ -98,7 +102,8 @@ class GroupListPage {
     }
     "name=name" #> SHtml.onSubmit(newGroup.name(_))&
       "name=description" #> SHtml.onSubmit(newGroup.description(_))&
-      "name=sameCategory" #> SHtml.onSubmit(sameCategory = _) &
+//      "name=sameCategory" #> SHtml.onSubmit(sameCategory = _) &
+      "name=public" #> SHtml.onSubmit(public = _) &
       "name=tags_edit" #> SHtml.onSubmit(tags = _) &
       "type=submit" #> SHtml.onSubmitUnit(saveMe)
   }
