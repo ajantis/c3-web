@@ -219,9 +219,6 @@ class Boot extends Bootable{
         S.notice("Super user is Admin")
       }
     })
-    val allGroups = Group.findAll()
-    allGroups.filter(!_.isOpen.dbNotNull_?).foreach(_.isOpen(false).save)
-
   }
 
 
