@@ -3,7 +3,7 @@ Bundle-Version: 1.0.0
 Bundle-Name: C3 Web
 Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.aphreet.c3.web
-Web-ContextPath: /c3
+Web-ContextPath: /
 Bundle-ClassPath: WEB-INF/classes,
  WEB-INF/lib/accesslib-1.0.19.jar,
  WEB-INF/lib/webdav-servlet-2.0.3.jar,
