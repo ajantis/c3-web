@@ -69,6 +69,12 @@ class Boot extends Bootable{
     val isSuperAdmin = If(() => {if(!User.currentUser.isEmpty) User.currentUser.open_!.superUser.is else false},
       () => RedirectWithState("/index", RedirectState( () => {} ,"Not a super user" -> NoticeType.Notice ) )
     )
+//    val groupAccess = If(() => {if (gr)
+//
+//
+//    }
+//
+//    )
 
     val isGroupAdmin = If(() => {
       (for {
@@ -227,6 +233,13 @@ class Boot extends Bootable{
         user.enabled(true).save
       }
     })
+    val allGroups = Group.findAll()
+    allGroups.map(group =>{
+      if (!group.isOpen.dbNotNull_?){
+        group.isOpen(false).save
+      }
+      }
+    )
 
   }
 
