@@ -30,7 +30,7 @@ import org.aphreet.c3.util.helpers.ByteCalculatorHelpers
  * @author Dmitry Ivanov (mailto: id.ajantis@gmail.com)
  *         iFunSoftware
  */
-object GroupPageFiles extends ItemRewriteLoc[Group, GroupPageFilesData] with SuffixLoc[Group, GroupPageFilesData]{
+object GroupPageFiles extends AbstractGroupPageLoc[GroupPageFilesData] with SuffixLoc[Group, GroupPageFilesData]{
 
   override val name = "Files"
   override val pathPrefix = "groups" :: Nil
@@ -40,7 +40,7 @@ object GroupPageFiles extends ItemRewriteLoc[Group, GroupPageFilesData] with Suf
   override def isAccessiblePage(page: GroupPageFilesData): Boolean = {
     if (!page.isDirectoryLoc) {
       true
-    }else {
+    } else {
       super.isAccessiblePage(page)
     }
   }
