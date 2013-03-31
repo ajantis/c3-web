@@ -1,6 +1,6 @@
 package org.aphreet.c3.snippet.groups.snippet
 
-import net.liftweb.widgets.tablesorter.{TableSorter,Sorter, DisableSorting}
+import net.liftmodules.widgets.tablesorter.{TableSorter,Sorter, DisableSorting}
 import xml.{Text, NodeSeq}
 
 /**

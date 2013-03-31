@@ -1,9 +1,10 @@
 package org.aphreet.c3.util.helpers
 
-import akka.util.duration._
-import akka.util.{Timeout, Duration}
+import concurrent.duration
+import duration._
 import org.aphreet.c3.lib.DependencyFactory
 import akka.actor.ActorSystem
+import akka.util.Timeout
 
 /**
  * @author Dmitry Ivanov (mailto: id.ajantis@gmail.com)

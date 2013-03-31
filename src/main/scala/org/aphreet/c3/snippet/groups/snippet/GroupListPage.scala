@@ -8,7 +8,7 @@ import net.liftweb.http.{RequestVar, S, SHtml}
 import net.liftweb.http.js.{JsCmds, JsCmd}
 import org.aphreet.c3.service.groups.GroupService
 import net.liftweb.util.Helpers._
-import net.liftweb.util.BindHelpers._
+import net.liftweb.util._
 import org.aphreet.c3.lib.DependencyFactory
 import net.liftweb.util.CssSel
 

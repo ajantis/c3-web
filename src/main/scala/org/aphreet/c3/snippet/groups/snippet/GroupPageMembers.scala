@@ -14,12 +14,12 @@ import com.ifunsoftware.c3.access.C3System
 import net.liftweb.http.js.{JsCmds, JsCmd}
 import org.aphreet.c3.service.groups.GroupService
 import net.liftweb.util.CssSel
-import net.liftweb.widgets.autocomplete.AutoComplete
+import net.liftmodules.widgets.autocomplete.AutoComplete
 
 /**
  * @author Serjk (mailto: serjk91@gmail.com)
  */
-object GroupPageMembers extends AbstractGroupPageLoc[GroupPageData] with SuffixLoc {
+object GroupPageMembers extends AbstractGroupPageLoc[GroupPageData] with SuffixLoc[Group, GroupPageData]{
   override val name = "Members"
   override val pathPrefix = "groups" :: Nil
   override val pathSuffix = "members" ::  Nil

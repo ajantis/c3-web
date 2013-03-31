@@ -7,11 +7,11 @@ import akka.pattern.ask
 import org.aphreet.c3.util.helpers.{AkkaAwareSnippet, DateTimeHelpers}
 import net.liftweb.util.PassThru
 import org.aphreet.c3.service.notifications.NotificationManagerProtocol.GetUserNotifications
-import akka.dispatch.{Await, Future}
-import net.liftweb.common.{Empty, Box, Full}
+import net.liftweb.common.Box
 import org.aphreet.c3.lib.DependencyFactory._
-import org.aphreet.c3.lib.{NotificationManagerRef, MetadataServiceRef}
-import akka.util.duration._
+import org.aphreet.c3.lib.NotificationManagerRef
+import concurrent.{Await, Future, duration}
+import duration._
 
 /**
  * Copyright iFunSoftware 2013

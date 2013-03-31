@@ -4,7 +4,8 @@ import org.aphreet.c3.service.metadata.MetadataServiceProtocol._
 import org.aphreet.c3.lib.DependencyFactory._
 import com.ifunsoftware.c3.access.{C3Resource, C3System}
 import com.ifunsoftware.c3.access.C3System._
-import akka.util.duration._
+import concurrent.duration
+import duration._
 import akka.routing.FromConfig
 import akka.actor
 import actor.{ActorRef, Actor, OneForOneStrategy}
@@ -42,6 +43,7 @@ class MetadataService(notificationManager: ActorRef) extends Actor with C3Loggab
     case msg => logger.error("Unknown message is received: " + msg)
   }
 
+  import context.dispatcher // Use this Actors' Dispatcher as ExecutionContext
   this.context.system.scheduler.schedule(5 minutes, 5 minutes, self, CheckForMetadataUpdates)
 }
 

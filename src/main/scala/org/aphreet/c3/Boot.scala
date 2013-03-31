@@ -10,11 +10,11 @@ import org.aphreet.c3.model._
 import net.liftweb.mapper._
 import net.liftweb.http._
 import js.jquery.JQuery14Artifacts
-import net.liftweb.widgets.logchanger._
-import net.liftweb.widgets.uploadprogress._
-import net.liftweb.widgets.tablesorter.TableSorter
-import net.liftweb.widgets.autocomplete.AutoComplete
-import net.liftweb.widgets.menu.MenuWidget
+import net.liftmodules.widgets.logchanger._
+import net.liftmodules.widgets.uploadprogress._
+import net.liftmodules.widgets.tablesorter.TableSorter
+import net.liftmodules.widgets.autocomplete.AutoComplete
+import net.liftmodules.widgets.menu.MenuWidget
 import snippet.categories.CategoriesSection
 import snippet.groups.GroupsSection
 import snippet.logging.LogLevel

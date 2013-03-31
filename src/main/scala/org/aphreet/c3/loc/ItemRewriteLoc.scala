@@ -29,7 +29,7 @@ trait ItemRewriteLoc[S, T <: PageData] extends Loc[T] {
 
   def getDefault: Box[S] = Empty
   def getItem(id: String): Box[S]
-  def wrapItem(itemBox: Box[MyS]): Box[T]
+  def wrapItem(itemBox: Box[MyS]): Box[MyT]
 
   def isAccessiblePage(page: T): Boolean
 
@@ -56,7 +56,7 @@ trait ItemRewriteLoc[S, T <: PageData] extends Loc[T] {
    */
   def finishPath(itemBox: => Box[MyS],
                  restPath: List[String],
-                 suffix: String = ""): Box[T] = {
+                 suffix: String = ""): Box[MyT] = {
     if (restPath == Nil) wrapItem(itemBox) else Empty
   }
 
@@ -88,13 +88,13 @@ trait PageData {
 /**
  * For URLs of the for /foo/[ID]/suffix
  */
-trait SuffixLoc {
-  self: ItemRewriteLoc[_, _] =>
+trait SuffixLoc[S, T <: PageData]{
+  self: ItemRewriteLoc[S, T] =>
 
   val pathSuffix: List[String]
   override lazy val pathList: List[String] = pathPrefix ++ pathSuffix
 
-  override def link = {
+  override def link: Link[MyT] = {
     new Link[MyT](pathList)
   }
 

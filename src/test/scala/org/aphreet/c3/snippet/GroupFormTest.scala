@@ -44,8 +44,9 @@ import com.ifunsoftware.c3.access.C3System
 import com.ifunsoftware.c3.access.fs.C3FileSystemNode
 import Mockito._
 import org.aphreet.c3.lib.metadata.Metadata._
+import org.junit
 
-
+@junit.Ignore
 class GroupFormTest extends TestCase {
 
   private val session : LiftSession = new LiftSession("", StringHelpers.randomString(20), Empty)
@@ -122,7 +123,7 @@ class GroupFormTest extends TestCase {
     // Initialize session state if it is not already
     S.initIfUninitted(session) {
       // Create and log-in the user
-      val user : User = User.create
+      val user: User = User.create
       user.firstName("test")
       user.lastName("user")
       user.save

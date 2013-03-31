@@ -39,6 +39,8 @@ object Notification extends Notification with LongKeyedMetaMapper[Notification] 
 }
 
 object NotificationType extends Enumeration{
+  type NotificationType = Value
+
   val AddedToGroup = Value("added_to_group")
   val FileMetaUpdated = Value("file_meta_updated")
 }

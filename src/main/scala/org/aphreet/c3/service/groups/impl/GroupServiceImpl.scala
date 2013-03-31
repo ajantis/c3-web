@@ -14,9 +14,9 @@ import org.aphreet.c3.lib.metadata.Metadata._
 import net.liftweb.common.Full
 import scala.Some
 import org.aphreet.c3.service.notifications.NotificationManagerProtocol.CreateNotification
-import org.aphreet.c3.service.notifications.AddedToGroupMsg
 import org.aphreet.c3.lib.NotificationManagerRef
 import java.lang.Exception
+import org.aphreet.c3.service.notifications.AddedToGroupMsg
 
 class GroupServiceImpl extends GroupService with C3Loggable{
 
@@ -76,7 +76,7 @@ class GroupServiceImpl extends GroupService with C3Loggable{
     } yield {
       if (UserGroup.findAll(By(UserGroup.user, member), By(UserGroup.group, group)).isEmpty){
         UserGroup.join(member, group)
-        notificationManager ! CreateNotification(AddedToGroupMsg(group = group, recipient = member))
+        notificationManager ! CreateNotification(AddedToGroupMsg(group = group, recipientId = member.id.is))
         Full(member)
       } else Failure("User " + member.email + " is already a member of this group!")
     }

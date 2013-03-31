@@ -6,11 +6,12 @@ import net.liftweb.common._
 import org.aphreet.c3.util.C3Exception
 import org.aphreet.c3.model.{Group, User, Message}
 import net.liftweb.util.Helpers
+import net.liftweb.util.Helpers._
 import xml.NodeSeq
 import js.jquery.JqJsCmds.PrependHtml
 import net.liftweb.http.js.JsCmds._
 import java.util
-import net.liftweb.textile.TextileParser
+import net.liftmodules.textile.TextileParser
 import org.aphreet.c3.util.helpers.DateTimeHelpers
 
 /**
@@ -93,7 +94,7 @@ trait GroupMessagesLog extends CometActor with CometListener {
           ("#" + hideInputBtnId + " [onclick]") #> SHtml.ajaxInvoke(hideInput _) &
           "#postit" #> SHtml.onSubmit((s: String) => content = s.trim) &
           "#tags_input" #> SHtml.onSubmit((s: String) => tagsInput = s.trim) &
-          "type=submit" #> (xml => xml ++ SHtml.hidden(sendMessage _)) apply(xml)
+          "type=submit" #> ((xml: NodeSeq) => xml ++ SHtml.hidden(sendMessage _)) apply(xml)
       }
     }}
   }
