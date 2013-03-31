@@ -26,10 +26,10 @@ Bundle-ClassPath: WEB-INF/classes,
  WEB-INF/lib/paranamer-2.4.1.jar,
  WEB-INF/lib/postgresql-9.0-801.jdbc4.jar,
  WEB-INF/lib/scalap-2.10.0.jar,
- WEB-INF/lib/textile_2.10-2.5-RC2-1.2.jar
+ WEB-INF/lib/textile_2.10-2.5-RC2-1.2.jar,
  WEB-INF/lib/wikiparser-1.0.1.jar,
  WEB-INF/lib/webdav-servlet-2.0.3.jar,
- WEB-INF/lib/widgets_2.10-2.5-RC2-1.2.jar,
+ WEB-INF/lib/widgets_2.10-2.5-RC2-1.2.jar
 Import-Bundle: javax.servlet;version="[2.5.0,3.1.0]",
  org.scala-lang.scala-library;version="[2.10.1,2.11)",
  org.scala-lang.scala-actors;version="[2.10.1,2.11)",
