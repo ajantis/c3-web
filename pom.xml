@@ -11,7 +11,7 @@
     <inceptionYear>2010</inceptionYear>
     <properties>
         <scala.version>2.10</scala.version>
-        <scala.version.full>${scala.version}.0</scala.version.full>
+        <scala.version.full>${scala.version}.1</scala.version.full>
         <lift.version>2.5-RC2</lift.version>
         <akka.version>2.1.2</akka.version>
         <!-- Common plugin settings -->
@@ -233,6 +233,10 @@
                     </execution>
                 </executions>
                 <configuration>
+                    <args>
+                        <arg>-deprecation</arg>
+                        <arg>-feature</arg>
+                    </args>
                     <scalaVersion>${scala.version.full}</scalaVersion>
                 </configuration>
             </plugin>

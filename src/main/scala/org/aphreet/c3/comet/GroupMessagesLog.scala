@@ -13,6 +13,7 @@ import net.liftweb.http.js.JsCmds._
 import java.util
 import net.liftmodules.textile.TextileParser
 import org.aphreet.c3.util.helpers.DateTimeHelpers
+import scala.language.postfixOps
 
 /**
  * @author Dmitry Ivanov (mailto: id.ajantis@gmail.com)

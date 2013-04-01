@@ -12,6 +12,7 @@ import org.aphreet.c3.lib.DependencyFactory._
 import org.aphreet.c3.lib.NotificationManagerRef
 import concurrent.{Await, Future, duration}
 import duration._
+import scala.language.postfixOps
 
 /**
  * Copyright iFunSoftware 2013

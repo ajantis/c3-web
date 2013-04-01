@@ -9,6 +9,8 @@ import concurrent.duration
 import duration._
 import org.scalatest.mock.MockitoSugar
 import org.mockito.Mockito._
+import scala.language.implicitConversions
+import scala.language.postfixOps
 
 /**
  * Copyright iFunSoftware 2011

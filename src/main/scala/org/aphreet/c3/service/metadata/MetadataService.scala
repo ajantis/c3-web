@@ -13,6 +13,7 @@ import actor.SupervisorStrategy.Resume
 import org.aphreet.c3.util.C3Loggable
 import org.aphreet.c3.lib.metadata.Metadata
 import Metadata._
+import scala.language.postfixOps
 
 /**
  * Copyright iFunSoftware 2013
