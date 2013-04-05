@@ -20,8 +20,9 @@ class GroupTabMenu {
   private def defaultTabs(groupId: String): List[(String, GroupTab)] =
     List("about" -> AboutTab(groupId),
       "files" -> FilesTab(groupId),
-      "messages" -> MessagesTab(groupId),
-      "members" -> MembersTab(groupId))
+      "messages" -> MessagesTab(groupId)
+//      "members" -> MembersTab(groupId)
+  )
 
   def render: CssSel = {
     val activeTab = S.attr("active")

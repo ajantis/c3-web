@@ -743,4 +743,9 @@ td.file-table-date{
 }
 .hr_group{
     margin:0!important;
+    border-bottom: 1px solid #ddd!important;
+}
+.checkbox_public{
+    margin-top: 10px!important;
+    margin-right: 5px!important;
 }
