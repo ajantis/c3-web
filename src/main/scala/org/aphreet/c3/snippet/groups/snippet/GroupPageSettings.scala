@@ -14,6 +14,7 @@ import net.liftweb.http.SHtml
 import net.liftweb.http.js.{JsCmds, JsCmd}
 import net.liftweb.http.S
 import net.liftmodules.widgets.autocomplete.AutoComplete
+import net.liftweb.http.js.JsCmds._Noop
 
 /**
  * @author Koyushev Sergey (mailto: serjk91@gmail.com)
@@ -113,22 +114,15 @@ class GroupPageSettings (data: GroupPageData) extends GroupPageHelpers{
     // normally shouldn't happen
       S.error(userEmails +" is not added to group: " + group.name.is)
   }
-
+  var param =  group.isOpen.is
   def publicSettings = {
-    def saveCheckbox():JsCmd = {
-      // TODO Serjk: need save value checkbox
-//      S.redirectTo("")
-//
+    def saveCheckbox(b:Boolean):JsCmd = {
+      group.isOpen(b).saveMe()
+      param = b
+      JsCmds.Noop
     }
+    ".checkbox_public" #> SHtml.ajaxCheckbox(param,saveCheckbox(_))andThen
+    ":checkbox [class+]" #> "floatLeft checkbox_public"
 
-    ".public_group_from *" #>
-      ((n: NodeSeq) => SHtml.ajaxForm(
-        (
-          ".checkbox_public" #> SHtml.checkbox(group.isOpen,group.isOpen(_).saveMe()) andThen
-            ":checkbox [onclick]" #> "this.form.submit();" &
-              ":checkbox [class+]" #> "floatLeft checkbox_public" &
-              ":checkbox [id]" #> "checkbox_public" &
-              "* *" #> SHtml.memoize(f => f++SHtml.hidden(saveCheckbox _))).apply(n)
-      ))
   }
 }
