@@ -58,7 +58,6 @@ class GroupPageSettings (data: GroupPageData) extends GroupPageHelpers{
 
   }
   def listUser = {
-    if (User.currentUser.open_!.email.is == group.owner.obj.map(_.email).open_!.is){
       ".ListGroupUser" #> members.map(user =>{
         if (user.email.is != group.owner.obj.map(_.email).open_!.is){
           def deleteUser():JsCmd = {
@@ -82,17 +81,7 @@ class GroupPageSettings (data: GroupPageData) extends GroupPageHelpers{
         }
 
       })
-    }else{
-      ".ListGroupUser *" #> members.map(user =>{
-        ".first_name *" #> user.firstName.is &
-          ".last_name *" #> user.lastName.is &
-          ".email *" #> user.email.is &
-          ".deluser *" #> NodeSeq.Empty
-      })
-
-    }
   }
-
   def addUser = {
     var users = User.findAll().filter(_.id.is != User.currentUser.open_!.id.is)
     members.map(user =>{
