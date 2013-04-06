@@ -29,16 +29,38 @@
                         <h2 class="GroupName">Group name</h2>
                     </div>
                     <div>
-                            <p class="inf_left GroupDescription description_box" rows="20" cols="150">Group description</p>
+                            <p class="GroupDescription description_box" rows="20" cols="150">Group description</p>
                     </div>
+                    <div class="inf_right">
+                        <span>Access Type</span>
+                        <span class="btn GroupAccess">Status</span>
+                    </div>
+                    <hr class="hr_group"/>
                     <div>
                         <img class="inf_left" src="/images/tag.png">
                         <span class="tags_group label label btn-info inf_left">table</span>
                     </div>
+                    <br/>
 
-                    <div class="inf_right">
-                        <span>Access Type</span>
-                        <span class="btn GroupAccess">Status</span>
+                    <div>
+                        <span class="lead">Group Members:</span>
+
+                        <table class="table-striped table-condensed lift:GroupPageSettings.listUser">
+                            <thead>
+                            <tr>
+                                <th>First Name</th>
+                                <th>Last Name</th>
+                                <th>E-mail</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr class="ListGroupUser" >
+                                <td class="first_name">First</td>
+                                <td class="last_name">Last</td>
+                                <td class="email">mail</td>
+                            </tr>
+                            </tbody>
+                        </table>
                     </div>
 
                 </div>
