@@ -14,6 +14,7 @@ import net.liftweb.http.SHtml
 import net.liftweb.http.js.{JsCmds, JsCmd}
 import net.liftweb.http.S
 import net.liftmodules.widgets.autocomplete.AutoComplete
+import net.liftweb.http.js.JsCmds._Noop
 
 /**
  * @author Koyushev Sergey (mailto: serjk91@gmail.com)
@@ -57,7 +58,6 @@ class GroupPageSettings (data: GroupPageData) extends GroupPageHelpers{
 
   }
   def listUser = {
-    if (User.currentUser.open_!.email.is == group.owner.obj.map(_.email).open_!.is){
       ".ListGroupUser" #> members.map(user =>{
         if (user.email.is != group.owner.obj.map(_.email).open_!.is){
           def deleteUser():JsCmd = {
@@ -81,17 +81,7 @@ class GroupPageSettings (data: GroupPageData) extends GroupPageHelpers{
         }
 
       })
-    }else{
-      ".ListGroupUser *" #> members.map(user =>{
-        ".first_name *" #> user.firstName.is &
-          ".last_name *" #> user.lastName.is &
-          ".email *" #> user.email.is &
-          ".deluser *" #> NodeSeq.Empty
-      })
-
-    }
   }
-
   def addUser = {
     var users = User.findAll().filter(_.id.is != User.currentUser.open_!.id.is)
     members.map(user =>{
@@ -113,22 +103,15 @@ class GroupPageSettings (data: GroupPageData) extends GroupPageHelpers{
     // normally shouldn't happen
       S.error(userEmails +" is not added to group: " + group.name.is)
   }
-
+  var param =  group.isOpen.is
   def publicSettings = {
-    def saveCheckbox():JsCmd = {
-      // TODO Serjk: need save value checkbox
-//      S.redirectTo("")
-//
+    def saveCheckbox(b:Boolean):JsCmd = {
+      group.isOpen(b).saveMe()
+      param = b
+      JsCmds.Noop
     }
+    ".checkbox_public" #> SHtml.ajaxCheckbox(param,saveCheckbox(_))andThen
+    ":checkbox [class+]" #> "floatLeft checkbox_public"
 
-    ".public_group_from *" #>
-      ((n: NodeSeq) => SHtml.ajaxForm(
-        (
-          ".checkbox_public" #> SHtml.checkbox(group.isOpen,group.isOpen(_).saveMe()) andThen
-            ":checkbox [onclick]" #> "this.form.submit();" &
-              ":checkbox [class+]" #> "floatLeft checkbox_public" &
-              ":checkbox [id]" #> "checkbox_public" &
-              "* *" #> SHtml.memoize(f => f++SHtml.hidden(saveCheckbox _))).apply(n)
-      ))
   }
 }
