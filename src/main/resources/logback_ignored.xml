@@ -10,7 +10,9 @@
 
     <logger name="net.liftweb.util" level="warn"/>
 
-    <logger name="org.aphreet" level="info"/>
+    <logger name="org.aphreet" level="debug"/>
+
+    <logger name="com.ifunsoftware.c3" level="trace"/>
 
     <root level="info">
         <appender-ref ref="STDOUT" />

@@ -14,8 +14,6 @@ import java.text.SimpleDateFormat
 import org.aphreet.c3.lib.metadata.Metadata
 import org.aphreet.c3.util.C3Loggable
 import com.ifunsoftware.c3.access.SearchResultEntry
-import org.aphreet.c3.snippet.search.snippet.SearchQuery
-import com.ifunsoftware.c3.access.SearchResultEntry
 
 /**
  * @author Serjk (mailto: serjk91@gmail.com)
@@ -215,7 +213,7 @@ class SearchForm extends PaginatorSnippet[SearchResultEntry] with C3Loggable{
     val userGroupsIds = User.currentUser.map(_.groups.map(_.id.is)).openOr(Nil)
     val openGroups = Group.findOpenGroups.map(_.id.is)
     c3.search(query).filter{p =>
-      val groupId = C3Path(p.path).groupName
+      val groupId = C3Path(p.path).groupName.toLong
       userGroupsIds.contains(groupId) || openGroups.contains(groupId)
     }
   }

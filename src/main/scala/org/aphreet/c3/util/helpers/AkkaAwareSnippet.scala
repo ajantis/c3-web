@@ -5,6 +5,7 @@ import duration._
 import org.aphreet.c3.lib.DependencyFactory
 import akka.actor.ActorSystem
 import akka.util.Timeout
+import scala.languageFeature.postfixOps
 
 /**
  * @author Dmitry Ivanov (mailto: id.ajantis@gmail.com)

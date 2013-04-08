@@ -1,8 +1,9 @@
 # Properties in this file will be read when running in dev mode
-c3_host=http://localhost:7373
-#c3_context_path=/rest/fs/
-c3_domain_name=anonymous
-c3_domain_secret=
+c3_host=http://node0.c3.ifunsoftware.com
+c3_domain_name=a85ab787-9a97-4ecf-9dbe-67faef863e22
+c3_domain_secret=e14ebc01610f9273fbe12e118d662f37
+http_proxy_host=localhost
+http_proxy_port=3128
 
 default_admin_email=admin@admin.com
 default_admin_password=admin
