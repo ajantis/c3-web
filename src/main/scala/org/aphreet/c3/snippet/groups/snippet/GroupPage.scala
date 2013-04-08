@@ -37,13 +37,17 @@ class GroupPage(data: GroupPageData) extends GroupPageHelpers{
   override lazy val activeLocId = "about"
   lazy val c3 = inject[C3System].open_!
   def info = {
+    val status =  if(group.isOpen) "Public" else "Private"
+    val background =  if(group.isOpen) "btn-info" else "btn-warning"
     val groupTags = group.getTags()
     ".tags_group" #> groupTags.map((tag: String) => {
       ".tags_group *" #> tag
     }) &
     ".GroupOwner *" #> group.owner.obj.map(_.shortName).openOr("N/A")&
     ".GroupOwner [href]" #> group.owner.obj.map(_.createLink)&
-    ".GroupName *" #> group.name.is&
+    ".GroupName *" #> group.name.is &
+    ".GroupAccess *" #> status &
+      ".GroupAccess [class+]" #> background &
     ".GroupDescription *" #>group.description.is
 
   }

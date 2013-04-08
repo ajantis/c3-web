@@ -284,6 +284,7 @@ trait C3ResourceHelpers {
       ".owner [href]" #> owner.map(_.createLink) &
       ".name *" #> directory.name &
       ".link [href]" #> (directory.name + "/") &
+      ".child_td [onclick]" #> SHtml.ajaxInvoke(() => JsCmds.RedirectTo(directory.name + "/"))&
       ".icon [src]" #> "/images/folder_classic.png" &
       ".created_date *" #> internetDateFormatter.format(directory.date)
   }
@@ -295,6 +296,7 @@ trait C3ResourceHelpers {
       ".owner [href]" #> owner.map(_.createLink) &
       ".name *" #> file.name &
       ".link [href]" #> file.name &
+      ".child_td [onclick]" #> SHtml.ajaxInvoke(() => JsCmds.RedirectTo(file.name))&
       ".icon [src]" #> "/images/document_letter.png" &
       ".created_date *" #> internetDateFormatter.format(file.date)
   }

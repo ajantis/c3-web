@@ -13,6 +13,21 @@ function SelectAll(sel){
 
 }
 $(document).ready( function(){
+
+    //row hover on file browser
+    $(".child_td").hover(
+      function () {
+        $(this).parent().children().each(function(index){
+            $(this).toggleClass("active_hover");
+
+        });
+      },
+      function () {
+        $(this).parent().children().each(function(index){
+                    $(this).toggleClass("active_hover");
+        });
+      }
+    );
      //add metadata
     $(".btn_add_metadata").live("click",function(){
         var keyExist = true;
@@ -54,20 +69,6 @@ $(document).ready( function(){
         $("#value_cont").val(value);
      });
 
-//    $('.btn_add_user').live("click",function(){
-//        $('#listusersadd').val(SelectAll("selusersadd"));
-//    });
-//
-//    $('.buttonuser1').live("click",function(){
-//        $('#listusers').val(SelectAll("selusers"));
-//    });
-
-    //$('.search-query').focus(function() {
-    //    $(this).stop().animate({width: '400px'}, 'slow');
-    //});
-    //$('.search-query').blur(function() {
-    //    $(this).stop().animate({width: '200px'},'fast');
-    //});
     // add tag in search
     $(".margn").live("click",function(){
        $(this).appendTo(".flt");

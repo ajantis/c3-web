@@ -2,7 +2,7 @@ package org.aphreet.c3.snippet.search.snippet
 
 import net.liftweb.util._
 import Helpers._
-import org.aphreet.c3.model.{C3Path, Tag, Category}
+import org.aphreet.c3.model._
 import net.liftweb.http._
 import net.liftweb.http.js.{JE, JsCmd, JsCmds}
 import net.liftweb.http.js.jquery.JqJsCmds
@@ -13,6 +13,8 @@ import net.liftweb.util.CssSel
 import java.text.SimpleDateFormat
 import org.aphreet.c3.lib.metadata.Metadata
 import org.aphreet.c3.util.C3Loggable
+import com.ifunsoftware.c3.access.SearchResultEntry
+import org.aphreet.c3.snippet.search.snippet.SearchQuery
 import com.ifunsoftware.c3.access.SearchResultEntry
 
 /**
@@ -210,7 +212,12 @@ class SearchForm extends PaginatorSnippet[SearchResultEntry] with C3Loggable{
 
   private def search(query: String): List[SearchResultEntry] = {
     logger.debug("Query to C3: " + query)
-    c3.search(query)
+    val userGroupsIds = User.currentUser.map(_.groups.map(_.id.is)).openOr(Nil)
+    val openGroups = Group.findOpenGroups.map(_.id.is)
+    c3.search(query).filter{p =>
+      val groupId = C3Path(p.path).groupName
+      userGroupsIds.contains(groupId) || openGroups.contains(groupId)
+    }
   }
 
   private def initSearchParams(){

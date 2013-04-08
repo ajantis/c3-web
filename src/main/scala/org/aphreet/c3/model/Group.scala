@@ -124,4 +124,6 @@ object Group extends Group with LongKeyedMetaMapper[Group] {
 
   def findByName(name: String) = find(By(Group.name, name))
 
+  def findOpenGroups = findAll(By(Group.isOpen, true))
+
 }

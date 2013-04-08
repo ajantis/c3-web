@@ -1,10 +1,11 @@
 package org.aphreet.c3.snippet.groups.snippet
 
 import net.liftweb.util.BindHelpers._
-import net.liftweb.http.S
+import net.liftweb.http.{RequestVar, S}
 import net.liftweb.common.{Failure, Full}
 import net.liftweb.util.{PassThru, CssSel}
 import xml.NodeSeq
+import org.aphreet.c3.model.{User, Group}
 
 /**
  * Copyright iFunSoftware 2011
@@ -12,19 +13,31 @@ import xml.NodeSeq
  */
 class GroupTabMenu {
 
-  val tabs: String => List[(String, GroupTab)] =
-    (id: String) => List("about" -> AboutTab(id),
-                        "files" -> FilesTab(id),
-                        "messages" -> MessagesTab(id),
-                        //"wiki" -> WikiTab(id),
-                        "members" -> MembersTab(id))
+  type GroupTabsFunc = String => List[(String, GroupTab)]
+
+  object tabs extends RequestVar[GroupTabsFunc](defaultTabs)
+
+  private def defaultTabs(groupId: String): List[(String, GroupTab)] =
+    List("about" -> AboutTab(groupId),
+      "files" -> FilesTab(groupId),
+      "messages" -> MessagesTab(groupId)
+//      "members" -> MembersTab(groupId)
+  )
 
   def render: CssSel = {
     val activeTab = S.attr("active")
     val groupId = S.attr("group_id")
+    val group = groupId.flatMap(id => Group.find(id))
 
+    (User.currentUser, group) match {
+      case (Full(user), Full(g)) => {
+        if (user.email.is == g.owner.obj.map(_.email).open_!.is)
+          tabs.set(groupId => defaultTabs(groupId) ::: List("settings" -> SettingsTab(groupId)))
+      }
+      case _ =>
+    }
     def tabMenu(id: String, active: String) = {
-      "li" #> tabs(id).map{
+      "li" #> tabs.get(id).map{
         case (key, tab) =>
           "a *" #> tab.name &
           "a [href]" #> tab.path &
@@ -53,5 +66,5 @@ sealed abstract class GroupTab(val name: String, val path: String)
 case class AboutTab(groupId: String) extends GroupTab("About", "/groups/" + groupId)
 case class FilesTab(groupId: String) extends GroupTab("Files", "/groups/" + groupId + "/files/")
 case class MessagesTab(groupId: String) extends GroupTab("Messages", "/groups/" + groupId + "/messages")
-//case class WikiTab(groupId: String) extends GroupTab("Wiki", "/groups/" + groupId + "/wiki")
 case class MembersTab(groupId: String) extends GroupTab("Members", "/groups/" + groupId + "/members")
+case class SettingsTab(groupId: String) extends GroupTab("Settings", "/groups/" + groupId + "/settings")

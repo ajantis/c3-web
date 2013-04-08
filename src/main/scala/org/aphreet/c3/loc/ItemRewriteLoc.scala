@@ -44,7 +44,10 @@ trait ItemRewriteLoc[S, T <: PageData] extends Loc[T] {
         if (isAccessiblePage(p))
           canonicalUrl(p).filter(v => v != S.uri).map(RedirectResponse(_))
         else
+          if (User.currentUser.isDefined)
           Full(RedirectWithState("/index", RedirectState( () => {}, "You don't have access to this group" -> NoticeType.Notice )))
+        else
+          Full(RedirectWithState("/user_mgt/login", RedirectState( () => {}, "Not logged in" -> NoticeType.Notice )))
       }
     } :: Nil
 

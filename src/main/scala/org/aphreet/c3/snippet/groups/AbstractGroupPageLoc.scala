@@ -12,6 +12,6 @@ import net.liftweb.sitemap.Loc.Link
 trait AbstractGroupPageLoc[Data <: GroupPageData]
   extends ItemRewriteLoc[Group, Data] {
   def isAccessiblePage(page: Data): Boolean = {
-    page.group.isOpen || User.currentUser.open_!.groups.find(_.name.is == page.group.name.is).isDefined
+    page.group.isOpen || User.currentUser.map(_.groups.find(_.name.is == page.group.name.is).isDefined).openOr(false)
   }
 }
