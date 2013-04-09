@@ -245,7 +245,7 @@
                 <artifactId>jetty-maven-plugin</artifactId>
                 <version>8.1.10.v20130312</version>
                 <configuration>
-                    <jvmArgs>-XX:PermSize=256M -XX:MaxPermSize=512M -Xms256M -Xmx800M</jvmArgs>
+                    <jvmArgs>-XX:PermSize=256M -XX:MaxPermSize=512M -Xms256M -Xmx800M -Dlogback.configurationFile=${basedir}/src/main/config/logback.xml</jvmArgs>
                     <webApp>
                         <contextPath>/</contextPath>
                     </webApp>

@@ -1,4 +1,6 @@
-<configuration>
+<!-- This configuration is only used in development environment
+ Production configuration is located in virgo configuration directory-->
+<configuration scan="true" scanPeriod="10 seconds">
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
@@ -12,7 +14,7 @@
 
     <logger name="org.aphreet" level="debug"/>
 
-    <logger name="com.ifunsoftware.c3" level="trace"/>
+    <logger name="com.ifunsoftware.c3" level="debug"/>
 
     <root level="info">
         <appender-ref ref="STDOUT" />
