@@ -28,6 +28,54 @@ $(document).ready( function(){
         });
       }
     );
+
+     //checkbox acl
+     $(".rules").click(function(){
+        var acl = $(this).text();
+//        var idResource = $(this).attr("id");
+        if(acl[0] =='r') $(".group_read").attr('checked', true);
+        if(acl[1] =='w') $(".group_write").attr('checked', true);
+        if(acl[2] =='r') $(".all_read").attr('checked', true);
+        if(acl[3] =='w') $(".all_write").attr('checked', true);
+//        $("#name_resource").val(idResource);
+
+     });
+
+
+     $(".group_read").click(function(){
+        if(!$(this).attr('checked')){
+            $(".group_write").removeAttr("checked");
+            $(".all_read").removeAttr("checked");
+            $(".all_write").removeAttr("checked");
+        }
+    });
+
+    $(".group_write").click(function(){
+        if(!$(this).attr('checked')){
+            $(".all_write").removeAttr("checked");
+        }
+        else{
+            $(".group_read").attr('checked', true);
+        }
+    });
+
+    $(".all_read").click(function(){
+        if(!$(this).attr('checked')){
+            $(".all_write").removeAttr("checked");
+        }
+        else{
+            $(".group_read").attr('checked', true);
+        }
+    });
+
+    $(".all_write").click(function(){
+        if($(this).attr('checked')){
+            $(".group_read").attr('checked', true);
+            $(".group_write").attr('checked', true);
+            $(".all_read").attr('checked', true);
+        }
+    });
+
      //add metadata
     $(".btn_add_metadata").live("click",function(){
         var keyExist = true;

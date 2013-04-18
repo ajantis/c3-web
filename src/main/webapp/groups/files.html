@@ -74,7 +74,7 @@
                                 <td class="child_td"><a class="link" href="#"><span class="name"></span></a></td>
                                 <td class="child_td"><a class="owner" href="#">Aphreet</a></td>
                                 <td class="child_td file-table-date"><span class="created_date"></span></td>
-                                <td class="child_td file-table-rules"><a href="#" class="" data-toggle="modal"><span class="rules">rw-r--r--</span></a></td>
+                                <td class="file-table-rules"><a href="#acl" class="acl_button" data-toggle="modal"><span class="rules">rw--</span></a></td>
                                 <td class="child_td"><input class="select_resource" type="checkbox" /></td>
                             </tr>
                             </tbody>
@@ -178,6 +178,38 @@
                         </div>
 
                     </div>
+
+                    <div id="acl" class="modal hide fade">
+                        <h4 class = "modal-header">Access control</h4>
+                        <div class="edit_access">
+                            <table class="table-striped table-condensed">
+                                <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>Read</th>
+                                    <th>Write</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="" >
+                                        <td class="">Group</td>
+                                        <td class=""><input class="group_read"  type="checkbox"></td>
+                                        <td class=""><input class="group_write"  type="checkbox"></td>
+                                    </tr>
+                                    <tr class="" >
+                                        <td class="">Other users</td>
+                                        <td class=""><input class="all_read"  type="checkbox"></td>
+                                        <td class=""><input class="all_write"  type="checkbox"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <input type="hidden" id="name_resource" value="default">
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" data-dismiss="modal" class="btn">Cancel</button>
+                        </div>
+                    </div>
+
 
                     <div id="upload_form" class="modal hide fade">
                         <h4 class = "modal-header">Upload files to directory</h4>

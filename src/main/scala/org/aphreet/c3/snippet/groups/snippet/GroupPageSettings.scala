@@ -103,14 +103,12 @@ class GroupPageSettings (data: GroupPageData) extends GroupPageHelpers{
     // normally shouldn't happen
       S.error(userEmails +" is not added to group: " + group.name.is)
   }
-  var param =  group.isOpen.is
   def publicSettings = {
     def saveCheckbox(b:Boolean):JsCmd = {
       group.isOpen(b).saveMe()
-      param = b
       JsCmds.Noop
     }
-    ".checkbox_public" #> SHtml.ajaxCheckbox(param,saveCheckbox(_))andThen
+    ".checkbox_public" #> SHtml.ajaxCheckbox(group.isOpen.is,saveCheckbox(_))andThen
     ":checkbox [class+]" #> "floatLeft checkbox_public"
 
   }

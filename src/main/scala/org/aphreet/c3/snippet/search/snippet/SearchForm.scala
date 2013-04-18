@@ -201,7 +201,7 @@ class SearchForm extends PaginatorSnippet[SearchResultEntry] with C3Loggable{
   }
 
   private def createC3SearchQuery(contentQuery: String, tags: Iterable[String]) = {
-    "(content:\"" + contentQuery + "\")" +
+    "content:\"" + contentQuery + "\"" +
     (if (!tags.isEmpty){
       " AND (" +
         tags.map { t => "(" + Metadata.TAGS_META + ":\"" + t + "\")" }.mkString(" AND ") +
@@ -214,8 +214,13 @@ class SearchForm extends PaginatorSnippet[SearchResultEntry] with C3Loggable{
     val userGroupsIds = User.currentUser.map(_.groups.map(_.id.is)).openOr(Nil)
     val openGroups = Group.findOpenGroups.map(_.id.is)
     c3.search(query).filter{p =>
-      val groupId = C3Path(p.path).groupName.toLong
-      userGroupsIds.contains(groupId) || openGroups.contains(groupId)
+      if(!p.path.isEmpty){
+        val groupId = C3Path(p.path).groupName.toLong
+        userGroupsIds.contains(groupId) || openGroups.contains(groupId)
+      }else{
+        false
+      }
+
     }
   }
 
