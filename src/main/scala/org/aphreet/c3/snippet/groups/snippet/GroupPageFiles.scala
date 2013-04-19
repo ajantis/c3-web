@@ -8,7 +8,6 @@ import tags.TagForms
 import xml.{NodeSeq, Text}
 import net.liftweb.util.Helpers._
 import net.liftweb.http.{RequestVar, SHtml, S}
-import net.liftweb.common.Full
 import org.aphreet.c3.snippet.groups.{AbstractGroupPageLoc, GroupPageFilesData}
 import com.ifunsoftware.c3.access.fs.{C3FileSystemNode, C3File, C3Directory}
 import org.aphreet.c3.lib.metadata.Metadata
@@ -22,9 +21,13 @@ import org.aphreet.c3.lib.DependencyFactory
 import com.ifunsoftware.c3.access.{MetadataRemove, MetadataUpdate, C3System}
 import com.ifunsoftware.c3.access.C3System._
 import net.liftweb.http.js.JsCmds.{Alert, OnLoad}
-import net.liftweb.http.js.JE._
 import org.aphreet.c3.util.helpers.ByteCalculatorHelpers
-import net.liftweb.http.js.jquery._
+
+import scala.Some
+import com.ifunsoftware.c3.access.MetadataUpdate
+import net.liftweb.common.Full
+import com.ifunsoftware.c3.access.MetadataRemove
+import org.aphreet.c3.snippet.groups.GroupPageFilesData
 
 
 /**
@@ -109,6 +112,7 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers with Gr
           .getOrElse(Text(groupFilesLink))
       }) &
       ".edit_access *" #> acl()&
+      ".close_acl [onclick]" #> SHtml.ajaxInvoke(() => updateAclValue())&
       (file match {
         case Empty => S.redirectTo("/404.html"); "* *" #> PassThru
         case Failure(msg, t, chain) => {
@@ -251,6 +255,169 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers with Gr
       "type=submit" #> SHtml.onSubmitUnit(createDirectory)
   }
 
+  var currentResourceName = ""
+  var currentAclValue = ""
+
+  def updateAclValue() = {
+    JsCmds.SetElemById(currentResourceName,currentAclValue)
+
+  }
+
+   //default value acl
+  def acl(acl:String) = {
+    if(acl == "")
+      if(group.isOpen)
+        "r-r-"
+      else
+        "r---"
+    else
+      acl
+  }
+
+  //current edit resource
+  def currentResource(nameResource:String,acl:String) = {
+    currentResourceName = nameResource
+    currentAclValue = acl
+    JsCmds.Noop
+  }
+
+
+  def toCss(directory: C3Directory) = {
+
+    val owner = nodeOwner(directory)
+    val metaACL = acl(directory.metadata.get(ACL_META).getOrElse(""))
+
+    ".owner *" #> owner.map(_.shortName).getOrElse("Unknown") &
+      ".owner [href]" #> owner.map(_.createLink) &
+      ".name *" #> directory.name &
+      ".link [href]" #> (directory.name + "/") &
+      ".child_td [onclick]" #> SHtml.ajaxInvoke(() => JsCmds.RedirectTo(directory.name + "/"))&
+      ".icon [src]" #> "/images/folder_classic.png" &
+      ".created_date *" #> internetDateFormatter.format(directory.date) &
+      ".rules *" #> metaACL &
+      ".rules [id]" #> directory.fullname &
+      ".rules [onclick]" #> SHtml.ajaxInvoke(()=>currentResource(directory.fullname,metaACL))
+  }
+
+  def toCss(file: C3File) = {
+    val owner = nodeOwner(file)
+    val metaACL = acl(file.metadata.get(ACL_META).getOrElse(""))
+    ".owner *" #> owner.map(_.shortName).getOrElse("Unknown") &
+      ".owner [href]" #> owner.map(_.createLink) &
+      ".name *" #> file.name &
+      ".link [href]" #> file.name &
+      ".child_td [onclick]" #> SHtml.ajaxInvoke(() => JsCmds.RedirectTo(file.name))&
+      ".icon [src]" #> "/images/document_letter.png" &
+      ".created_date *" #> internetDateFormatter.format(file.date)&
+      ".rules *" #> metaACL  &
+      ".rules [id]" #> file.fullname &
+      ".rules [onclick]" #> SHtml.ajaxInvoke(()=>currentResource(file.fullname,metaACL))
+  }
+
+  val defaultValueCheckbox = false
+
+  def acl():CssSel = {
+    def groupReadSave(b:Boolean):JsCmd = {
+      group.getChildren(data.currentAddress).map(res=>{
+        if(res.fullname == currentResourceName) {
+          val aclVal =  if(b)"r---" else "----"
+          val metadata = Map(ACL_META -> aclVal)
+          res.update(MetadataUpdate(metadata))
+          JsCmds.SetElemById(currentResourceName,aclVal)
+        }
+
+      })
+
+      JsCmds.Noop
+    }
+
+    def groupWriteSave(b:Boolean):JsCmd = {
+      group.getChildren(data.currentAddress).map(res=>{
+        if(res.fullname == currentResourceName) {
+          val metaACL = acl(res.metadata.get(ACL_META).getOrElse(""))
+          if (b) {
+            val newACL = metaACL.toCharArray
+            newACL.update(1,'w')
+            newACL.update(0,'r')
+            var t = ""
+            newACL.map(t += _)
+            val metadata = Map(ACL_META -> t)
+            res.update(MetadataUpdate(metadata))
+            currentAclValue = t
+          }
+          else{
+            val newAcl = metaACL.replace('w','-')
+            val metadata = Map(ACL_META -> newAcl )
+            res.update(MetadataUpdate(metadata))
+            currentAclValue = newAcl
+          }
+        }
+      })
+      JsCmds.Noop
+    }
+
+    def otherUsersReadSave(b:Boolean):JsCmd = {
+      group.getChildren(data.currentAddress).map(res=>{
+        if(res.fullname == currentResourceName) {
+          val metaACL = acl(res.metadata.get(ACL_META).getOrElse(""))
+          if (b) {
+            val newACL = metaACL.toCharArray
+            newACL.update(2,'r')
+            newACL.update(0,'r')
+            var t = ""
+            newACL.map(t += _)
+            val metadata = Map(ACL_META -> t)
+            res.update(MetadataUpdate(metadata))
+            currentAclValue = t
+          }
+          else{
+            val newACL = metaACL.toCharArray
+            newACL.update(3,'-')
+            newACL.update(2,'-')
+            var t = ""
+            newACL.map(t += _)
+            val metadata = Map(ACL_META -> t)
+            res.update(MetadataUpdate(metadata))
+            currentAclValue = t
+          }
+        }
+      })
+
+      JsCmds.Noop
+    }
+
+    def otherUsersWriteSave(b:Boolean):JsCmd = {
+      group.getChildren(data.currentAddress).map(res=>{
+        if(res.fullname == currentResourceName) {
+          val metaACL = acl(res.metadata.get(ACL_META).getOrElse(""))
+          if (b) {
+            val newAcl = "rwrw"
+            val metadata = Map(ACL_META -> newAcl )
+            res.update(MetadataUpdate(metadata))
+            currentAclValue = newAcl
+          }
+          else{
+            val newACL = metaACL.toCharArray
+            newACL.update(3,'-')
+            var t = ""
+            newACL.map(t += _)
+            val metadata = Map(ACL_META -> t)
+            res.update(MetadataUpdate(metadata))
+            currentAclValue = t
+          }
+        }
+
+      })
+      JsCmds.Noop
+    }
+
+    ".group_read" #> SHtml.ajaxCheckbox(defaultValueCheckbox,groupReadSave(_))&
+      ".group_write" #> SHtml.ajaxCheckbox(defaultValueCheckbox,groupWriteSave(_))&
+      ".all_read" #> SHtml.ajaxCheckbox(defaultValueCheckbox,otherUsersReadSave(_))&
+      ".all_write" #> SHtml.ajaxCheckbox(defaultValueCheckbox,otherUsersWriteSave(_))
+
+  }
+
   def buildPathLocs: List[Loc[_]] = {
     val locs: List[Loc[_]] = (transformToPathLists(data.path)).map { thisPath =>
 
@@ -280,87 +447,8 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers with Gr
 }
 
 trait C3ResourceHelpers {
-  import net.liftweb.util.TimeHelpers._
 
   val group: Group
-
-  def acl(acl:String) = {
-    if(acl=="")
-      if(group.isOpen)
-        "r-r-"
-      else
-        "r---"
-    else
-      acl
-  }
-
-  def toCss(directory: C3Directory) = {
-
-    val owner = nodeOwner(directory)
-    val metaACL = acl(directory.metadata.get(ACL_META).getOrElse(""))
-
-    ".owner *" #> owner.map(_.shortName).getOrElse("Unknown") &
-      ".owner [href]" #> owner.map(_.createLink) &
-      ".name *" #> directory.name &
-      ".link [href]" #> (directory.name + "/") &
-      ".child_td [onclick]" #> SHtml.ajaxInvoke(() => JsCmds.RedirectTo(directory.name + "/"))&
-      ".icon [src]" #> "/images/folder_classic.png" &
-      ".created_date *" #> internetDateFormatter.format(directory.date) &
-      ".rules *" #> metaACL &
-      ".rules [id]" #> directory.fullname
-  }
-
-  def toCss(file: C3File) = {
-    val owner = nodeOwner(file)
-    val metaACL = acl(file.metadata.get(ACL_META).getOrElse(""))
-    ".owner *" #> owner.map(_.shortName).getOrElse("Unknown") &
-      ".owner [href]" #> owner.map(_.createLink) &
-      ".name *" #> file.name &
-      ".link [href]" #> file.name &
-      ".child_td [onclick]" #> SHtml.ajaxInvoke(() => JsCmds.RedirectTo(file.name))&
-      ".icon [src]" #> "/images/document_letter.png" &
-      ".created_date *" #> internetDateFormatter.format(file.date)&
-      ".rules *" #> metaACL  &
-      ".rules [id]" #> file.fullname
-  }
-  val defaultValueCheckbox = false
-
-  def acl():CssSel = {
-    def groupReadSave(b:Boolean):JsCmd = {
-      val fullNameResource = ValById("name_resource")
-       None
-
-//      val fullNameResource = JqJE.Jq("#name_resource")~>JqJE.JqAttr("id").value
-//
-
-
-      JsCmds.Noop
-    }
-
-    def groupWriteSave(b:Boolean):JsCmd = {
-
-
-      JsCmds.Noop
-    }
-
-    def otherUsersReadSave(b:Boolean):JsCmd = {
-
-
-      JsCmds.Noop
-    }
-
-    def otherUsersWriteSave(b:Boolean):JsCmd = {
-
-
-      JsCmds.Noop
-    }
-
-    ".group_read" #> SHtml.ajaxCheckbox(defaultValueCheckbox,groupReadSave(_))&
-      ".group_write" #> SHtml.ajaxCheckbox(defaultValueCheckbox,groupWriteSave(_))&
-      ".all_read" #> SHtml.ajaxCheckbox(defaultValueCheckbox,otherUsersReadSave(_))&
-      ".all_write" #> SHtml.ajaxCheckbox(defaultValueCheckbox,otherUsersWriteSave(_))
-
-  }
 
   def fileDownloadUrl(file: C3File): String = "/download" + file.fullname + "?dl=true"
 
