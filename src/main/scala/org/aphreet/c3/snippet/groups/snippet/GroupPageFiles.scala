@@ -1,6 +1,6 @@
 package org.aphreet.c3.snippet.groups.snippet
 
-import org.aphreet.c3.loc.{SuffixLoc, ItemRewriteLoc}
+import org.aphreet.c3.loc.SuffixLoc
 import org.aphreet.c3.model.{User, Group}
 import net.liftweb.common._
 import net.liftweb.sitemap.Loc.{Hidden, LinkText, Link}
@@ -8,7 +8,7 @@ import tags.TagForms
 import xml.{NodeSeq, Text}
 import net.liftweb.util.Helpers._
 import net.liftweb.http.{RequestVar, SHtml, S}
-import org.aphreet.c3.snippet.groups.{AbstractGroupPageLoc, GroupPageFilesData}
+import org.aphreet.c3.snippet.groups.AbstractGroupPageLoc
 import com.ifunsoftware.c3.access.fs.{C3FileSystemNode, C3File, C3Directory}
 import org.aphreet.c3.lib.metadata.Metadata
 import Metadata._
@@ -18,9 +18,9 @@ import annotation.tailrec
 import net.liftweb.mapper.By
 import net.liftweb.http.js.{JsCmds, JsCmd}
 import org.aphreet.c3.lib.DependencyFactory
-import com.ifunsoftware.c3.access.{MetadataRemove, MetadataUpdate, C3System}
+import com.ifunsoftware.c3.access.C3System
 import com.ifunsoftware.c3.access.C3System._
-import net.liftweb.http.js.JsCmds.{Alert, OnLoad}
+import net.liftweb.http.js.JsCmds.{Function, Script}
 import org.aphreet.c3.util.helpers.ByteCalculatorHelpers
 
 import scala.Some
@@ -28,7 +28,7 @@ import com.ifunsoftware.c3.access.MetadataUpdate
 import net.liftweb.common.Full
 import com.ifunsoftware.c3.access.MetadataRemove
 import org.aphreet.c3.snippet.groups.GroupPageFilesData
-import net.liftweb.http.js.JE.JsRaw
+import net.liftweb.http.js.JE.JsVar
 
 
 /**
@@ -78,7 +78,6 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers with Gr
   private val logger = Logger(classOf[GroupPageFiles])
   private val c3 = inject[C3System].open_!
 
-
   override lazy val activeLocId = "files"
   override lazy val group = data.group
   lazy val path = data.path
@@ -88,13 +87,38 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers with Gr
     val pathLocs = buildPathLocs
     val groupFilesLink = group.createLink + "/files/"
 
+    def renameCurrentNode(newName: String): JsCmd = {
+      // TODO rename file in C3
+      //      file.foreach{ f =>
+      //        f.move((data.currentAddress.split("/").filter(!_.isEmpty).init :: newName :: Nil).mkString("/", "/", ""))
+      //      }
+      JsCmds.Noop
+    }
+
     ".base_files_path *" #> (
       ".link [href]" #> groupFilesLink &
         ".link *" #> group.name.is
       ) &
       ".bcrumb *" #> (pathLocs.map{ (loc: Loc[_]) =>
-        (if(isLocCurrent(pathLocs, loc)){
-          ".link" #> <strong>{loc.title}</strong>
+        ( if (isLocCurrent(pathLocs, loc)){
+          ".link" #>
+            <span class="hide name_submit_func">
+              {
+                Script(
+                  Function("renameNodeCallback", List("name"),
+                    SHtml.ajaxCall(
+                      JsVar("name"),
+                      (name: String) => renameCurrentNode(name)
+                    )._2.cmd
+                  )
+                )
+              }
+            </span>
+            <a href="#" id="node_name" data-type="text" data-pk="2"
+               data-placeholder="Name..." data-original-title="Rename"
+               class="editable editable-click">
+              {loc.title}
+            </a>
         } else {
           ".link [href]" #> loc.createDefaultLink &
             ".link *" #> loc.title
@@ -113,7 +137,7 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers with Gr
           .getOrElse(Text(groupFilesLink))
       }) &
       ".edit_access *" #> acl()&
-      ".submit_acl [onclick]" #> SHtml.ajaxInvoke(() => updateAclValue())&
+      ".close_acl [onclick]" #> SHtml.ajaxInvoke(() => updateAclValue())&
       (file match {
         case Empty => S.redirectTo("/404.html"); "* *" #> PassThru
         case Failure(msg, t, chain) => {
@@ -172,6 +196,12 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers with Gr
     val metadataUser = Metadata.filterSystemKey(meta)
     val owner = nodeOwner(f)
     f.versions.lastOption.map(_.length).getOrElse("None")
+
+    def updateDescription(descr: String): JsCmd = {
+      f.update(MetadataUpdate(Map((DESCRIPTION_META -> descr))))
+      JsCmds.Noop // bootstrap-editable will update text value on page by itself
+    }
+
     ".file_tags" #> meta.get(TAGS_META).map(_.split(TAGS_SEPARATOR).toList).getOrElse(Nil).map((tag: String) => {
       ".label *" #> tag
     }) &
@@ -188,6 +218,17 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers with Gr
       ".size_file *" #> ByteCalculatorHelpers.convert(f.versions.lastOption.map(_.length.toString).getOrElse("None")) &
       "#tags" #> editTags(f) &
       "#meta_edit" #> saveMetadata(f) &
+      ".description_box *" #> f.metadata.get(DESCRIPTION_META).getOrElse("") &
+      ".description_submit_func *" #> {
+        Script(
+          Function("updateDescriptionCallback", List("description"),
+            SHtml.ajaxCall(
+              JsVar("description"),
+              (d: String) => updateDescription(d)
+            )._2.cmd
+          )
+        )
+      } &
       ".metadata_form" #> metadataUser.map{ case (k, v) => {
         def removeMeta():JsCmd = {
           try{
@@ -213,6 +254,9 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers with Gr
     def save (){
       val  keyMetadata= key.split("%")
       val  valueMetadata= value.split("%")
+      //      var metaKey =  (f.metadata.filterNot{case (k, v) => keySet.contains(k)})
+      //      metaKey = metaKey.filterNot{case(k,v)=>keyMetadata.contains(k)}
+      //      f.update(MetadataRemove())
       val metadata = keyMetadata.zip(valueMetadata).toMap
       f.update(MetadataUpdate(metadata))
     }
@@ -255,20 +299,13 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers with Gr
 
   var currentResourceName = ""
   var currentAclValue = ""
-  val aclFormId = "acl"
 
-  //update value acl in storage
-  def updateAclValue():JsCmd = {
-    val metadata = Map(ACL_META -> currentAclValue)
-    group.getChildren(data.currentAddress).map(res=>{
-      if(res.fullname.hashCode.toString == currentResourceName)
-        res.update(MetadataUpdate(metadata))
-    })
-    JsRaw("$('#"+aclFormId+"').modal('hide')").cmd &
-      JsCmds.SetHtml(currentResourceName,Text(currentAclValue))
+  def updateAclValue() = {
+    JsCmds.SetElemById(currentResourceName,currentAclValue)
+
   }
 
-  //default value acl
+   //default value acl
   def acl(acl:String) = {
     if(acl == "")
       if(group.isOpen)
@@ -291,41 +328,32 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers with Gr
 
     val owner = nodeOwner(directory)
     val metaACL = acl(directory.metadata.get(ACL_META).getOrElse(""))
-    (if(User.currentUserUnsafe.superUser.is || User.containsCurrent(owner.toList)){
-      ".rules *" #> metaACL  &
-        ".rules [id]" #> directory.fullname.hashCode &
-        ".rules [onclick]" #> SHtml.ajaxInvoke(()=>currentResource(directory.fullname.hashCode.toString,metaACL))
-    }else{
-      ".acl_cont *" #> metaACL
-    })&
-      ".owner *" #> owner.map(_.shortName).getOrElse("Unknown") &
+
+    ".owner *" #> owner.map(_.shortName).getOrElse("Unknown") &
       ".owner [href]" #> owner.map(_.createLink) &
       ".name *" #> directory.name &
       ".link [href]" #> (directory.name + "/") &
       ".child_td [onclick]" #> SHtml.ajaxInvoke(() => JsCmds.RedirectTo(directory.name + "/"))&
       ".icon [src]" #> "/images/folder_classic.png" &
-      ".created_date *" #> internetDateFormatter.format(directory.date)
-
+      ".created_date *" #> internetDateFormatter.format(directory.date) &
+      ".rules *" #> metaACL &
+      ".rules [id]" #> directory.fullname &
+      ".rules [onclick]" #> SHtml.ajaxInvoke(()=>currentResource(directory.fullname,metaACL))
   }
 
   def toCss(file: C3File) = {
     val owner = nodeOwner(file)
     val metaACL = acl(file.metadata.get(ACL_META).getOrElse(""))
-    (if(User.currentUserUnsafe.superUser.is || User.containsCurrent(owner.toList)){
-      (".rules *" #> metaACL  &
-        ".rules [id]" #> file.fullname.hashCode &
-        ".rules [onclick]" #> SHtml.ajaxInvoke(()=>currentResource(file.fullname.hashCode.toString,metaACL)))
-    }else{
-      ".acl_cont *" #> metaACL
-    })&
-      ".owner *" #> owner.map(_.shortName).getOrElse("Unknown") &
+    ".owner *" #> owner.map(_.shortName).getOrElse("Unknown") &
       ".owner [href]" #> owner.map(_.createLink) &
       ".name *" #> file.name &
       ".link [href]" #> file.name &
       ".child_td [onclick]" #> SHtml.ajaxInvoke(() => JsCmds.RedirectTo(file.name))&
       ".icon [src]" #> "/images/document_letter.png" &
-      ".created_date *" #> internetDateFormatter.format(file.date)
-
+      ".created_date *" #> internetDateFormatter.format(file.date)&
+      ".rules *" #> metaACL  &
+      ".rules [id]" #> file.fullname &
+      ".rules [onclick]" #> SHtml.ajaxInvoke(()=>currentResource(file.fullname,metaACL))
   }
 
   val defaultValueCheckbox = false
@@ -333,9 +361,11 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers with Gr
   def acl():CssSel = {
     def groupReadSave(b:Boolean):JsCmd = {
       group.getChildren(data.currentAddress).map(res=>{
-        if(res.fullname.hashCode.toString == currentResourceName) {
+        if(res.fullname == currentResourceName) {
           val aclVal =  if(b)"r---" else "----"
-          currentAclValue = aclVal
+          val metadata = Map(ACL_META -> aclVal)
+          res.update(MetadataUpdate(metadata))
+          JsCmds.SetElemById(currentResourceName,aclVal)
         }
 
       })
@@ -345,18 +375,22 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers with Gr
 
     def groupWriteSave(b:Boolean):JsCmd = {
       group.getChildren(data.currentAddress).map(res=>{
-        if(res.fullname.hashCode.toString == currentResourceName) {
+        if(res.fullname == currentResourceName) {
           val metaACL = acl(res.metadata.get(ACL_META).getOrElse(""))
           if (b) {
             val newACL = metaACL.toCharArray
             newACL.update(1,'w')
             newACL.update(0,'r')
-            var aclVal = ""
-            newACL.map(aclVal += _)
-            currentAclValue = aclVal
+            var t = ""
+            newACL.map(t += _)
+            val metadata = Map(ACL_META -> t)
+            res.update(MetadataUpdate(metadata))
+            currentAclValue = t
           }
           else{
             val newAcl = metaACL.replace('w','-')
+            val metadata = Map(ACL_META -> newAcl )
+            res.update(MetadataUpdate(metadata))
             currentAclValue = newAcl
           }
         }
@@ -366,43 +400,55 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers with Gr
 
     def otherUsersReadSave(b:Boolean):JsCmd = {
       group.getChildren(data.currentAddress).map(res=>{
-        if(res.fullname.hashCode.toString == currentResourceName) {
+        if(res.fullname == currentResourceName) {
           val metaACL = acl(res.metadata.get(ACL_META).getOrElse(""))
           if (b) {
             val newACL = metaACL.toCharArray
             newACL.update(2,'r')
             newACL.update(0,'r')
-            var aclVal = ""
-            newACL.map(aclVal += _)
-            currentAclValue = aclVal
+            var t = ""
+            newACL.map(t += _)
+            val metadata = Map(ACL_META -> t)
+            res.update(MetadataUpdate(metadata))
+            currentAclValue = t
           }
           else{
             val newACL = metaACL.toCharArray
             newACL.update(3,'-')
             newACL.update(2,'-')
-            var aclVal = ""
-            newACL.map(aclVal += _)
-            currentAclValue = aclVal
+            var t = ""
+            newACL.map(t += _)
+            val metadata = Map(ACL_META -> t)
+            res.update(MetadataUpdate(metadata))
+            currentAclValue = t
           }
         }
       })
+
       JsCmds.Noop
     }
 
     def otherUsersWriteSave(b:Boolean):JsCmd = {
       group.getChildren(data.currentAddress).map(res=>{
-        if(res.fullname.hashCode.toString == currentResourceName) {
+        if(res.fullname == currentResourceName) {
           val metaACL = acl(res.metadata.get(ACL_META).getOrElse(""))
-          if (b)
-            currentAclValue = "rwrw"
+          if (b) {
+            val newAcl = "rwrw"
+            val metadata = Map(ACL_META -> newAcl )
+            res.update(MetadataUpdate(metadata))
+            currentAclValue = newAcl
+          }
           else{
             val newACL = metaACL.toCharArray
             newACL.update(3,'-')
-            var aclVal = ""
-            newACL.map(aclVal += _)
-            currentAclValue = aclVal
+            var t = ""
+            newACL.map(t += _)
+            val metadata = Map(ACL_META -> t)
+            res.update(MetadataUpdate(metadata))
+            currentAclValue = t
           }
         }
+
       })
       JsCmds.Noop
     }

@@ -39,7 +39,7 @@ import annotation.switch
 
 class WikiParser
 
-class C3HtmlVisitor(val writer:Writer, val resolver:SmartLinkResolver) 
+class C3HtmlVisitor(val writer:Writer, val resolver:SmartLinkResolver)
   extends HtmlVisitor(writer, resolver, new C3HtmlEncoder, true){
 
   var inHeader = false
@@ -173,7 +173,6 @@ class C3HtmlEncoder extends HtmlEncoder{
             builder.append(c)
         }
       }
-
       builder.toString()
     }
   }

@@ -222,6 +222,10 @@ class Boot extends Bootable{
       ret
     }
 
+    LiftRules.statelessDispatch.prepend {
+      case _ if DB.currentConnection.isEmpty => () => Full(ServiceUnavailableResponse(10))
+    }
+
     S.addAround(DB.buildLoanWrapper())
   }
 
