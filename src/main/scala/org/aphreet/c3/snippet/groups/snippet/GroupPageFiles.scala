@@ -264,11 +264,11 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers with Gr
       if(res.fullname.hashCode.toString == currentResourceName)
         res.update(MetadataUpdate(metadata))
     })
-     JsRaw("$('#"+aclFormId+"').modal('hide')").cmd &
-     JsCmds.SetHtml(currentResourceName,Text(currentAclValue))
+    JsRaw("$('#"+aclFormId+"').modal('hide')").cmd &
+      JsCmds.SetHtml(currentResourceName,Text(currentAclValue))
   }
 
-   //default value acl
+  //default value acl
   def acl(acl:String) = {
     if(acl == "")
       if(group.isOpen)
@@ -291,32 +291,41 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers with Gr
 
     val owner = nodeOwner(directory)
     val metaACL = acl(directory.metadata.get(ACL_META).getOrElse(""))
-
-    ".owner *" #> owner.map(_.shortName).getOrElse("Unknown") &
+    (if(User.currentUserUnsafe.superUser.is || User.containsCurrent(owner.toList)){
+      ".rules *" #> metaACL  &
+        ".rules [id]" #> directory.fullname.hashCode &
+        ".rules [onclick]" #> SHtml.ajaxInvoke(()=>currentResource(directory.fullname.hashCode.toString,metaACL))
+    }else{
+      ".acl_cont *" #> metaACL
+    })&
+      ".owner *" #> owner.map(_.shortName).getOrElse("Unknown") &
       ".owner [href]" #> owner.map(_.createLink) &
       ".name *" #> directory.name &
       ".link [href]" #> (directory.name + "/") &
       ".child_td [onclick]" #> SHtml.ajaxInvoke(() => JsCmds.RedirectTo(directory.name + "/"))&
       ".icon [src]" #> "/images/folder_classic.png" &
-      ".created_date *" #> internetDateFormatter.format(directory.date) &
-      ".rules *" #> metaACL &
-      ".rules [id]" #> directory.fullname.hashCode &
-      ".rules [onclick]" #> SHtml.ajaxInvoke(()=>currentResource(directory.fullname.hashCode.toString,metaACL))
+      ".created_date *" #> internetDateFormatter.format(directory.date)
+
   }
 
   def toCss(file: C3File) = {
     val owner = nodeOwner(file)
     val metaACL = acl(file.metadata.get(ACL_META).getOrElse(""))
-    ".owner *" #> owner.map(_.shortName).getOrElse("Unknown") &
+    (if(User.currentUserUnsafe.superUser.is || User.containsCurrent(owner.toList)){
+      (".rules *" #> metaACL  &
+        ".rules [id]" #> file.fullname.hashCode &
+        ".rules [onclick]" #> SHtml.ajaxInvoke(()=>currentResource(file.fullname.hashCode.toString,metaACL)))
+    }else{
+      ".acl_cont *" #> metaACL
+    })&
+      ".owner *" #> owner.map(_.shortName).getOrElse("Unknown") &
       ".owner [href]" #> owner.map(_.createLink) &
       ".name *" #> file.name &
       ".link [href]" #> file.name &
       ".child_td [onclick]" #> SHtml.ajaxInvoke(() => JsCmds.RedirectTo(file.name))&
       ".icon [src]" #> "/images/document_letter.png" &
-      ".created_date *" #> internetDateFormatter.format(file.date)&
-      ".rules *" #> metaACL  &
-      ".rules [id]" #> file.fullname.hashCode &
-      ".rules [onclick]" #> SHtml.ajaxInvoke(()=>currentResource(file.fullname.hashCode.toString,metaACL))
+      ".created_date *" #> internetDateFormatter.format(file.date)
+
   }
 
   val defaultValueCheckbox = false

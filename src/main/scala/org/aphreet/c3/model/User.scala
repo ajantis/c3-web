@@ -37,6 +37,10 @@ object User extends User with MetaMegaProtoUser[User]{
     }
   }
 
+  def currentUserUnsafe: User = {
+    currentUser.openOrThrowException("User is not logged in")
+  }
+
   // for stateful redirects on login (depends on where user wanted to go)
   override def logUserIn(who: User, postLogin: () => Nothing) : Nothing = {
     val currentRedirect : Box[String] = loginRedirect
@@ -352,6 +356,16 @@ object User extends User with MetaMegaProtoUser[User]{
       "password" -> (<input name="password" type="password" id="pwd inputIcon" class="password span2" />),
       "submit" -> (<input type="submit" name="Submit" value="Login" class="btn btn-primary" />))
   }
+
+  def containsCurrent(users: List[User]): Boolean = {
+    User.currentUser match {
+      case Full(user) => {
+        users.exists((u: User) => u.id.is == user.id.is)
+      }
+      case _ => false
+    }
+  }
+
 
 }
 
