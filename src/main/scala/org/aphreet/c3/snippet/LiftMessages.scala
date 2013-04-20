@@ -1,9 +1,11 @@
 package org.aphreet.c3.snippet
 
 import xml.NodeSeq
-import net.liftweb.http.LiftRules
+import net.liftweb.http.{S, LiftRules}
 import net.liftweb.http.S._
 import net.liftweb.util.Helpers._
+import net.liftweb.http.js.{JsCmds, JsCmd}
+
 /**
  * @author Dmitry Ivanov (mailto: id.ajantis@gmail.com)
  *         iFunSoftware
@@ -34,7 +36,7 @@ import net.liftweb.util.Helpers._
  *   </div>
  *
  */
-class LiftMessages {
+object LiftMessages {
 
   protected def messages(ms: List[NodeSeq]) = ms match {
     case Nil =>
@@ -49,5 +51,13 @@ class LiftMessages {
      ".warnings *" #> messages(noIdMessages(warnings)) &
      ".notices *" #> messages(noIdMessages(notices))
    }
+
+  def ajaxError(text: String): JsCmd = {
+     JsCmds.SetHtml("s_errors",
+      <div class="alert alert-error fade in">
+        <button type="button" class="close" data-dismiss="alert">×</button>
+        <p class="message">{text}</p>
+      </div>)
+  }
 
 }
