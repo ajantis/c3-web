@@ -167,8 +167,14 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers with Gr
     object selectedResourcePaths extends RequestVar[Set[String]](Set())
 
     val currentPathLink = data.group.createLink + "/files" + data.currentAddress
-
-    tagsForm(d) &
+    (if(checkSuperAccess(d)){
+      ".delete_selected_btn [onclick]" #> SHtml.ajaxInvoke(() =>
+      { selectedResourcePaths.foreach(c3.deleteFile _); JsCmds.RedirectTo(currentPathLink) })
+    }else{
+      ".delete_selected_btn" #>NodeSeq.Empty &
+        ".btn_remove_resource" #>NodeSeq.Empty
+    })&
+      tagsForm(d) &
       ".child *" #> group.getChildren(data.currentAddress).map {
         resource => {
           (resource.isDirectory match {

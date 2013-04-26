@@ -48,42 +48,31 @@ class GroupPageSettings (data: GroupPageData) extends GroupPageHelpers{
 
   }
   def listUserAdd = {
-    var users = User.findAll().filter(_.id.is != User.currentUser.open_!.id.is)
+    var users = User.findAll().filter(_.id.is != User.currentUserUnsafe.id.is)
     members.map(user =>{
       users = users.filter(_.id.is != user.id.is)
     })
-    if(users.isEmpty || User.currentUser.open_!.email.is != group.owner.obj.map(_.email).open_!.is){
-      ".btn_add_user" #> NodeSeq.Empty
-    }
-
   }
   def listUser = {
-      ".ListGroupUser" #> members.map(user =>{
-        if (user.email.is != group.owner.obj.map(_.email).open_!.is){
-          def deleteUser():JsCmd = {
-            if(groupService.removeUserFromGroup(group,user)){
-              JsCmds.Replace(user.id.is.toString, NodeSeq.Empty)
-            } else JsCmds.Alert("User is not removed! Please check logs for details")
-          }
-          ".ListGroupUser [id]" #> user.id.is &
-            ".ListGroupUser *" #>
-              ((n: NodeSeq) => SHtml.ajaxForm(
-                (".first_name *" #> user.firstName.is &
-                  ".last_name *" #> user.lastName.is &
-                  ".email *" #> user.email.is andThen
-                  "* *" #> SHtml.memoize(f => f ++ SHtml.hidden(deleteUser _))).apply(n)
-              ))
-        }else{
-          ".first_name *" #> user.firstName.is &
-            ".last_name *" #> user.lastName.is &
-            ".email *" #> user.email.is &
-            ".deluser *" #> NodeSeq.Empty
-        }
-
-      })
+    ".ListGroupUser" #> members.map(user =>{
+      def deleteUser():JsCmd = {
+        if(groupService.removeUserFromGroup(group,user)){
+          JsCmds.Replace(user.id.is.toString, NodeSeq.Empty)
+        } else JsCmds.Alert("User is not removed! Please check logs for details")
+      }
+      ".ListGroupUser [id]" #> user.id.is &
+        ".ListGroupUser *" #>
+          ((n: NodeSeq) => SHtml.ajaxForm(
+            (".first_name *" #> user.firstName.is &
+              ".last_name *" #> user.lastName.is &
+              ".email *" #> user.email.is andThen
+              "* *" #> SHtml.memoize(f => f ++ SHtml.hidden(deleteUser _))).apply(n)
+          ))
+    })
   }
+
   def addUser = {
-    var users = User.findAll().filter(_.id.is != User.currentUser.open_!.id.is)
+    var users = User.findAll().filter(_.id.is != User.currentUserUnsafe.id.is)
     members.map(user =>{
       users = users.filter(_.id.is != user.id.is)
     })
@@ -92,6 +81,7 @@ class GroupPageSettings (data: GroupPageData) extends GroupPageHelpers{
       data.filter(_.toLowerCase.startsWith(current.toLowerCase)),
       value => addUserToGroup(value))
   }
+
   protected def addUserToGroup(userEmails:String) = {
 
     val members = User.findByEmail(userEmails)
@@ -109,7 +99,7 @@ class GroupPageSettings (data: GroupPageData) extends GroupPageHelpers{
       JsCmds.Noop
     }
     ".checkbox_public" #> SHtml.ajaxCheckbox(group.isOpen.is,saveCheckbox(_))andThen
-    ":checkbox [class+]" #> "floatLeft checkbox_public"
+      ":checkbox [class+]" #> "floatLeft checkbox_public"
 
   }
 }
