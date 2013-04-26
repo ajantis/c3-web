@@ -199,7 +199,7 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers with Gr
     f.versions.lastOption.map(_.length).getOrElse("None")
 
     def updateDescription(descr: String): JsCmd = {
-      f.update(MetadataUpdate(Map((DESCRIPTION_META -> descr))))
+      f.update(MetadataUpdate(Map(DESCRIPTION_META -> descr)))
       JsCmds.Noop // bootstrap-editable will update text value on page by itself
     }
 

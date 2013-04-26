@@ -89,9 +89,9 @@ $(document).ready( function(){
         if(key!="" && value!="" && keyExist){
             $("#key").val("");
             $("#value").val("");
-            $(".metadata_form").append('<tr>'+
+            $(".metadata_container").append('<tr class="metadata_form">'+
                                             '<td><input readonly class="metadata_key" value="'+ key + '"/></td>'+
-                                            '<td><input class="metadata_value" value="'+ value + '"/></td>'+
+                                            '<td><input type="text" class="metadata_value" value="'+ value + '"/></td>'+
                                             '<td><a class="close remove_metadata">&times;</a></td>'+
                                        '</tr>');
 

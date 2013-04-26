@@ -60,4 +60,20 @@ object LiftMessages {
       </div>)
   }
 
+  def ajaxWarning(text: String): JsCmd = {
+    JsCmds.SetHtml("s_warnings",
+      <div class="alert alert-warning fade in">
+        <button type="button" class="close" data-dismiss="alert">×</button>
+        <p class="message">{text}</p>
+      </div>)
+  }
+
+  def ajaxNotice(text: String): JsCmd = {
+    JsCmds.SetHtml("s_notices",
+      <div class="alert alert-info fade in">
+        <button type="button" class="close" data-dismiss="alert">×</button>
+        <p class="message">{text}</p>
+      </div>)
+  }
+
 }
