@@ -202,10 +202,32 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers with Gr
       f.update(MetadataUpdate(Map(DESCRIPTION_META -> descr)))
       JsCmds.Noop // bootstrap-editable will update text value on page by itself
     }
-
-    ".file_tags" #> meta.get(TAGS_META).map(_.split(TAGS_SEPARATOR).toList).getOrElse(Nil).map((tag: String) => {
-      ".label *" #> tag
-    }) &
+    (if(checkWriteAccess(f)||checkSuperAccess(f)){
+      "#tags" #> editTags(f) &
+        "#meta_edit" #> saveMetadata(f)&
+        "#meta" #> metadataEdit(f,metadataUser) &
+        ".description_box *" #> f.metadata.get(DESCRIPTION_META).getOrElse("")&
+        ".description_submit_func *" #> {
+          Script(
+            Function("updateDescriptionCallback", List("description"),
+              SHtml.ajaxCall(
+                JsVar("description"),
+                (d: String) => updateDescription(d)
+              )._2.cmd
+            )
+          )
+        }
+    }else{
+      "#tags" #> NodeSeq.Empty &
+        ".remove_resource" #> NodeSeq.Empty&
+        ".edit_tags_btn" #> NodeSeq.Empty&
+        ".description_box" #> f.metadata.get(DESCRIPTION_META).getOrElse("")&
+        "#meta" #> metadataView(f,metadataUser)&
+        ".description_submit_func" #>NodeSeq.Empty
+    })&
+      ".file_tags" #> meta.get(TAGS_META).map(_.split(TAGS_SEPARATOR).toList).getOrElse(Nil).map((tag: String) => {
+        ".label *" #> tag
+      }) &
       "#node-tags-form" #> NodeSeq.Empty &
       ".file-table" #> NodeSeq.Empty &
       ".fs_toolbar" #> NodeSeq.Empty &
@@ -216,37 +238,40 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers with Gr
       ".view_btn [href]" #> fileViewUrl(f) &
       ".data_file *" #> internetDateFormatter.format(f.date)&
       ".owner_file *" #>  owner.map(_.shortName).getOrElse("Unknown") &
-      ".size_file *" #> ByteCalculatorHelpers.convert(f.versions.lastOption.map(_.length.toString).getOrElse("None")) &
-      "#tags" #> editTags(f) &
-      "#meta_edit" #> saveMetadata(f) &
-      ".description_box *" #> f.metadata.get(DESCRIPTION_META).getOrElse("") &
-      ".description_submit_func *" #> {
-        Script(
-          Function("updateDescriptionCallback", List("description"),
-            SHtml.ajaxCall(
-              JsVar("description"),
-              (d: String) => updateDescription(d)
-            )._2.cmd
-          )
-        )
-      } &
-      ".metadata_form" #> metadataUser.map{ case (k, v) => {
-        def removeMeta():JsCmd = {
-          try{
-            f.update(MetadataRemove(List(k)))
-            JsCmds.Replace((k+v),NodeSeq.Empty)
-          }catch{
-            case e:Exception => JsCmds.Alert("User is not removed! Please check logs for details")
-          }
+      ".size_file *" #> ByteCalculatorHelpers.convert(f.versions.lastOption.map(_.length.toString).getOrElse("None"))
+
+  }
+
+  protected def metadataEdit(f: C3File,metadataUsr:scala.collection.Map[String,String]) = {
+    metadataUsr.map{ case (k, v) => {
+      def removeMeta():JsCmd = {
+        try{
+          f.update(MetadataRemove(List(k)))
+          JsCmds.Replace((k+v),NodeSeq.Empty)
+        }catch{
+          case e:Exception => JsCmds.Alert("User is not removed! Please check logs for details")
         }
-        ".metadata_form [id]" #> (k + v)&
-          ".metadata_form *" #>
-            ((n: NodeSeq) => SHtml.ajaxForm(
-              (".metadata_key [value]" #> k &
-                ".metadata_value [value]" #> v &
-                ".remove_metadata *" #> SHtml.memoize(t => t ++ SHtml.hidden(removeMeta _))).apply(n)
-            ))
-      }}
+      }
+      ".metadata_form [id]" #> (k + v)&
+        ".metadata_form *" #>
+          ((n: NodeSeq) => SHtml.ajaxForm(
+            (".metadata_key [value]" #> k &
+              ".metadata_value [value]" #> v &
+              ".remove_metadata *" #> SHtml.memoize(t => t ++ SHtml.hidden(removeMeta _))).apply(n)
+          ))
+    }}
+  }
+
+  protected def metadataView(f: C3File,metadataUsr:scala.collection.Map[String,String]) = {
+    ".metadata_form *" #> metadataUsr.map{ case (k, v) => {
+      ".metadata_key [value]" #> k &
+        ".metadata_value [value]" #> v &
+        ".remove_metadata"#> NodeSeq.Empty &
+        ".metadata_value [readonly+]" #> "readonly"
+    }}&
+      ".add_metadata" #> NodeSeq.Empty &
+      ".btn_save_metadata" #> NodeSeq.Empty &
+      "#edit_metadata_form" #> NodeSeq.Empty
   }
 
   protected def saveMetadata(f: C3File): CssSel ={
@@ -269,9 +294,16 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers with Gr
       val metadata = Map((TAGS_META -> tags.split(",").map(_.trim).mkString(",")))
       f.update(MetadataUpdate(metadata))
     }
-    ".current_tags [value]" #> f.metadata.get(TAGS_META).getOrElse("")&
-      "name=tags_edit" #> SHtml.onSubmit(tags = _) &
-      "type=submit" #> SHtml.onSubmitUnit(saveTags)
+    (if(checkWriteAccess(f)||checkSuperAccess(f)){
+      ".current_tags [value]" #> f.metadata.get(TAGS_META).getOrElse("")&
+        "name=tags_edit" #> SHtml.onSubmit(tags = _) &
+        "type=submit" #> SHtml.onSubmitUnit(saveTags)
+    }else{
+      "#tags" #> NodeSeq.Empty
+    })
+
+
+
   }
 
   protected def newDirectoryForm(currentDirectory: C3Directory, currentPath: String): CssSel = {
@@ -360,7 +392,7 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers with Gr
       }else{
         ".link [href]" #> "#"&
           ".child_td [onclick]" #> SHtml.ajaxInvoke(() => (LiftMessages.ajaxError(S.?("access.restricted"))))
-        })&
+      })&
         ".acl_cont *" #> metaACL
     })&
       ".owner *" #> owner.map(_.shortName).getOrElse("Unknown") &
