@@ -88,6 +88,7 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers with Gr
     val pathLocs = buildPathLocs
     val groupFilesLink = group.createLink + "/files/"
 
+    val currentResource = file.openOrThrowException("Directory is not exist.")
     def renameCurrentNode(newName: String): JsCmd = {
       // TODO rename file in C3
       //      file.foreach{ f =>
@@ -101,7 +102,7 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers with Gr
         ".link *" #> group.name.is
       ) &
       ".bcrumb *" #> (pathLocs.map{ (loc: Loc[_]) =>
-        ( if (isLocCurrent(pathLocs, loc)){
+        ( if (isLocCurrent(pathLocs, loc) && (checkSuperAccess(currentResource)||checkWriteAccess(currentResource))){
           ".link" #>
             <span class="hide name_submit_func">
               {
@@ -248,7 +249,7 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers with Gr
   }
 
   protected def metadataEdit(f: C3File,metadataUsr:scala.collection.Map[String,String]) = {
-    metadataUsr.map{ case (k, v) => {
+    ".metadata_form" #> metadataUsr.map{ case (k, v) => {
       def removeMeta():JsCmd = {
         try{
           f.update(MetadataRemove(List(k)))
@@ -264,7 +265,8 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers with Gr
               ".metadata_value [value]" #> v &
               ".remove_metadata *" #> SHtml.memoize(t => t ++ SHtml.hidden(removeMeta _))).apply(n)
           ))
-    }}
+    }}&
+      "#meta_edit" #> saveMetadata(f)
   }
 
   protected def metadataView(f: C3File,metadataUsr:scala.collection.Map[String,String]) = {

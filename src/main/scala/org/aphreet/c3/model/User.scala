@@ -2,7 +2,7 @@ package org.aphreet.c3.model
 
 import net.liftweb.mapper._
 import net.liftweb.common._
-import net.liftweb.http.{SessionVar, S, SHtml}
+import net.liftweb.http._
 import xml._
 import net.liftweb.http.js.JsCmds.FocusOnLoad
 import net.liftweb.util.Helpers._
@@ -111,7 +111,7 @@ object User extends User with MetaMegaProtoUser[User]{
       case Full(user) =>
         def finishSet() {
           user.validate match {
-            case Nil => S.notice(S.??("password.changed"))
+            case Nil => S.notice(S.?("password.changed"))
             user.resetUniqueId().save
             logUserIn(user, () => S.redirectTo(homePage))
 
@@ -122,7 +122,7 @@ object User extends User with MetaMegaProtoUser[User]{
           "pwd" -> SHtml.password_*("",(p: List[String]) =>
             user.setPasswordFromListString(p)),
           "submit" -> resetPasswordSubmitButton(S.?("set.password.button"), finishSet _))
-      case _ => S.error(S.??("password.link.invalid")); S.redirectTo(homePage)
+      case _ => S.error(S.?("password.link.invalid")); S.redirectTo(homePage)
     }
 
   // password recovery email generation
@@ -146,7 +146,7 @@ object User extends User with MetaMegaProtoUser[User]{
 
       case Full(user) =>
         sendValidationEmail(user)
-        S.notice(S.??("account.validation.resent"))
+        S.notice(S.?("account.validation.resent"))
         S.redirectTo(homePage)
 
       case _ => S.error(userNameNotFoundString)
@@ -155,7 +155,7 @@ object User extends User with MetaMegaProtoUser[User]{
   override def passwordResetMailBody(user: TheUserType, resetLink: String): Elem = {
     (<html>
       <head>
-        <title>{S.??("reset.password.confirmation")}</title>
+        <title>{S.?("reset.password.confirmation")}</title>
       </head>
       <body>
         <p>{S.?("dear")} {user.getFirstName},
@@ -272,11 +272,11 @@ object User extends User with MetaMegaProtoUser[User]{
       var newPassword: List[String] = Nil
 
       def testAndSet() {
-        if (!user.testPassword(Full(oldPassword))) S.error(S.??("wrong.old.password"))
+        if (!user.testPassword(Full(oldPassword))) S.error(S.?("wrong.old.password"))
         else {
           user.setPasswordFromListString(newPassword)
           user.validate match {
-            case Nil => user.save; S.notice(S.??("changePassword.changed")); S.redirectTo(homePage)
+            case Nil => user.save; S.notice(S.?("changePassword.changed")); S.redirectTo(homePage)
             case xs => S.error(xs.str)
           }
         }
@@ -331,7 +331,7 @@ object User extends User with MetaMegaProtoUser[User]{
         case Full(user) if user.validated_? && user.enabled.is &&
           user.testPassword(S.param("password")) => {
           logUserIn(user, () => {
-            S.notice(S.??("logged.in"))
+            S.notice(S.?("logged.in"))
 
             val redir = loginRedirect.is match {
               case Full(url) =>
@@ -345,9 +345,9 @@ object User extends User with MetaMegaProtoUser[User]{
         }
 
         case Full(user) if !user.validated_? =>
-          S.error(S.??("account.validation.error"))
+          S.error(S.?("account.validation.error"))
 
-        case _ => S.error(S.??("invalid.credentials"))
+        case _ => S.error(S.?("invalid.credentials"))
       }
     }
 

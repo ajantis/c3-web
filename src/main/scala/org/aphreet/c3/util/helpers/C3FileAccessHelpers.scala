@@ -59,8 +59,8 @@ trait C3FileAccessHelpers extends C3FileAccess with C3ResourceHelpers{
 
   def checkSuperAccess(resource:C3FileSystemNode) =  {
     val owner = nodeOwner(resource)
-    if(User.currentUserUnsafe.superUser.is || User.containsCurrent(owner.toList))
-      true else false
+    User.currentUserUnsafe.superUser.is || User.containsCurrent(owner.toList)
+
   }
 
 }
