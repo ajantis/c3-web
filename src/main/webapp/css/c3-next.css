@@ -173,7 +173,7 @@ body > .navbar .brand:hover {
 /*********************************************************
 * Begin Categories part
 *********************************************************/
-.tags_cont{
+.tags_cont_all{
     margin-right: 50px;
     display:inline-block;
     vertical-align:top;
