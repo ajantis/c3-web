@@ -543,23 +543,24 @@ table.file-table {
 	border-color:#CCC;
 	padding:2px;
 }
-
 tr.file-table-name{
-	width:70%;
+	width:60%;
 }
-
-td.file-table-date td.file-table-owner{
-	width:15%;
+td.file-table-owner{
+	width:10%;
 }
-
+td.file-table-rules{
+	width:25px;
+}
 td.file-table-date{
 	text-align:right;
+	width:175px;
 }
 .inf_left{
     float:left;
     margin-left:3px;
     margin-top:3px;
-
+    line-height:14px;
 }
 .inf_left_text{
     float:left;
@@ -736,9 +737,11 @@ td.file-table-date{
     color: #999999;
 }
 .description_group{
-    margin-left: 25px;
-    color: #333333;
-    font-size: 14px;
+    margin-left: 20px;
+    margin-top:-20px;
+    color: #666;
+    font-size: 13px;
+    font-style: italic;
 }
 .container_groups{
     width:80%;
@@ -754,10 +757,10 @@ td.file-table-date{
 .active_hover{
     cursor:pointer;
     background-color:#CCC!important;
+
 }
-.rules{
-    border-bottom: dashed 1px #0088cc;
-}
-.rules:hover{
-    border:none;
-}
+.short_description
+{
+     margin-left: 15px!important;
+     font-size: 9px!important;
+     overflo
