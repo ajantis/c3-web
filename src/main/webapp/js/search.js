@@ -18,13 +18,14 @@ $(document).ready( function(){
     $(".child_td").hover(
       function () {
         $(this).parent().children().each(function(index){
-            $(this).toggleClass("active_hover");
+            $(this).removeClass("active_hover");
+            $(this).addClass("active_hover");
 
         });
       },
       function () {
         $(this).parent().children().each(function(index){
-                    $(this).toggleClass("active_hover");
+            $(this).removeClass("active_hover");
         });
       }
     );
@@ -32,15 +33,11 @@ $(document).ready( function(){
      //checkbox acl
      $(".rules").click(function(){
         var acl = $(this).text();
-//        var idResource = $(this).attr("id");
         if(acl[0] =='r') $(".group_read").attr('checked', true);
         if(acl[1] =='w') $(".group_write").attr('checked', true);
         if(acl[2] =='r') $(".all_read").attr('checked', true);
         if(acl[3] =='w') $(".all_write").attr('checked', true);
-//        $("#name_resource").val(idResource);
-
      });
-
 
      $(".group_read").click(function(){
         if(!$(this).attr('checked')){
