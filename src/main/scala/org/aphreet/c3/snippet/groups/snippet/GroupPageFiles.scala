@@ -21,7 +21,7 @@ import org.aphreet.c3.lib.DependencyFactory
 import com.ifunsoftware.c3.access.C3System
 import com.ifunsoftware.c3.access.C3System._
 import net.liftweb.http.js.JsCmds.{Function, Script}
-import org.aphreet.c3.util.helpers.{C3FileAccessHelpers, ByteCalculatorHelpers}
+import org.aphreet.c3.util.helpers.{ConvertHelpers, C3FileAccessHelpers, ByteCalculatorHelpers}
 
 import scala.Some
 import com.ifunsoftware.c3.access.MetadataUpdate
@@ -88,7 +88,6 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers with Gr
     val pathLocs = buildPathLocs
     val groupFilesLink = group.createLink + "/files/"
 
-    val currentResource = file.openOrThrowException("Directory is not exist.")
     def renameCurrentNode(newName: String): JsCmd = {
       // TODO rename file in C3
       //      file.foreach{ f =>
@@ -102,7 +101,7 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers with Gr
         ".link *" #> group.name.is
       ) &
       ".bcrumb *" #> (pathLocs.map{ (loc: Loc[_]) =>
-        ( if (isLocCurrent(pathLocs, loc) && (checkSuperAccess(currentResource)||checkWriteAccess(currentResource))){
+        ( if (isLocCurrent(pathLocs, loc)){
           ".link" #>
             <span class="hide name_submit_func">
               {
@@ -249,7 +248,7 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers with Gr
   }
 
   protected def metadataEdit(f: C3File,metadataUsr:scala.collection.Map[String,String]) = {
-    ".metadata_form" #> metadataUsr.map{ case (k, v) => {
+    metadataUsr.map{ case (k, v) => {
       def removeMeta():JsCmd = {
         try{
           f.update(MetadataRemove(List(k)))
@@ -265,8 +264,7 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers with Gr
               ".metadata_value [value]" #> v &
               ".remove_metadata *" #> SHtml.memoize(t => t ++ SHtml.hidden(removeMeta _))).apply(n)
           ))
-    }}&
-      "#meta_edit" #> saveMetadata(f)
+    }}
   }
 
   protected def metadataView(f: C3File,metadataUsr:scala.collection.Map[String,String]) = {
@@ -376,6 +374,7 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers with Gr
       ".owner [href]" #> owner.map(_.createLink) &
       ".name *" #> directory.name &
       ".icon [src]" #> "/images/folder_classic.png" &
+      ".description_box *" #> directory.metadata.get(DESCRIPTION_META).getOrElse("")&
       ".created_date *" #> internetDateFormatter.format(directory.date)
 
   }
@@ -401,10 +400,12 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers with Gr
     })&
       ".owner *" #> owner.map(_.shortName).getOrElse("Unknown") &
       ".owner [href]" #> owner.map(_.createLink) &
-      ".name *" #> file.name &
+      ".name *" #> ConvertHelpers.ShortString(file.name,40) &
+      ".description_box *" #> ConvertHelpers.ShortString(file.metadata.get(DESCRIPTION_META).getOrElse(""),if(file.name.length > 40) 60 else (110-file.name.length))&
       ".icon [src]" #> "/images/document_letter.png" &
       ".created_date *" #> internetDateFormatter.format(file.date)
-
+       //40 - max vizible sumbols, when size file name is big
+       //110 - count visible sumbols in descriptoin columns
   }
 
   val defaultValueCheckbox = false

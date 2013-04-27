@@ -10,11 +10,12 @@
         <h2>Users</h2>
         <div>
             <table class="table-striped table-condensed lift:UserListPage.list">
-                <thead>
+                <thead class="user-head">
                 <tr>
                     <th>User name</th>
                     <th>E-mail</th>
-                    <th style="width:70px;"></th>
+                    <th style="width:70px;" class="name-admin">Admin</th>
+                    <th style="width:70px;" class="name-enabled">Enabled</th>
                     <th style="width:20px;"></th>
                 </tr>
                 </thead>
@@ -26,6 +27,7 @@
                         </a>
                     </td>
                     <td class="email">mail</td>
+                    <td class="is_admin">is_admin</td>
                     <td class="enabled">enabled</td>
                     <td class="deluser"><button class="delete_group close">&times;</button></td>
                 </tr>

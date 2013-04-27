@@ -15,7 +15,18 @@ import net.liftweb.mapper.By
 class UserListPage extends UserHelpers{
   def list = {
     val users = User.findAll(By(User.enabled,true))
-    ".user " #> users.map {user => {
+    ".user-head *" #> (
+      if (User.currentUser.open_!.superUser.is)
+      {
+        ".name-admin *" #> "Admin" &
+        ".name-enabled *" #> "Enabled"
+      }
+      else
+      {
+        ".name-admin *" #> NodeSeq.Empty &
+        ".name-enabled *" #> NodeSeq.Empty
+      })&
+      ".user " #> users.map {user => {
       if (User.currentUser.open_!.superUser.is && !user.superUser.is){
         def deleteUser():JsCmd = {
           user.enabled.set(false)
@@ -30,6 +41,7 @@ class UserListPage extends UserHelpers{
         ".user *" #>
           ((n: NodeSeq) =>  SHtml.ajaxForm(
             (toCssBindings(user)&
+              ".is_admin *" #> (if(user.superUser.is) "Yes" else "No") &
               ".enabled *" #> (if(user.enabled.is) "Yes" else "No") &
               ".deluser *" #> SHtml.memoize(f => f ++ SHtml.hidden(deleteUser _))).apply(n)
           ))
@@ -38,11 +50,12 @@ class UserListPage extends UserHelpers{
       else
       {
         toCssBindings(user)&
+        ".is_admin *" #> NodeSeq.Empty &
         ".enabled *" #> NodeSeq.Empty &
         ".deluser *" #> NodeSeq.Empty
       }
     }
 
-    }
+      }
   }
 }

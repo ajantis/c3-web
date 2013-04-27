@@ -65,12 +65,19 @@ class GroupPageSettings (data: GroupPageData) extends GroupPageHelpers{
           ((n: NodeSeq) => SHtml.ajaxForm(
             (".first_name *" #> user.firstName.is &
               ".last_name *" #> user.lastName.is &
-              ".email *" #> user.email.is andThen
+              ".email *" #> user.email.is  &
+              ".full_name *" #> user.shortName andThen
               "* *" #> SHtml.memoize(f => f ++ SHtml.hidden(deleteUser _))).apply(n)
           ))
     })
   }
-
+  def listShortUser = {
+    ".ListShortGroupUser" #> members.map(user =>{
+      ".email *" #> user.email &
+        ".short_name [href]" #> user.createLink &
+        ".short_name *" #> user.shortName
+    })
+  }
   def addUser = {
     var users = User.findAll().filter(_.id.is != User.currentUserUnsafe.id.is)
     members.map(user =>{
