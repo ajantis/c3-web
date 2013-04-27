@@ -13,7 +13,7 @@ trait C3FileAccessHelpers extends C3FileAccess with C3ResourceHelpers{
   //default value acl
   def acl(acl:String) = {
     if(acl == "")
-      if(group.isOpen)
+      if(group.isOpen.is)
         "r-r-"
       else
         "r---"

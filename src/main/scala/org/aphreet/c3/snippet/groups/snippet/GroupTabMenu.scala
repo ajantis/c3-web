@@ -31,7 +31,7 @@ class GroupTabMenu {
 
     (User.currentUser, group) match {
       case (Full(user), Full(g)) => {
-        if (user.email.is == g.owner.obj.map(_.email).open_!.is)
+        if (user.email.is == g.owner.obj.map(_.email).open_!.is ||user.superUser.is)
           tabs.set(groupId => defaultTabs(groupId) ::: List("settings" -> SettingsTab(groupId)))
       }
       case _ =>
