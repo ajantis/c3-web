@@ -173,14 +173,14 @@ body > .navbar .brand:hover {
 /*********************************************************
 * Begin Categories part
 *********************************************************/
-/*.table{*/
-    /*margin-right: 50px;*/
-    /*display:inline-block;*/
-    /*vertical-align:top;*/
-    /*width: 233px;*/
-    /*zoom:1 !ie;*/
-    /*display:inline !ie;*/
-/*}*/
+.tags_cont{
+    margin-right: 50px;
+    display:inline-block;
+    vertical-align:top;
+    width: 233px;
+    zoom:1 !ie;
+    display:inline !ie;
+}
 
 .labls{
     margin-bottom: 5px;
