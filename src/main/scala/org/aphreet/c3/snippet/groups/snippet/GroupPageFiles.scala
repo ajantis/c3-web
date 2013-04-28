@@ -71,13 +71,13 @@ object GroupPageFiles extends AbstractGroupPageLoc[GroupPageFilesData] with Suff
   }
 }
 
-class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers with GroupPageHelpers with FSHelpers with TagForms with C3FileAccessHelpers{
+class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers
+with GroupPageHelpers with FSHelpers with TagForms with C3FileAccessHelpers{
 
   import DependencyFactory._
 
   private val logger = Logger(classOf[GroupPageFiles])
-  private val c3 = inject[C3System].open_!
-
+  private val c3 = inject[C3System].openOrThrowException("C3 is not available")
 
   override lazy val activeLocId = "files"
   override lazy val group = data.group
@@ -88,13 +88,18 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers with Gr
     val pathLocs = buildPathLocs
     val groupFilesLink = group.createLink + "/files/"
 
-    val currentResource = file.openOrThrowException("Directory is not exist.")
+    val currentResource = file.openOrThrowException("Directory or file is not exist.")
     def renameCurrentNode(newName: String): JsCmd = {
-      // TODO rename file in C3
-      //      file.foreach{ f =>
-      //        f.move((data.currentAddress.split("/").filter(!_.isEmpty).init :: newName :: Nil).mkString("/", "/", ""))
-      //      }
-      JsCmds.Noop
+      file.foreach{ f =>
+        val newPath = (f.fullname.split("/").toList.init ::: newName :: Nil).mkString("", "/", "")
+        f.move(newPath)
+      }
+
+      val redirectPath: String = file.map { f =>
+        groupFilesLink + (path.init ::: newName :: Nil).mkString("", "/", if (f.isDirectory) "/" else "")
+      }.openOr("")
+
+      JsCmds.RedirectTo(redirectPath)
     }
 
     ".base_files_path *" #> (
@@ -209,10 +214,27 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers with Gr
       f.update(MetadataUpdate(Map(DESCRIPTION_META -> descr)))
       JsCmds.Noop // bootstrap-editable will update text value on page by itself
     }
-    (if(checkWriteAccess(f)||checkSuperAccess(f)){
-      "#tags" #> editTags(f) &
+
+    def updateTags(tags: String): JsCmd = {
+      val metadata = Map((TAGS_META -> tags.split(",").map(_.trim()).mkString(",")))
+      f.update(MetadataUpdate(metadata))
+      JsCmds.Noop // bootstrap-editable will update text value on page by itself
+    }
+
+    "#edit_tags_form *" #> f.metadata.get(TAGS_META).map(_.split(",").mkString(", ")).getOrElse("") &
+    ".description_box *" #> f.metadata.get(DESCRIPTION_META).getOrElse("") &
+    (if(checkWriteAccess(f) || checkSuperAccess(f)){
+        ".edit_tags_form_func *" #> {
+            Script(
+              Function("updateTagsCallback", List("tags"),
+                SHtml.ajaxCall(
+                  JsVar("tags"),
+                  (d: String) => updateTags(d)
+                )._2.cmd
+              )
+            )
+        } &
         "#meta" #> metadataEdit(f,metadataUser) &
-        ".description_box *" #> f.metadata.get(DESCRIPTION_META).getOrElse("")&
         ".description_submit_func *" #> {
           Script(
             Function("updateDescriptionCallback", List("description"),
@@ -223,14 +245,13 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers with Gr
             )
           )
         }
-    }else{
-      "#tags" #> NodeSeq.Empty &
-        ".remove_resource" #> NodeSeq.Empty&
-        ".edit_tags_btn" #> NodeSeq.Empty&
-        ".description_box" #> f.metadata.get(DESCRIPTION_META).getOrElse("")&
-        "#meta" #> metadataView(f,metadataUser)&
-        ".description_submit_func" #>NodeSeq.Empty
-    })&
+    } else {
+        "#edit_tags_form [data-disabled]" #> "true" &
+        ".remove_resource" #> NodeSeq.Empty &
+        ".description_box" #> f.metadata.get(DESCRIPTION_META).getOrElse("") &
+        ".description_box [data-disabled]" #> "true" &
+        "#meta" #> metadataView(f,metadataUser)
+    }) &
       ".file_tags" #> meta.get(TAGS_META).map(_.split(TAGS_SEPARATOR).toList).getOrElse(Nil).map((tag: String) => {
         ".label *" #> tag
       }) &
@@ -293,21 +314,6 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers with Gr
     "name=metadata_key" #> SHtml.onSubmit(key = _) &
       "name=metadata_value" #> SHtml.onSubmit(value = _) &
       "type=submit" #> SHtml.onSubmitUnit(save)
-  }
-
-  protected def editTags(f: C3File): CssSel = {
-    var tags = ""
-    def saveTags() {
-      val metadata = Map((TAGS_META -> tags.split(",").map(_.trim).mkString(",")))
-      f.update(MetadataUpdate(metadata))
-    }
-    (if(checkWriteAccess(f)||checkSuperAccess(f)){
-      ".current_tags [value]" #> f.metadata.get(TAGS_META).getOrElse("")&
-        "name=tags_edit" #> SHtml.onSubmit(tags = _) &
-        "type=submit" #> SHtml.onSubmitUnit(saveTags)
-    }else{
-      "#tags" #> NodeSeq.Empty
-    })
   }
 
   protected def newDirectoryForm(currentDirectory: C3Directory, currentPath: String): CssSel = {
@@ -388,9 +394,9 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers with Gr
       ".rules *" #> metaACL  &
         ".rules [id]" #> file.fullname.hashCode &
         ".rules [onclick]" #> SHtml.ajaxInvoke(()=>currentResource(file.fullname.hashCode.toString,metaACL))&
-        ".link [href]" #> (file.name + "/") &
+        ".link [href]" #> file.name &
         ".child_td [onclick]" #> SHtml.ajaxInvoke(() => JsCmds.RedirectTo(file.name + "/"))
-    }else{
+    } else {
       (if(checkReadAccess(file)){
         ".link [href]" #> (file.name + "/") &
           ".child_td [onclick]" #> SHtml.ajaxInvoke(() => JsCmds.RedirectTo(file.name + "/"))

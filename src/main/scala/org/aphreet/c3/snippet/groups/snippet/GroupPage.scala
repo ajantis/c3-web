@@ -43,15 +43,15 @@ class GroupPage(data: GroupPageData) extends GroupPageHelpers{
     ".tags_group" #> groupTags.map((tag: String) => {
       ".tags_group *" #> tag
     }) &
-    ".GroupOwner *" #> group.owner.obj.map(_.shortName).openOr("N/A")&
-    ".GroupOwner [href]" #> group.owner.obj.map(_.createLink)&
+    ".GroupOwner *" #> group.owner.obj.map(_.shortName).openOr("N/A") &
+    ".GroupOwner [href]" #> group.owner.obj.map(_.createLink) &
     ".GroupName *" #> group.name.is &
     ".GroupAccess *" #> status &
       ".GroupAccess [class+]" #> background &
     ".GroupDescription *" #>group.description.is
-
   }
 }
+
 trait GroupPageHelpers {
   val group: Group
   val activeLocId: String

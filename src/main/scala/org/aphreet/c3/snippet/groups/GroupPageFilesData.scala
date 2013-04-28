@@ -15,5 +15,5 @@ case class GroupPageFilesData(override val group: Group, private val _path: List
     case _ => _path
   }
 
-  val currentAddress = if(!path.isEmpty) path.mkString("/","/", if(isDirectoryLoc)"/" else "") else "/"
+  val currentAddress = if (!path.isEmpty) path.mkString("/","/", if(isDirectoryLoc) "/" else "") else "/"
 }

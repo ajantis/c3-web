@@ -9,6 +9,10 @@
         <script src="/js/bootstrap-tags/js/bootstrap-tags.js" type="text/javascript"></script>
         <link rel="stylesheet" type="text/css" href="/js/bootstrap-tags/css/bootstrap-tags.css">
 
+        <!-- select2 -->
+        <link href="/assets/select2/select2.css" rel="stylesheet">
+        <script src="/assets/select2/select2.js"></script>
+
         <div class="lift:TableSorters.defaultTableSorter"></div>
 
         <div class="row-fluid">
@@ -120,10 +124,10 @@
                                         <tr>
                                             <td><i class="icon-tags"></i> Tags</td>
                                             <td>
-                                                <div class="file_tags label btn-info inf_left">
-                                                    <span class="label label-info inf_left">Snipp</span>
-                                                </div>
-                                                <a class="edit_tags_btn" href="#tags" data-toggle="modal" title="Edit tags"><img src="/images/tag_add.png"/></a>
+                                                <span class="hide edit_tags_form_func"></span>
+                                                <a href="#" id="edit_tags_form" data-type="select2" data-pk="1" data-original-title="Enter tags">
+                                                    html, javascript
+                                                </a>
                                             </td>
                                         </tr>
                                     </tbody>
@@ -144,19 +148,6 @@
                             </div>
                         </div>
 
-                        <div id="tags" class="modal hide fade">
-                            <h4 class = "modal-header">Edit tags</h4>
-                            <div class="edit_meta">
-                                <form id="edit_tags_from"  class="input_tags">
-                                    <input type="text" name="tags_edit" placeholder="docs, main, etc..." class="current_tags input-xlarge">
-                                    <p class="help-block">tags must be comma-separated "docs, main, etc..."</p>
-                                </form>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" data-dismiss="modal" class="btn">Cancel</button>
-                                <button type="submit" class="btn btn-success" form="edit_tags_from">Save</button>
-                            </div>
-                        </div>
                         <div id="meta" class="modal hide fade">
                             <h4 class = "modal-header">Metadata</h4>
                             <div class="edit_meta">
@@ -419,6 +410,16 @@
                             $('#node_name').editable({
                                 url: function(params) {
                                     renameNodeCallback(params.value);
+                                }
+                            });
+                            $('#edit_tags_form').editable({
+                                inputclass: 'input-large',
+                                select2: {
+                                    tags: [],
+                                    tokenSeparators: [","]
+                                },
+                                url: function(params) {
+                                    updateTagsCallback(params.value);
                                 }
                             });
                             // ]]>

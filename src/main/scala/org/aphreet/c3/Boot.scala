@@ -69,6 +69,7 @@ class Boot extends Bootable{
     val isSuperAdmin = If(() => {if(!User.currentUser.isEmpty) User.currentUser.open_!.superUser.is else false},
       () => RedirectWithState("/index", RedirectState( () => {} ,"Not a super user" -> NoticeType.Notice ) )
     )
+
     val isGroupAdmin = If(() => {
       (for {
         groupName <- S.param("groupname")
