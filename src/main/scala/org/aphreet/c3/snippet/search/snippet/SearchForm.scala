@@ -201,11 +201,11 @@ class SearchForm extends PaginatorSnippet[SearchResultEntry] with C3Loggable{
   }
 
   private def createC3SearchQuery(contentQuery: String, tags: Iterable[String]) = {
-    "content:\"" + contentQuery + "\"" +
+    "+content:\"" + contentQuery + "\"" +
     (if (!tags.isEmpty){
-      " AND (" +
-        tags.map { t => "(" + Metadata.TAGS_META + ":\"" + t + "\")" }.mkString(" AND ") +
-      ")"
+      " " +
+        tags.map { t => Metadata.TAGS_META + ":\"" + t + "\"" }.mkString(" ") +
+      ""
     } else "")
   }
 
