@@ -13,6 +13,14 @@ function SelectAll(sel){
 
 }
 $(document).ready( function(){
+    // show/hide metadata
+
+     $('.metadata_btn').click(function () {
+        $(".test").toggleClass("icon-chevron-up");
+        $(".test").toggleClass("icon-chevron-down");
+        $(this).parent().children('.edit_metadata').toggle(300);
+     });
+
 
     //row hover on file browser
     $(".child_td").hover(
