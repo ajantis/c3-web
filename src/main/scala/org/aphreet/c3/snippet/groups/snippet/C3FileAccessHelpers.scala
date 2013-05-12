@@ -1,9 +1,8 @@
-package org.aphreet.c3.util.helpers
+package org.aphreet.c3.snippet.groups.snippet
 
 import com.ifunsoftware.c3.access.fs.C3FileSystemNode
 import org.aphreet.c3.lib.metadata.Metadata._
 import org.aphreet.c3.model.User
-import org.aphreet.c3.snippet.groups.snippet.C3ResourceHelpers
 
 /**
  * @author Koyushev Sergey (mailto: serjk91@gmail.com)
@@ -49,18 +48,16 @@ trait C3FileAccessHelpers extends C3FileAccess with C3ResourceHelpers{
 
   }
 
-  def checkWriteAccess(resource:C3FileSystemNode) = {
+  def hasWriteAccess(resource:C3FileSystemNode) = {
     if(User.containsCurrent(group.users.toList))
       isGroupWrite(resource)
     else
       isOtherUserWrite(resource)
-
   }
 
-  def checkSuperAccess(resource:C3FileSystemNode) =  {
+  def hasSuperAccess(resource:C3FileSystemNode) =  {
     val owner = nodeOwner(resource)
     User.currentUserUnsafe.superUser.is || User.containsCurrent(owner.toList)
-
   }
 
 }

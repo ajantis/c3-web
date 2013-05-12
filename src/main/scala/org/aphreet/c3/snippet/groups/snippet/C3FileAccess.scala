@@ -1,4 +1,4 @@
-package org.aphreet.c3.util.helpers
+package org.aphreet.c3.snippet.groups.snippet
 
 import com.ifunsoftware.c3.access.fs.C3FileSystemNode
 
@@ -9,8 +9,8 @@ trait C3FileAccess {
 
   def checkReadAccess(resource:C3FileSystemNode): Boolean
 
-  def checkWriteAccess(resource:C3FileSystemNode): Boolean
+  def hasWriteAccess(resource:C3FileSystemNode): Boolean
 
-  def checkSuperAccess(resource:C3FileSystemNode): Boolean
+  def hasSuperAccess(resource:C3FileSystemNode): Boolean
 
 }

@@ -52,13 +52,34 @@
                         </ul>
                     </div>
                     <div class="file-table">
-                        <div id="node-tags-form">
-                            <i class="icon-tags inf_left"></i>
-                            <!--<img class="inf_left" src="/images/tag_add.png"/>-->
-                            <p class="inf_left">Tags: </p>
-                            <div id="node-tags" class="tag-list inf_left">
-                                <div class="tags"></div>
-                            </div>
+                        <div>
+                            <table class="table table-striped" style="width: 100%">
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <i class="icon-tags"></i> Tags
+                                        </td>
+                                        <td>
+                                            <span class="hide edit_tags_form_func"></span>
+                                            <a href="#" id="edit_tags_form" data-type="select2" data-pk="1" data-original-title="Enter tags">
+                                                html, javascript
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="width: 15%"><i class="icon-info-sign"></i> Description</td>
+                                        <td>
+                                            <span class="hide description_submit_func"></span>
+                                            <a href="#" id="description" data-type="textarea" data-pk="1"
+                                               data-placeholder="File description..." data-original-title="Edit description"
+                                               class="editable editable-click description_box">
+                                                Engineering Science is a comprehensive textbook suitable for all <br/>
+                                                vocational and pre-degree courses.
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
 
                         <table class="tablesorter" id="table-sort">

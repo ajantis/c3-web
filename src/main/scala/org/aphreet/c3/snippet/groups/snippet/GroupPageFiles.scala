@@ -14,16 +14,12 @@ import org.aphreet.c3.lib.metadata.Metadata
 import Metadata._
 import net.liftweb.util.{CssSel, PassThru}
 import net.liftweb.sitemap.{Menu, SiteMap, Loc}
-import annotation.tailrec
-import net.liftweb.mapper.By
 import net.liftweb.http.js.{JsCmds, JsCmd}
 import org.aphreet.c3.lib.DependencyFactory
 import com.ifunsoftware.c3.access.C3System
 import com.ifunsoftware.c3.access.C3System._
 import net.liftweb.http.js.JsCmds.{Function, Script}
-import org.aphreet.c3.util.helpers.{ConvertHelpers, C3FileAccessHelpers, ByteCalculatorHelpers}
-
-import scala.Some
+import org.aphreet.c3.util.helpers.{ConvertHelpers, ByteCalculatorHelpers}
 import com.ifunsoftware.c3.access.MetadataUpdate
 import net.liftweb.common.Full
 import com.ifunsoftware.c3.access.MetadataRemove
@@ -87,8 +83,8 @@ with GroupPageHelpers with FSHelpers with TagForms with C3FileAccessHelpers{
     val file = group.getFile(data.currentAddress)
     val pathLocs = buildPathLocs
     val groupFilesLink = group.createLink + "/files/"
-
     val currentResource = file.openOrThrowException("Directory or file is not exist.")
+
     def renameCurrentNode(newName: String): JsCmd = {
       file.foreach{ f =>
         val newPath = (f.fullname.split("/").toList.init ::: newName :: Nil).mkString("", "/", "")
@@ -104,13 +100,13 @@ with GroupPageHelpers with FSHelpers with TagForms with C3FileAccessHelpers{
 
     ".base_files_path *" #> (
       ".link [href]" #> groupFilesLink &
-        ".link *" #> group.name.is
-      ) &
-      ".bcrumb *" #> (pathLocs.map{ (loc: Loc[_]) =>
-        ( if (isLocCurrent(pathLocs, loc) && (checkSuperAccess(currentResource)||checkWriteAccess(currentResource))){
-          ".link" #>
-            <span class="hide name_submit_func">
-              {
+      ".link *" #> group.name.is
+    ) &
+    ".bcrumb *" #> (pathLocs.map{ (loc: Loc[_]) =>
+      ( if (isLocCurrent(pathLocs, loc) && (hasSuperAccess(currentResource)||hasWriteAccess(currentResource))){
+        ".link" #>
+          <span class="hide name_submit_func">
+            {
               Script(
                 Function("renameNodeCallback", List("name"),
                   SHtml.ajaxCall(
@@ -119,32 +115,32 @@ with GroupPageHelpers with FSHelpers with TagForms with C3FileAccessHelpers{
                   )._2.cmd
                 )
               )
-              }
-            </span>
-              <a href="#" id="node_name" data-type="text" data-pk="2"
+            }
+          </span>
+          <a href="#" id="node_name" data-type="text" data-pk="2"
                  data-placeholder="Name..." data-original-title="Rename"
                  class="editable editable-click">
                 {loc.title}
-              </a>
+          </a>
         } else {
           ".link [href]" #> loc.createDefaultLink &
             ".link *" #> loc.title
-        }) &
-          ".divider" #> (
+      }) &
+        ".divider" #> (
             data.isDirectoryLoc match {
               case false if loc == pathLocs.last => (_:NodeSeq) => NodeSeq.Empty // if it is a file then we want to skip last "/" divider
               case _ => PassThru
             }
-            )
-      }) &
-      ".current_path *" #> Text(data.currentAddress) &
-      ".back_btn [href]" #> (pathLocs.reverse match {
-        case Nil => Text(groupFilesLink)
-        case xs => xs.tail.headOption.map((l: Loc[_]) => l.createDefaultLink.get)
+        )
+    }) &
+    ".current_path *" #> Text(data.currentAddress) &
+    ".back_btn [href]" #> (pathLocs.reverse match {
+      case Nil => Text(groupFilesLink)
+      case xs => xs.tail.headOption.map((l: Loc[_]) => l.createDefaultLink.get)
           .getOrElse(Text(groupFilesLink))
-      }) &
-      ".edit_access *" #> acl()&
-      ".submit_acl [onclick]" #> SHtml.ajaxInvoke(() => updateAclValue())&
+    }) &
+    ".edit_access *" #> acl()&
+    ".submit_acl [onclick]" #> SHtml.ajaxInvoke(() => updateAclValue()) &
       (file match {
         case Empty => S.redirectTo("/404.html"); "* *" #> PassThru
         case Failure(msg, t, chain) => {
@@ -152,12 +148,11 @@ with GroupPageHelpers with FSHelpers with TagForms with C3FileAccessHelpers{
           S.redirectTo("/404.html")
           "* *" #> PassThru
         }
-
         case Full(f) => {
           //Type matching is not gonna work since in local c3 accesslib implementation all nodes are both files and directories
-          if(!f.isDirectory){
+          if (!f.isDirectory){
             renderFileLoc(f.asFile)
-          }else{
+          } else {
             if(!S.uri.endsWith("/"))
               S.redirectTo(S.uri + "/")
             else
@@ -168,94 +163,95 @@ with GroupPageHelpers with FSHelpers with TagForms with C3FileAccessHelpers{
       })
   }
 
-  protected def renderDirectoryLoc(d: C3Directory): CssSel = {
-
-    object selectedResourcePaths extends RequestVar[Set[String]](Set())
-
-    val currentPathLink = data.group.createLink + "/files" + data.currentAddress
-    (if(checkSuperAccess(d)){
-      ".delete_selected_btn [onclick]" #> SHtml.ajaxInvoke(() =>
-      { selectedResourcePaths.foreach(c3.deleteFile _); JsCmds.RedirectTo(currentPathLink) })
-    }else{
-      ".delete_selected_btn" #>NodeSeq.Empty &
-        ".btn_remove_resource" #>NodeSeq.Empty
-    })&
-      tagsForm(d) &
-      ".child *" #> group.getChildren(data.currentAddress).map {
-        resource => {
-          (resource.isDirectory match {
-            case true => toCss(resource.asDirectory)
-            case _ => toCss(resource.asFile)
-          }) &
-            ".select_resource" #> SHtml.ajaxCheckbox(false, (value: Boolean) => {
-              if(value)
-                selectedResourcePaths.set(selectedResourcePaths.get + resource.fullname)
-              else
-                selectedResourcePaths.set(selectedResourcePaths.get - resource.fullname)
-              JsCmds.Noop
-            })
-        }
-      } &
-      ".delete_selected_btn [onclick]" #> SHtml.ajaxInvoke(() =>
-      { selectedResourcePaths.foreach(c3.deleteFile _); JsCmds.RedirectTo(currentPathLink) }) &
-      ".file-view" #> NodeSeq.Empty &
-      "#file_upload_form [action]" #> ("/upload/file/groups/" + group.id.is + "/files" + data.currentAddress) &
-      "#file_upload_close_btn [onclick]" #> SHtml.ajaxInvoke(() => JsCmds.Reload) &
-      "#new-directory" #> newDirectoryForm(d, currentPath = currentPathLink)
+  protected def updateDescription(node: C3FileSystemNode, descr: String): JsCmd = {
+    node.update(MetadataUpdate(Map(DESCRIPTION_META -> descr)))
+    JsCmds.Noop // bootstrap-editable will update text value on page by itself
   }
 
-  protected def renderFileLoc(f: C3File): CssSel = {
-    val meta = f.metadata
+  protected def updateTags(node: C3FileSystemNode, tags: String): JsCmd = {
+    val metadata = Map((TAGS_META -> tags.split(",").map(_.trim()).mkString(",")))
+    node.update(MetadataUpdate(metadata))
+    JsCmds.Noop // bootstrap-editable will update text value on page by itself
+  }
+
+  protected def commonForms(node: C3FileSystemNode): CssSel = {
+    val meta = node.metadata
     val metadataUser = Metadata.filterSystemKey(meta)
-    val owner = nodeOwner(f)
-    f.versions.lastOption.map(_.length).getOrElse("None")
 
-    def updateDescription(descr: String): JsCmd = {
-      f.update(MetadataUpdate(Map(DESCRIPTION_META -> descr)))
-      JsCmds.Noop // bootstrap-editable will update text value on page by itself
-    }
-
-    def updateTags(tags: String): JsCmd = {
-      val metadata = Map((TAGS_META -> tags.split(",").map(_.trim()).mkString(",")))
-      f.update(MetadataUpdate(metadata))
-      JsCmds.Noop // bootstrap-editable will update text value on page by itself
-    }
-
-    "#edit_tags_form *" #> f.metadata.get(TAGS_META).map(_.split(",").mkString(", ")).getOrElse("") &
-    ".description_box *" #> f.metadata.get(DESCRIPTION_META).getOrElse("") &
-    (if(checkWriteAccess(f) || checkSuperAccess(f)){
-        ".edit_tags_form_func *" #> {
-            Script(
-              Function("updateTagsCallback", List("tags"),
-                SHtml.ajaxCall(
-                  JsVar("tags"),
-                  (d: String) => updateTags(d)
-                )._2.cmd
-              )
-            )
-        } &
-        "#meta" #> metadataEdit(f,metadataUser) &
-        ".description_submit_func *" #> {
+    "#edit_tags_form *" #> meta.get(TAGS_META).map(_.split(",").mkString(", ")).getOrElse("") &
+    ".description_box *" #> meta.get(DESCRIPTION_META).getOrElse("") &
+    (if(hasWriteAccess(node) || hasSuperAccess(node)){
+      ".edit_tags_form_func *" #> {
+        Script(
+          Function("updateTagsCallback", List("tags"),
+            SHtml.ajaxCall(
+              JsVar("tags"),
+              (d: String) => updateTags(node, d)
+            )._2.cmd
+          )
+        )
+      } &
+      "#meta" #> metadataEdit(node, metadataUser) &
+      ".description_submit_func *" #> {
           Script(
             Function("updateDescriptionCallback", List("description"),
               SHtml.ajaxCall(
                 JsVar("description"),
-                (d: String) => updateDescription(d)
+                (d: String) => updateDescription(node, d)
               )._2.cmd
             )
           )
-        }
+      }
     } else {
-        "#edit_tags_form [data-disabled]" #> "true" &
-        ".remove_resource" #> NodeSeq.Empty &
-        ".description_box" #> f.metadata.get(DESCRIPTION_META).getOrElse("") &
-        ".description_box [data-disabled]" #> "true" &
-        "#meta" #> metadataView(f,metadataUser)
+      "#edit_tags_form [data-disabled]" #> "true" &
+      ".remove_resource" #> NodeSeq.Empty &
+      ".description_box [data-disabled]" #> "true" &
+      "#meta" #> metadataView(node, metadataUser)
     }) &
-      ".file_tags" #> meta.get(TAGS_META).map(_.split(TAGS_SEPARATOR).toList).getOrElse(Nil).map((tag: String) => {
-        ".label *" #> tag
-      }) &
-      "#node-tags-form" #> NodeSeq.Empty &
+    ".file_tags" #> meta.get(TAGS_META).map(_.split(TAGS_SEPARATOR).toList).getOrElse(Nil).map((tag: String) => {
+      ".label *" #> tag
+    })
+  }
+
+  protected def renderDirectoryLoc(d: C3Directory): CssSel = {
+    object selectedResourcePaths extends RequestVar[Set[String]](Set())
+
+    val currentPathLink = data.group.createLink + "/files" + data.currentAddress
+    (if(hasSuperAccess(d)){
+      ".delete_selected_btn [onclick]" #> SHtml.ajaxInvoke(() =>
+      { selectedResourcePaths.foreach(c3.deleteFile _); JsCmds.RedirectTo(currentPathLink) })
+    } else {
+      ".delete_selected_btn" #>NodeSeq.Empty &
+        ".btn_remove_resource" #>NodeSeq.Empty
+    }) &
+    tagsForm(d) &
+    ".child *" #> group.getChildren(data.currentAddress).map {
+      resource => {
+        (resource.isDirectory match {
+          case true => toCss(resource.asDirectory)
+          case _ => toCss(resource.asFile)
+        }) &
+        ".select_resource" #> SHtml.ajaxCheckbox(false, (value: Boolean) => {
+          if(value)
+            selectedResourcePaths.set(selectedResourcePaths.get + resource.fullname)
+          else
+            selectedResourcePaths.set(selectedResourcePaths.get - resource.fullname)
+            JsCmds.Noop
+          })
+      }
+    } &
+    ".delete_selected_btn [onclick]" #> SHtml.ajaxInvoke(() =>
+      { selectedResourcePaths.foreach(c3.deleteFile _); JsCmds.RedirectTo(currentPathLink) }) &
+    ".file-view" #> NodeSeq.Empty &
+    "#file_upload_form [action]" #> ("/upload/file/groups/" + group.id.is + "/files" + data.currentAddress) &
+    "#file_upload_close_btn [onclick]" #> SHtml.ajaxInvoke(() => JsCmds.Reload) &
+    "#new-directory" #> newDirectoryForm(d, currentPath = currentPathLink) &
+    commonForms(d)
+  }
+
+  protected def renderFileLoc(f: C3File): CssSel = {
+      val owner = nodeOwner(f)
+
       ".file-table" #> NodeSeq.Empty &
       ".fs_toolbar" #> NodeSeq.Empty &
       "#upload_form" #> NodeSeq.Empty &
@@ -265,11 +261,11 @@ with GroupPageHelpers with FSHelpers with TagForms with C3FileAccessHelpers{
       ".view_btn [href]" #> fileViewUrl(f) &
       ".data_file *" #> internetDateFormatter.format(f.date)&
       ".owner_file *" #>  owner.map(_.shortName).getOrElse("Unknown") &
-      ".size_file *" #> ByteCalculatorHelpers.convert(f.versions.lastOption.map(_.length.toString).getOrElse("None"))
-
+      ".size_file *" #> ByteCalculatorHelpers.convert(f.versions.lastOption.map(_.length.toString).getOrElse("None")) &
+      commonForms(f)
   }
 
-  protected def metadataEdit(f: C3File,metadataUsr:scala.collection.Map[String,String]) = {
+  protected def metadataEdit(f: C3FileSystemNode, metadataUsr:scala.collection.Map[String,String]) = {
     ".metadata_form" #> metadataUsr.map{ case (k, v) => {
       def removeMeta():JsCmd = {
         try{
@@ -287,10 +283,10 @@ with GroupPageHelpers with FSHelpers with TagForms with C3FileAccessHelpers{
               ".remove_metadata *" #> SHtml.memoize(t => t ++ SHtml.hidden(removeMeta _))).apply(n)
           ))
     }}&
-      "#meta_edit" #> saveMetadata(f)
+    "#meta_edit" #> saveMetadata(f)
   }
 
-  protected def metadataView(f: C3File,metadataUsr:scala.collection.Map[String,String]) = {
+  protected def metadataView(f: C3FileSystemNode, metadataUsr:scala.collection.Map[String,String]) = {
     ".metadata_form *" #> metadataUsr.map{ case (k, v) => {
       ".metadata_key [value]" #> k &
         ".metadata_value [value]" #> v &
@@ -302,7 +298,7 @@ with GroupPageHelpers with FSHelpers with TagForms with C3FileAccessHelpers{
       "#edit_metadata_form" #> NodeSeq.Empty
   }
 
-  protected def saveMetadata(f: C3File): CssSel ={
+  protected def saveMetadata(f: C3FileSystemNode): CssSel ={
     var key = ""
     var value = ""
     def save (){
@@ -362,7 +358,7 @@ with GroupPageHelpers with FSHelpers with TagForms with C3FileAccessHelpers{
 
     val owner = nodeOwner(directory)
     val metaACL = acl(directory.metadata.get(ACL_META).getOrElse(""))
-    (if(checkSuperAccess(directory)){
+    (if(hasSuperAccess(directory)){
       ".rules *" #> metaACL  &
         ".rules [id]" #> directory.fullname.hashCode &
         ".rules [onclick]" #> SHtml.ajaxInvoke(()=>currentResource(directory.fullname.hashCode.toString,metaACL))&
@@ -390,7 +386,7 @@ with GroupPageHelpers with FSHelpers with TagForms with C3FileAccessHelpers{
   def toCss(file: C3File) = {
     val owner = nodeOwner(file)
     val metaACL = acl(file.metadata.get(ACL_META).getOrElse(""))
-    (if(checkSuperAccess(file)){
+    (if(hasSuperAccess(file)){
       ".rules *" #> metaACL  &
         ".rules [id]" #> file.fullname.hashCode &
         ".rules [onclick]" #> SHtml.ajaxInvoke(()=>currentResource(file.fullname.hashCode.toString,metaACL))&
@@ -412,13 +408,14 @@ with GroupPageHelpers with FSHelpers with TagForms with C3FileAccessHelpers{
       ".description_box *" #> ConvertHelpers.ShortString(file.metadata.get(DESCRIPTION_META).getOrElse(""),if(file.name.length > 40) 60 else (110-file.name.length))&
       ".icon [src]" #> "/images/document_letter.png" &
       ".created_date *" #> internetDateFormatter.format(file.date)
-       //40 - max vizible sumbols, when size file name is big
-       //110 - count visible sumbols in descriptoin columns
+       //40 - max vizible symbols, when size file name is big
+       //110 - count visible symbols in description columns
   }
+
 
   val defaultValueCheckbox = false
 
-  def acl():CssSel = {
+  def acl(): CssSel = {
     def groupReadSave(b:Boolean):JsCmd = {
       group.getChildren(data.currentAddress).map(res=>{
         if(res.fullname.hashCode.toString == currentResourceName) {
@@ -431,7 +428,7 @@ with GroupPageHelpers with FSHelpers with TagForms with C3FileAccessHelpers{
       JsCmds.Noop
     }
 
-    def groupWriteSave(b:Boolean):JsCmd = {
+    def groupWriteSave(b:Boolean): JsCmd = {
       group.getChildren(data.currentAddress).map(res=>{
         if(res.fullname.hashCode.toString == currentResourceName) {
           val metaACL = acl(res.metadata.get(ACL_META).getOrElse(""))
@@ -452,7 +449,7 @@ with GroupPageHelpers with FSHelpers with TagForms with C3FileAccessHelpers{
       JsCmds.Noop
     }
 
-    def otherUsersReadSave(b:Boolean):JsCmd = {
+    def otherUsersReadSave(b:Boolean): JsCmd = {
       group.getChildren(data.currentAddress).map(res=>{
         if(res.fullname.hashCode.toString == currentResourceName) {
           val metaACL = acl(res.metadata.get(ACL_META).getOrElse(""))
@@ -477,7 +474,7 @@ with GroupPageHelpers with FSHelpers with TagForms with C3FileAccessHelpers{
       JsCmds.Noop
     }
 
-    def otherUsersWriteSave(b:Boolean):JsCmd = {
+    def otherUsersWriteSave(b:Boolean): JsCmd = {
       group.getChildren(data.currentAddress).map(res=>{
         if(res.fullname.hashCode.toString == currentResourceName) {
           val metaACL = acl(res.metadata.get(ACL_META).getOrElse(""))
@@ -496,10 +493,9 @@ with GroupPageHelpers with FSHelpers with TagForms with C3FileAccessHelpers{
     }
 
     ".group_read" #> SHtml.ajaxCheckbox(defaultValueCheckbox,groupReadSave(_))&
-      ".group_write" #> SHtml.ajaxCheckbox(defaultValueCheckbox,groupWriteSave(_))&
-      ".all_read" #> SHtml.ajaxCheckbox(defaultValueCheckbox,otherUsersReadSave(_))&
-      ".all_write" #> SHtml.ajaxCheckbox(defaultValueCheckbox,otherUsersWriteSave(_))
-
+    ".group_write" #> SHtml.ajaxCheckbox(defaultValueCheckbox,groupWriteSave(_))&
+    ".all_read" #> SHtml.ajaxCheckbox(defaultValueCheckbox,otherUsersReadSave(_))&
+    ".all_write" #> SHtml.ajaxCheckbox(defaultValueCheckbox,otherUsersWriteSave(_))
   }
 
   def buildPathLocs: List[Loc[_]] = {
@@ -528,41 +524,5 @@ with GroupPageHelpers with FSHelpers with TagForms with C3FileAccessHelpers{
   }
 
   def isLocCurrent(allLocs: List[Loc[_]], loc: Loc[_]) = allLocs.lastOption.map(_ == loc).getOrElse(false)
-}
-
-trait C3ResourceHelpers {
-
-  val group: Group
-
-  def fileDownloadUrl(file: C3File): String = "/download" + file.fullname + "?dl=true"
-
-  def fileViewUrl(file: C3File): String = "/download" + file.fullname
-
-  def nodeOwner(node: C3FileSystemNode): Box[User] = node.metadata.get(OWNER_ID_META) match {
-    case Some(id) if !id.isEmpty => User.find(By(User.id, id.toLong))
-    case _ => Empty
-  }
-}
-
-trait FSHelpers {
-
-  case class FSLoc(path: List[String]){
-    def title: String = path.lastOption.getOrElse("N/A")
-  }
-
-  def transformToPathLists(fullPath: List[String]): List[List[String]] = {
-    @tailrec
-    def transform(acc: List[List[String]], fullPath: List[String]): List[List[String]] = {
-      fullPath match {
-        case x :: Nil => acc
-        case _ :: tail => transform(tail.reverse :: acc, tail)
-        case Nil => acc
-      }
-    }
-
-    if (fullPath.isEmpty) Nil
-    else transform(List(fullPath), fullPath.reverse)
-  }
-
 
 }
