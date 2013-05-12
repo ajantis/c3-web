@@ -79,12 +79,19 @@ with GroupPageHelpers with FSHelpers with TagForms with C3FileAccessHelpers{
   override lazy val group = data.group
   lazy val path = data.path
 
-  def render = {
-    val file = group.getFile(data.currentAddress)
-    val pathLocs = buildPathLocs
-    val groupFilesLink = group.createLink + "/files/"
-    val currentResource = file.openOrThrowException("Directory or file is not exist.")
+  val pathLocs = buildPathLocs
+  val groupFilesLink = group.createLink + "/files/"
+  val file = group.getFile(data.currentAddress)
+  val currentResource = file.openOrThrowException("Directory or file is not exist.")
 
+  def parentNodeLink: String = {
+    (pathLocs.reverse match {
+      case Nil => groupFilesLink
+      case xs => xs.tail.headOption.map((l: Loc[_]) => l.createDefaultLink.get.text).getOrElse(groupFilesLink)
+    })
+  }
+
+  def render = {
     def renameCurrentNode(newName: String): JsCmd = {
       file.foreach{ f =>
         val newPath = (f.fullname.split("/").toList.init ::: newName :: Nil).mkString("", "/", "")
@@ -134,11 +141,6 @@ with GroupPageHelpers with FSHelpers with TagForms with C3FileAccessHelpers{
         )
     }) &
     ".current_path *" #> Text(data.currentAddress) &
-    ".back_btn [href]" #> (pathLocs.reverse match {
-      case Nil => Text(groupFilesLink)
-      case xs => xs.tail.headOption.map((l: Loc[_]) => l.createDefaultLink.get)
-          .getOrElse(Text(groupFilesLink))
-    }) &
     ".edit_access *" #> acl()&
     ".submit_acl [onclick]" #> SHtml.ajaxInvoke(() => updateAclValue()) &
       (file match {
@@ -201,7 +203,8 @@ with GroupPageHelpers with FSHelpers with TagForms with C3FileAccessHelpers{
               )._2.cmd
             )
           )
-      }
+      } &
+      ".delete_file_btn [onclick]" #> SHtml.ajaxInvoke(() => { c3.deleteFile(node.fullname); JsCmds.RedirectTo(parentNodeLink) })
     } else {
       "#edit_tags_form [data-disabled]" #> "true" &
       ".remove_resource" #> NodeSeq.Empty &
@@ -221,8 +224,8 @@ with GroupPageHelpers with FSHelpers with TagForms with C3FileAccessHelpers{
       ".delete_selected_btn [onclick]" #> SHtml.ajaxInvoke(() =>
       { selectedResourcePaths.foreach(c3.deleteFile _); JsCmds.RedirectTo(currentPathLink) })
     } else {
-      ".delete_selected_btn" #>NodeSeq.Empty &
-        ".btn_remove_resource" #>NodeSeq.Empty
+      ".delete_selected_form_button" #> NodeSeq.Empty &
+      ".delete_selected_form" #> NodeSeq.Empty
     }) &
     tagsForm(d) &
     ".child *" #> group.getChildren(data.currentAddress).map {
@@ -386,22 +389,23 @@ with GroupPageHelpers with FSHelpers with TagForms with C3FileAccessHelpers{
   def toCss(file: C3File) = {
     val owner = nodeOwner(file)
     val metaACL = acl(file.metadata.get(ACL_META).getOrElse(""))
+
     (if(hasSuperAccess(file)){
       ".rules *" #> metaACL  &
         ".rules [id]" #> file.fullname.hashCode &
         ".rules [onclick]" #> SHtml.ajaxInvoke(()=>currentResource(file.fullname.hashCode.toString,metaACL))&
         ".link [href]" #> file.name &
-        ".child_td [onclick]" #> SHtml.ajaxInvoke(() => JsCmds.RedirectTo(file.name + "/"))
+        ".child_td [onclick]" #> SHtml.ajaxInvoke(() => JsCmds.RedirectTo(file.name))
     } else {
       (if(checkReadAccess(file)){
         ".link [href]" #> (file.name + "/") &
-          ".child_td [onclick]" #> SHtml.ajaxInvoke(() => JsCmds.RedirectTo(file.name + "/"))
-      }else{
-        ".link [href]" #> "#"&
-          ".child_td [onclick]" #> SHtml.ajaxInvoke(() => (LiftMessages.ajaxError(S.?("access.restricted"))))
-      })&
+        ".child_td [onclick]" #> SHtml.ajaxInvoke(() => JsCmds.RedirectTo(file.name))
+      } else {
+        ".link [href]" #> "#" &
+        ".child_td [onclick]" #> SHtml.ajaxInvoke(() => (LiftMessages.ajaxError(S.?("access.restricted"))))
+      }) &
         ".acl_cont *" #> metaACL
-    })&
+    }) &
       ".owner *" #> owner.map(_.shortName).getOrElse("Unknown") &
       ".owner [href]" #> owner.map(_.createLink) &
       ".name *" #> ConvertHelpers.ShortString(file.name,40) &
@@ -411,7 +415,6 @@ with GroupPageHelpers with FSHelpers with TagForms with C3FileAccessHelpers{
        //40 - max vizible symbols, when size file name is big
        //110 - count visible symbols in description columns
   }
-
 
   val defaultValueCheckbox = false
 
