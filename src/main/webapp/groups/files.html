@@ -56,6 +56,18 @@
                             <table class="table table-striped" style="width: 100%">
                                 <tbody>
                                     <tr>
+                                        <td style="width: 15%"><i class="icon-info-sign"></i> Description</td>
+                                        <td>
+                                            <span class="hide description_submit_func"></span>
+                                            <a href="#" id="description" data-type="text" data-pk="1"
+                                               data-placeholder="File description..." data-original-title="Edit description"
+                                               class="editable editable-click description_box">
+                                                Engineering Science is a comprehensive textbook suitable for all <br/>
+                                                vocational and pre-degree courses.
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    <tr>
                                         <td>
                                             <i class="icon-tags"></i> Tags
                                         </td>
@@ -63,18 +75,6 @@
                                             <span class="hide edit_tags_form_func"></span>
                                             <a href="#" id="edit_tags_form" data-type="select2" data-pk="1" data-original-title="Enter tags">
                                                 html, javascript
-                                            </a>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td style="width: 15%"><i class="icon-info-sign"></i> Description</td>
-                                        <td>
-                                            <span class="hide description_submit_func"></span>
-                                            <a href="#" id="description" data-type="textarea" data-pk="1"
-                                               data-placeholder="File description..." data-original-title="Edit description"
-                                               class="editable editable-click description_box">
-                                                Engineering Science is a comprehensive textbook suitable for all <br/>
-                                                vocational and pre-degree courses.
                                             </a>
                                         </td>
                                     </tr>
@@ -134,7 +134,7 @@
                                             <td><i class="icon-info-sign"></i> Description</td>
                                             <td>
                                                 <span class="hide description_submit_func"></span>
-                                                <a href="#" id="description" data-type="textarea" data-pk="1"
+                                                <a href="#" id="description" data-type="text" data-pk="1"
                                                    data-placeholder="File description..." data-original-title="Edit description"
                                                    class="editable editable-click description_box">
                                                     Engineering Science is a comprehensive textbook suitable for all <br/>
@@ -432,7 +432,8 @@
                             $('#description').editable({
                                 url: function(params) {
                                     updateDescriptionCallback(params.value);
-                                }
+                                },
+                                rows: 2
                             });
                             $('#node_name').editable({
                                 url: function(params) {

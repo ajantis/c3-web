@@ -36,6 +36,7 @@ class GroupPage(data: GroupPageData) extends GroupPageHelpers{
   override lazy val group = data.group
   override lazy val activeLocId = "about"
   lazy val c3 = inject[C3System].open_!
+
   def info = {
     val status =  if(group.isOpen) "Public" else "Private"
     val background =  if(group.isOpen) "btn-info" else "btn-warning"

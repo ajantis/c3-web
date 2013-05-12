@@ -19,8 +19,6 @@ import org.aphreet.c3.service.notifications.FileMetaProcessedMsg
  * @author Dmitry Ivanov
  */
 class MetadataServiceWorker(c3system: C3System, notificationManager: ActorRef) extends Actor with C3Loggable{
-
-
   def receive = {
     case ProcessC3Resource(res) => {
       logger.debug("Received a C3 resource " + res.address + " for processing.")
