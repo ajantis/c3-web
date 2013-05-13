@@ -599,7 +599,7 @@ td.file-table-date{
     width:218px!important;
 }
 .input_meta{
-    width:218px!important;
+    width:210px!important;
 }
 
 .description_box{
@@ -763,4 +763,26 @@ td.file-table-date{
 {
      margin-left: 15px!important;
      font-size: 9px!important;
+}
+
+#metadata_container li {
+    display: inline-block;
+    padding: 2px;
+    margin: 3px !important;
+}
+.input_metadata{
+    width:210px;
+}
+#metadata_container {
+    padding: 2px !important;
+    margin: 10px !important;
+}
+#selected_metadata{
+    display: inline-block;
+    padding: 2px;
+    width:100%;
+
+}
+#add_metadata_btn {
+    margin-top:-10px;
 }

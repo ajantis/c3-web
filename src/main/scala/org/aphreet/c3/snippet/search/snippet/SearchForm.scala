@@ -14,9 +14,16 @@ import java.text.SimpleDateFormat
 import org.aphreet.c3.lib.metadata.Metadata
 import org.aphreet.c3.util.C3Loggable
 import com.ifunsoftware.c3.access.SearchResultEntry
+import org.aphreet.c3.snippet.groups.snippet.C3ResourceHelpers
+import org.aphreet.c3.lib.metadata.Metadata._
+import scala.Some
+import com.ifunsoftware.c3.access.SearchResultEntry
+import org.aphreet.c3.snippet.search.snippet.SearchQuery
+import net.liftweb.mapper.By
+import net.liftweb.common.Empty
 
 /**
- * @author Serjk (mailto: serjk91@gmail.com)
+ * @author Sergey Koyushev (mailto: serjk91@gmail.com)
  * @author Dmitry Ivanov (mailto: id.ajantis@gmail.com)
  */
 class SearchForm extends PaginatorSnippet[SearchResultEntry] with C3Loggable{
@@ -25,6 +32,7 @@ class SearchForm extends PaginatorSnippet[SearchResultEntry] with C3Loggable{
   private val dateFormat = new SimpleDateFormat("MMM dd, yyyy")
 
   val selectedTagsContainerId = "selected_tags"
+  val selectedMetadataContainerId = "metadata_container"
   val tagTemplate = <li class="tag"><a href="#" class="label btn-info name">Sample tag</a></li>
   var entryHtml = NodeSeq.Empty
   var noResultsHtml = NodeSeq.Empty
@@ -36,6 +44,7 @@ class SearchForm extends PaginatorSnippet[SearchResultEntry] with C3Loggable{
 
   object queryString extends SessionVar[String]("")
   object tags extends SessionVar[Set[String]](Set())
+  object metadata extends SessionVar[Set[String]](Set())
   object firstP extends RequestVar[Long](S.param(offsetParam).map(toLong) openOr _first max 0)
   object results extends RequestVar[List[SearchResultEntry]](Nil)
 
@@ -59,7 +68,7 @@ class SearchForm extends PaginatorSnippet[SearchResultEntry] with C3Loggable{
         if (first == newFirst)
           ("active", "#")
         else
-          ("", SHtml.ajaxCall(JE.ValById(queryInputId), s => redoSearch(newFirst, SearchQuery(s, Set())))._2.toJsCmd)
+          ("", SHtml.ajaxCall(JE.ValById(queryInputId), s => redoSearch(newFirst, SearchQuery(s, Set(),Set())))._2.toJsCmd)
 
       <li class={liClass}><a onclick={onClick}>{ns}</a></li>
     }
@@ -75,8 +84,9 @@ class SearchForm extends PaginatorSnippet[SearchResultEntry] with C3Loggable{
 
     queryString.set(q.value)
     tags.set(q.tags)
+    metadata.set(q.metadata)
 
-    results.set(search(createC3SearchQuery(queryString, tags)))
+    results.set(search(createC3SearchQuery(queryString, tags,metadata)))
 
     val resultsHtml: NodeSeq = {
       if (results.isEmpty)
@@ -100,6 +110,10 @@ class SearchForm extends PaginatorSnippet[SearchResultEntry] with C3Loggable{
     //        case _ => c3Path.resourceName
     //      }
     val tags = resource.metadata.get(Metadata.TAGS_META).map(_.split(",").toList).getOrElse(Nil)
+    val owner = resource.metadata.get(OWNER_ID_META) match {
+      case Some(id) if !id.isEmpty => User.find(By(User.id, id.toLong))
+      case _ => Empty
+    }
 
     ".result_header *" #> nodeName &
       ".result_header [href]" #> c3Path.resourceParentDir &
@@ -107,13 +121,15 @@ class SearchForm extends PaginatorSnippet[SearchResultEntry] with C3Loggable{
       ".result_link *" #> c3Path.resourceUri &
       ".result_content *" #> Unparsed(content.getOrElse("")) &
       ".result_date *" #> dateFormat.format(resource.date) &
+      ".owner *" #> owner.map(_.shortName).getOrElse("Unknown") &
+      ".owner [href]" #> owner.map(_.createLink) &
       ".tag *" #> {
         ".label *" #> tags
       }
   }
 
   private def selectTag(tag: Tag, q: String): JsCmd = {
-    val newSQuery = SearchQuery(q, tags.get + tag.name.is)
+    val newSQuery = SearchQuery(q, tags.get + tag.name.is,metadata)
 
     JsCmds.Replace("tag_" + tag.id.is, NodeSeq.Empty) &
     JqJsCmds.AppendHtml(selectedTagsContainerId,
@@ -127,7 +143,7 @@ class SearchForm extends PaginatorSnippet[SearchResultEntry] with C3Loggable{
   }
 
   private def unselectTag(tag: Tag, q: String): JsCmd = {
-    val newSQuery = SearchQuery(q, tags.get - tag.name.is)
+    val newSQuery = SearchQuery(q, tags.get - tag.name.is,metadata)
 
     JqJsCmds.AppendHtml("category_" + tag.category.get + "_tags", tagToCss(tag)(tagTemplate)) &
     JsCmds.Replace("sel_tag_" + tag.id.is, NodeSeq.Empty) &
@@ -152,6 +168,52 @@ class SearchForm extends PaginatorSnippet[SearchResultEntry] with C3Loggable{
   }
 
   private def renderPagination(xml: NodeSeq) = paginate(xml)
+
+  def unselectMetadata(idMetadata:String, metadataInst: String, q: String): JsCmd = {
+    val newSQuery = SearchQuery(q, tags,metadata.get-metadataInst)
+    JsCmds.Replace(idMetadata, NodeSeq.Empty) &
+    redoSearch(0, newSQuery)
+  }
+
+  def addMetadataPair:CssSel = {
+    var key = ""
+    var value = ""
+
+    def addMetadataInst(metadataInst:String): JsCmd  = {
+
+      if(!metadata.contains(metadataInst)){
+        val newSQuery = SearchQuery(queryString, tags.get, metadata.get+metadataInst)
+        val idMetadata = key+"_"+value
+
+        JqJsCmds.AppendHtml(selectedMetadataContainerId,
+          <li id={idMetadata} class="label btn-success sel-tag">
+            <span>{key}</span>
+            <span>/</span>
+            <span>{value}</span>
+            <a onclick={SHtml.ajaxCall(JE.ValById(queryInputId), s => unselectMetadata(idMetadata,metadataInst, s))._2.cmd.toJsCmd}>
+              <i class="icon-remove-sign icon-white"></i>
+            </a>
+          </li>
+        ) & redoSearch(0, newSQuery)
+      }else JsCmds.Noop
+
+    }
+
+    ".add_metadata *" #> { (xml: NodeSeq) =>
+      SHtml.ajaxForm(
+        ( "name=key" #> SHtml.onSubmit(key=_) &
+          "name=value" #> SHtml.onSubmit(value=_) &
+          "type=submit" #> ( (xml: NodeSeq) =>
+            xml ++ SHtml.hidden{ () =>
+              if(key=="" || value=="")
+                JsCmds.Noop
+              else
+                addMetadataInst(key+":\""+value+"\"")
+            })).apply(xml)
+      )
+    }
+  }
+
 
   def render = {
     initSearchParams()
@@ -178,10 +240,11 @@ class SearchForm extends PaginatorSnippet[SearchResultEntry] with C3Loggable{
              if(queryString.isEmpty)
                JsCmds.Noop
              else
-               redoSearch(0, SearchQuery(queryString, tags))
+               redoSearch(0, SearchQuery(queryString, tags,metadata))
          })).apply(xml)
       )
     } &
+    ".add_metadata" #> addMetadataPair &
     "#results *" #> {
       val results = page
       if (results.isEmpty){
@@ -200,13 +263,17 @@ class SearchForm extends PaginatorSnippet[SearchResultEntry] with C3Loggable{
     ("#" + paginationBarId + " *") #> { (xml: NodeSeq) => { paginationHtml = xml; renderPagination(paginationHtml) } }
   }
 
-  private def createC3SearchQuery(contentQuery: String, tags: Iterable[String]) = {
+  private def createC3SearchQuery(contentQuery: String, tags: Iterable[String],metadata: Iterable[String]) = {
     "+content:\"" + contentQuery + "\"" +
     (if (!tags.isEmpty){
       " " +
         tags.map { t => Metadata.TAGS_META + ":\"" + t + "\"" }.mkString(" ") +
       ""
-    } else "")
+    } else "")+
+    (if(!metadata.isEmpty)
+      " " + metadata.mkString(" ")
+     else ""
+    )
   }
 
   private def search(query: String): List[SearchResultEntry] = {
@@ -227,8 +294,9 @@ class SearchForm extends PaginatorSnippet[SearchResultEntry] with C3Loggable{
   private def initSearchParams(){
     queryString.set(S.param("query").openOr(""))
     tags.set(Set())
-    results.set(search(createC3SearchQuery(queryString, tags)))
+    metadata.set(Set())
+    results.set(search(createC3SearchQuery(queryString, tags,metadata)))
   }
 }
 
-case class SearchQuery(value: String, tags: Set[String])
+case class SearchQuery(value: String, tags: Set[String],metadata: Set[String])

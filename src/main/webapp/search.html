@@ -5,8 +5,8 @@
         <div class="lift:bind-at?name=left-panel">
             <h3>Categories</h3>
             <!--<p>-->
-                <!--<a href="#" class="btn btn-mini expand-all"><i class="icon-plus-sign"></i> Expand</a>-->
-                <!--<a href="#" class="btn btn-mini collapse-all"><i class="icon-minus-sign"></i> Collapse</a>-->
+            <!--<a href="#" class="btn btn-mini expand-all"><i class="icon-plus-sign"></i> Expand</a>-->
+            <!--<a href="#" class="btn btn-mini collapse-all"><i class="icon-minus-sign"></i> Collapse</a>-->
             <!--</p>-->
             <ul class="root nav nav-list affix-top">
                 <li class="branch category"><a href="#" class="name">Scala</a>
@@ -19,29 +19,62 @@
 
         <div class="lift:bind-at?name=content">
             <h3 class="span10">Search</h3>
-            <div class="span7 search_form form-search well">
-                <div class="input-append">
-                    <input class="span6 search_query" type="text" placeholder="Enter a search query...">
-                    <button class="btn search_btn btn-primary" type="submit"><i class="icon-search icon-white"></i> Go</button>
+            <div class="span7  well">
+                <div class="search_form form-search">
+                    <div class="input-append">
+                        <input class="span6 search_query" type="text" placeholder="Enter a search query...">
+                        <button class="btn search_btn btn-primary" type="submit"><i class="icon-search icon-white"></i> Go</button>
+                    </div>
+                    <div class="selected-tags-container span6">
+
+                        <ul id="selected_tags">
+                        </ul>
+
+                        <ul id="metadata_container">
+                        </ul>
+                    </div>
                 </div>
-                <div class="selected-tags-container span6">
-                    <ul id="selected_tags">
-                    </ul>
+                <div id="selected_metadata">
+                    <a class="metadata_btn active_hover editable"><i id="icon_meta" class="test icon-chevron-up"></i>Metadata add</a>
+                    <div class="edit_metadata hide">
+                        <div class="edit_meta">
+                            <div class="add_metadata">
+                                <input name="key" class="input_metadata" type="text"  placeholder="Keyword" >
+                                <input name="value" class="input_metadata" type="text"  placeholder="Value">
+                                <button type="submit" id="add_metadata_btn" class="btn btn-success">Add</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-
             <div id="results" class="span7 search_results">
                 <div class="entry">
-                    <h4><a href="#" class="result_header">Some interesting file</a></h4>
-                    <p class="entry-datetime result_date">Feb 2, 2013</p>
-                    <p><a href="#" class="result_link">/Java Tuning/documentation/2.1/jvm_internals.pdf</a></p>
-                    <div class="result_content">Java IDL adds CORBA (Common Object Request Broker Architecture) capability to Java, providing...
+                    <div class="row">
+                        <div class="span8">
+                            <div class="row">
+                                <div class="span8">
+                                    <h4><strong><a href="#" class="result_header">Some interesting file</a></strong></h4>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="span8">
+                                    <p>Pull path: <a href="#" class="result_link">/Java Tuning/documentation/2.1/jvm_internals.pdf</a></p>
+                                    <p class="result_content">Java IDL adds CORBA ...</p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="span8">
+                                    <div class="container_inf">
+                                        <i class="icon-user"></i> by <a class="owner" href="#">John</a>
+                                        | <i class="icon-calendar"></i> Sept 16th, 2012
+                                        | <i class="icon-tags"></i> Tags :
+                                        <a class="tag" href="#"><span class="label label-info">Snipp</span></a>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
                     </div>
-                    <ul class="result_tags">
-                        <li class="tag">
-                            <a href="#" class="label label-info">pefr</a>
-                        </li>
-                    </ul>
                 </div>
                 <div class="no_results">
                     <p>Your search - <strong><span class="query">Sample query</span></strong> - did not match any documents.</p>
