@@ -146,7 +146,7 @@
                                         <tr>
                                             <td><i class="icon-tags"></i> Metadata</td>
                                             <td>
-                                                <a class="metadata_btn active_hover editable"><i id="icon_meta" class="test icon-chevron-up"></i>Metadata</a>
+                                                <a class="metadata_btn cursor_pointer editable"><i id="icon_meta" class="test icon-chevron-up"></i>Metadata</a>
                                                 <div id="meta" class="edit_metadata hide">
                                                     <div class="edit_meta">
                                                         <table class="tablesorter table_meta">
@@ -157,7 +157,7 @@
                                                                 <th style="width:25px;"></th>
                                                             </tr>
                                                             </thead>
-                                                            <tbody class="metadata_container">
+                                                            <tbody id="metadata_container">
                                                             <tr class="metadata_form">
                                                                 <td><input class="metadata_key" value="" readonly/></td>
                                                                 <td><input type="text" class="metadata_value" value=""/></td>
@@ -167,17 +167,10 @@
                                                         </table>
                                                         <hr/>
                                                         <div class="add_metadata">
-                                                            <input id="key" class="span5 input_meta" type="text"  placeholder="Keyword" >
-                                                            <input id="value" class="span5 input_meta" type="text"  placeholder="Value">
-                                                            <a name="btn_add_metadata" class="btn_add_metadata btn btn-primary">Add</a>
+                                                            <input name="key" class="span5 input_meta_add" type="text"  placeholder="Keyword" >
+                                                            <input name="value" class="span5 input_meta_add" type="text"  placeholder="Value">
+                                                            <button type="submit" name="btn_add_metadata" class="btn_add_metadata btn btn-primary">Add</button>
                                                         </div>
-                                                    </div>
-                                                    <div id="meta_edit" class="modal-footer">
-                                                        <form id="edit_metadata_form">
-                                                            <input name="metadata_key"  value="k" id="key_cont" class="hide"/>
-                                                            <input name="metadata_value" value="v" id="value_cont" class="hide"/>
-                                                        </form>
-                                                        <button type="submit" class="btn_save_metadata btn btn-success" form="edit_metadata_form">Save</button>
                                                     </div>
                                                 </div>
                                             </td>

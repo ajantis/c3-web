@@ -601,6 +601,9 @@ td.file-table-date{
 .input_meta{
     width:210px!important;
 }
+.input_meta_add{
+    width:260px!important;
+}
 
 .description_box{
                  font-family:Arial;
@@ -785,4 +788,7 @@ td.file-table-date{
 }
 #add_metadata_btn {
     margin-top:-10px;
+}
+.cursor_pointer {
+    cursor:pointer;
 }
