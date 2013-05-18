@@ -17,5 +17,7 @@ trait NotificationStorageComponent{
     def getNotificationsForUser(recipient: User): List[Notification]
 
     def markAsRead(notification: Notification): Notification
+
+    def getNotificationStatsForUser(recipient: User): NotificationStats
   }
 }

@@ -82,7 +82,7 @@ class Boot extends Bootable{
     // Build SiteMap
     def sitemap() = SiteMap(
 
-      Menu("Home") / "index" >> LocGroup("mainmenu"),
+      Menu("Home") / "index",
 
       Menu("About") / "about" >> LocGroup("footerMenu"),
 
@@ -97,9 +97,15 @@ class Boot extends Bootable{
       Menu("Categories") / "categories" >> loggedIn >> LocGroup("mainmenu") submenus {
         CategoriesSection.menus:_*
       },
-      Menu("Notifications") / "notifications" >> loggedIn >> LocGroup("mainmenu") submenus {
+      Menu("Notifications") / "notifications" >> loggedIn submenus {
         NotificationsSection.menus:_*
       },
+      Menu("Experiments") / "experiments" >> LocGroup("mainmenu"),
+
+      Menu(Loc("virtualization", ExtLink("https://194.85.162.171/"), "Virtualization", LocGroup("mainmenu"))),
+
+      Menu("R service") / "r_suite" >> LocGroup("mainmenu"),
+
       LogLevel.menu, // default log level menu is located at /loglevel/change
 
       Menu("UserEdit") / "users" / "edituser" >> loggedIn >> Hidden,

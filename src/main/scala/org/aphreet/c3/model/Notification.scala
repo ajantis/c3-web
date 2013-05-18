@@ -36,6 +36,11 @@ class Notification extends LongKeyedMapper[Notification] with IdPK{
 object Notification extends Notification with LongKeyedMetaMapper[Notification] {
   override def dbTableName = "notifications"
   def findByRecipient(user: User) = this.findAll(By(Notification.recipient, user.id.is))
+
+  def totalByRecipient(user: User) = this.count(By(Notification.recipient, user.id.is))
+
+  def unreadByRecipient(user: User) = this.count(By(Notification.recipient, user.id.is),
+                                                 By(Notification.isRead, false))
 }
 
 object NotificationType extends Enumeration{

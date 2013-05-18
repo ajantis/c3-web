@@ -55,13 +55,20 @@
                     <img class="ajax-loader" alt="" id="ajax-loader" src="/images/ajax-loader.gif" />
 
                     <div class="list-menu pull-right user-menu">
-                        <div class="btn-group">
                             <div class="lift:MainSnippet.currentUser">
                                     <div class="user">
-                                        <div class="btn-group">
-                                            <a class="btn btn-primary" href="/user_mgt/edit"><i class="icon-user icon-white"></i> <span class="username">Ivan Petrov</span></a>
-                                            <a class="btn btn-primary dropdown-toggle" data-toggle="dropdown" href="#"><span class="caret"></span></a>
+                                        <div class="btn-group lift:NotificationsUserBar">
+                                            <a class="btn btn-primary" href="/user_mgt/edit">
+                                                <i class="icon-user icon-white"></i> <span class="username">Ivan Petrov</span>
+                                            </a>
+                                            <a class="btn btn-primary dropdown-toggle" data-toggle="dropdown" href="#">
+                                                <span class="badge unread_count">1</span>
+                                                <span class="caret"></span>
+                                            </a>
                                             <ul class="dropdown-menu">
+                                                <li>
+                                                    <a href="/notifications"><span class="badge unread_count">1</span> Notifications</a>
+                                                </li>
                                                 <li>
                                                     <lift:Menu.item name="ChangePassword"><i class="icon-pencil"></i> Change password</lift:Menu.item>
                                                 </li>
@@ -79,12 +86,10 @@
                                         </div>
                                     </div>
                             </div>
-
-                        </div>
                     </div>
 
                     <form class="lift:SearchForm.miniSearch?form=post navbar-search pull-right">
-                        <input name="query" type="text" class="search-query span3" style="width: 200px" placeholder="Search" />
+                        <input name="query" type="text" class="search-query span3" style="width: 80%" placeholder="Search" />
                     </form>
 
                 </div>

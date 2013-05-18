@@ -2,7 +2,7 @@ package org.aphreet.c3.service.notifications.impl
 
 import org.aphreet.c3.util.C3Loggable
 import org.aphreet.c3.model.{Notification, User}
-import org.aphreet.c3.service.notifications.{NotifyMsg, NotificationStorageComponent}
+import org.aphreet.c3.service.notifications.{NotificationStats, NotifyMsg, NotificationStorageComponent}
 import net.liftweb.util.FieldError
 
 /**
@@ -31,6 +31,10 @@ trait NotificationStorageComponentImpl extends NotificationStorageComponent{
         logger.error("Notification is already marked as read! " + notification)
         notification
       }
+    }
+
+    def getNotificationStatsForUser(recipient: User): NotificationStats = {
+      new NotificationStats(Notification.totalByRecipient(recipient), Notification.unreadByRecipient(recipient))
     }
   }
 }
