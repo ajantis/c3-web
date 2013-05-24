@@ -66,7 +66,7 @@ class Boot extends Bootable{
 
     val loggedIn = If(() => User.loggedIn_?, loginAndComeBack _ )
 
-    val isSuperAdmin = If(() => {if(!User.currentUser.isEmpty) User.currentUser.open_!.superUser.is else false},
+    val isSuperAdmin = If(() => {if(!User.currentUser.isEmpty) User.currentUser.openOrThrowException("User is not logged in").superUser.is else false},
       () => RedirectWithState("/index", RedirectState( () => {} ,"Not a super user" -> NoticeType.Notice ) )
     )
 
@@ -91,10 +91,10 @@ class Boot extends Bootable{
       Menu("Groups") / "groups" >> loggedIn >> LocGroup("mainmenu") submenus {
         GroupsSection.menus:_*
       },
-      Menu("Users") / "users" >> loggedIn >> LocGroup("mainmenu") submenus {
+      Menu("Users") / "users" >> loggedIn submenus {
         UsersSection.menus:_*
       },
-      Menu("Categories") / "categories" >> loggedIn >> LocGroup("mainmenu") submenus {
+      Menu("Categories") / "categories" >> isSuperAdmin >> LocGroup("mainmenu") submenus {
         CategoriesSection.menus:_*
       },
       Menu("Notifications") / "notifications" >> loggedIn submenus {

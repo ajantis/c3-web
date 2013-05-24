@@ -792,3 +792,8 @@ td.file-table-date{
 .cursor_pointer {
     cursor:pointer;
 }
+
+.menu_users a{
+    float:none!important;
+
+}
