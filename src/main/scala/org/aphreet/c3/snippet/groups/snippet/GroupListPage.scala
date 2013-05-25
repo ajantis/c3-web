@@ -28,7 +28,7 @@ class GroupListPage {
   def list = {
     val groupList =if(User.currentUser.open_!.superUser.is) Group.findAll().toList else {User.currentUser.open_!.groups.toList ::: Group.findAll(By(Group.isOpen,true))}
 
-    ".container_groups" #> groupList.map{ group:Group => {
+    ".container_groups" #> groupList.toSet.map{ group:Group => {
 
       //      def deleteGroup(): JsCmd = {
       //        if(groupService.removeGroup(group)){
