@@ -11,6 +11,8 @@ import net.liftweb.util.Helpers._
 import net.liftweb.util._
 import org.aphreet.c3.lib.DependencyFactory
 import net.liftweb.util.CssSel
+import net.liftweb.mapper.By
+import net.liftweb.common.Full
 
 /**
  * @author Serjk (mailto: serjk91@gmail.com)
@@ -24,7 +26,7 @@ class GroupListPage {
   lazy val logger = Logger(classOf[GroupListPage])
 
   def list = {
-    val groupList =if(User.currentUser.open_!.superUser.is) Group.findAll().toList else User.currentUser.open_!.groups.toList
+    val groupList =if(User.currentUser.open_!.superUser.is) Group.findAll().toList else {User.currentUser.open_!.groups.toList ::: Group.findAll(By(Group.isOpen,true))}
 
     ".container_groups" #> groupList.map{ group:Group => {
 
