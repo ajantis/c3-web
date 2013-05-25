@@ -1,19 +1,9 @@
 package org.aphreet.c3.comet
 
-import net.liftweb.http._
-import js.{JsCmds, JsCmd}
-import net.liftweb.common._
 import org.aphreet.c3.util.C3Exception
 import org.aphreet.c3.model.{Group, User, Message}
-import net.liftweb.util.Helpers
-import net.liftweb.util.Helpers._
-import xml.NodeSeq
-import js.jquery.JqJsCmds.PrependHtml
-import net.liftweb.http.js.JsCmds._
 import java.util
-import net.liftmodules.textile.TextileParser
 import org.aphreet.c3.util.helpers.DateTimeHelpers
-import scala.language.postfixOps
 
 /**
  * @author Dmitry Ivanov (mailto: id.ajantis@gmail.com)
@@ -61,41 +51,52 @@ trait GroupMessagesLog extends CometActor with CometListener {
   private def line(c: Message) = {
     ("name=when *" #> formatMsgCreationDate(c.creationDate) &
      "name=who *" #> c.author.map(_.shortName) &
-     "name=body *" #> toHtml(c.content))(li)
+     "name=body *" #> toHtml(c.content) &
+     ".tags *" #> {
+       ".tag *" #> c.tags
+     })(li)
   }
 
   // display a list of messages
   private def displayList: NodeSeq = messages.flatMap(line)
 
+  object tags extends SessionVar[List[String]](Nil)
+
+  protected def updateTags(tagsInput: String): JsCmd = {
+    tags.set(tagsInput.split(',').map(_.trim).toList)
+    JsCmds.Noop // bootstrap-editable will update text value on page by itself
+  }
+
   // render the whole list of messages
   override def render = {
 
-    val showInputBtnId = "show_input_msg"
-    val hideInputBtnId = "hide_input_msg"
-
-    // Helper js methods to show\hide input message form
-    def showInput(): JsCmd = JsCmds.JsShowId(inputTextContainerId) & JsCmds.JsHideId(showInputBtnId)
-    def hideInput(): JsCmd = JsCmds.JsHideId(inputTextContainerId) & JsCmds.JsShowId(showInputBtnId)
-
     "name=user_name" #> User.currentUser.map(_.shortName) &
-    ("#"+ulId+" *") #> displayList &
-    ("#" + showInputBtnId + " [onclick]") #> SHtml.ajaxInvoke(showInput _) &
+    ("#" + ulId + " *") #> displayList &
     ("#" + inputTextContainerId + " *") #> { (xml: NodeSeq) => {
       var content = ""
-      var tagsInput = ""
 
       def sendMessage(): JsCmd = {
-        val tags = tagsInput.split(",").toList
-        println(messageServer)
         messageServer.foreach(_ ! MessageServerMsg(User.currentUser.open_!, group.open_!, content, tags))
-        SetValById("postit", "") & JsCmds.JsHideId(inputTextContainerId) & JsCmds.JsShowId(showInputBtnId)
+        tags.set(Nil)
+
+        SetValById("postit", "") &
+        JsCmds.Run("$('#" + inputTextContainerId + "').modal('hide');")
       }
 
       SHtml.ajaxForm {
-          ("#" + hideInputBtnId + " [onclick]") #> SHtml.ajaxInvoke(hideInput _) &
-          "#postit" #> SHtml.onSubmit((s: String) => content = s.trim) &
-          "#tags_input" #> SHtml.onSubmit((s: String) => tagsInput = s.trim) &
-          "type=submit" #> ((xml: NodeSeq) => xml ++ SHtml.hidden(sendMessage _)) apply(xml)
+        ".edit_tags_form_func *" #> {
+          Script(
+            Function("updateTagsCallback", List("tags"),
+              SHtml.ajaxCall(
+                JsVar("tags"),
+                (d: String) => updateTags(d)
+              )._2.cmd
+            )
+          )
+        } &
+        "#tags_input *" #> Text("") &
+        "#postit" #> SHtml.onSubmit((s: String) => content = s.trim) &
+        "type=submit" #> ((xml: NodeSeq) => xml ++ SHtml.hidden(sendMessage _)) apply(xml)
       }
     }}
   }

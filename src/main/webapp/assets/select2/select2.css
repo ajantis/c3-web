@@ -203,6 +203,7 @@ Version: 3.2 Timestamp: Mon Sep 10 10:38:04 PDT 2012
     border-radius: 0;
     -moz-border-radius: 0;
     -webkit-border-radius: 0;
+    -webkit-max-logical-width: 90%;
 }
 
 .select2-drop.select2-drop-above .select2-search input

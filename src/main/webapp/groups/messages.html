@@ -4,11 +4,30 @@
         <link rel="stylesheet" type="text/css" href="/js/markitup/sets/default/style.css"/>
         <script type="text/javascript" src="/js/markitup/jquery.markitup.js"></script>
         <script type="text/javascript" src="/js/markitup/sets/default/set.js"></script>
+
+        <!-- select2 -->
+        <link href="/assets/select2/select2.css" rel="stylesheet">
+        <script src="/assets/select2/select2.js"></script>
+
+        <!-- x-editable (bootstrap) -->
+        <link href="/bootstrap-editable/css/bootstrap-editable.css" rel="stylesheet">
+        <script src="/bootstrap-editable/js/bootstrap-editable.js"></script>
     </head>
     <tail>
         <script type="text/javascript">
             $(document).ready(function($){
-                $('#postit').markItUp(mySettings);
+                $.fn.editable.defaults.mode = "inline";
+//                $('#postit').markItUp(mySettings);
+                $('#tags_input').editable({
+                    inputclass: 'input-large',
+                    select2: {
+                        tags: [],
+                        tokenSeparators: [","]
+                    },
+                    url: function(params) {
+                        updateTagsCallback(params.value);
+                    }
+                });
             } );
         </script>
     </tail>
@@ -20,34 +39,36 @@
 
             <div class="span8">
                 <div id="tab-content" class="tab-content">
+
                     <div class="lift:GroupPageMessages.putCometJournal">
                         <div id="messages_toolbar">
-                            <a href="#" id="show_input_msg" class="btn btn-primary" rel="tooltip" title="Compose new message">
+                            <a href="#input_container" id="show_input_msg" data-toggle="modal" class="btn btn-primary" rel="tooltip" title="Compose new message">
                                 <i class="icon-pencil icon-white"></i>
                             </a>
+
+                            <div class="modal fade hide" id="input_container">
+                                <div class="modal-header">
+                                    <a class="close" data-dismiss="modal">&times;</a>
+                                    <h3>New message</h3>
+                                </div>
+                                <div class="modal-body">
+                                    <textarea class="field" style="width: 97%; resize: none;" rows="6" id="postit" placeholder="Enter message text"></textarea>
+                                    <!--<input id="tags_input" placeholder="Enter tags"/>-->
+                                    <div>
+                                        <span class="hide edit_tags_form_func"></span>
+                                        Tags: <a href="#" id="tags_input" data-type="select2" data-pk="1" data-original-title="Enter tags">
+                                            html, javascript
+                                        </a>
+                                    </div>
+
+                                </div>
+                                <div class="modal-footer">
+                                    <a href="#" class="btn" data-dismiss="modal">Close</a>
+                                    <button class="btn btn-primary" type="submit" id="send_btn">Send</button>
+                                </div>
+                            </div>
                         </div>
-                        <div id="input_container" style="display: none;">
-                            <textarea id="postit" placeholder="Enter text"></textarea>
-                            <button class="btn btn-success" type="submit" id="send_btn">Send</button>
-                            <a id="hide_input_msg" class="btn btn-danger">Cancel</a>
-                        </div>
-                        <!--<div id="messages_toolbar">-->
-                            <!--<a id="show_input_msg" href="#add_messages" data-toggle="modal" class="btn btn-primary" rel="tooltip" title="Compose new message">-->
-                                <!--<i class="icon-pencil icon-white"></i>-->
-                            <!--</a>-->
-                        <!--</div>-->
-                        <!--<div id="add_messages" class="modal hide fade">-->
-                            <!--<h4 class = "modal-header">New message</h4>-->
-                            <!--<form id="add_messages_form">-->
-                                <!--<div id="input_container" style="display: none;">-->
-                                    <!--<textarea id="postit" placeholder="Enter text"></textarea>-->
-                                <!--</div>-->
-                            <!--</form>-->
-                            <!--<div class="modal-footer">-->
-                                <!--<button type="button" data-dismiss="modal" class="btn">Cancel</button>-->
-                                <!--<button type="submit" class="btn btn-success" id="send_btn" form="add_messages_form">Save</button>-->
-                            <!--</div>-->
-                        <!--</div>-->
+
                         <div id="main_ul_id">
                             <div id="main_li_id">
                                 <h5><b><span name="who">Dmitry Ivanov</span>:</b></h5>
@@ -55,7 +76,10 @@
                                     <span name="body">My Message</span>
                                 </p>
                                 <div>
-                                    <span class="badge badge-success">Posted <span name="when">2012-08-02 20:47:04</span></span><div class="pull-right"><span class="label">tag1</span> <span class="label">tag2</span> <span class="label">tag3</span> <span class="label">tag4</span></div>
+                                    <span class="badge badge-info">Created on <span name="when">2012-08-02 20:47:04</span></span>
+                                    <div class="tags pull-right">
+                                        <span class="tag label label-info" style="margin: 3px;">tag1</span>
+                                    </div>
                                 </div>
                                 <hr/>
                             </div>

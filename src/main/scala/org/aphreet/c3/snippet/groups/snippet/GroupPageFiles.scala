@@ -83,7 +83,6 @@ with GroupPageHelpers with FSHelpers with TagForms with C3FileAccessHelpers{
   //list keys for metadata
   object keys extends SessionVar[Set[String]](Set())
 
-
   val pathLocs = buildPathLocs
   val groupFilesLink = group.createLink + "/files/"
   val file = group.getFile(data.currentAddress)

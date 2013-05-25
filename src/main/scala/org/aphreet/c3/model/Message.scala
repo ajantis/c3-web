@@ -9,7 +9,7 @@ import java.util
  * @author Dmitry Ivanov
  */
 
-case class Message(groupId: String, authorId: String, creationDate: util.Date, content: String, uuid: String, tags: List[String] = List()) {
+case class Message(groupId: String, authorId: String, creationDate: util.Date, content: String, uuid: String, tags: List[String]) {
   lazy val author: Box[User] = User.find(authorId)
   lazy val group: Box[Group] = Group.find(groupId)
 
