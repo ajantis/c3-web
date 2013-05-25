@@ -21,6 +21,8 @@ import net.liftweb.util.Mailer.BCC
  */
 object User extends User with MetaMegaProtoUser[User]{
 
+  lazy val defaultPage = "/groups"
+
   override def loginMenuLocParams = LocGroup("loginLogoutMenu") :: super.loginMenuLocParams
   override def createUserMenuLocParams = LocGroup("loginLogoutMenu") :: super.createUserMenuLocParams
 
@@ -338,7 +340,7 @@ object User extends User with MetaMegaProtoUser[User]{
                 loginRedirect(Empty)
                 url
               case _ =>
-                homePage
+                defaultPage
             }
             S.redirectTo(redir)
           })
