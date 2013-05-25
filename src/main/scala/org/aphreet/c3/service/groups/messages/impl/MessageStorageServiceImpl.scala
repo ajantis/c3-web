@@ -38,12 +38,19 @@ class MessageStorageServiceImpl extends MessageStorageService with C3Loggable{
         file <- root.children(embedChildrenData = true, embedChildMetaData = metaTags).filter(!_.isDirectory).map(_.asFile)
       } yield {
         val md = file.metadata
+
+        val tags: List[String] = md.get(TAGS_META) match {
+          case Some("") => Nil
+          case Some(s) => s.split(',').toList
+          case _ => Nil
+        }
+
         Message(group.id.is.toString,
           Box(md.get(MSG_CREATOR_META)).openOr("N/A"),
           file.versions.last.date,
           file.versions.last.getData.readContentAsString,
           messageUUID(file.name),
-          md.get(TAGS_META).getOrElse("").split(',').toList
+          tags
         )
       }
 

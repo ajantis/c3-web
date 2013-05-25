@@ -64,8 +64,10 @@ trait GroupMessagesLog extends CometActor with CometListener {
      "name=who *" #> c.author.map(_.shortName) &
      "name=body *" #> toHtml(c.content) &
      ".tags *" #> {
-       ".tag *" #> c.tags
-     } & ClearClearable)(li)
+       ".tag *" #> c.tags.map{ (tag: String) =>
+         <span class="label label-info">{tag}</span>
+       }
+     })(li)
   }
 
   // display a list of messages
@@ -74,7 +76,8 @@ trait GroupMessagesLog extends CometActor with CometListener {
   object tags extends SessionVar[List[String]](Nil)
 
   protected def updateTags(tagsInput: String): JsCmd = {
-    tags.set(tagsInput.split(',').map(_.trim).toList)
+    val tagList = if (tagsInput.isEmpty) Nil else tagsInput.split(',').map(_.trim).toList
+    tags.set(tagList)
     JsCmds.Noop // bootstrap-editable will update text value on page by itself
   }
 
