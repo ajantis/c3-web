@@ -72,16 +72,17 @@
                         <table class="tablesorter" id="table-sort">
                             <thead>
                                 <tr>
+                                    <th><input type="checkbox" name="check_all"/></th>
                                     <th></th>
                                     <th class="file-table-name"><b>Name</b></th>
                                     <th class="file-table-owner"><b>Owner</b></th>
                                     <th class="file-table-date"><b>Modify date</b></th>
                                     <th class="file-table-rules" style="width: 7%"><b>Access</b></th>
-                                    <th><input type="checkbox" name="check_all"/></th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr class="child">
+                                    <td><input class="select_resource" name="check_file" type="checkbox" /></td>
                                     <td class="child_td"><img class="icon"/></td>
                                     <td class="child_td file-table-name"><a class="link" href="#"><span class="name"></span></a>
                                         <span class="description_box last_changed short_description"></span></td>
@@ -91,7 +92,7 @@
                                         <a href="#acl" class="acl_button" data-toggle="modal">
                                             <span class="rules">rw--</span></a>
                                     </td>
-                                    <td><input class="select_resource" name="check_file" type="checkbox" /></td>
+
                                 </tr>
                             </tbody>
                         </table>
