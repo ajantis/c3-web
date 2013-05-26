@@ -448,7 +448,17 @@ with GroupPageHelpers with FSHelpers with TagForms with C3FileAccessHelpers{
       ".owner [href]" #> owner.map(_.createLink) &
       ".name *" #> ConvertHelpers.ShortString(file.name,40) &
       ".description_box *" #> ConvertHelpers.ShortString(file.metadata.get(DESCRIPTION_META).getOrElse(""),if(file.name.length > 40) 60 else (110-file.name.length))&
-      ".icon [src]" #> "/images/document_letter.png" &
+      ".icon [src]" #> (  file.metadata.get(CONTENT_TYPE) match {
+        case Some("application/vnd.ms-excel") => "/images/excel_type.png"
+        case Some("image/png") => "/images/png_type.png"
+        case Some("image/gif") => "/images/gif_type.png"
+        case Some("application/pdf") => "/images/pdf_type.png"
+        case Some("application/msword") => "/images/word_type.png"
+        case Some("application/zip") => "/images/zip_type.png"
+        case Some("application/x-rar-compressed") => "/images/rar_type.png"
+        // case Some(s) => if s.contains("text/plain") "/images/document_letter.png"
+        case _ => "/images/unkhown_type.png"
+      })&
       ".created_date *" #> internetDateFormatter.format(file.date)
     //40 - max vizible symbols, when size file name is big
     //110 - count visible symbols in description columns
