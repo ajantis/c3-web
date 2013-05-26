@@ -15,7 +15,6 @@ trait UserHelpers {
     ".mailto [href]" #> Text("mailto:"+user.email.is) &
     ".link [href]" #> user.createLink &
     ".name *" #> user.shortName &
-    ".name [class+]" #> (if(user.superUser.is) "admin" else "") &
-    ".is_admin *" #> (if(user.superUser.is) "Yes" else "No")
+    ".name [class+]" #> (if(user.superUser.is) "admin" else "")
   }
 }

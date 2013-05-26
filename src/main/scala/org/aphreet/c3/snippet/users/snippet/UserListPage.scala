@@ -15,46 +15,66 @@ import net.liftweb.mapper.By
 class UserListPage extends UserHelpers{
   def list = {
     val users = User.findAll(By(User.enabled,true))
+    val current = User.currentUser.openOrThrowException("User is not detected!")
     ".user-head *" #> (
-      if (User.currentUser.open_!.superUser.is)
+      if (current.superUser.is)
       {
-        ".name-admin *" #> "Admin" &
-        ".name-enabled *" #> "Enabled"
+//        ".name-admin *" #> "Admin" &
+          ".name-enabled *" #> "Enabled"
       }
       else
       {
-        ".name-admin *" #> NodeSeq.Empty &
-        ".name-enabled *" #> NodeSeq.Empty
+//        ".name-admin *" #> NodeSeq.Empty &
+          ".name-enabled *" #> NodeSeq.Empty
       })&
       ".user " #> users.map {user => {
-      if (User.currentUser.open_!.superUser.is && !user.superUser.is){
-        def deleteUser():JsCmd = {
-          user.enabled.set(false)
-          user.save
-          if (!user.enabled.is )
-          {
-            JsCmds.Replace(user.id.is.toString, NodeSeq.Empty)
-          }
-          else JsCmds.Alert("User is not removed! You don't have administrator rights! Please check logs for details")
-        }
-        ".user [id]" #> user.id.is &
-        ".user *" #>
-          ((n: NodeSeq) =>  SHtml.ajaxForm(
-            (toCssBindings(user)&
-              ".is_admin *" #> (if(user.superUser.is) "Yes" else "No") &
-              ".enabled *" #> (if(user.enabled.is) "Yes" else "No") &
-              ".deluser *" #> SHtml.memoize(f => f ++ SHtml.hidden(deleteUser _))).apply(n)
-          ))
 
+        if (current.superUser.is){
+          def setSuperAdmin(b:Boolean):JsCmd={
+            user.superUser.set(b)
+            user.save
+
+            JsCmds.Noop
+          }
+          def deleteUser():JsCmd = {
+            user.enabled.set(false)
+            user.save
+            if (!user.enabled.is )
+            {
+              JsCmds.Replace(user.id.is.toString, NodeSeq.Empty)
+            }
+            else JsCmds.Alert("User is not removed! You don't have administrator rights! Please check logs for details")
+          }
+          ".user [id]" #> user.id.is &
+            ".user *" #>
+              ((n: NodeSeq) =>  SHtml.ajaxForm(
+                (toCssBindings(user)&
+                  ".is_admin" #> NodeSeq.Empty &
+                  ".enabled *" #> (if(user.enabled.is) "Yes" else "No") &
+                  (if(user.id != current.id)
+                  {
+                    ".deluser *" #> SHtml.memoize(f => f ++ SHtml.hidden(deleteUser _))&
+                    ".admin_checkbox " #> SHtml.ajaxCheckbox(user.superUser.is,setSuperAdmin(_))
+                  }else
+                  {
+                    ".admin_checkbox" #> NodeSeq.Empty &
+                    ".deluser *" #> NodeSeq.Empty
+
+                  }
+                    )
+                ).apply(n)
+              ))
+
+        }
+        else
+        {
+          toCssBindings(user)&
+            ".is_admin" #> (if(user.superUser.is) "Yes" else "No") &
+            ".enabled *" #> NodeSeq.Empty &
+            ".deluser *" #> NodeSeq.Empty &
+            ".admin_checkbox" #> NodeSeq.Empty
+        }
       }
-      else
-      {
-        toCssBindings(user)&
-        ".is_admin *" #> NodeSeq.Empty &
-        ".enabled *" #> NodeSeq.Empty &
-        ".deluser *" #> NodeSeq.Empty
-      }
-    }
 
       }
   }
