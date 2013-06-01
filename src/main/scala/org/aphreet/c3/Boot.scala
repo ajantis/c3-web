@@ -99,11 +99,11 @@ class Boot extends Bootable{
       Menu("Groups") / "groups" >> loggedIn >> LocGroup("mainmenu") submenus {
         GroupsSection.menus:_*
       },
-      Menu("Users") / "users" >> loggedIn >> LocGroup("mainmenu") submenus {
+      Menu("users", "Users") / "users" >> loggedIn >> LocGroup("mainmenu") submenus {
         UsersSection.menus:_*
       },
       Menu("admin", "Admin") / "admin" >> LocGroup("admin_menus") >> isSuperAdmin submenus {
-        Menu("Categories") / "admin" / "categories" submenus {
+        Menu("categories", "Categories") / "admin" / "categories" submenus {
           CategoriesSection.menus:_*
         }
       },
