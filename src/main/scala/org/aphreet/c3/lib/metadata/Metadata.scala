@@ -6,6 +6,7 @@ package org.aphreet.c3.lib.metadata
  */
 object Metadata {
   val DESCRIPTION_META = "x-c3-description"
+  val CONTENT_TYPE = "content-type"
   val ACL_META = "x-c3-acl"
   val TAGS_META: String = "x-c3-tags"
   val MSG_CREATOR_META: String = "x-c3-msg-creator"
