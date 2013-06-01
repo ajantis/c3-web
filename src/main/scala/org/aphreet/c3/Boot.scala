@@ -4,7 +4,7 @@ import _root_.net.liftweb.util._
 import _root_.net.liftweb.common._
 import _root_.net.liftweb.http.provider._
 import _root_.net.liftweb.sitemap._
-import _root_.net.liftweb.sitemap.Loc._
+import net.liftweb.sitemap.Loc._
 import Helpers._
 import org.aphreet.c3.model._
 import net.liftweb.mapper._
@@ -25,6 +25,14 @@ import util.helpers.C3Streamer
 import util.{DefaultAuthDataLoader, TextileRenderer}
 import javax.mail.{Authenticator, PasswordAuthentication}
 import net.liftweb.util.Props
+import net.liftweb.http.Html5Properties
+import net.liftweb.http.InMemoryResponse
+import net.liftweb.common.Full
+import net.liftweb.http.ParsePath
+import net.liftweb.http.NotFoundAsTemplate
+import net.liftweb.sitemap.Loc.LocGroup
+import net.liftweb.http.ServiceUnavailableResponse
+import net.liftweb.sitemap.Loc.If
 
 /**
  * A class that's instantiated early and run.  It allows the application
@@ -91,13 +99,15 @@ class Boot extends Bootable{
       Menu("Groups") / "groups" >> loggedIn >> LocGroup("mainmenu") submenus {
         GroupsSection.menus:_*
       },
-      Menu("Users") / "users" >> loggedIn submenus {
+      Menu("Users") / "users" >> loggedIn >> LocGroup("mainmenu") submenus {
         UsersSection.menus:_*
       },
-      Menu("Categories") / "categories" >> isSuperAdmin >> LocGroup("mainmenu") submenus {
-        CategoriesSection.menus:_*
+      Menu("admin", "Admin") / "admin" >> LocGroup("admin_menus") >> isSuperAdmin submenus {
+        Menu("Categories") / "admin" / "categories" submenus {
+          CategoriesSection.menus:_*
+        }
       },
-      Menu("Notifications") / "notifications" >> loggedIn submenus {
+      Menu("notifications", "Notifications") / "notifications" >> loggedIn submenus {
         NotificationsSection.menus:_*
       },
       Menu("Experiments") / "experiments" >> LocGroup("mainmenu"),

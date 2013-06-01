@@ -33,13 +33,11 @@ package org.aphreet.c3.snippet
 
 import org.aphreet.c3.model.{Group, User}
 import net.liftweb.mapper.MaxRows
-import net.liftweb.sitemap.Loc
-import net.liftweb.http.S
 import xml.{Text, NodeSeq}
 import net.liftweb.common.Full
 import net.liftmodules.widgets.autocomplete.AutoComplete
-
-import net.liftweb.util.BindHelpers._
+import net.liftweb.util.Helpers
+import Helpers._
 import net.liftweb.util.PassThru
 
 
@@ -49,7 +47,11 @@ class MainSnippet  {
       case Full(user) => {
         ".username" #> user.shortName &
         ".user ^*" #> PassThru &
-        ".not_logged_in" #> NodeSeq.Empty
+        ".not_logged_in" #> NodeSeq.Empty &
+        (if (user.superUser.is)
+          ".admin_section" #> PassThru
+        else
+          ".admin_section" #> NodeSeq.Empty)
       }
       case _ =>
         ".user" #> NodeSeq.Empty &

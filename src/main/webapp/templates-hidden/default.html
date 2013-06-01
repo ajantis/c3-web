@@ -66,11 +66,16 @@
                                                 <span class="caret"></span>
                                             </a>
                                             <ul class="dropdown-menu menu_users">
-                                                <li>
-                                                    <a href="/notifications"><span class="badge unread_count">1</span> Notifications</a>
+                                                <li class="admin_section">
+                                                    <lift:Menu.item name="admin">
+                                                        <i class="icon-wrench"></i> Administration
+                                                    </lift:Menu.item>
                                                 </li>
+                                                <li class="divider admin_section"></li>
                                                 <li>
-                                                    <a href="/users"><i class="icon-user"></i> Users</a>
+                                                    <lift:Menu.item name="notifications">
+                                                        <span class="badge unread_count">1</span> Notifications
+                                                    </lift:Menu.item>
                                                 </li>
                                                 <li>
                                                     <lift:Menu.item name="ChangePassword"><i class="icon-pencil"></i> Change password</lift:Menu.item>

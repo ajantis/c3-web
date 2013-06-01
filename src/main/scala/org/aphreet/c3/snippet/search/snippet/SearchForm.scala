@@ -281,7 +281,7 @@ class SearchForm extends PaginatorSnippet[SearchResultEntry] with C3Loggable{
     val userGroupsIds = User.currentUser.map(_.groups.map(_.id.is)).openOr(Nil)
     val openGroups = Group.findOpenGroups.map(_.id.is)
     c3.search(query).filter{p =>
-      if(!p.path.isEmpty){
+      if (p.path != null && !p.path.isEmpty){
         val groupId = C3Path(p.path).groupName.toLong
         userGroupsIds.contains(groupId) || openGroups.contains(groupId)
       }else{
