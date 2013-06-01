@@ -7,8 +7,8 @@ import xml.{Text, NodeSeq}
  * @author Serjk (mailto: serjk91@gmail.com)
  */
 class TableSorters {
-  val headers = (0, Sorter("text")) :: (1,Sorter("text")):: (2,Sorter("text")) :: (3,Sorter("usLongDate")) ::
-    (4, Sorter("text")) :: (5, DisableSorting()) :: Nil
+  val headers = (0, DisableSorting()) :: (1,Sorter("text")):: (2,Sorter("text")) :: (3,Sorter("text")) ::
+    (4, Sorter("usLongDate")) :: (5, DisableSorting()) :: Nil
   val sortList = Nil
 
   val options = TableSorter.options(headers, sortList)

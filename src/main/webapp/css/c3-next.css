@@ -798,3 +798,9 @@ td.file-table-date{
     float:none!important;
 
 }
+.file_checkbox{
+    width:20px!important;
+}
+.resource_icon{
+    width:20px!important;
+}
