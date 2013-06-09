@@ -28,7 +28,7 @@ import net.liftweb.common.Empty
  */
 class SearchForm extends PaginatorSnippet[SearchResultEntry] with C3Loggable{
 
-  private val c3 = inject[C3System].open_!
+  private val c3 = inject[C3System].openOrThrowException("c3Storage is not accessible")
   private val dateFormat = new SimpleDateFormat("MMM dd, yyyy")
 
   val selectedTagsContainerId = "selected_tags"
@@ -110,12 +110,16 @@ class SearchForm extends PaginatorSnippet[SearchResultEntry] with C3Loggable{
     //        case _ => c3Path.resourceName
     //      }
     val tags = resource.metadata.get(Metadata.TAGS_META).map(_.split(",").toList).getOrElse(Nil)
+
     val owner = resource.metadata.get(OWNER_ID_META) match {
       case Some(id) if !id.isEmpty => User.find(By(User.id, id.toLong))
-      case _ => Empty
+      case _ => resource.metadata.get(MSG_CREATOR_META) match {
+        case Some(id) if !id.isEmpty => User.find(By(User.id, id.toLong))
+        case _ => Empty
+      }
     }
 
-    ".result_header *" #> nodeName &
+    ".result_header *" #> c3Path.resourceName &
       ".result_header [href]" #> c3Path.resourceParentDir &
       ".result_link [href]" #> c3Path.resourceUri &
       ".result_link *" #> c3Path.resourceUri &
@@ -188,7 +192,7 @@ class SearchForm extends PaginatorSnippet[SearchResultEntry] with C3Loggable{
         JqJsCmds.AppendHtml(selectedMetadataContainerId,
           <li id={idMetadata} class="label btn-success sel-tag">
             <span>{key}</span>
-            <span>/</span>
+            <span> : </span>
             <span>{value}</span>
             <a onclick={SHtml.ajaxCall(JE.ValById(queryInputId), s => unselectMetadata(idMetadata,metadataInst, s))._2.cmd.toJsCmd}>
               <i class="icon-remove-sign icon-white"></i>
@@ -264,7 +268,8 @@ class SearchForm extends PaginatorSnippet[SearchResultEntry] with C3Loggable{
   }
 
   private def createC3SearchQuery(contentQuery: String, tags: Iterable[String],metadata: Iterable[String]) = {
-    "+content:\"" + contentQuery + "\"" +
+    val correctQueryString = if(!contentQuery.isEmpty) contentQuery.trim.split(" ").map(str=>{""+str+""}).mkString(" ")  else contentQuery
+     correctQueryString+
     (if (!tags.isEmpty){
       " " +
         tags.map { t => Metadata.TAGS_META + ":\"" + t + "\"" }.mkString(" ") +
