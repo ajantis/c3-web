@@ -63,7 +63,8 @@ trait GroupMessagesLog extends CometActor with CometListener {
     ("name=when *" #> formatMsgCreationDate(c.creationDate) &
      "name=who *" #> c.author.map(_.shortName) &
      "name=body *" #> toHtml(c.content) &
-     ".tags *" #> {
+     ".msg_id [id]"#> ("msg-" + c.uuid.toString) &
+      ".tags *" #> {
        ".tag *" #> c.tags.map{ (tag: String) =>
          <span class="label label-info">{tag}</span>
        }

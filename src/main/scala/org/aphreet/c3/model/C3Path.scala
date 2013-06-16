@@ -66,7 +66,7 @@ case class C3Path(path:String){
         resourceName = "Message"
         resourceType = MessagesType
         resourceUri = "/groups/" + group + "/messages"
-        resourceParentDir = resourceUri
+        resourceParentDir = "/groups/" + group + "/messages" +"#"+ filePath.last
       }
 
       case _ =>
