@@ -571,7 +571,7 @@ td.file-table-date{
     margin:0!important;
 }
 .edit_meta{
-    width: 90%;
+    width: 100%;
     margin: 0 auto;
 }
 .table_meta{
@@ -593,11 +593,21 @@ td.file-table-date{
     border: 0;
     background: none!important;
     cursor: default!important;
-
+    height: 100%;
 }
 .metadata_value{
-    width:218px!important;
+    width:95%!important;
+    margin-bottom: 0!important;
 }
+
+.close.remove_metadata{
+    padding: 5px;
+}
+
+tr.metadata_form_header th{
+    border:0!important;
+}
+
 .input_meta{
     width:210px!important;
 }

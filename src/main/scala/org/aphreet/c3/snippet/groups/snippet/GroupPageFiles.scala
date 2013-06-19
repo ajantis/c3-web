@@ -278,22 +278,25 @@ with GroupPageHelpers with FSHelpers with TagForms with C3FileAccessHelpers{
       keys.set(keys.get - key)
       JsCmds.Replace((key+value),NodeSeq.Empty)
     }catch{
-      case e:Exception => JsCmds.Alert("User is not removed! Please check logs for details")
+      case e:Exception => JsCmds.Alert("Failed to remove metadata")
     }
   }
 
   def editMeta(f: C3FileSystemNode,key:String,value:String):JsCmd = {
     try{
-      val metadata = Map(key->value)
-      f.update(MetadataUpdate(metadata))
+
+      if(Some(value) != f.metadata.get(key)){
+        val metadata = Map(key->value)
+        f.update(MetadataUpdate(metadata))
+      }
 
     }catch{
-      case e:Exception => JsCmds.Alert("User is not removed! Please check logs for details")
+      case e:Exception => JsCmds.Alert("Failed to update metadata")
     }
   }
 
   protected def metadataEdit(f: C3FileSystemNode, metadataUsr:scala.collection.Map[String,String]) = {
-    ".metadata_form" #> metadataUsr.map{ case (k, v) => {
+    ".metadata_form" #> combineUserMetadata(metadataUsr).map{ case (k, v) => {
       keys.set(keys.get+k)
       ".metadata_form [id]" #> (k + v)&
         ".metadata_key [value]" #> k &
@@ -305,15 +308,27 @@ with GroupPageHelpers with FSHelpers with TagForms with C3FileAccessHelpers{
   }
 
   protected def metadataView(f: C3FileSystemNode, metadataUsr:scala.collection.Map[String,String]) = {
-    ".metadata_form *" #> metadataUsr.map{ case (k, v) => {
+    ".metadata_form *" #> combineUserMetadata(metadataUsr).map{ case (k, v) => {
       ".metadata_key [value]" #> k &
-        ".metadata_value [value]" #> v &
-        ".remove_metadata"#> NodeSeq.Empty &
-        ".metadata_value [readonly+]" #> "readonly"
+      ".metadata_value [value]" #> v &
+      ".remove_metadata"#> NodeSeq.Empty &
+      ".metadata_value [readonly+]" #> "readonly"
     }}&
       ".add_metadata" #> NodeSeq.Empty &
       ".btn_save_metadata" #> NodeSeq.Empty &
       "#edit_metadata_form" #> NodeSeq.Empty
+  }
+
+  case class MetadataElement(key: String, value: String, extracted: Boolean)
+
+  private def combineUserMetadata(metadata: scala.collection.Map[String, String]): Map[String, String] = {
+
+    val combinedMeta: Map[String, Iterable[MetadataElement]] = metadata.map(e => MetadataElement(e._1.replaceFirst("^doc:", ""), e._2, e._1.startsWith("doc:"))).groupBy(_.key)
+
+    val filteredMeta = combinedMeta.values.map(list => if(list.forall(_.value == list.head.value)) List(list.toList.sortBy(_.extracted).head) else list)
+      .flatten.map(e => (if(e.extracted) "doc:" + e.key else e.key, e.value)).toMap
+
+    filteredMeta
   }
 
   protected def addMetadata(f: C3FileSystemNode): CssSel ={
