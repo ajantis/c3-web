@@ -14,7 +14,7 @@ import org.aphreet.c3.lib.metadata.Metadata
 import Metadata._
 import net.liftweb.util.{CssSel, PassThru}
 import net.liftweb.sitemap.{Menu, SiteMap, Loc}
-import net.liftweb.http.js.{JE, JsCmds, JsCmd}
+import net.liftweb.http.js.{JsCmds, JsCmd}
 import org.aphreet.c3.lib.DependencyFactory
 import com.ifunsoftware.c3.access.C3System
 import com.ifunsoftware.c3.access.C3System._
@@ -175,7 +175,7 @@ with GroupPageHelpers with FSHelpers with TagForms with C3FileAccessHelpers{
   }
 
   protected def updateTags(node: C3FileSystemNode, tags: String): JsCmd = {
-    val metadata = Map((TAGS_META -> tags.split(",").map(_.trim()).mkString(",")))
+    val metadata = Map(TAGS_META -> tags.split(",").map(_.trim()).mkString(","))
     node.update(MetadataUpdate(metadata))
     JsCmds.Noop // bootstrap-editable will update text value on page by itself
   }
@@ -238,7 +238,7 @@ with GroupPageHelpers with FSHelpers with TagForms with C3FileAccessHelpers{
             case true => toCss(resource.asDirectory)
             case _ => toCss(resource.asFile)
           }) &
-            ".select_resource" #> SHtml.ajaxCheckbox(false, (value: Boolean) => {
+            ".select_resource" #> SHtml.ajaxCheckbox(value = false, (value: Boolean) => {
               if(value)
                 selectedResourcePaths.set(selectedResourcePaths.get + resource.fullname)
               else
@@ -276,7 +276,7 @@ with GroupPageHelpers with FSHelpers with TagForms with C3FileAccessHelpers{
     try{
       f.update(MetadataRemove(List(key)))
       keys.set(keys.get - key)
-      JsCmds.Replace((key+value),NodeSeq.Empty)
+      JsCmds.Replace(key + value,NodeSeq.Empty)
     }catch{
       case e:Exception => JsCmds.Alert("Failed to remove metadata")
     }
@@ -299,7 +299,7 @@ with GroupPageHelpers with FSHelpers with TagForms with C3FileAccessHelpers{
     ".metadata_form" #> combineUserMetadata(metadataUsr).map{ case (k, v) => {
       keys.set(keys.get+k)
       ".metadata_form [id]" #> (k + v)&
-        ".metadata_key [value]" #> k &
+        ".metadata_key [value]" #> S.?(k) &
         ".metadata_value" #> SHtml.ajaxText(v,editMeta(f,k,_))&
         ".remove_metadata [onClick]" #> SHtml.ajaxInvoke(()=>removeMeta(f,k,v))
 
@@ -376,9 +376,9 @@ with GroupPageHelpers with FSHelpers with TagForms with C3FileAccessHelpers{
       if (name.trim.isEmpty){
         S.error("Directory name cannot be empty")
       } else {
-        val metadata = Map((OWNER_ID_META -> User.currentUserUnsafe.id.is.toString),
-          (GROUP_ID_META -> data.group.id.is.toString),
-          (TAGS_META -> tags.trim))
+        val metadata = Map(OWNER_ID_META -> User.currentUserUnsafe.id.is.toString,
+          GROUP_ID_META -> data.group.id.is.toString,
+          TAGS_META -> tags.trim)
         currentDirectory.createDirectory(name.trim, metadata)
         S.redirectTo(currentPath) // redirect on the same page
       }
@@ -455,7 +455,7 @@ with GroupPageHelpers with FSHelpers with TagForms with C3FileAccessHelpers{
           ".child_td [onclick]" #> SHtml.ajaxInvoke(() => JsCmds.RedirectTo(file.name))
       } else {
         ".link [href]" #> "#" &
-          ".child_td [onclick]" #> SHtml.ajaxInvoke(() => (LiftMessages.ajaxError(S.?("access.restricted"))))
+          ".child_td [onclick]" #> SHtml.ajaxInvoke(() => LiftMessages.ajaxError(S.?("access.restricted")))
       }) &
         ".acl_cont *" #> metaACL
     }) &
@@ -565,7 +565,7 @@ with GroupPageHelpers with FSHelpers with TagForms with C3FileAccessHelpers{
   }
 
   def buildPathLocs: List[Loc[_]] = {
-    val locs: List[Loc[_]] = (transformToPathLists(data.path)).map { thisPath =>
+    val locs: List[Loc[_]] = transformToPathLists(data.path).map { thisPath =>
 
       new Loc[List[String]] {
         private val __sitemap = SiteMap.build(Array(Menu(this)))
