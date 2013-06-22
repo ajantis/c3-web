@@ -42,12 +42,12 @@
         <repository>
             <id>libs-release</id>
             <name>iFunSoftware release repository</name>
-            <url>http://repository-ifunsoftware.rhcloud.com/content/repositories/releases</url>
+            <url>http://repository.ifunsoftware.com/content/repositories/releases</url>
         </repository>
         <repository>
             <id>libs-snapshot</id>
             <name>iFunSoftware snapshot repository</name>
-            <url>http://repository-ifunsoftware.rhcloud.com/content/repositories/snapshots/</url>
+            <url>http://repository.ifunsoftware.com/content/repositories/snapshots/</url>
         </repository>
         <repository>
             <id>c3</id>
@@ -64,12 +64,12 @@
         <repository>
             <id>ifunsoftware</id>
             <name>iFunSoftware release repository</name>
-            <url>http://repository-ifunsoftware.rhcloud.com/content/repositories/releases</url>
+            <url>http://repository.ifunsoftware.com/content/repositories/releases</url>
         </repository>
         <snapshotRepository>
             <id>ifunsoftware-snap</id>
             <name>iFunSoftware snapshot repository</name>
-            <url>http://repository-ifunsoftware.rhcloud.com/content/repositories/snapshots/</url>
+            <url>http://repository.ifunsoftware.com/content/repositories/snapshots/</url>
         </snapshotRepository>
     </distributionManagement>
     <pluginRepositories>
