@@ -755,7 +755,18 @@ tr.metadata_form_header th{
     color: #666;
     font-size: 13px;
     font-style: italic;
+    padding-top:5px;
 }
+
+.description_group_settings{
+    margin-top: 0;
+}
+
+.name_group_settings{
+    margin-top:0;
+    padding:0;
+}
+
 .container_groups{
     width:80%;
     min-height: 65px;
@@ -765,8 +776,8 @@ tr.metadata_form_header th{
     border-bottom: 1px solid #ddd!important;
 }
 .checkbox_public{
-    margin-top: 10px!important;
-    margin-right: 5px!important;
+    margin-top: -4px!important;
+    margin-left: 6px!important;
 }
 .active_hover{
     cursor:pointer;

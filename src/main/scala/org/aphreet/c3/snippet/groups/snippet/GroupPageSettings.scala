@@ -105,8 +105,7 @@ class GroupPageSettings (data: GroupPageData) extends GroupPageHelpers{
       group.isOpen(b).saveMe()
       JsCmds.Noop
     }
-    ".checkbox_public" #> SHtml.ajaxCheckbox(group.isOpen.is,saveCheckbox(_))andThen
-      ":checkbox [class+]" #> "floatLeft checkbox_public"
-
+    ".checkbox_public" #> SHtml.ajaxCheckbox(group.isOpen.is,saveCheckbox(_)) &
+    ".name_group_settings *" #> group.name.is
   }
 }

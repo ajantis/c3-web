@@ -4,20 +4,25 @@
             <div class="row-fluid lift:GroupPageSettings.embedTabMenu">
             </div>
             <div class="row-fluid">
-                <h3 class="nav-header groupsHeader">Features</h3>
                 <div class="lift:GroupPageSettings.publicSettings container_groups">
+                    <h2 class="name_group_settings">Name</h2>
+                    <span class="lead">Description</span>
+                    <p class="description_group description_group_settings">What is this group about?</p>
                     <hr class="hr_group"/>
-                    <div class="nav lift:GroupPageSettings.owner">
-                        <p class="lead">Owner: <a class="GroupOwner">User Name</a></p>
+
+                    <div class="lift:GroupPageSettings.owner">
+                        <span class="lead">Owner <a class="GroupOwner">User Name</a></span>
+                        <p class="description_group description_group_settings">Owner can edit group settings</p>
                     </div>
                     <hr class="hr_group"/>
                     <form class="public_group_from">
-                        <input class="floatLeft checkbox_public"  type="checkbox">
-                        <h4 class="name_group">Public</h4>
+                        <span class="lead">Public</span>
+                        <input class="checkbox_public"  type="checkbox">
                     </form>
-                    <p class="description_group">By default group is private. By enabling this setting group become accessible by all users.</p>
+                    <p class="description_group description_group_settings">By default group is private. By enabling this setting group become accessible by all users.</p>
                     <hr class="hr_group"/>
-                    <p class="lead">Group Members:</p>
+                    <span class="lead">Group Members</span>
+                    <p class="description_group description_group_settings">Group members can create new content within group</p>
 
                     <div>
                         <table class="table-striped table-condensed lift:GroupPageSettings.listUser">
