@@ -45,7 +45,7 @@ class MetadataServiceWorker(c3system: C3System, notificationManager: ActorRef) e
                   case _ => logger.error("Resource " + res.address + " is not found in virtual FS... Skipping")
                 }
               }
-              case Failure(msg, _, _) => logger.error(msg)
+              case Failure(msg, _, _) => logger.debug(msg)
               case _ => logger.error("Something unexpected happen.")
             }
           }
