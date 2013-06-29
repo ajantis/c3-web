@@ -12,9 +12,38 @@ function SelectAll(sel){
     return msg;
 
 }
-$(document).ready( function(){
-    // show/hide metadata
 
+//get url param by name
+function getParam(sParamName)
+{
+    var Params = location.search.substring(1).split("&");
+    var variable = "";
+    for (var i = 0; i < Params.length; i++){
+        if (Params[i].split("=")[0] == sParamName)
+        {
+            if (Params[i].split("=").length > 1) variable = Params[i].split("=")[1];
+            return variable;
+        }
+    }
+    return "";
+}
+
+$(document).ready( function(){
+
+    //update url
+     $(".search_form").submit(function(){
+        var url = "/search?query=" + $(".search_query").val();
+        history.pushState(null, null, url);
+     });
+
+    //history (last view page)
+     window.addEventListener("popstate", function(e) {
+        $(".search_query").val(unescape(getParam("query")));
+        $(".search_btn").submit();
+     }, false)
+
+
+    // show/hide metadata
      $('.metadata_btn').click(function () {
         $(".test").toggleClass("icon-chevron-up");
         $(".test").toggleClass("icon-chevron-down");
