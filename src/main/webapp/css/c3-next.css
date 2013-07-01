@@ -584,6 +584,7 @@ td.file-table-date{
 }
 .btn_add_metadata{
     margin-top:-10px!important;
+    margin-left: -30px;
 }
 
 /*********************************************************
@@ -602,6 +603,7 @@ td.file-table-date{
 
 .close.remove_metadata{
     padding: 5px;
+    margin-right:30px;
 }
 
 tr.metadata_form_header th{
@@ -612,7 +614,8 @@ tr.metadata_form_header th{
     width:210px!important;
 }
 .input_meta_add{
-    width:260px!important;
+    width:280px!important;
+    margin-right: 37px;
 }
 
 .description_box{
