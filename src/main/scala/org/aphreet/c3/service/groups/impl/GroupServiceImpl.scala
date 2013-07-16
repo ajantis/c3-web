@@ -24,8 +24,8 @@ class GroupServiceImpl extends GroupService with C3Loggable{
 
   lazy val notificationManager = inject[NotificationManagerRef].open_!.actorRef
 
-  override def createGroup(newGroup: Group, members: Iterable[User], tags:String): Box[Group] = {
-    val metadata: Map[String, String] = Map((TAGS_META -> tags.split(",").map(_.trim).mkString(",")))
+  override def createGroup(newGroup: Group, members: Iterable[User], tags:String, description:String): Box[Group] = {
+    val metadata: Map[String, String] = Map((TAGS_META -> tags.split(",").map(_.trim).mkString(",")),DESCRIPTION_META -> description)
     val group = newGroup.saveMe()
 
     try {
@@ -41,8 +41,8 @@ class GroupServiceImpl extends GroupService with C3Loggable{
       }
     }
   }
-  override def createGroup(newGroup: Group, tags:String): Box[Group] = {
-    createGroup(newGroup, List(), tags)
+  override def createGroup(newGroup: Group, tags:String, description:String): Box[Group] = {
+    createGroup(newGroup, List(), tags, description)
   }
 
   override def removeGroup(group: Group): Boolean = {
@@ -60,7 +60,7 @@ class GroupServiceImpl extends GroupService with C3Loggable{
 
   override def removeUserFromGroup(group:Group, user:User) = {
     try{
-      UserGroup.findAll(By(UserGroup.user, user),By(UserGroup.group, group)).foreach(_.delete_!)
+       UserGroup.findAll(By(UserGroup.user, user),By(UserGroup.group, group)).foreach(_.delete_!)
     } catch {
       case e: Exception => {
         logger.error("Error while removing user" + e.getMessage, e)

@@ -147,7 +147,7 @@ class GroupFormTest extends TestCase {
 
   private def createGroups(owner: User, data: List[(String, String)]){
     groups = data.map { case (name, description) =>
-      val group = Group.create.name(name).description(description).owner(owner).saveMe()
+      val group = Group.create.name(name).owner(owner).saveMe()
       UserGroup.create.user(owner).group(group).save()
       group
     }

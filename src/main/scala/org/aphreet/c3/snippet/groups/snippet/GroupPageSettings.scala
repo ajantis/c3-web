@@ -6,7 +6,7 @@ import org.aphreet.c3.model.{User, Group}
 import net.liftweb.common.Box
 import net.liftweb.sitemap.Loc.Link
 import org.aphreet.c3.lib.DependencyFactory._
-import com.ifunsoftware.c3.access.C3System
+import com.ifunsoftware.c3.access.{StringMetadataValue, MetadataUpdate, C3System}
 import org.aphreet.c3.service.groups.GroupService
 import net.liftweb.util.BindHelpers._
 import xml.NodeSeq
@@ -14,7 +14,13 @@ import net.liftweb.http.SHtml
 import net.liftweb.http.js.{JsCmds, JsCmd}
 import net.liftweb.http.S
 import net.liftmodules.widgets.autocomplete.AutoComplete
-import net.liftweb.http.js.JsCmds._Noop
+import net.liftweb.http.js.JsCmds.{Function, Script, _Noop}
+import org.aphreet.c3.snippet.LiftMessages
+import net.liftweb.http.js.JE.JsVar
+import com.ifunsoftware.c3.access.fs.C3FileSystemNode
+import org.aphreet.c3.lib.metadata.Metadata._
+import net.liftweb.http.js.JE.JsVar
+
 
 /**
  * @author Koyushev Sergey (mailto: serjk91@gmail.com)
@@ -47,30 +53,38 @@ class GroupPageSettings (data: GroupPageData) extends GroupPageHelpers{
       ".GroupOwner [href]" #> group.owner.obj.map(_.createLink)
 
   }
+
   def listUserAdd = {
     var users = User.findAll().filter(_.id.is != User.currentUserUnsafe.id.is)
     members.map(user =>{
       users = users.filter(_.id.is != user.id.is)
     })
   }
+
   def listUser = {
     ".ListGroupUser" #> members.map(user =>{
+
       def deleteUser():JsCmd = {
-        if(groupService.removeUserFromGroup(group,user)){
-          JsCmds.Replace(user.id.is.toString, NodeSeq.Empty)
-        } else JsCmds.Alert("User is not removed! Please check logs for details")
+        val currentUser = User.currentUserUnsafe
+        val ownerGroup = group.owner.obj.openOrThrowException("Group haven't owner")
+        user match{
+          case usr if usr == currentUser => LiftMessages.ajaxError(S.?("remove.themselves"))
+          case usr if usr == ownerGroup => LiftMessages.ajaxError(S.?("remove.owner"))
+          case _ => if(groupService.removeUserFromGroup(group,user)){
+            JsCmds.Replace(user.id.is.toString, NodeSeq.Empty)
+          } else JsCmds.Alert("User is not removed! Please check logs for details")
+        }
+
       }
       ".ListGroupUser [id]" #> user.id.is &
-        ".ListGroupUser *" #>
-          ((n: NodeSeq) => SHtml.ajaxForm(
-            (".first_name *" #> user.firstName.is &
-              ".last_name *" #> user.lastName.is &
-              ".email *" #> user.email.is  &
-              ".full_name *" #> user.shortName andThen
-              "* *" #> SHtml.memoize(f => f ++ SHtml.hidden(deleteUser _))).apply(n)
-          ))
+        ".first_name *" #> user.firstName.is &
+        ".last_name *" #> user.lastName.is &
+        ".email *" #> user.email.is  &
+        ".full_name *" #> user.shortName &
+        ".delete_member [onclick]" #> SHtml.ajaxInvoke(()=>deleteUser())
     })
   }
+
   def listShortUser = {
     ".ListShortGroupUser" #> members.map(user =>{
       ".email *" #> user.email &
@@ -78,6 +92,7 @@ class GroupPageSettings (data: GroupPageData) extends GroupPageHelpers{
         ".short_name *" #> user.shortName
     })
   }
+
   def addUser = {
     var users = User.findAll().filter(_.id.is != User.currentUserUnsafe.id.is)
     members.map(user =>{
@@ -100,12 +115,34 @@ class GroupPageSettings (data: GroupPageData) extends GroupPageHelpers{
     // normally shouldn't happen
       S.error(userEmails +" is not added to group: " + group.name.is)
   }
+
   def publicSettings = {
+
+
     def saveCheckbox(b:Boolean):JsCmd = {
       group.isOpen(b).saveMe()
       JsCmds.Noop
     }
+
+    def updateDescription(node:C3FileSystemNode, descr:String): JsCmd = {
+      val meta = Map(DESCRIPTION_META -> StringMetadataValue(descr))
+      node.update(MetadataUpdate(meta))
+      JsCmds.Noop // bootstrap-editable will update text value on page by itself
+    }
+
     ".checkbox_public" #> SHtml.ajaxCheckbox(group.isOpen.is,saveCheckbox(_)) &
-    ".name_group_settings *" #> group.name.is
+      ".name_group_settings *" #> group.name.is &
+    ".description_box *"#> group.getDescription &
+      ".description_submit_func *" #> {
+        Script(
+          Function("updateDescriptionCallback", List("description"),
+            SHtml.ajaxCall(
+              JsVar("description"),
+              (str: String) => updateDescription(group.getGroupC3, str)
+            )._2.cmd
+          )
+        )
+      }
+
   }
 }

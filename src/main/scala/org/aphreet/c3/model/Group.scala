@@ -61,12 +61,6 @@ class Group extends LongKeyedMapper[Group] with IdPK with ManyToMany{
 
   object users extends MappedManyToMany(UserGroup, UserGroup.group, UserGroup.user, User)
 
-  object description extends MappedTextarea(this,2048){
-    override def textareaRows  = 10
-    override def textareaCols = 50
-    override def displayName = "Group description"
-  }
-
   object name extends MappedString(this,64){
     override def validations = nonEmpty _ :: isUnique _ :: Nil
 
@@ -94,7 +88,7 @@ class Group extends LongKeyedMapper[Group] with IdPK with ManyToMany{
     c3.getFile(baseFilePath + path)
   }
 
-  def getTags() = {
+  def getTags = {
     try{
       c3.getFile(baseGroupDirectory).metadata.get(TAGS_META).map(_.split(TAGS_SEPARATOR).toList).getOrElse(Nil)
     }
@@ -103,6 +97,28 @@ class Group extends LongKeyedMapper[Group] with IdPK with ManyToMany{
     }
 
   }
+  def getDescription = {
+    try{
+      c3.getFile(baseGroupDirectory).metadata.get(DESCRIPTION_META).getOrElse("")
+    }
+    catch {
+      case x:Exception=>""
+    }
+
+  }
+
+  def getGroupC3:C3FileSystemNode = {
+//    try{
+      c3.getFile(baseGroupDirectory)
+//    }
+//    catch {
+//      case x:Exception=>NullRef
+//    }
+
+
+  }
+
+
   override def delete_! : Boolean = {
     UserGroup.findAll(By(UserGroup.group, this)).foreach(_.delete_!)
     Category.findAll(By(Category.linkedGroup,this)).foreach(_.delete_!)

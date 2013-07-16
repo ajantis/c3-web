@@ -6,8 +6,15 @@
             <div class="row-fluid">
                 <div class="lift:GroupPageSettings.publicSettings container_groups">
                     <h2 class="name_group_settings">Name</h2>
-                    <span class="lead">Description</span>
-                    <p class="description_group description_group_settings">What is this group about?</p>
+                    <span class="lead description">Description</span>
+                    <!--<p class="description_group description_group_settings">What is this group about?</p>-->
+                    <span class="hide  description_submit_func"></span>
+                    <a href="#" id="description_group" data-type="text" data-pk="1"
+                       data-placeholder="File description..." data-original-title="Edit description"
+                       class="editable editable-click description_box">
+                        Engineering Science is a comprehensive textbook suitable for all <br/>
+                        vocational and pre-degree courses.
+                    </a>
                     <hr class="hr_group"/>
 
                     <div class="lift:GroupPageSettings.owner">
@@ -59,6 +66,24 @@
                     </div>
 
                 </div>
+
+                <tail>
+                    <!-- x-editable (bootstrap) -->
+                    <link href="/bootstrap-editable/css/bootstrap-editable.css" rel="stylesheet">
+                    <script src="/bootstrap-editable/js/bootstrap-editable.js"></script>
+                    <script>
+                        // <![CDATA[
+                            $.fn.editable.defaults.mode = 'popover';
+                            $('#description_group').editable({
+                            url: function(params) {
+                            updateDescriptionCallback(params.value);
+                            },
+                            rows: 2
+                            });
+
+                        // ]]>
+                    </script>
+                </tail>
             </div>
         </div>
     </div>

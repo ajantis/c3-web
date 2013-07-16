@@ -37,7 +37,7 @@ class MessageServiceImplIntegrationTest extends TestCase {
       LiftRules.unloadHooks.append(vendor.closeAllConnections_! _)
       DB.defineConnectionManager(DefaultConnectionIdentifier, vendor)
     }
-    group = groupService.createGroup(Group.create.name("TestGroup2"), Nil,"").open_!
+    group = groupService.createGroup(Group.create.name("TestGroup2"), Nil,"","").open_!
   }
 
   override def tearDown(){

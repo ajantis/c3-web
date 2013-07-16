@@ -16,13 +16,11 @@ import net.liftweb.util.{CssSel, PassThru}
 import net.liftweb.sitemap.{Menu, SiteMap, Loc}
 import net.liftweb.http.js.{JsCmds, JsCmd}
 import org.aphreet.c3.lib.DependencyFactory
-import com.ifunsoftware.c3.access.C3System
+import com.ifunsoftware.c3.access.{StringMetadataValue, C3System, MetadataUpdate, MetadataRemove}
 import com.ifunsoftware.c3.access.C3System._
 import net.liftweb.http.js.JsCmds.{Function, Script}
 import org.aphreet.c3.util.helpers.{ConvertHelpers, ByteCalculatorHelpers}
-import com.ifunsoftware.c3.access.MetadataUpdate
 import net.liftweb.common.Full
-import com.ifunsoftware.c3.access.MetadataRemove
 import org.aphreet.c3.snippet.groups.GroupPageFilesData
 import net.liftweb.http.js.JE.{JsVar, JsRaw}
 import org.aphreet.c3.snippet.LiftMessages
@@ -286,7 +284,7 @@ with GroupPageHelpers with FSHelpers with TagForms with C3FileAccessHelpers{
     try{
 
       if(Some(value) != f.metadata.get(key)){
-        val metadata = Map(key->value)
+        val metadata = Map(key->StringMetadataValue(value))
         f.update(MetadataUpdate(metadata))
       }
 

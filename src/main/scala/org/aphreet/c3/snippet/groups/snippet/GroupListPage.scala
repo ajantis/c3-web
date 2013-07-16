@@ -15,7 +15,7 @@ import net.liftweb.mapper.By
 import net.liftweb.common.Full
 
 /**
- * @author Serjk (mailto: serjk91@gmail.com)
+ * @author Koyushev Sergey (mailto: serjk91@gmail.com)
  */
 class GroupListPage {
 
@@ -26,7 +26,7 @@ class GroupListPage {
   lazy val logger = Logger(classOf[GroupListPage])
 
   def list = {
-    val groupList =if(User.currentUser.open_!.superUser.is) Group.findAll().toList else {User.currentUser.open_!.groups.toList ::: Group.findAll(By(Group.isOpen,true))}
+    val groupList =if(User.currentUserUnsafe.superUser.is) Group.findAll().toList else {User.currentUserUnsafe.groups.toList ::: Group.findAll(By(Group.isOpen,true))}
 
     ".container_groups" #> groupList.toSet.map{ group:Group => {
 
@@ -46,14 +46,14 @@ class GroupListPage {
       //      }
         val picName = if(!group.isOpen.is) "glyphicons_203_lock.png" else "glyphicons_043_group.png"
 
-        val groupTags = group.getTags()
+        val groupTags = group.getTags
         ".tags_group" #> groupTags.map((tag: String) => {
           ".tags_group *" #> tag
         }) &
         ".inf_left_groups [src]"#> ("/images/"+picName)&
           "a *" #> group.name.is &
           "a [href]" #> ("/groups/"+group.id)&
-          ".description_group *"#> group.description
+          ".description_group *"#> group.getDescription
 
 
 
@@ -71,13 +71,14 @@ class GroupListPage {
 //    var sameCategory = "true"
     var public = ""
     var tags = ""
+    var description = ""
 
     def saveMe(){
       newGroup.validate match {
         case Nil => {
-          newGroup = newGroup.owner(User.currentUser.open_!)
+          newGroup = newGroup.owner(User.currentUserUnsafe)
           if (public != "false") newGroup.isOpen(true)
-          groupService.createGroup(newGroup,tags) match {
+          groupService.createGroup(newGroup, tags, description) match {
             case Full(g) => {
               S.notice("Added group: " + g.name)
 //              if (sameCategory != "false"){
@@ -103,7 +104,7 @@ class GroupListPage {
       }
     }
     "name=name" #> SHtml.onSubmit(newGroup.name(_))&
-      "name=description" #> SHtml.onSubmit(newGroup.description(_))&
+      "name=description" #> SHtml.onSubmit(description =_)&
 //      "name=sameCategory" #> SHtml.onSubmit(sameCategory = _) &
       "name=public" #> SHtml.onSubmit(public = _) &
       "name=tags_edit" #> SHtml.onSubmit(tags = _) &

@@ -40,7 +40,7 @@ class GroupPage(data: GroupPageData) extends GroupPageHelpers{
   def info = {
     val status =  if(group.isOpen) "Public" else "Private"
     val background =  if(group.isOpen) "btn-info" else "btn-warning"
-    val groupTags = group.getTags()
+    val groupTags = group.getTags
     ".tags_group" #> groupTags.map((tag: String) => {
       ".tags_group *" #> tag
     }) &
@@ -49,7 +49,7 @@ class GroupPage(data: GroupPageData) extends GroupPageHelpers{
     ".GroupName *" #> group.name.is &
     ".GroupAccess *" #> status &
       ".GroupAccess [class+]" #> background &
-    ".GroupDescription *" #>group.description.is
+    ".GroupDescription *" #>group.getDescription
   }
 }
 
