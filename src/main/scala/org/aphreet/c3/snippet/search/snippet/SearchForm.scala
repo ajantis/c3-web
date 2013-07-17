@@ -103,7 +103,7 @@ class SearchForm extends PaginatorSnippet[SearchResultEntry] with C3Loggable{
   private def toCss(result: SearchResultEntry): CssSel = {
     val resource = c3.getResource(result.address, List("c3.ext.fs.path"))
     val c3Path = C3Path(result.path)
-    val nodeName = resource.systemMetadata.getOrElse("c3.fs.nodename", "<Unknown>")
+//    lazy val nodeName = resource.systemMetadata.getOrElse("c3.fs.nodename", "<Unknown>")
     val content = result.fragments.headOption.flatMap(_.strings.headOption.map(_.take(50)))
     //      val resourceName = c3Path.resourceType match {
     //        case MessagesType => "Message in group: " + c3Path.groupName

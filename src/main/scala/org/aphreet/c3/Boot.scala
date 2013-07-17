@@ -33,6 +33,7 @@ import net.liftweb.http.NotFoundAsTemplate
 import net.liftweb.sitemap.Loc.LocGroup
 import net.liftweb.http.ServiceUnavailableResponse
 import net.liftweb.sitemap.Loc.If
+import org.aphreet.c3.snippet.approve.ApproveSection
 
 /**
  * A class that's instantiated early and run.  It allows the application
@@ -40,7 +41,7 @@ import net.liftweb.sitemap.Loc.If
  */
 class Boot extends Bootable{
   private val sections: List[Section] = List(BaseSection, UsersSection, GroupsSection,
-    SearchSection, CategoriesSection, NotificationsSection)
+    SearchSection, CategoriesSection, NotificationsSection,ApproveSection)
 
   def boot {
     if (!DB.jndiJdbcConnAvailable_?) {
@@ -103,9 +104,12 @@ class Boot extends Bootable{
         UsersSection.menus:_*
       },
       Menu("admin", "Admin") / "admin" >> LocGroup("admin_menus") >> isSuperAdmin submenus {
-        Menu("categories", "Categories") / "admin" / "categories" submenus {
+        List(Menu("categories", "Categories") / "admin" / "categories" submenus {
           CategoriesSection.menus:_*
-        }
+        },
+        Menu("group_admin","Approve group") / "admin" / "group_admin" submenus {
+          ApproveSection.menus:_*
+        })
       },
       Menu("notifications", "Notifications") / "notifications" >> loggedIn submenus {
         NotificationsSection.menus:_*
