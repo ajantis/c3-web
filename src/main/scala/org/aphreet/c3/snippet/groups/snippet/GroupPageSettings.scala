@@ -138,7 +138,7 @@ class GroupPageSettings (data: GroupPageData) extends GroupPageHelpers{
           Function("updateDescriptionCallback", List("description"),
             SHtml.ajaxCall(
               JsVar("description"),
-              (str: String) => updateDescription(group.getGroupC3, str)
+              (str: String) => updateDescription(group.getGroupC3.openOrThrowException("File not found"), str)
             )._2.cmd
           )
         )

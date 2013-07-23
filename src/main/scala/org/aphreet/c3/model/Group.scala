@@ -33,7 +33,7 @@ package org.aphreet.c3.model
 import net.liftweb.mapper._
 import net.liftweb.util.FieldError
 import xml.{NodeSeq, Text}
-import net.liftweb.common.{Logger, Full, Box}
+import net.liftweb.common._
 import net.liftweb.http.SHtml
 import org.aphreet.c3.apiaccess.C3
 import net.liftweb.util.Helpers._
@@ -42,10 +42,12 @@ import org.aphreet.c3.lib.metadata.Metadata._
 import net.liftweb.mapper.Cmp
 import org.aphreet.c3.lib.DependencyFactory
 import org.aphreet.c3.lib.DependencyFactory._
-import net.liftweb.common.Full
 import net.liftweb.mapper.Cmp
 import com.ifunsoftware.c3.access.C3System
 import DependencyFactory._
+import net.liftweb.common.Full
+import net.liftweb.mapper.Cmp
+import scala.collection.immutable.Stream
 
 
 class Group extends LongKeyedMapper[Group] with IdPK with ManyToMany{
@@ -75,7 +77,15 @@ class Group extends LongKeyedMapper[Group] with IdPK with ManyToMany{
 
 
   }
+  object description extends MappedText(this)
+
+  object tags extends MappedText(this)
+
   object isOpen extends MappedBoolean(this) {
+    override def defaultValue = false
+  }
+
+  object isApprove extends MappedBoolean(this) {
     override def defaultValue = false
   }
 
@@ -107,15 +117,8 @@ class Group extends LongKeyedMapper[Group] with IdPK with ManyToMany{
 
   }
 
-  def getGroupC3:C3FileSystemNode = {
-//    try{
-      c3.getFile(baseGroupDirectory)
-//    }
-//    catch {
-//      case x:Exception=>NullRef
-//    }
-
-
+  def getGroupC3:Box[C3FileSystemNode] = {
+    tryo(c3.getFile(baseGroupDirectory))
   }
 
 
