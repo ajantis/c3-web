@@ -13,9 +13,17 @@ abstract class NotifyMsg(val recipientId: Long, val title: String, val message: 
 
 case class AddedToGroupMsg(group: Group, override val recipientId: Long) extends NotifyMsg(
   recipientId = recipientId,
-  title = TemplateManager.addedGroupTitle(group.name.is),
-  message = TemplateManager.addedGroupTemplate(group.name.is, group.createLink),
-  notifyType = NotificationType.AddedToGroup)
+  title = TemplateManager.addedGroupTitle(group.name),
+  message = TemplateManager.addedGroupTemplate(group.name, group.createLink),
+  notifyType = NotificationType.AddedToGroup
+)
+
+case class ApproveGroupMsg(group: Group, override val recipientId: Long) extends NotifyMsg(
+  recipientId = recipientId,
+  title = TemplateManager.approveGroupTitle(group.name),
+  message = TemplateManager.approveGroupTemplate(group.name, group.createLink),
+  notifyType = NotificationType.ApproveGroup
+)
 
 case class FileMetaProcessedMsg(file: C3File, override val recipientId: Long) extends NotifyMsg(
   recipientId = recipientId,
