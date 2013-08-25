@@ -399,7 +399,7 @@ class User extends MegaProtoUser[User] with ManyToMany {
   }
 
   object enabled extends MappedBoolean(this){
-    override def defaultValue = true
+    override def defaultValue = false
   }
 
       // this is just a prototype change
