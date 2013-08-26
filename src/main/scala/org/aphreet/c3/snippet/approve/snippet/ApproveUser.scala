@@ -22,6 +22,7 @@ class ApproveUser {
         JsCmds.Replace(user.email.toString(), NodeSeq.Empty)&
         LiftMessages.ajaxNotice("User "+user.niceName +" is approve")
       }
+
       ".list_user [id]" #> user.email &
       ".first_name *" #> user.firstName &
       ".last_name *" #> user.lastName &

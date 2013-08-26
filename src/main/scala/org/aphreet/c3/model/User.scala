@@ -306,13 +306,16 @@ object User extends User with MetaMegaProtoUser[User]{
   } : NodeSeq
   override def signup = {
     val theUser: TheUserType = mutateUserOnSignup(createNewUserInstance())
-    val theName = signUpPath.mkString("")
 
     def testSignup() {
       validateSignup(theUser) match {
-        case Nil =>
-          actionsAfterSignup(theUser, () => {S.notice(S.?("signup.user")); S.redirectTo(homePage)})
-        case xs => S.error(xs.str) ;signupFunc(Full(innerSignup _))
+        case Nil =>{
+          theUser.setValidated(skipEmailValidation).resetUniqueId()
+          theUser.save
+          S.notice((S.?("approve.list.user")+theUser.niceName))
+          S.redirectTo("/")
+        }
+        case xs => S.error(xs.str);signupFunc(Full(innerSignup _))
       }
     }
 
@@ -330,7 +333,7 @@ object User extends User with MetaMegaProtoUser[User]{
     if (S.post_?) {
       S.param("username").
         flatMap(username => findUserByUserName(username)) match {
-        case Full(user) if user.validated_? && user.enabled.is &&
+        case Full(user) if user.validated_? && user.enabled &&
           user.testPassword(S.param("password")) => {
           logUserIn(user, () => {
             S.notice(S.?("logged.in"))
@@ -348,7 +351,8 @@ object User extends User with MetaMegaProtoUser[User]{
 
         case Full(user) if !user.validated_? =>
           S.error(S.?("account.validation.error"))
-
+        case Full(user) if !user.enabled =>
+          S.error(S.?("not.approve.user"))
         case _ => S.error(S.?("invalid.credentials"))
       }
     }

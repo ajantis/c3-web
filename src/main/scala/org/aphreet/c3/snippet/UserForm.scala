@@ -52,7 +52,8 @@ class UserForm {
           case Nil => {
             user.save
 
-            S.notice("Added user: " + user.firstName+" "+user.lastName); S.redirectTo("/users/")
+            S.notice("Added user: " + user.firstName+" "+user.lastName)
+            S.redirectTo("/users/")
           }
           case xs => S.error(xs) ; S.mapSnippet(invokedAs, newUser)
 

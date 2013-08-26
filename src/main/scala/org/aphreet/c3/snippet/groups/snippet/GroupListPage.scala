@@ -59,7 +59,7 @@ class GroupListPage {
         case Nil => {
           newGroup = newGroup.owner(User.currentUserUnsafe)
           if (public != "false") newGroup.isOpen(true)
-          if(newGroup.save) S.notice("Added to approve list group: " + newGroup.name)
+          if(newGroup.save) S.notice(S.?("approve.list.group") + newGroup.name)
             else S.warning(newGroup.name + " isn't added")
         }
         case xs =>
