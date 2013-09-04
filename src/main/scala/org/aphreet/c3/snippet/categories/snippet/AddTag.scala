@@ -9,10 +9,9 @@ import net.liftweb.util.Helpers
 import xml.NodeSeq
 
 /**
- * @author Serjk
- * C3 Web team
+ * @author Serjk (mailto: serjk91@gmail.com)
  */
-class AddTag {
+object AddTag {
 
   def adm = {
     User.currentUser match {
@@ -25,31 +24,43 @@ class AddTag {
     }
   }
 
-  def render = {
-    var categoryName = ""
-    val tag = Tag.create
+  def addTags = {
+    var categoryId = ""
+    var tags = ""
 
     def process() = {
-      val category = Category.find(Cmp(Category.name, OprEnum.Eql, Full(categoryName.toLowerCase), None, Full("LOWER")))
+      val category = Category.find(categoryId)
 
       if(category.isEmpty)
-        S.error("Category with name " + categoryName + " is not found!")
-      else {
-        tag.category(category.open_!)
-        tag.validate match {
-          case Nil => {
-            tag.save()
-            S.notice("Tag is added.")
+        S.error("Category is not found!")
+      else if (tags=="")
+        None
+      else{
+        val tagsList = tags.split(",").map(_.trim)
+        var successfully = true
+        tagsList.map(tagAdd=>{
+          val tag = Tag.create
+          tag.name(tagAdd)
+          tag.category(category.open_!)
+          tag.validate match {
+            case Nil => {
+              tag.save()
+            }
+            case xs => {
+              xs.foreach(fe => S.error(fe.msg))
+              successfully = false
+            }
           }
-          case xs => {
-            xs.foreach(fe => S.error(fe.msg))
-          }
-        }
+
+        })
+        if (successfully)
+          S.notice("Tags is added.")
+
       }
     }
-    "name=categoryName" #> SHtml.onSubmit(categoryName = _)&
-    "name=TagName" #> SHtml.onSubmit(tag.name(_))&
-    "type=submit" #> SHtml.onSubmitUnit(process _)
+    "name=category_id" #> SHtml.onSubmit(categoryId = _)&
+      "name=tags_add" #> SHtml.onSubmit(tags =_)&
+      "type=submit" #> SHtml.onSubmitUnit(process)
   }
 
 }

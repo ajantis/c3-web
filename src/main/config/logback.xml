@@ -1,0 +1,22 @@
+<!-- This configuration is only used in development environment
+ Production configuration is located in virgo configuration directory-->
+<configuration scan="true" scanPeriod="10 seconds">
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <logger name="httpclient" level="info"/>
+
+    <logger name="net.liftweb.util" level="warn"/>
+
+    <logger name="org.aphreet" level="debug"/>
+
+    <logger name="com.ifunsoftware.c3" level="debug"/>
+
+    <root level="info">
+        <appender-ref ref="STDOUT" />
+    </root>
+</configuration>

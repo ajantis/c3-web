@@ -1,7 +1,7 @@
 /* Body and structure
 -------------------------------------------------- */
 html,body{
-    height: 100%
+    height: 99%
 }
 
 body {
@@ -173,27 +173,26 @@ body > .navbar .brand:hover {
 /*********************************************************
 * Begin Categories part
 *********************************************************/
-.table{
+.tags_cont_all{
     margin-right: 50px;
     display:inline-block;
     vertical-align:top;
-    width: 150px;
+    width: 233px;
     zoom:1 !ie;
     display:inline !ie;
 }
+
 .labls{
     margin-bottom: 5px;
     display: block;
 }
+
 .label_tag{
-    background-color:#999!important;
     text-align:center;
     margin-left:5px;
-    height:25px;
-    font-size:16px;
-    color:white;
+    font-size:14px;
     margin-top:5px;
-    padding-top:3px;
+    padding-top:7px;
     padding-left:5px;
     padding-right:5px;
     -webkit-border-radius: 3px;
@@ -201,14 +200,29 @@ body > .navbar .brand:hover {
     border-radius: 3px;
 }
 .close_orient{
-    margin-bottom:1px;
-
-
+    opacity: 0.6;
+    margin-left:2px;
+    font-size:15px!important;
 }
 .tags_orient{
     display:inline-block;
+    float:left;
+    margin-top:2px;
+}
+.border_none{
+    margin:0;
 
+}
+.add_cat{
+    margin-bottom:5px;
 
+}
+.tagAddButton{
+    margin-top:0px!important;
+
+}
+.new_category_cont{
+    border: 2px dotted #2F96B4;
 }
 
 #categories_s{
@@ -469,7 +483,7 @@ body > .navbar .brand:hover {
     outline: 1px solid #CCC;
 }
 .groupsHeader{
-    font-size:18x;
+    font-size:18px;
 }
 /*********************************************************
 * End Add Group part
@@ -529,24 +543,35 @@ table.file-table {
 	border-color:#CCC;
 	padding:2px;
 }
-
 tr.file-table-name{
-	width:70%;
+	width:60%;
 }
-
-td.file-table-date td.file-table-owner{
-	width:15%;
+td.file-table-owner{
+	width:10%;
 }
-
+td.file-table-rules{
+	width:25px;
+}
 td.file-table-date{
 	text-align:right;
+	width:175px;
 }
 .inf_left{
     float:left;
-
+    margin-left:3px;
+    margin-top:3px;
+    line-height:14px;
+}
+.inf_left_text{
+    float:left;
+    margin-left:3px;
+    margin-top:0px;
+}
+.inf_left form{
+    margin:0!important;
 }
 .edit_meta{
-    width: 90%;
+    width: 100%;
     margin: 0 auto;
 }
 .table_meta{
@@ -559,8 +584,250 @@ td.file-table-date{
 }
 .btn_add_metadata{
     margin-top:-10px!important;
+    margin-left: -30px;
 }
 
 /*********************************************************
 * End file table part
 *********************************************************/
+.metadata_key{
+    border: 0;
+    background: none!important;
+    cursor: default!important;
+    height: 100%;
+}
+.metadata_value{
+    width:95%!important;
+    margin-bottom: 0!important;
+}
+
+.close.remove_metadata{
+    padding: 5px;
+    margin-right:30px;
+}
+
+tr.metadata_form_header th{
+    border:0!important;
+}
+
+.input_meta{
+    width:210px!important;
+}
+.input_meta_add{
+    width:280px!important;
+    margin-right: 37px;
+}
+
+.description_box{
+                 font-family:Arial;
+                 font-size:9pt!important;
+                 min-height:75px!important;
+                 width:950px!important;
+}
+
+
+
+.root {
+    width: 188px;
+    margin: 10px 0 0;
+    padding: 0;
+    background-color: #fff;
+    -webkit-border-radius: 6px;
+    -moz-border-radius: 6px;
+    border-radius: 6px;
+    -webkit-box-shadow: 0 1px 4px rgba(0,0,0,.065);
+    -moz-box-shadow: 0 1px 4px rgba(0,0,0,.065);
+    box-shadow: 0 1px 4px rgba(0,0,0,.065);
+}
+
+.root > li > a {
+    display: block;
+    font-weight: bold;
+    width: 150px \9;
+    margin: 0 0 -1px;
+    padding: 8px 14px;
+    border: 1px solid #e5e5e5;
+}
+
+.category ul{
+    list-style: none;
+    margin: 0 0 10px 5px !important;
+}
+
+.category ul li {
+    display: inline-block;
+    padding: 2px;
+}
+
+.tag > a:hover {
+    color: #002a80;
+}
+
+.root > li:first-child > a {
+    -webkit-border-radius: 6px 6px 0 0;
+    -moz-border-radius: 6px 6px 0 0;
+    border-radius: 6px 6px 0 0;
+}
+.root > li:last-child > a {
+    -webkit-border-radius: 0 0 6px 6px;
+    -moz-border-radius: 0 0 6px 6px;
+    border-radius: 0 0 6px 6px;
+}
+
+.selected-tags-container {
+    margin-left: 5px !important;
+}
+
+#selected_tags {
+    padding: 2px !important;
+    margin: 10px !important;
+}
+
+#selected_tags li {
+    display: inline-block;
+    padding: 2px;
+    margin: 3px !important;
+}
+
+.sel-tag > a {
+    opacity: 0.6;
+}
+
+.sel-tag > a:hover {
+    opacity: 1;
+}
+
+.entry-meta {
+    color: #666666;
+    margin: 0;
+}
+.entry-datetime {
+    color: #666666;
+    font-size: 12px;
+}
+
+.search_results > div {
+    margin-bottom: 30px;
+    margin-left: 20px;
+}
+
+.pagination > ul {
+    margin-left: 20px !important;
+}
+
+.result_tags ul {
+    list-style: none;
+}
+
+.result_tags li {
+    display: inline-block;
+    padding: 2px;
+    margin: 2px !important;
+}
+
+.inf_left_groups{
+   float: left;
+   margin-left: 5px;
+   margin-top: 2px;
+   margin-right: 5px;
+
+}
+.inf_right   {
+    float: right;
+    margin-left: 5px;
+    margin-top: 2px;
+    margin-right: 5px;
+}
+.add_group_form{
+    margin-left:20px;
+}
+.name_group{
+    font-size: 20px;
+    letter-spacing: -1px;
+    line-height: 32px;
+    white-space: nowrap;
+}
+.last_changed{
+    margin-left: 25px;
+    font-size: 11px;
+    color: #999999;
+}
+.description_group{
+    margin-left: 20px;
+    margin-top:-20px;
+    color: #666;
+    font-size: 13px;
+    font-style: italic;
+    padding-top:5px;
+}
+
+.description_group_settings{
+    margin-top: 0;
+}
+
+.name_group_settings{
+    margin-top:0;
+    padding:0;
+}
+
+.container_groups{
+    width:80%;
+    min-height: 65px;
+}
+.hr_group{
+    margin:0!important;
+    border-bottom: 1px solid #ddd!important;
+}
+.checkbox_public{
+    margin-top: -4px!important;
+    margin-left: 6px!important;
+}
+.active_hover{
+    cursor:pointer;
+    background-color:#CCC!important;
+
+}
+.short_description
+{
+     margin-left: 15px!important;
+     font-size: 9px!important;
+}
+
+#metadata_container li {
+    display: inline-block;
+    padding: 2px;
+    margin: 3px !important;
+}
+.input_metadata{
+    width:210px;
+}
+#metadata_container {
+    padding: 2px !important;
+    margin: 10px !important;
+}
+#selected_metadata{
+    display: inline-block;
+    padding: 2px;
+    width:100%;
+
+}
+#add_metadata_btn {
+    margin-top:-10px;
+}
+.cursor_pointer {
+    cursor:pointer;
+}
+
+.menu_users a{
+    float:none!important;
+
+}
+.file_checkbox{
+    width:20px!important;
+}
+.resource_icon{
+    width:20px!important;
+}
+.tags_margin{
+    margin-right:3px;
+}

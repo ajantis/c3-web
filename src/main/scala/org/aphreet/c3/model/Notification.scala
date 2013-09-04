@@ -36,9 +36,17 @@ class Notification extends LongKeyedMapper[Notification] with IdPK{
 object Notification extends Notification with LongKeyedMetaMapper[Notification] {
   override def dbTableName = "notifications"
   def findByRecipient(user: User) = this.findAll(By(Notification.recipient, user.id.is))
+
+  def totalByRecipient(user: User) = this.count(By(Notification.recipient, user.id.is))
+
+  def unreadByRecipient(user: User) = this.count(By(Notification.recipient, user.id.is),
+                                                 By(Notification.isRead, false))
 }
 
 object NotificationType extends Enumeration{
+  type NotificationType = Value
+
   val AddedToGroup = Value("added_to_group")
+  val ApproveGroup = Value ("approve_group")
   val FileMetaUpdated = Value("file_meta_updated")
 }

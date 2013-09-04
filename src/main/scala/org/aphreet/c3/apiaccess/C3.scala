@@ -34,15 +34,15 @@ object C3 {
 
       val host = Props.get("c3_host") openOr("http://localhost:7373")
 
+      log.info(s"Using domain ${domain} located at ${host}")
+
       val secret = Props.get("c3_domain_secret") openOr ""
 
-      val proxy = System.getenv("HTTP_PROXY")
+      val proxyHost = Props.get("http_proxy_host") openOr ""
+      val proxyPort: Int = (Props.get("http_proxy_port") openOr "8080").toInt
 
-      if (proxy != null){
-        val hostAndPort = proxy.replaceFirst("^http://", "").split(":", 2)
-        val proxyHost = hostAndPort(0)
-        val proxyPort = hostAndPort(1).toInt
-
+      if (!proxyHost.isEmpty){
+        log.info(s"Using proxy server to access c3: ${proxyHost}:${proxyPort}")
         new C3SystemFactory().createSystem(host, domain ,secret, 100, proxyHost, proxyPort)
       }else{
         new C3SystemFactory().createSystem(host, domain, secret)

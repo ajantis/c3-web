@@ -1,53 +1,64 @@
-<div class="lift:surround?with=default">
+<div class="lift:surround?with=default" xmlns="http://www.w3.org/1999/html">
     <div class="lift:bind-at?name=left-panel">
-        <div class="lift:GroupListPage.list">
-            <p class="nav-header groupsHeader">Groups</p>
-            <ul class="listGroup nav nav-list">
-                <li class="container_groups"><a></a><button class="delete_group close">&times;</button></li>
-            </ul>
+        <a type="button" href="#add_group" class="btn btn_add_user" data-toggle="modal" title="Add User"><strong>Add Group</strong></a>
+        <div id="add_group" class="modal hide fade lift:GroupListPage.action">
+            <h4 class = "modal-header">Add Group</h4>
+            <form id="add_group_form" class="add_group_form" form="post">
+                <div class="control-group">
+                    <label class="control-label">Group Name</label>
+                    <div class="controls">
+                        <input type="text" name="name" placeholder="" class="input-xlarge"/>
+                    </div>
+                </div>
+                <!-- same category
+                <div class="control-group">-->
+                    <!--<label class="checkbox">-->
+                        <!--<input name="sameCategory" type="checkbox" value="true"/>-->
+                        <!--Do the same name category-->
+                    <!--</label>-->
+                <!--</div>-->
+
+                <div class="control-group">
+                    <label class="checkbox">
+                        <input name="public" type="checkbox" value="true"/>
+                        Public group
+                    </label>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">Tags</label>
+                    <div class="controls">
+                        <input type="text" name="tags_edit" placeholder="docs, main, etc..." class="current_tags input-xlarge">
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">Description group</label>
+                    <div class="controls">
+                        <textarea type="text" name="description" placeholder="" class="input-xlarge"></textarea>
+                    </div>
+                </div>
+            </form>
+            <div id="add_user" class="modal-footer">
+                <button type="button" data-dismiss="modal" class="btn">Cancel</button>
+                <button type="submit" class="btn_add_user btn btn-success" form="add_group_form">Add</button>
+            </div>
         </div>
     </div>
     <div class="lift:bind-at?name=content">
-        <form class="lift:GroupListPage.add">
-            <div id="legend">
-                <legend class="">Add group</legend>
-            </div>
-            <div class="control-group">
-                <label class="control-label">Group Name</label>
-                <div class="controls">
-                    <input type="text" name="name" placeholder="" class="input-xlarge"/>
+        <div class="lift:GroupListPage.list">
+            <h3 class="nav-header groupsHeader">Groups</h3>
+            <div class="container_groups">
+                <hr class="hr_group"/>
+                <h4>
+                    <img class="inf_left_groups" src="/images/glyphicons_203_lock.png"/>
+                    <a href="#" class="name_group"></a>
+                </h4>
+                <div class="pull-right">
+                    <img class="inf_left" src="/images/tag.png"/>
+                    <span class="tags_group label label-info inf_left">table</span>
                 </div>
+                <p class="description_group">Description....</p>
+                <!--<p class="last_changed">Last changed 16 hours ago</p>-->
             </div>
-            <div class="control-group">
-                <label class="checkbox">
-                    <input name="sameCategory" type="checkbox" value="true"/>
-                    Do the same name category
-                </label>
-            </div>
-            <div class="control-group">
-                <label class="control-label">Add users</label>
-                <div class="lift:GroupListPage.listUser" class="controls">
-                    <select class="selectUsers" name="data" id="selusers" multiple="multiple">
-                        <option class="contUser">User1</option>
-                    </select>
-                </div>
-                <input id="listusers" class="hide" name="listusers"/>
-            </div>
-
-            <div class="control-group">
-                <label class="control-label">Description group</label>
-                <div class="controls">
-                    <textarea type="text" name="description" placeholder="" class="input-xlarge"></textarea>
-                </div>
-            </div>
-            <div class="control-group">
-                <!-- Button -->
-                <div class="controls">
-                    <button type="submit" class="buttonuser1 btn btn-success">Add</button>
-                </div>
-            </div>
-        </form>
+        </div>
     </div>
-
-
 </div>

@@ -31,7 +31,7 @@
 package org.aphreet.c3.snippet
  
 import _root_.scala.xml.NodeSeq
-import _root_.net.liftweb.widgets.menu.MenuWidget
+import _root_.net.liftmodules.widgets.menu.MenuWidget
 
 class Menubar {
   def render (xhtml : NodeSeq) = MenuWidget("mainmenu" :: Nil)

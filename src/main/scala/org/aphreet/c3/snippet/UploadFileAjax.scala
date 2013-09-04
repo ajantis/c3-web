@@ -38,7 +38,8 @@ import Helpers._
 import javax.activation.MimetypesFileTypeMap
 import org.apache.commons.httpclient.util.URIUtil
 import org.aphreet.c3.lib.DependencyFactory.inject
-import com.ifunsoftware.c3.access.{C3System, C3AccessException, DataStream}
+import com.ifunsoftware.c3.access.{MetadataUpdate, C3System, C3AccessException, DataStream}
+import com.ifunsoftware.c3.access.C3System._
 
 /**
  * Attach a function to the uploaded file.
@@ -105,7 +106,7 @@ class UploadFileAjax {
   }
   
   def updateFile(path:String)(data:Array[Byte], metadata:Map[String, String]){
-    c3.getFile("/" + path).update(metadata, DataStream(data))
+    c3.getFile("/" + path).update(MetadataUpdate(metadata), DataStream(data))
   }
 
 

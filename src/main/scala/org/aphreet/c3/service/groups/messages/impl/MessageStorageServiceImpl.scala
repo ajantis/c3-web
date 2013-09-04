@@ -9,6 +9,7 @@ import net.liftweb.util.Helpers
 import Helpers._
 import org.aphreet.c3.service.groups.messages.{MessageStorageException, MessageStorageService}
 import com.ifunsoftware.c3.access.{DataStream, C3System}
+import com.ifunsoftware.c3.access.C3System._
 import net.liftweb.common.Box
 import com.ifunsoftware.c3.access.fs.C3Directory
 
@@ -18,7 +19,7 @@ import com.ifunsoftware.c3.access.fs.C3Directory
  */
 class MessageStorageServiceImpl extends MessageStorageService with C3Loggable{
 
-  private val metaTags = Set(MSG_CREATOR_META)
+  private val metaTags = Set(MSG_CREATOR_META, TAGS_META)
   private val MSG_FILE_PREFIX = "msg-"
 
   lazy val c3 = inject[C3System].open_!
@@ -36,12 +37,21 @@ class MessageStorageServiceImpl extends MessageStorageService with C3Loggable{
         root <- messagesRoot.toList
         file <- root.children(embedChildrenData = true, embedChildMetaData = metaTags).filter(!_.isDirectory).map(_.asFile)
       } yield {
-        val md = file. metadata
+        val md = file.metadata
+
+        val tags: List[String] = md.get(TAGS_META) match {
+          case Some("") => Nil
+          case Some(s) => s.split(',').toList
+          case _ => Nil
+        }
+
         Message(group.id.is.toString,
           Box(md.get(MSG_CREATOR_META)).openOr("N/A"),
           file.versions.last.date,
           file.versions.last.getData.readContentAsString,
-          messageUUID(file.name))
+          messageUUID(file.name),
+          tags
+        )
       }
 
       messages.sortWith((cd1, cd2) => cd1.creationDate.after(cd2.creationDate))
@@ -54,7 +64,7 @@ class MessageStorageServiceImpl extends MessageStorageService with C3Loggable{
         group <- msg.group ?~ "Group message belongs to is not defined!"
         root <- getGroupMessagesRoot(group)
     } yield {
-      val tagsMap = buildTagsMap(CreatorTag(msg.author.map(_.id.is.toString).openOr("N/A")))
+      val tagsMap = buildTagsMap(CreatorTag(msg.author.map(_.id.is.toString).openOr("N/A")), MessageTags(msg.tags))
       root.createFile(messageFileName(msg), tagsMap, DataStream(msg.content))
       msg
     }
@@ -102,3 +112,5 @@ object MessageStorageServiceImpl{
 sealed abstract class MsgMDTag(val name: String, val value: String)
 
 final case class CreatorTag(creator: String) extends MsgMDTag(name = MSG_CREATOR_META, value = creator)
+
+final case class MessageTags(tags: List[String]) extends MsgMDTag(name = TAGS_META, value = tags.mkString(","))

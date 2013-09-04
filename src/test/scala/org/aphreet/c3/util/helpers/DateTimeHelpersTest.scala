@@ -14,7 +14,7 @@ object DateTimeHelpersTest extends Specification{
   "'DateTimeHelpers.todayTimeOrPastDate' should format a date for current day with pattern like '22:04'" in {
      val currentDayDate = TimeHelpers.dayNow
      currentDayDate.setHours(22)
-     currentDayDate.setMinutes(04)
+     currentDayDate.setMinutes(4)
      todayTimeOrPastDate(currentDayDate) must be equalTo("22:04")
   }
 

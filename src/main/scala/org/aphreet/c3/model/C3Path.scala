@@ -63,9 +63,10 @@ case class C3Path(path:String){
       }
       case fullpath @ (group :: "messages" :: filePath) => {
         groupName = group
-        resourceName = filePath.head
+        resourceName = "Message"
         resourceType = MessagesType
-        resourceUri = "/groups/" + group + "/messages/" + resourceName
+        resourceUri = "/groups/" + group + "/messages"
+        resourceParentDir = "/groups/" + group + "/messages" +"#"+ filePath.last
       }
 
       case _ =>

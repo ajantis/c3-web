@@ -2,21 +2,26 @@ package org.aphreet.c3.model
 
 import net.liftweb.mapper._
 import net.liftweb.common._
-import net.liftweb.http.{SessionVar, S, SHtml}
+import net.liftweb.http._
 import xml._
 import net.liftweb.http.js.JsCmds.FocusOnLoad
 import net.liftweb.util.Helpers._
 import net.liftweb.http.S._
+import net.liftweb.util.Mailer
+import net.liftweb.util.Mailer.Subject
 import net.liftweb.sitemap.Loc.LocGroup
 import xml.Text
+import net.liftweb.util.Mailer.From
+import net.liftweb.util.Mailer.To
 import net.liftweb.common.Full
-import net.liftweb.util.Mailer
-import net.liftweb.util.Mailer.{BCC, To, Subject, From}
+import net.liftweb.util.Mailer.BCC
 
 /**
  * The singleton that has methods for accessing the database
  */
 object User extends User with MetaMegaProtoUser[User]{
+
+  lazy val defaultPage = "/groups"
 
   override def loginMenuLocParams = LocGroup("loginLogoutMenu") :: super.loginMenuLocParams
   override def createUserMenuLocParams = LocGroup("loginLogoutMenu") :: super.createUserMenuLocParams
@@ -32,6 +37,10 @@ object User extends User with MetaMegaProtoUser[User]{
       }
       case _ => {}
     }
+  }
+
+  def currentUserUnsafe: User = {
+    currentUser.openOrThrowException("User is not logged in")
   }
 
   // for stateful redirects on login (depends on where user wanted to go)
@@ -76,7 +85,8 @@ object User extends User with MetaMegaProtoUser[User]{
         </form>
       </div>)
   }
-  //форма восстановления пароля
+
+  // password recovery form
   override def passwordResetXhtml = {
     (<div class="forgot_password_form form-holder login-form well well_login">
       <form action={S.uri} method="POST" class="form">
@@ -103,7 +113,7 @@ object User extends User with MetaMegaProtoUser[User]{
       case Full(user) =>
         def finishSet() {
           user.validate match {
-            case Nil => S.notice(S.??("password.changed"))
+            case Nil => S.notice(S.?("password.changed"))
             user.resetUniqueId().save
             logUserIn(user, () => S.redirectTo(homePage))
 
@@ -114,9 +124,10 @@ object User extends User with MetaMegaProtoUser[User]{
           "pwd" -> SHtml.password_*("",(p: List[String]) =>
             user.setPasswordFromListString(p)),
           "submit" -> resetPasswordSubmitButton(S.?("set.password.button"), finishSet _))
-      case _ => S.error(S.??("password.link.invalid")); S.redirectTo(homePage)
+      case _ => S.error(S.?("password.link.invalid")); S.redirectTo(homePage)
     }
-  //блок генерации письма
+
+  // password recovery email generation
   override def sendPasswordReset(email: String) {
     findUserByUserName(email) match {
       case Full(user) if user.validated_? =>
@@ -137,7 +148,7 @@ object User extends User with MetaMegaProtoUser[User]{
 
       case Full(user) =>
         sendValidationEmail(user)
-        S.notice(S.??("account.validation.resent"))
+        S.notice(S.?("account.validation.resent"))
         S.redirectTo(homePage)
 
       case _ => S.error(userNameNotFoundString)
@@ -146,7 +157,7 @@ object User extends User with MetaMegaProtoUser[User]{
   override def passwordResetMailBody(user: TheUserType, resetLink: String): Elem = {
     (<html>
       <head>
-        <title>{S.??("reset.password.confirmation")}</title>
+        <title>{S.?("reset.password.confirmation")}</title>
       </head>
       <body>
         <p>{S.?("dear")} {user.getFirstName},
@@ -257,17 +268,17 @@ object User extends User with MetaMegaProtoUser[User]{
         </form>
       </div>)
   }
-  override  def changePassword = {
+  override def changePassword = {
       val user = currentUser.open_! // we can do this because the logged in test has happened
       var oldPassword = ""
       var newPassword: List[String] = Nil
 
       def testAndSet() {
-        if (!user.testPassword(Full(oldPassword))) S.error(S.??("wrong.old.password"))
+        if (!user.testPassword(Full(oldPassword))) S.error(S.?("wrong.old.password"))
         else {
           user.setPasswordFromListString(newPassword)
           user.validate match {
-            case Nil => user.save; S.notice(S.??("changePassword.changed")); S.redirectTo(homePage)
+            case Nil => user.save; S.notice(S.?("changePassword.changed")); S.redirectTo(homePage)
             case xs => S.error(xs.str)
           }
         }
@@ -295,13 +306,16 @@ object User extends User with MetaMegaProtoUser[User]{
   } : NodeSeq
   override def signup = {
     val theUser: TheUserType = mutateUserOnSignup(createNewUserInstance())
-    val theName = signUpPath.mkString("")
 
     def testSignup() {
       validateSignup(theUser) match {
-        case Nil =>
-          actionsAfterSignup(theUser, () => {S.notice(S.?("signup.user")); S.redirectTo(homePage)})
-        case xs => S.error(xs.str) ;signupFunc(Full(innerSignup _))
+        case Nil =>{
+          theUser.setValidated(skipEmailValidation).resetUniqueId()
+          theUser.save
+          S.notice((S.?("approve.list.user")+theUser.niceName))
+          S.redirectTo("/")
+        }
+        case xs => S.error(xs.str);signupFunc(Full(innerSignup _))
       }
     }
 
@@ -319,26 +333,27 @@ object User extends User with MetaMegaProtoUser[User]{
     if (S.post_?) {
       S.param("username").
         flatMap(username => findUserByUserName(username)) match {
-        case Full(user) if user.validated_? &&
+        case Full(user) if user.validated_? && user.enabled &&
           user.testPassword(S.param("password")) => {
           logUserIn(user, () => {
-            S.notice(S.??("logged.in"))
+            S.notice(S.?("logged.in"))
 
             val redir = loginRedirect.is match {
               case Full(url) =>
                 loginRedirect(Empty)
                 url
               case _ =>
-                homePage
+                defaultPage
             }
             S.redirectTo(redir)
           })
         }
 
         case Full(user) if !user.validated_? =>
-          S.error(S.??("account.validation.error"))
-
-        case _ => S.error(S.??("invalid.credentials"))
+          S.error(S.?("account.validation.error"))
+        case Full(user) if !user.enabled =>
+          S.error(S.?("not.approve.user"))
+        case _ => S.error(S.?("invalid.credentials"))
       }
     }
 
@@ -347,6 +362,16 @@ object User extends User with MetaMegaProtoUser[User]{
       "password" -> (<input name="password" type="password" id="pwd inputIcon" class="password span2" />),
       "submit" -> (<input type="submit" name="Submit" value="Login" class="btn btn-primary" />))
   }
+
+  def containsCurrent(users: List[User]): Boolean = {
+    User.currentUser match {
+      case Full(user) => {
+        users.exists((u: User) => u.id.is == user.id.is)
+      }
+      case _ => false
+    }
+  }
+
 
 }
 
@@ -365,8 +390,8 @@ class User extends MegaProtoUser[User] with ManyToMany {
     override def displayName = "Personal Essay"
   }
 
-  object groups extends MappedManyToMany(UserGroup, UserGroup.user, UserGroup.group, Group){
-    def toForm() : NodeSeq = {
+  object groups extends MappedManyToMany(UserGroup, UserGroup.user, UserGroup.group, org.aphreet.c3.model.Group){
+    def toForm: NodeSeq = {
       if(!this.toList.isEmpty) {
         {<ul>{
           for(group <- this.toList) yield
@@ -375,6 +400,10 @@ class User extends MegaProtoUser[User] with ManyToMany {
       }
       else Text("No groups.")
     }
+  }
+
+  object enabled extends MappedBoolean(this){
+    override def defaultValue = false
   }
 
       // this is just a prototype change

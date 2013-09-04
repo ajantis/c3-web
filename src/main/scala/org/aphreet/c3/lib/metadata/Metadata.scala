@@ -5,6 +5,9 @@ package org.aphreet.c3.lib.metadata
  * @author Dmitry Ivanov
  */
 object Metadata {
+  val DESCRIPTION_META = "x-c3-description"
+  val CONTENT_TYPE = "content-type"
+  val ACL_META = "x-c3-acl"
   val TAGS_META: String = "x-c3-tags"
   val MSG_CREATOR_META: String = "x-c3-msg-creator"
   val MSG_DATE_META: String = "x-c3-msg-date"
@@ -14,5 +17,9 @@ object Metadata {
   val FS_PATH_META = "c3.ext.fs.path"
   val TAGS_SEPARATOR = ","
 
-  val keySet: Set[String] = Set(TAGS_META,MSG_CREATOR_META,MSG_DATE_META,S4_PROCESSED_FLAG_META,OWNER_ID_META,GROUP_ID_META,FS_PATH_META)
+  val systemKeySet: Set[String] = Set(DESCRIPTION_META,ACL_META,TAGS_META,MSG_CREATOR_META,MSG_DATE_META,S4_PROCESSED_FLAG_META,OWNER_ID_META,GROUP_ID_META,FS_PATH_META)
+
+  def filterSystemKey(meta: scala.collection.Map[String,String]) = {
+    meta.filterNot{case (k, v) => systemKeySet.contains(k)}
+  }
 }

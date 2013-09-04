@@ -1,49 +1,104 @@
 <div class="lift:surround?with=default">
-    <div class="lift:bind-at?name=left-panel">
-        <div class="lift:SearchSnippet.categories">
-            <ul class="categories" role="menu" aria-labelledby="dLabel">
-                <li class="category_cnt dropdown-submenu">
-                    <div class="con_category" tabindex="-1">
-                        <div class="category_cont" >Categories</div>
-                        <a class="linkGroup" href="#">[+]</a>
-                    </div>
-                    <ul class="category_tags">
-                        <span class="label margn">Tags</span>
+
+    <lift:snippet type="SearchForm">
+
+        <div class="lift:bind-at?name=left-panel">
+            <h3>Categories</h3>
+            <!--<p>-->
+            <!--<a href="#" class="btn btn-mini expand-all"><i class="icon-plus-sign"></i> Expand</a>-->
+            <!--<a href="#" class="btn btn-mini collapse-all"><i class="icon-minus-sign"></i> Collapse</a>-->
+            <!--</p>-->
+            <ul class="root nav nav-list affix-top">
+                <li class="branch category"><a href="#" class="name">Scala</a>
+                    <ul>
+                        <li class="tag"><a href="#" class="label btn-info name">Case classes</a></li>
                     </ul>
                 </li>
             </ul>
         </div>
-    </div>
-    <div class="lift:bind-at?name=content">
-        <div class="lift:SearchSnippet.result">
-            <div class="conteyner_result">
-                <a class="header_search"></a>
-                <div class="fragment_search">'You ought to be ashamed of yourself for asking such a simple question,' added the Gryphon; and then they both sat silent and looked at poor Alice, who felt ready to sink into the earth. At last the Gryphon said to the Mock Turtle, 'Drive on, old fellow! Don't be all day about it!' and he went on in these words:
-                    'Yes, we went to school in the sea, though you mayn't believe it—'
-                    'I never said I didn't!' interrupted Alice.
-                    'You did,' said the Mock Turtle.
-                </div>
-                <div>
-                    <span class="badge badge-success date_create">Posted 2012-08-02 20:47:04</span>
-                </div>
-                <hr/>
 
+        <div class="lift:bind-at?name=content">
+            <h3 class="span10">Search</h3>
+            <div class="span7  well">
+                <div class="search_form form-search">
+                    <div class="input-append">
+                        <input class="span6 search_query" type="text" placeholder="Enter a search query...">
+                        <button class="btn search_btn btn-primary" type="submit"><i class="icon-search icon-white"></i> Go</button>
+                    </div>
+                    <div class="selected-tags-container span6">
+
+                        <ul id="selected_tags">
+                        </ul>
+
+                        <ul id="metadata_container">
+                        </ul>
+                    </div>
+                </div>
+                <div id="selected_metadata">
+                    <a class="metadata_btn cursor_pointer editable"><i id="icon_meta" class="test icon-chevron-up"></i>Metadata add</a>
+                    <div class="edit_metadata hide">
+                        <div class="edit_meta">
+                            <div class="add_metadata">
+                                <input name="key" class="input_metadata" type="text"  placeholder="Keyword" >
+                                <input name="value" class="input_metadata" type="text"  placeholder="Value">
+                                <button type="submit" id="add_metadata_btn" class="btn btn-success">Add</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="results" class="span7 search_results">
+                <div class="entry">
+                    <div class="row">
+                        <div class="span8">
+                            <div class="row">
+                                <div class="span8">
+                                    <h4><strong><a href="#" class="result_header">Some interesting file</a></strong></h4>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="span8">
+                                    <p>Full path: <a href="#" class="result_link">/Java Tuning/documentation/2.1/jvm_internals.pdf</a></p>
+                                    <p class="result_content">Java IDL adds CORBA ...</p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="span8">
+                                    <div class="container_inf">
+                                        <i class="icon-user"></i> <a class="owner" href="#">John</a>
+                                        | <i class="icon-calendar"></i> <span class="result_date">Sept 16th, 2012</span>
+                                        | <i class="icon-tags"></i> Tags :
+                                        <a class="tag" href="#"><span class="tags_margin label label-info">Snipp</span></a>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="no_results">
+                    <p>Your search - <strong><span class="query">Sample query</span></strong> - did not match any documents.</p>
+                    <p>Suggestions:</p>
+                    <ul>
+                        <li>Make sure that all words are spelled correctly.</li>
+                        <li>Try different keywords.</li>
+                        <li>Try more general keywords.</li>
+                        <li>Try fewer tags or keywords.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div id="pagination" class="span7 pagination">
+                <ul>
+                    <nav:first></nav:first>
+                    <nav:prev></nav:prev>
+                    <nav:allpages></nav:allpages>
+                    <nav:next></nav:next>
+                    <nav:last></nav:last>
+                </ul>
             </div>
         </div>
-    </div>
-    <div class="lift:bind-at?name=categories_search">
-        <div class="lift:SearchSnippet.search">
-            <form class="lift:SearchSnippet.render?form=post form-search search_categories">
-                    <div class="input-append">
-                        <div class="text_size">
-                            <div class="flt">
-                            </div>
-                            <input name="tags" class="disp_none tags_input"/>
-                            <input name="query" type="text" class="span2 text_search" placeholder="Edit text..."/>
-                        </div>
-                        <button type="submit" class="btn btn_search">Search</button>
-                    </div>
-            </form>
-         </div>
-    </div>
+
+    </lift:snippet>
+
 </div>

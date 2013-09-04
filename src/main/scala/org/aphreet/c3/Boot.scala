@@ -4,17 +4,17 @@ import _root_.net.liftweb.util._
 import _root_.net.liftweb.common._
 import _root_.net.liftweb.http.provider._
 import _root_.net.liftweb.sitemap._
-import _root_.net.liftweb.sitemap.Loc._
+import net.liftweb.sitemap.Loc._
 import Helpers._
 import org.aphreet.c3.model._
 import net.liftweb.mapper._
 import net.liftweb.http._
 import js.jquery.JQuery14Artifacts
-import net.liftweb.widgets.logchanger._
-import net.liftweb.widgets.uploadprogress._
-import net.liftweb.widgets.tablesorter.TableSorter
-import net.liftweb.widgets.autocomplete.AutoComplete
-import net.liftweb.widgets.menu.MenuWidget
+import net.liftmodules.widgets.logchanger._
+import net.liftmodules.widgets.uploadprogress._
+import net.liftmodules.widgets.tablesorter.TableSorter
+import net.liftmodules.widgets.autocomplete.AutoComplete
+import net.liftmodules.widgets.menu.MenuWidget
 import snippet.categories.CategoriesSection
 import snippet.groups.GroupsSection
 import snippet.logging.LogLevel
@@ -25,6 +25,15 @@ import util.helpers.C3Streamer
 import util.{DefaultAuthDataLoader, TextileRenderer}
 import javax.mail.{Authenticator, PasswordAuthentication}
 import net.liftweb.util.Props
+import net.liftweb.http.Html5Properties
+import net.liftweb.http.InMemoryResponse
+import net.liftweb.common.Full
+import net.liftweb.http.ParsePath
+import net.liftweb.http.NotFoundAsTemplate
+import net.liftweb.sitemap.Loc.LocGroup
+import net.liftweb.http.ServiceUnavailableResponse
+import net.liftweb.sitemap.Loc.If
+import org.aphreet.c3.snippet.approve.ApproveSection
 
 /**
  * A class that's instantiated early and run.  It allows the application
@@ -32,7 +41,7 @@ import net.liftweb.util.Props
  */
 class Boot extends Bootable{
   private val sections: List[Section] = List(BaseSection, UsersSection, GroupsSection,
-    SearchSection, CategoriesSection, NotificationsSection)
+    SearchSection, CategoriesSection, NotificationsSection,ApproveSection)
 
   def boot {
     if (!DB.jndiJdbcConnAvailable_?) {
@@ -66,7 +75,7 @@ class Boot extends Bootable{
 
     val loggedIn = If(() => User.loggedIn_?, loginAndComeBack _ )
 
-    val isSuperAdmin = If(() => {if(!User.currentUser.isEmpty) User.currentUser.open_!.superUser.is else false},
+    val isSuperAdmin = If(() => {if(!User.currentUser.isEmpty) User.currentUser.openOrThrowException("User is not logged in").superUser.is else false},
       () => RedirectWithState("/index", RedirectState( () => {} ,"Not a super user" -> NoticeType.Notice ) )
     )
 
@@ -82,7 +91,7 @@ class Boot extends Bootable{
     // Build SiteMap
     def sitemap() = SiteMap(
 
-      Menu("Home") / "index" >> LocGroup("mainmenu"),
+      Menu("Home") / "index",
 
       Menu("About") / "about" >> LocGroup("footerMenu"),
 
@@ -91,15 +100,29 @@ class Boot extends Bootable{
       Menu("Groups") / "groups" >> loggedIn >> LocGroup("mainmenu") submenus {
         GroupsSection.menus:_*
       },
-      Menu("Users") / "users" >> loggedIn >> LocGroup("mainmenu") submenus {
+      Menu("users", "Users") / "users" >> loggedIn >> LocGroup("mainmenu") submenus {
         UsersSection.menus:_*
       },
-      Menu("Categories") / "categories" >> loggedIn >> LocGroup("mainmenu") submenus {
-        CategoriesSection.menus:_*
+      Menu("admin", "Admin") / "admin" >> LocGroup("admin_menus") >> isSuperAdmin submenus {
+        List(Menu("categories", "Categories") / "admin" / "categories" submenus {
+          CategoriesSection.menus:_*
+        },
+        Menu("group_admin","Approve group") / "admin" / "group_admin" submenus {
+          ApproveSection.menus:_*
+        },
+        Menu("user_admin","Approve user") / "admin" / "user_admin" submenus {
+          ApproveSection.menus:_*
+        })
       },
-      Menu("Notifications") / "notifications" >> loggedIn >> LocGroup("mainmenu") submenus {
+      Menu("notifications", "Notifications") / "notifications" >> loggedIn submenus {
         NotificationsSection.menus:_*
       },
+      Menu("Experiments") / "experiments" >> LocGroup("mainmenu"),
+
+      Menu(Loc("virtualization", ExtLink("https://194.85.162.171/"), "Virtualization", LocGroup("mainmenu"))),
+
+      Menu("R service") / "r_suite" >> LocGroup("mainmenu"),
+
       LogLevel.menu, // default log level menu is located at /loglevel/change
 
       Menu("UserEdit") / "users" / "edituser" >> loggedIn >> Hidden,
@@ -182,6 +205,9 @@ class Boot extends Bootable{
     // Table sorter widget init
     TableSorter.init()
 
+    //Init auto complete input
+    AutoComplete.init()
+
     LiftRules.statelessDispatchTable.append(TextileRenderer)
 
     // for ajax file upload
@@ -207,20 +233,25 @@ class Boot extends Bootable{
 
     configMailer("smtp.gmail.com", "c3-project@ifunsoftware.com", "myverysecretpassword")
 
-    S.addAround(DB.buildLoanWrapper)
-    // create a super admin user
-    val users = User.find(By(User.email, "admin@admin.com"))
-    users.map(user =>{
-      if(!user.superUser){
-        user.superUser(true)
-        user.save
-        S.notice("Super user is Admin")
-      }
-    })
+    FileUpload.init()
 
+    LiftRules.progressListener = {
+      val opl = LiftRules.progressListener
+      val ret: (Long, Long, Int) => Unit =
+        (a, b, c) => {
+          // println("progress listener "+a+" plus "+b+" "+c)
+          // Thread.sleep(100) -- demonstrate slow uploads
+          opl(a, b, c)
+        }
+      ret
+    }
 
+    LiftRules.statelessDispatch.prepend {
+      case _ if DB.currentConnection.isEmpty => () => Full(ServiceUnavailableResponse(10))
+    }
+
+    S.addAround(DB.buildLoanWrapper())
   }
-
 
   /**
    * Force the request to be UTF-8

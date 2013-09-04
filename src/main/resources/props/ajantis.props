@@ -1,6 +1,6 @@
-c3_host=http://node0.c3.ifunsoftware.com
+c3_host=http://localhost:8080
 c3_domain_name=dev-ajantis
-c3_domain_secret=1db8b27ede72ccd0442cfcedf343e65b
+c3_domain_secret=83a1f0924a442d623bac1a93401122ff
 
 default_admin_email=admin@admin.com
 default_admin_password=admin

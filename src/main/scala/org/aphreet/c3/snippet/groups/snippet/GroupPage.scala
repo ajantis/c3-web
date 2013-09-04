@@ -1,18 +1,20 @@
 package org.aphreet.c3.snippet.groups.snippet
 
-import org.aphreet.c3.loc.ItemRewriteLoc
 import org.aphreet.c3.model.Group
 import net.liftweb.sitemap.Loc.{LinkText, Link}
-import net.liftweb.common.{Logger, Full, Box}
-import org.aphreet.c3.snippet.groups.GroupPageData
-import xml.Text
+import net.liftweb.common.Box
+import org.aphreet.c3.snippet.groups.{AbstractGroupPageLoc, GroupPageData}
 import net.liftweb.util.BindHelpers._
+import org.aphreet.c3.lib.DependencyFactory._
+import com.ifunsoftware.c3.access.C3System
+import xml.Text
+import net.liftweb.common.Full
 
 /**
  * Copyright iFunSoftware 2011
  * @author Dmitry Ivanov
  */
-object GroupPage extends ItemRewriteLoc[Group, GroupPageData] {
+object GroupPage extends AbstractGroupPageLoc[GroupPageData] {
 
   override val name = "Group"
   override def title = Text(currentValue.map(_.group.name.is).openOr("Group"))
@@ -33,14 +35,24 @@ object GroupPage extends ItemRewriteLoc[Group, GroupPageData] {
 class GroupPage(data: GroupPageData) extends GroupPageHelpers{
   override lazy val group = data.group
   override lazy val activeLocId = "about"
-  def info = {
-    ".GroupOwner *" #> group.owner.obj.map(_.shortName).openOr("N/A")&
-    ".GroupOwner [href]" #> group.owner.obj.map(_.createLink)&
-    ".GroupName *" #> group.name.is&
-    ".GroupDescription *" #>group.description.is
+  lazy val c3 = inject[C3System].open_!
 
+  def info = {
+    val status =  if(group.isOpen) "Public" else "Private"
+    val background =  if(group.isOpen) "btn-info" else "btn-warning"
+    val groupTags = group.getTags
+    ".tags_group" #> groupTags.map((tag: String) => {
+      ".tags_group *" #> tag
+    }) &
+    ".GroupOwner *" #> group.owner.obj.map(_.shortName).openOr("N/A") &
+    ".GroupOwner [href]" #> group.owner.obj.map(_.createLink) &
+    ".GroupName *" #> group.name.is &
+    ".GroupAccess *" #> status &
+      ".GroupAccess [class+]" #> background &
+    ".GroupDescription *" #>group.getDescription
   }
 }
+
 trait GroupPageHelpers {
   val group: Group
   val activeLocId: String
