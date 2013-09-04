@@ -14,6 +14,7 @@ import net.liftweb.mapper.By
 import org.apache.commons.codec.binary.Base64
 import net.liftweb.common.Full
 import net.sf.webdav.exceptions.{AccessDeniedException, UnauthenticatedException}
+import scala.language.implicitConversions
 
 class C3FileSystemStore(val root:File) extends IWebdavStore{
 

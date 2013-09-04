@@ -1,0 +1,13 @@
+language: java
+
+branches:
+  only:
+    - master
+
+after_success:
+  - mvn deploy --settings src/main/config/travis-settings.xml
+
+env:
+  global:
+    - secure: "PtHECIVlDhf8Zb+tkmyPNiFScp8LiTh4+jUuRlnSVV+AKMb0k2fatOMMcPmd\nmze4nGziqFNfTlfvtwwVY4BJGdMWsZKUASg/xH0IyNoA9krCnYUTvStGerrZ\n8ncbjlGwYO6WDEM1QMUEYnTn9eLctH2XpUqI/1GNcCEW68cmRPg="
+    - secure: "L5zAuGDVYU8geae7mLkpfjfJ6eaANcHHX2Lcjhv9CgVu5GSCqG0V3gPCMhDi\nuNIpjvGUmQRxKDYpRBJkWy/c5XwffK0+lu17WkVOAnxFKONLcSQzAiCKbA97\nNDn80GbDsV8kND0g1xHxRu8zNdVtZvGfunyGyjTWX2aIJPnFD58="

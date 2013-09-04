@@ -13,6 +13,7 @@ import com.ifunsoftware.c3.access.{DataStream, C3AccessException, C3System}
 import javax.activation.MimetypesFileTypeMap
 import org.apache.commons.httpclient.util.URIUtil
 import org.aphreet.c3.model.Group
+import com.ifunsoftware.c3.access.C3System._
 
 /**
  * Copyright iFunSoftware 2011

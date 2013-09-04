@@ -18,21 +18,20 @@
         <!--Old links -->
         <link rel="icon" href="/images/c3favicon.ico" />
 
-        <script src="/js/jquery-1.7.2.js" type="text/javascript"></script>
+        <script id="jquery" src="/js/jquery-1.7.2.js" type="text/javascript"></script>
         <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.11/themes/base/jquery-ui.css" id="theme"/>
-        <link href="/css/jquery.fileupload-ui.css" type="text/css" rel="stylesheet"/>
-
         <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.11/jquery-ui.min.js"></script>
-
-        <script src="/js/jquery.fileupload.js" type="text/javascript"></script>
-        <script src="/js/jquery.fileupload-ui.js" type="text/javascript"></script>
-        <script id="json" src="/classpath/json.js" type="text/javascript"></script>
 
         <script src="/js/jquery.blockUI.js" type="text/javascript"></script>
         <script src="/js/categories.js" type="text/javascript"></script>
         <script src="/js/search.js"  type="text/javascript"></script>
         <!--End-->
 
+        <link href="/css/fileupload5.0.2/jquery.fileupload-ui.css" type="text/css" rel="stylesheet"/>
+        <script src="http://ajax.aspnetcdn.com/ajax/jquery.templates/beta1/jquery.tmpl.min.js"></script>
+        <script src="/js/fileupload5.0.2/jquery.fileupload.js" type="text/javascript"></script>
+        <script src="/js/fileupload5.0.2/jquery.fileupload-ui.js" type="text/javascript"></script>
+        <script id="json" src="/classpath/json.js" type="text/javascript"></script>
 
         <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
         <!--[if lt IE 9]>
@@ -56,16 +55,32 @@
                     <img class="ajax-loader" alt="" id="ajax-loader" src="/images/ajax-loader.gif" />
 
                     <div class="list-menu pull-right user-menu">
-                        <div class="btn-group">
                             <div class="lift:MainSnippet.currentUser">
                                     <div class="user">
-                                        <div class="btn-group">
-                                            <a class="btn btn-primary" href="/user_mgt/edit"><i class="icon-user icon-white"></i> <span class="username">Ivan Petrov</span></a>
-                                            <a class="btn btn-primary dropdown-toggle" data-toggle="dropdown" href="#"><span class="caret"></span></a>
-                                            <ul class="dropdown-menu">
+                                        <div class="btn-group lift:NotificationsUserBar">
+                                            <a class="btn btn-primary" href="/user_mgt/edit">
+                                                <i class="icon-user icon-white"></i> <span class="username">Ivan Petrov</span>
+                                            </a>
+                                            <a class="btn btn-primary dropdown-toggle" data-toggle="dropdown" href="#">
+                                                <span class="badge unread_count">1</span>
+                                                <span class="caret"></span>
+                                            </a>
+                                            <ul class="dropdown-menu menu_users">
+                                                <li class="admin_section">
+                                                    <lift:Menu.item name="admin">
+                                                        <i class="icon-wrench"></i> Administration
+                                                    </lift:Menu.item>
+                                                </li>
+                                                <li class="divider admin_section"></li>
+                                                <li>
+                                                    <lift:Menu.item name="notifications">
+                                                        <span class="badge unread_count">1</span> Notifications
+                                                    </lift:Menu.item>
+                                                </li>
                                                 <li>
                                                     <lift:Menu.item name="ChangePassword"><i class="icon-pencil"></i> Change password</lift:Menu.item>
                                                 </li>
+                                                <li class="divider"></li>
                                                 <li>
                                                     <lift:Menu.item name="Logout">
                                                         <i class="icon-off"></i> Sign out
@@ -80,12 +95,10 @@
                                         </div>
                                     </div>
                             </div>
-
-                        </div>
                     </div>
 
-                    <form class="lift:SearchSnippet.miniSearch?form=post navbar-search pull-right">
-                        <input name="query" type="text" class="search-query span3" style="width: 200px" placeholder="Search" />
+                    <form class="lift:SearchForm.miniSearch?form=post navbar-search pull-right">
+                        <input name="query" type="text" class="search-query span3" style="width: 80%" placeholder="Search" />
                     </form>
 
                 </div>
@@ -106,21 +119,21 @@
 
             <div class="lift:LiftMessages row">
                 <div class="lift_messages_container span4 offset4">
-                    <div class="errors">
+                    <div id="s_errors" class="errors">
                         <div class="alert alert-error fade in">
                             <button type="button" class="close" data-dismiss="alert">×</button>
                             <p class="message">Here go all errors</p>
                         </div>
                     </div>
 
-                    <div class="warnings">
+                    <div id="s_warnings" class="warnings">
                         <div class="alert alert-warning fade in">
                             <button type="button" class="close" data-dismiss="alert">×</button>
                             <p class="message">Here go all warnings</p>
                         </div>
                     </div>
 
-                    <div class="notices">
+                    <div id="s_notices" class="notices">
                         <div class="alert alert-info fade in">
                             <button type="button" class="close" data-dismiss="alert">×</button>
                             <p class="message">Here go all notices</p>

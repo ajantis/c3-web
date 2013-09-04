@@ -33,6 +33,8 @@ object NotificationPage extends ItemRewriteLoc[Notification, NotificationPageDat
   override def canonicalUrl(data: NotificationPageData) = {
     Full((pathPrefix:::List(data.notification.id.is.toString)).mkString("/","/",""))
   }
+
+  def isAccessiblePage(page: NotificationPageData) = true
 }
 
 class NotificationPage(data: NotificationPageData) extends C3Loggable{

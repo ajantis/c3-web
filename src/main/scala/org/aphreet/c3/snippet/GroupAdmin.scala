@@ -67,7 +67,6 @@ class GroupAdmin {
         Group.find(By(Group.name,name)) match {
           case Full(group) => {
             bind("groupadmin", html, "groupname" -> SHtml.text(group.name, group.name(_)),
-              "description" -> group.description.toForm,
               "users" -> {(ns: NodeSeq) => {
                 group.users.flatMap(user => bind("groupuser",ns,"username" -> user.email.is,
                   "selectuser" -> {

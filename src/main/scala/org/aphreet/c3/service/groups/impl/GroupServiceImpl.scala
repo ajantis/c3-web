@@ -4,14 +4,19 @@ import org.aphreet.c3.lib.DependencyFactory._
 import org.aphreet.c3.util.{C3Loggable, C3Exception}
 import org.aphreet.c3.model.{UserGroup, Group, User}
 import org.aphreet.c3.service.groups.GroupService
-import org.aphreet.c3.service.notifications.{AddedToGroupMsg, NotificationManager}
 import com.ifunsoftware.c3.access.C3System
-import net.liftweb.common.{Box, Empty, Full, Failure}
+import com.ifunsoftware.c3.access.C3System._
+import net.liftweb.common.{Box, Empty, Failure}
 import com.ifunsoftware.c3.access.fs.{C3File, C3Directory}
 import net.liftweb.mapper.By
+import org.aphreet.c3.lib.metadata.Metadata
+import org.aphreet.c3.lib.metadata.Metadata._
+import net.liftweb.common.Full
+import scala.Some
 import org.aphreet.c3.service.notifications.NotificationManagerProtocol.CreateNotification
 import org.aphreet.c3.lib.NotificationManagerRef
-import org.aphreet.c3.lib.metadata.Metadata
+import java.lang.Exception
+import org.aphreet.c3.service.notifications.AddedToGroupMsg
 
 class GroupServiceImpl extends GroupService with C3Loggable{
 
@@ -19,26 +24,32 @@ class GroupServiceImpl extends GroupService with C3Loggable{
 
   lazy val notificationManager = inject[NotificationManagerRef].open_!.actorRef
 
-  override def createGroup(newGroup: Group, members: Iterable[User]): Box[Group] = {
+  override def createGroup(newGroup: Group, members: Iterable[User], tags:String, description:String): Box[Group] = {
+    val metadata: Map[String, String] = Map((TAGS_META -> tags.split(",").map(_.trim).mkString(",")),DESCRIPTION_META -> description)
     val group = newGroup.saveMe()
+
     try {
-      createGroupMapping(group.id.is.toString)
+      createGroupMapping(group.id.is.toString, metadata, group.owner)
+      group.owner.foreach(owner => UserGroup.join(owner, group))
+      addUsersToGroup(group,members)
+      Full(group)
     } catch {
-      case e: C3Exception => {
+      case e: Exception => {
+        logger.error("Couldn't create group C3 FS mapping: " + newGroup.name.is)
         group.delete_! // rollback
         Failure("Couldn't create group C3 FS mapping", Full(e), Empty)
       }
     }
-    group.owner.foreach(owner => UserGroup.join(owner, group))
-    addUsersToGroup(group,members)
-    Full(group)
+  }
+  override def createGroup(newGroup: Group, tags:String, description:String): Box[Group] = {
+    createGroup(newGroup, List(), tags, description)
   }
 
   override def removeGroup(group: Group): Boolean = {
     try {
       removeGroupMapping(group.id.is.toString)
     } catch {
-      case e: C3Exception => {
+      case e: Exception => {
         logger.error("Error while removing group mapping from C3: " + e.getMessage, e)
         false
       }
@@ -47,11 +58,11 @@ class GroupServiceImpl extends GroupService with C3Loggable{
     group.delete_!
   }
 
-  override  def removeUserFromGroup(group:Group, user:User) = {
+  override def removeUserFromGroup(group:Group, user:User) = {
     try{
-      UserGroup.findAll(By(UserGroup.user, user),By(UserGroup.group, group)).foreach(_.delete_!)
+       UserGroup.findAll(By(UserGroup.user, user),By(UserGroup.group, group)).foreach(_.delete_!)
     } catch {
-      case e: C3Exception => {
+      case e: Exception => {
         logger.error("Error while removing user" + e.getMessage, e)
         false
       }
@@ -66,24 +77,26 @@ class GroupServiceImpl extends GroupService with C3Loggable{
     } yield {
       if (UserGroup.findAll(By(UserGroup.user, member), By(UserGroup.group, group)).isEmpty){
         UserGroup.join(member, group)
-        notificationManager ! CreateNotification(AddedToGroupMsg(group = group, recipient = member))
+        notificationManager ! CreateNotification(AddedToGroupMsg(group = group, recipientId = member.id.is))
         Full(member)
       } else Failure("User " + member.email + " is already a member of this group!")
     }
   }
 
-  private def createGroupMapping(groupId: String){
+  private def createGroupMapping(groupId: String, metadata: Map[String, String], owner: Box[User]){
     val root = c3.getFile("/").asDirectory
 
-    val metadata = Map((Metadata.GROUP_ID_META -> groupId))
+    val defaultMeta: Map[String, String] = Map((Metadata.GROUP_ID_META -> groupId)) ++
+      owner.map(u => Map[String, String]((Metadata.OWNER_ID_META -> u.id.is.toString))).getOrElse(Map())
+    val metadataGroup: Map[String, String] = defaultMeta ++ metadata
 
-    root.createDirectory(groupId, metadata)
+    root.createDirectory(groupId, metadataGroup)
 
     root.getChild(groupId) match {
       case Some(node) => val dir = node.asDirectory
-      dir.createDirectory("files", metadata)
-      dir.createDirectory("messages", metadata)
-      dir.createDirectory("wiki", metadata)
+      dir.createDirectory("files", metadataGroup)
+      dir.createDirectory("messages", metadataGroup)
+      dir.createDirectory("wiki", metadataGroup)
       case None => throw new C3Exception("Failed to create directory for group " + groupId)
     }
   }

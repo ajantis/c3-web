@@ -29,7 +29,9 @@ trait ItemRewriteLoc[S, T <: PageData] extends Loc[T] {
 
   def getDefault: Box[S] = Empty
   def getItem(id: String): Box[S]
-  def wrapItem(itemBox: Box[MyS]): Box[T]
+  def wrapItem(itemBox: Box[MyS]): Box[MyT]
+
+  def isAccessiblePage(page: T): Boolean
 
   /**
    * Override this function to provide a canonical URL
@@ -37,9 +39,19 @@ trait ItemRewriteLoc[S, T <: PageData] extends Loc[T] {
   def canonicalUrl(data: T): Box[String] = Empty
   override def params: List[LocParam[T]] =
     Hidden ::
-    TestValueAccess[T](_.flatMap(canonicalUrl(_))
-                        .filter(_ != S.uri)
-                        .map(RedirectResponse(_))) :: Nil
+    TestValueAccess[T]{ (page: Box[T]) =>
+      page.flatMap { p: T =>
+        if (isAccessiblePage(p))
+          canonicalUrl(p).filter(v => v != S.uri).map(RedirectResponse(_))
+        else
+          if (User.currentUser.isDefined)
+          Full(RedirectWithState("/index", RedirectState( () => {}, "You don't have access to this group" -> NoticeType.Notice )))
+        else
+          Full(RedirectWithState("/user_mgt/login", RedirectState( () => {}, "Not logged in" -> NoticeType.Notice )))
+      }
+    } :: Nil
+
+//      ) :: Nil
 
   /**
    * By default the path must end after the item id.
@@ -47,7 +59,7 @@ trait ItemRewriteLoc[S, T <: PageData] extends Loc[T] {
    */
   def finishPath(itemBox: => Box[MyS],
                  restPath: List[String],
-                 suffix: String = ""): Box[T] = {
+                 suffix: String = ""): Box[MyT] = {
     if (restPath == Nil) wrapItem(itemBox) else Empty
   }
 
@@ -79,13 +91,13 @@ trait PageData {
 /**
  * For URLs of the for /foo/[ID]/suffix
  */
-trait SuffixLoc {
-  self: ItemRewriteLoc[_, _] =>
+trait SuffixLoc[S, T <: PageData]{
+  self: ItemRewriteLoc[S, T] =>
 
   val pathSuffix: List[String]
   override lazy val pathList: List[String] = pathPrefix ++ pathSuffix
 
-  override def link = {
+  override def link: Link[MyT] = {
     new Link[MyT](pathList)
   }
 

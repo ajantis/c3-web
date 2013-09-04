@@ -37,7 +37,16 @@ import net.liftweb.http.{LiftRules, S, LiftSession}
 import net.liftweb.mapper._
 import org.aphreet.c3.model._
 import org.aphreet.c3.DBSetup
+import org.aphreet.c3.lib.DependencyFactory
+import org.aphreet.c3.apiaccess.C3
+import org.mockito.{Matchers, Mockito}
+import com.ifunsoftware.c3.access.C3System
+import com.ifunsoftware.c3.access.fs.C3FileSystemNode
+import Mockito._
+import org.aphreet.c3.lib.metadata.Metadata._
+import org.junit
 
+@junit.Ignore
 class GroupFormTest extends TestCase {
 
   private val session : LiftSession = new LiftSession("", StringHelpers.randomString(20), Empty)
@@ -77,21 +86,33 @@ class GroupFormTest extends TestCase {
   private def getGroups(){
 
     val xml = {
-        <p class="groupsHeader">Groups</p>
-        <ul class="listGroup">
-          <li class="container_groups"><a></a><button class="delete_group">&times;</button></li>
-        </ul>
+      <h3 class="nav-header groupsHeader">Groups</h3>
+      <div class="container_groups">
+        <hr class="hr_group"/>
+        <h4>
+          <img class="inf_left_groups" src="/images/glyphicons_203_lock.png"/>
+          <a href="#" class="name_group"></a>
+          <div class="pull-right">
+            <img class="inf_left" src="/images/tag.png"/>
+            <span class="tags_group label label-info inf_left">table</span>
+          </div>
+        </h4>
+        <p class="description_group">Description....</p>
+        <p class="last_changed">Last changed 16 hours ago</p>
+      </div>
     }
 
     val snippet = new GroupListPage()
+
     val output = snippet.list(xml)
 
     println(classOf[GroupListPage].getName + " result output: " + output)
 
     // Do verification of data returned; assert if something is amiss
-    assert ( (output \\ "li").length == groups.size)
 
-    (output \\ "a").foreach { node =>
+    assert ( (output \\ "a").length == groups.size)
+
+    (output \\ "a" ).foreach { node =>
       assert ( groups.map(_.name.is).contains(node.text))
       assert (node.attributes.get("href").isDefined)
       assert ( groups.map(_.createLink).contains(node.attributes.get("href").get.text) )
@@ -102,13 +123,20 @@ class GroupFormTest extends TestCase {
     // Initialize session state if it is not already
     S.initIfUninitted(session) {
       // Create and log-in the user
-      val user : User = User.create
+      val user: User = User.create
       user.firstName("test")
       user.lastName("user")
       user.save
+      //mock c3 storage
+      val c3mock: C3System = mock(classOf[C3System])
+      val c3File = mock(classOf[C3FileSystemNode])
+      val map = Map(TAGS_META->"")
+      when(c3File.metadata).thenReturn(map)
+      when(c3mock.getFile(Matchers.anyString())).thenReturn(c3File)
+
+      DependencyFactory.c3.default.set(Vendor(c3mock))
 
       createGroups(user, groupsData)
-
       User.logUserIn(user)
       // Call the test to run
       getGroups()
@@ -119,7 +147,7 @@ class GroupFormTest extends TestCase {
 
   private def createGroups(owner: User, data: List[(String, String)]){
     groups = data.map { case (name, description) =>
-      val group = Group.create.name(name).description(description).owner(owner).saveMe()
+      val group = Group.create.name(name).owner(owner).saveMe()
       UserGroup.create.user(owner).group(group).save()
       group
     }
