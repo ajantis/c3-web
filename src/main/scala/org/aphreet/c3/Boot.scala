@@ -45,6 +45,10 @@ class Boot extends Bootable{
 
   private val plabAddress = "https://194.85.162.171/"
 
+  private val defaultMailHost = "smtp.gmail.com"
+  private val defaultMailUser = "c3-project@ifunsoftware.com"
+  private val defaultMailPassword = "myverysecretpassword"
+
   def boot() {
     if (!DB.jndiJdbcConnAvailable_?) {
       val vendor =
@@ -232,17 +236,16 @@ class Boot extends Bootable{
     }
 
     //Use HTML5 for rendering
-    LiftRules.htmlProperties.default.set((r: Req) =>
-      new Html5Properties(r.userAgent))
+    LiftRules.htmlProperties.default.set((r: Req) => new Html5Properties(r.userAgent))
 
+    // Ignore requests to /dav/*
     LiftRules.liftRequest.append({
-      case r if (r.path.partPath match {
-        case "dav" :: _ => true
-        case _ => false
-      }) => false
+      case r if r.path.partPath.headOption.exists(_ == "dav") => false
     })
 
-    configMailer("smtp.gmail.com", "c3-project@ifunsoftware.com", "myverysecretpassword")
+    configMailer(Props.get("mail.host").openOr(defaultMailHost),
+                 Props.get("mail.user").openOr(defaultMailUser),
+                 Props.get("mail.password").openOr(defaultMailPassword))
 
     FileUpload.init()
 
@@ -262,11 +265,14 @@ class Boot extends Bootable{
 
   private def configMailer(host: String, user: String, password: String) {
     // Enable TLS support
-    System.setProperty("mail.smtp.starttls.enable","true")
+    System.setProperty("mail.smtp.starttls.enable", "true")
     // Set the host name
-    System.setProperty("mail.smtp.host", host) // Enable authentication
-    System.setProperty("mail.smtp.auth", "true") // Provide a means for authentication. Pass it a Can, which can either be Full or Empty
+    System.setProperty("mail.smtp.host", host)
+    // Enable authentication
+    System.setProperty("mail.smtp.auth", "true")
 
+
+    // Provide a means for authentication. Pass it a Box, which can either be Full or Empty
     Mailer.authenticator = Full(new Authenticator {
       override def getPasswordAuthentication = new PasswordAuthentication(user, password)
     })
