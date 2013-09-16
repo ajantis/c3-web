@@ -9,7 +9,7 @@ import Helpers._
 import org.aphreet.c3.model._
 import net.liftweb.mapper._
 import net.liftweb.http._
-import js.jquery.JQuery14Artifacts
+import net.liftweb.http.js.jquery.{JQueryArtifacts, JQuery14Artifacts}
 import net.liftmodules.widgets.logchanger._
 import net.liftmodules.widgets.uploadprogress._
 import net.liftmodules.widgets.tablesorter.TableSorter
@@ -43,7 +43,9 @@ class Boot extends Bootable{
   private val sections: List[Section] = List(BaseSection, UsersSection, GroupsSection,
     SearchSection, CategoriesSection, NotificationsSection,ApproveSection)
 
-  def boot {
+  private val plabAddress = "https://194.85.162.171/"
+
+  def boot() {
     if (!DB.jndiJdbcConnAvailable_?) {
       val vendor =
         new StandardDBVendor(Props.get("db.driver") openOr "org.h2.Driver",
@@ -58,7 +60,7 @@ class Boot extends Bootable{
 
     LiftRules.resourceNames = "i18n/lift-core" :: LiftRules.resourceNames
 
-    LiftRules.jsArtifacts = JQuery14Artifacts
+    LiftRules.jsArtifacts = JQueryArtifacts
 
     // where to search snippets
     sections.foreach(s => LiftRules.addToPackages(s.currentPackage))
@@ -68,25 +70,33 @@ class Boot extends Bootable{
     lazy val loginUrl = "/user_mgt/login"
 
     // stateful redirect after login
-    def loginAndComeBack = {
+    def loginAndComeBack: RedirectWithState = {
       val uri = S.uriAndQueryString
       RedirectWithState ( loginUrl, RedirectState( () => User.loginRedirect.set(uri) , "Not logged in" -> NoticeType.Notice ) )
     }
 
-    val loggedIn = If(() => User.loggedIn_?, loginAndComeBack _ )
+    val loggedIn = If(() => User.loggedIn_?, loginAndComeBack)
 
-    val isSuperAdmin = If(() => {if(!User.currentUser.isEmpty) User.currentUser.openOrThrowException("User is not logged in").superUser.is else false},
-      () => RedirectWithState("/index", RedirectState( () => {} ,"Not a super user" -> NoticeType.Notice ) )
+    /**
+     * LocParam check that current user is a super admin
+     * Because of If(..) cannot be easily composed there should be loggedIn check performed before
+     */
+    val isSuperAdmin = If(
+      () => User.currentUser.map(_.superUser.is) openOr false,
+      () => RedirectWithState("/index", RedirectState(() => {}, "Not a super user" -> NoticeType.Notice))
     )
 
-    val isGroupAdmin = If(() => {
-      (for {
-        groupName <- S.param("groupname")
-        group     <- Group.find(By(Group.name,groupName))
-        user      <- User.currentUser
-        if user.id.is == group.owner.is
-      } yield true).openOr(false)
-    }, () => RedirectWithState("/index", RedirectState( () => {} ,"Not a group admin" -> NoticeType.Notice )))
+    /**
+     * LocParam check that current user is an admin of requested group (group name is sent via request param)
+     * Because of If(..) cannot be easily composed there should be loggedIn check performed before
+     */
+    val isGroupAdmin = If(
+      () => (for {
+               user      <- User.currentUser
+               groupName <- S.param("groupname")
+               group     <- Group.find(By(Group.name,groupName))
+            } yield user.id.is == group.owner.is) openOr false,
+      () => RedirectWithState("/index", RedirectState( () => {} ,"Not a group admin" -> NoticeType.Notice )))
 
     // Build SiteMap
     def sitemap() = SiteMap(
@@ -119,7 +129,7 @@ class Boot extends Bootable{
       },
       Menu("Experiments") / "experiments" >> LocGroup("mainmenu"),
 
-      Menu(Loc("virtualization", ExtLink("https://194.85.162.171/"), "Virtualization", LocGroup("mainmenu"))),
+      Menu(Loc("virtualization", ExtLink(plabAddress), "Virtualization", LocGroup("mainmenu"))),
 
       Menu("R service") / "r_suite" >> LocGroup("mainmenu"),
 
@@ -135,7 +145,7 @@ class Boot extends Bootable{
     // Custom 404 page
     LiftRules.uriNotFound.prepend(NamedPF("404handler"){
       case (req,failure) =>
-        NotFoundAsTemplate(ParsePath(List("404"),"html", false, false))
+        NotFoundAsTemplate(ParsePath(List("404"),"html", absolute = false, endSlash = false))
     })
 
 
@@ -181,7 +191,6 @@ class Boot extends Bootable{
 
     LiftRules.loggedInTest = Full(() => User.loggedIn_?)
 
-
     // Log Changer widget inittialization is required for setting setup
     // default location for log changer is {webapproot}/loglevel/change
     LogLevelChanger.init()
@@ -193,14 +202,16 @@ class Boot extends Bootable{
     LiftRules.handleMimeFile = OnDiskFileParamHolder.apply
 
     // Initialization for auto complete widget
-    AutoComplete.init
+    AutoComplete.init()
 
     // Initilization for table sorter widget
-    TableSorter.init
+    TableSorter.init()
 
+    // TODO do we use it?
     MenuWidget.init()
 
-    DefaultAuthDataLoader.init
+    // Check and create default users if necessary
+    DefaultAuthDataLoader.init()
 
     // Table sorter widget init
     TableSorter.init()
@@ -208,7 +219,7 @@ class Boot extends Bootable{
     //Init auto complete input
     AutoComplete.init()
 
-    LiftRules.statelessDispatchTable.append(TextileRenderer)
+    LiftRules.statelessDispatch.append(TextileRenderer)
 
     // for ajax file upload
     LiftRules.progressListener = {
@@ -234,17 +245,6 @@ class Boot extends Bootable{
     configMailer("smtp.gmail.com", "c3-project@ifunsoftware.com", "myverysecretpassword")
 
     FileUpload.init()
-
-    LiftRules.progressListener = {
-      val opl = LiftRules.progressListener
-      val ret: (Long, Long, Int) => Unit =
-        (a, b, c) => {
-          // println("progress listener "+a+" plus "+b+" "+c)
-          // Thread.sleep(100) -- demonstrate slow uploads
-          opl(a, b, c)
-        }
-      ret
-    }
 
     LiftRules.statelessDispatch.prepend {
       case _ if DB.currentConnection.isEmpty => () => Full(ServiceUnavailableResponse(10))
