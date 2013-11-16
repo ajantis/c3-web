@@ -17,16 +17,31 @@ class CategoryListPage {
     val categories = Category.findAll()
 
     def categoryContents(cat: Category) = {
+
+
+      val categoryFormId = "cat_" + cat.id.is
+
+      def deleteCat(): JsCmd = {
+        cat.delete_!
+        JsCmds.Replace(categoryFormId, NodeSeq.Empty)
+    }
+
+    ".cat [id]" #> categoryFormId &
+      ".cat *" #>
+        ((n: NodeSeq) => SHtml.ajaxForm(
+            ("h4 *" #> cat.name.is andThen
+              "* *" #> SHtml.memoize(f => f ++ SHtml.hidden(deleteCat _))).apply(n)
+          ))
+
+
       val tags: List[Tag] = cat.tags.toList
       ".tag" #> tags.map {
         tag: Tag => {
           val formId = "tag_" + tag.id.is
-
           def deleteTag(): JsCmd = {
             tag.delete_!
             JsCmds.Replace(formId, NodeSeq.Empty)
           }
-
           ".tag [id]" #> formId &
             ".tag *" #>
               ((n: NodeSeq) => SHtml.ajaxForm(
@@ -38,7 +53,6 @@ class CategoryListPage {
         ".muted *" #> cat.name &
         ".tagAddButton [id]" #> cat.id.is
     }
-
     ".tags_cont *" #> categories.map{ cat:Category =>  categoryContents(cat) } &
       "#new_tags" #> AddTag.addTags   andThen
       "* *" #> ((x: NodeSeq) => x ++ Script(OnLoad(JsCmds.JsHideId("left-panel"))))
