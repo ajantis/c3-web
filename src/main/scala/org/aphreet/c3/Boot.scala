@@ -40,7 +40,7 @@ import org.aphreet.c3.snippet.approve.ApproveSection
  */
 class Boot extends Bootable{
   private val sections: List[Section] = List(BaseSection, UsersSection, GroupsSection,
-    CategoriesSection, NotificationsSection,ApproveSection)
+    SearchSection, CategoriesSection, NotificationsSection,ApproveSection)
 
   def boot {
     if (!DB.jndiJdbcConnAvailable_?) {
