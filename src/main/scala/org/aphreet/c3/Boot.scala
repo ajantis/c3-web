@@ -19,7 +19,6 @@ import snippet.categories.CategoriesSection
 import snippet.groups.GroupsSection
 import snippet.logging.LogLevel
 import snippet.notifications.NotificationsSection
-import snippet.search.SearchSection
 import snippet.users.UsersSection
 import util.helpers.C3Streamer
 import util.{DefaultAuthDataLoader, TextileRenderer}
@@ -41,7 +40,7 @@ import org.aphreet.c3.snippet.approve.ApproveSection
  */
 class Boot extends Bootable{
   private val sections: List[Section] = List(BaseSection, UsersSection, GroupsSection,
-    SearchSection, CategoriesSection, NotificationsSection,ApproveSection)
+    CategoriesSection, NotificationsSection,ApproveSection)
 
   def boot {
     if (!DB.jndiJdbcConnAvailable_?) {
@@ -91,7 +90,7 @@ class Boot extends Bootable{
     // Build SiteMap
     def sitemap() = SiteMap(
 
-      Menu("Home") / "index",
+      Menu("index") / "index",
 
       Menu("About") / "about" >> LocGroup("footerMenu"),
 
@@ -125,9 +124,8 @@ class Boot extends Bootable{
 
       LogLevel.menu, // default log level menu is located at /loglevel/change
 
-      Menu("UserEdit") / "users" / "edituser" >> loggedIn >> Hidden,
+      Menu("UserEdit") / "users" / "edituser" >> loggedIn >> Hidden
 
-      Menu("Search") / "search" >> loggedIn >> Hidden
     )
 
     LiftRules.setSiteMapFunc(() => User.sitemapMutator(sitemap()))

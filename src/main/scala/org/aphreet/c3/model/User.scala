@@ -403,11 +403,9 @@ class User extends MegaProtoUser[User] with ManyToMany {
   }
 
   object enabled extends MappedBoolean(this){
-    override def defaultValue = false
+    override def defaultValue = true
   }
 
-      // this is just a prototype change
-  //<div class="input-prepend"><label for="password">{field.displayName}</label>{form}</div>
   override lazy val email: MappedEmail[T] = new MyEmail(this, 128){
 
     override def _toForm: Box[Elem] =

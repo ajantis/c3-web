@@ -32,7 +32,7 @@ $(document).ready( function(){
 
     //update url
      $(".search_form").submit(function(){
-        var url = "/search?query=" + $(".search_query").val();
+        var url = "/index?query=" + $(".search_query").val();
         history.pushState(null, null, url);
      });
 
