@@ -9,9 +9,10 @@ import net.liftweb.sitemap.Loc.Link
  * Copyright iFunSoftware 2011
  * @author Dmitry Ivanov
  */
-trait AbstractGroupPageLoc[Data <: GroupPageData]
-  extends ItemRewriteLoc[Group, Data] {
+trait AbstractGroupPageLoc[Data <: GroupPageData] extends ItemRewriteLoc[Group, Data] {
   def isAccessiblePage(page: Data): Boolean = {
-    User.currentUser.map(_.superUser.is).openOr(false)||page.group.isOpen.is || User.currentUser.map(_.groups.find(_.name.is == page.group.name.is).isDefined).openOr(false)
+    User.currentUser.map(_.superUser.is).openOr(false)||
+      page.group.isOpen.is ||
+      User.currentUser.map(_.groups.exists(_.name.is == page.group.name.is)).openOr(false)
   }
 }

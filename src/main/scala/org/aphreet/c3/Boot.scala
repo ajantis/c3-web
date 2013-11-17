@@ -50,7 +50,7 @@ class Boot extends Bootable{
             "jdbc:h2:lift_proto.db;AUTO_SERVER=TRUE",
           Props.get("db.user"), Props.get("db.password"))
 
-      LiftRules.unloadHooks.append(vendor.closeAllConnections_! _)
+      LiftRules.unloadHooks.append(vendor.closeAllConnections_!)
 
       DB.defineConnectionManager(DefaultConnectionIdentifier, vendor)
     }
@@ -72,7 +72,7 @@ class Boot extends Bootable{
       RedirectWithState ( loginUrl, RedirectState( () => User.loginRedirect.set(uri) , "Not logged in" -> NoticeType.Notice ) )
     }
 
-    val loggedIn = If(() => User.loggedIn_?, loginAndComeBack _ )
+    val loggedIn = If(() => User.loggedIn_?, loginAndComeBack )
 
     val isSuperAdmin = If(() => {if(!User.currentUser.isEmpty) User.currentUser.openOrThrowException("User is not logged in").superUser.is else false},
       () => RedirectWithState("/index", RedirectState( () => {} ,"Not a super user" -> NoticeType.Notice ) )
@@ -96,7 +96,7 @@ class Boot extends Bootable{
 
       Menu("Faq") / "faq" >> LocGroup("footerMenu"),
 
-      Menu("Groups") / "groups" >> loggedIn >> LocGroup("mainmenu") submenus {
+      Menu("Groups") / "groups" >> LocGroup("mainmenu") submenus {
         GroupsSection.menus:_*
       },
       Menu("users", "Users") / "users" >> loggedIn >> LocGroup("mainmenu") submenus {
@@ -133,7 +133,7 @@ class Boot extends Bootable{
     // Custom 404 page
     LiftRules.uriNotFound.prepend(NamedPF("404handler"){
       case (req,failure) =>
-        NotFoundAsTemplate(ParsePath(List("404"),"html", false, false))
+        NotFoundAsTemplate(ParsePath(List("404"),"html", absolute = false, endSlash = false))
     })
 
 
@@ -191,14 +191,14 @@ class Boot extends Bootable{
     LiftRules.handleMimeFile = OnDiskFileParamHolder.apply
 
     // Initialization for auto complete widget
-    AutoComplete.init
+    AutoComplete.init()
 
     // Initilization for table sorter widget
-    TableSorter.init
+    TableSorter.init()
 
     MenuWidget.init()
 
-    DefaultAuthDataLoader.init
+    DefaultAuthDataLoader.init()
 
     // Table sorter widget init
     TableSorter.init()
