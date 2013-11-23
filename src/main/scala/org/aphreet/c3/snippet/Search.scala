@@ -36,6 +36,7 @@ class Search extends PaginatorSnippet[SearchResultEntry] with C3Loggable{
   var entryHtml = NodeSeq.Empty
   var noResultsHtml = NodeSeq.Empty
   var paginationHtml = NodeSeq.Empty
+  var welcomeHtml = NodeSeq.Empty
 
   val queryInputId = "s_query"
   val queryParam = "query"
@@ -96,13 +97,13 @@ class Search extends PaginatorSnippet[SearchResultEntry] with C3Loggable{
 
 
     JsCmds.SetHtml("results", resultsHtml) &
-    JsCmds.SetHtml(paginationBarId, renderPagination(paginationHtml))
+      JsCmds.SetHtml(paginationBarId, renderPagination(paginationHtml))
   }
 
   private def toCss(result: SearchResultEntry): CssSel = {
     val resource = c3.getResource(result.address, List("c3.ext.fs.path"))
     val c3Path = C3Path(result.path)
-//    lazy val nodeName = resource.systemMetadata.getOrElse("c3.fs.nodename", "<Unknown>")
+    //    lazy val nodeName = resource.systemMetadata.getOrElse("c3.fs.nodename", "<Unknown>")
     val content = result.fragments.headOption.flatMap(_.strings.headOption.map(_.take(50)))
     //      val resourceName = c3Path.resourceType match {
     //        case MessagesType => "Message in group: " + c3Path.groupName
@@ -135,28 +136,28 @@ class Search extends PaginatorSnippet[SearchResultEntry] with C3Loggable{
     val newSQuery = SearchQuery(q, tags.get + tag.name.is,metadata)
 
     JsCmds.Replace("tag_" + tag.id.is, NodeSeq.Empty) &
-    JqJsCmds.AppendHtml(selectedTagsContainerId,
-      <li id={"sel_tag_" + tag.id.is} class="label btn-info sel-tag">
-        <span>{tag.name.is}</span>
-        <a onclick={SHtml.ajaxCall(JE.ValById(queryInputId), s => unselectTag(tag, s))._2.cmd.toJsCmd}>
-          <i class="icon-remove-sign icon-white"></i>
-        </a>
-      </li>
-    ) & redoSearch(0, newSQuery)
+      JqJsCmds.AppendHtml(selectedTagsContainerId,
+        <li id={"sel_tag_" + tag.id.is} class="label btn-info sel-tag">
+          <span>{tag.name.is}</span>
+          <a onclick={SHtml.ajaxCall(JE.ValById(queryInputId), s => unselectTag(tag, s))._2.cmd.toJsCmd}>
+            <i class="icon-remove-sign icon-white"></i>
+          </a>
+        </li>
+      ) & redoSearch(0, newSQuery)
   }
 
   private def unselectTag(tag: Tag, q: String): JsCmd = {
     val newSQuery = SearchQuery(q, tags.get - tag.name.is,metadata)
 
     JqJsCmds.AppendHtml("category_" + tag.category.get + "_tags", tagToCss(tag)(tagTemplate)) &
-    JsCmds.Replace("sel_tag_" + tag.id.is, NodeSeq.Empty) &
-    redoSearch(0, newSQuery)
+      JsCmds.Replace("sel_tag_" + tag.id.is, NodeSeq.Empty) &
+      redoSearch(0, newSQuery)
   }
 
   private def tagToCss(tag: Tag) = {
     "li [id]" #> ("tag_" + tag.id.is) &
-    ".name *" #> tag.name.is &
-    ".name [onclick]" #> SHtml.ajaxCall(JE.ValById(queryInputId), s => selectTag(tag, s))
+      ".name *" #> tag.name.is &
+      ".name [onclick]" #> SHtml.ajaxCall(JE.ValById(queryInputId), s => selectTag(tag, s))
   }
 
   def miniSearch = {
@@ -167,7 +168,7 @@ class Search extends PaginatorSnippet[SearchResultEntry] with C3Loggable{
       else S.notice("Empty search query")
     }
     "name=query [value]" #> S.param("query") &
-    "name=query" #> SHtml.onSubmit(process _)
+      "name=query" #> SHtml.onSubmit(process _)
   }
 
   private def renderPagination(xml: NodeSeq) = paginate(xml)
@@ -175,7 +176,7 @@ class Search extends PaginatorSnippet[SearchResultEntry] with C3Loggable{
   def unselectMetadata(idMetadata:String, metadataInst: String, q: String): JsCmd = {
     val newSQuery = SearchQuery(q, tags,metadata.get-metadataInst)
     JsCmds.Replace(idMetadata, NodeSeq.Empty) &
-    redoSearch(0, newSQuery)
+      redoSearch(0, newSQuery)
   }
 
   def addMetadataPair:CssSel = {
@@ -225,59 +226,65 @@ class Search extends PaginatorSnippet[SearchResultEntry] with C3Loggable{
       category => {
         val tags = category.tags.toList
         "ul [id]" #> ("category_" + category.id.is + "_tags") &
-        ".name *" #> category.name.is &
-        ".tag" #> tags.map { tag =>
-          tagToCss(tag)
-        }
+          ".name *" #> category.name.is &
+          ".tag" #> tags.map { tag =>
+            tagToCss(tag)
+          }
       }
     } &
-    ".search_form *" #> { (xml: NodeSeq) =>
-      SHtml.ajaxForm(
-        (".search_query [id]" #> queryInputId &
-         ".search_query [value]" #> queryString.get &
-         ".search_query" #> SHtml.onSubmit(s => {
-          queryString.set(s)
-         }) &
-         "type=submit" #> ( (xml: NodeSeq) =>
-           xml ++ SHtml.hidden{ () =>
-             if(queryString.isEmpty)
-               JsCmds.Noop
-             else
-               redoSearch(0, SearchQuery(queryString, tags,metadata))
-         })).apply(xml)
-      )
-    } &
-    ".add_metadata" #> addMetadataPair &
-    "#results *" #> {
-      val results = page
-      if (results.isEmpty){
-        ".entry *" #> ((xml: NodeSeq) => { entryHtml = xml; NodeSeq.Empty }) &
-        ".no_results" #> { (xml: NodeSeq) =>
-          { noResultsHtml = xml; (".query *" #> queryString.get).apply(xml) }
+      ".search_form *" #> { (xml: NodeSeq) =>
+        SHtml.ajaxForm(
+          (".search_query [id]" #> queryInputId &
+            ".search_query [value]" #> queryString.get &
+            ".search_query" #> SHtml.onSubmit(s => {
+              queryString.set(s)
+            }) &
+            "type=submit" #> ( (xml: NodeSeq) =>
+              xml ++ SHtml.hidden{ () =>
+                if(queryString.isEmpty)
+                  JsCmds.Noop
+                else
+                  redoSearch(0, SearchQuery(queryString, tags,metadata))
+              })).apply(xml)
+        )
+      } &
+      ".add_metadata" #> addMetadataPair &
+      "#results *" #> {
+        val results = page
+        if (results.isEmpty && !queryString.isEmpty ){
+          ".entry *" #> ((xml: NodeSeq) => { entryHtml = xml; NodeSeq.Empty }) &
+            ".no_results" #> { (xml: NodeSeq) =>
+            { noResultsHtml = xml; (".query *" #> queryString.get).apply(xml) }
+            }&
+            ".index"#> ((xml:NodeSeq)=> { welcomeHtml = xml; NodeSeq.Empty})
+        } else if(results.isEmpty && queryString.isEmpty){
+          ".entry *" #> ((xml: NodeSeq) => { entryHtml = xml; NodeSeq.Empty }) &
+          ".no_results" #> ((xml: NodeSeq) =>{noResultsHtml = xml; NodeSeq.Empty})&
+          ".index" #> ((xml:NodeSeq)=> { welcomeHtml = xml; xml})
         }
-      } else {
-        ".entry" #> ((xml: NodeSeq) => { entryHtml = xml; xml }) &
-        ".entry *" #> page.map { res: SearchResultEntry =>
-          toCss(res)
-        } &
-        ".no_results" #> ((xml: NodeSeq) => { noResultsHtml = xml; (".no_results *" #> NodeSeq.Empty).apply(xml) })
-      }
-    } &
-    ("#" + paginationBarId + " *") #> { (xml: NodeSeq) => { paginationHtml = xml; renderPagination(paginationHtml) } }
+        else {
+          ".entry" #> ((xml: NodeSeq) => { entryHtml = xml; xml }) &
+            ".entry *" #> page.map { res: SearchResultEntry =>
+              toCss(res)
+            } &
+            ".no_results" #> ((xml: NodeSeq) => { noResultsHtml = xml; (".no_results *" #> NodeSeq.Empty).apply(xml) })
+        }
+      } &
+      ("#" + paginationBarId + " *") #> { (xml: NodeSeq) => { paginationHtml = xml; renderPagination(paginationHtml) } }
   }
 
   private def createC3SearchQuery(contentQuery: String, tags: Iterable[String],metadata: Iterable[String]) = {
     val correctQueryString = if(!contentQuery.isEmpty) contentQuery.trim.split(" ").map(str=>{""+str+""}).mkString(" ")  else contentQuery
-     correctQueryString+
-    (if (!tags.isEmpty){
-      " " +
-        tags.map { t => Metadata.TAGS_META + ":\"" + t + "\"" }.mkString(" ") +
-      ""
-    } else "")+
-    (if(!metadata.isEmpty)
-      " " + metadata.mkString(" ")
-     else ""
-    )
+    correctQueryString+
+      (if (!tags.isEmpty){
+        " " +
+          tags.map { t => Metadata.TAGS_META + ":\"" + t + "\"" }.mkString(" ") +
+          ""
+      } else "")+
+      (if(!metadata.isEmpty)
+        " " + metadata.mkString(" ")
+      else ""
+        )
   }
 
   private def search(query: String): List[SearchResultEntry] = {
