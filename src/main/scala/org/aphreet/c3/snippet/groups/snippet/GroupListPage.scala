@@ -26,22 +26,27 @@ class GroupListPage {
   lazy val logger = Logger(classOf[GroupListPage])
 
   def list = {
-    val groupList =if(User.currentUserUnsafe.superUser.is) Group.findAll().toList
-      else User.currentUserUnsafe.groups.toList ::: Group.findAll(By(Group.isOpen,true))
 
-      ".container_groups" #> groupList.toSet.filter(_.isApprove==true).map{ group:Group => {
+    val groupList =  User.currentUser match {
+      case Full(u) =>   if(u.superUser.is) Group.findAll().toList
+      else u.groups.toList ::: Group.findAll(By(Group.isOpen,true))
 
-        val picName = if(!group.isOpen) "glyphicons_203_lock.png" else "glyphicons_043_group.png"
+      case Empty => Group.findAll(By(Group.isOpen,true))
+    }
 
-        val groupTags = group.getTags
-        ".tags_group" #> groupTags.map((tag: String) => {
-          ".tags_group *" #> tag
-        }) &
+    ".container_groups" #> groupList.toSet.filter(_.isApprove==true).map{ group:Group => {
+
+      val picName = if(!group.isOpen) "glyphicons_203_lock.png" else "glyphicons_043_group.png"
+
+      val groupTags = group.getTags
+      ".tags_group" #> groupTags.map((tag: String) => {
+        ".tags_group *" #> tag
+      }) &
         ".inf_left_groups [src]"#> ("/images/"+picName)&
-          "a *" #> group.name.is &
-          "a [href]" #> ("/groups/"+group.id)&
-          ".description_group *"#> group.getDescription
-      }
+        "a *" #> group.name.is &
+        "a [href]" #> ("/groups/"+group.id)&
+        ".description_group *"#> group.getDescription
+    }
     }
   }
 
@@ -60,7 +65,7 @@ class GroupListPage {
           newGroup = newGroup.owner(User.currentUserUnsafe)
           if (public != "false") newGroup.isOpen(true)
           if(newGroup.save) S.notice(S.?("approve.list.group") + newGroup.name)
-            else S.warning(newGroup.name + " isn't added")
+          else S.warning(newGroup.name + " isn't added")
         }
         case xs =>
           xs.foreach(f => S.error(f.msg))

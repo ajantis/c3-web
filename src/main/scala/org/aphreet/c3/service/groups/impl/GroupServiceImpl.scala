@@ -25,7 +25,7 @@ class GroupServiceImpl extends GroupService with C3Loggable{
   lazy val notificationManager = inject[NotificationManagerRef].open_!.actorRef
 
   override def createGroup(newGroup: Group, members: Iterable[User], tags:String, description:String): Box[Group] = {
-    val metadata: Map[String, String] = Map((TAGS_META -> tags.split(",").map(_.trim).mkString(",")),DESCRIPTION_META -> description)
+    val metadata: Map[String, String] = Map(TAGS_META -> tags.split(",").map(_.trim).mkString(","),DESCRIPTION_META -> description)
     val group = newGroup.saveMe()
 
     try {
@@ -86,8 +86,8 @@ class GroupServiceImpl extends GroupService with C3Loggable{
   private def createGroupMapping(groupId: String, metadata: Map[String, String], owner: Box[User]){
     val root = c3.getFile("/").asDirectory
 
-    val defaultMeta: Map[String, String] = Map((Metadata.GROUP_ID_META -> groupId)) ++
-      owner.map(u => Map[String, String]((Metadata.OWNER_ID_META -> u.id.is.toString))).getOrElse(Map())
+    val defaultMeta: Map[String, String] = Map(Metadata.GROUP_ID_META -> groupId) ++
+      owner.map(u => Map[String, String](Metadata.OWNER_ID_META -> u.id.is.toString)).getOrElse(Map())
     val metadataGroup: Map[String, String] = defaultMeta ++ metadata
 
     root.createDirectory(groupId, metadataGroup)
@@ -96,7 +96,6 @@ class GroupServiceImpl extends GroupService with C3Loggable{
       case Some(node) => val dir = node.asDirectory
       dir.createDirectory("files", metadataGroup)
       dir.createDirectory("messages", metadataGroup)
-      dir.createDirectory("wiki", metadataGroup)
       case None => throw new C3Exception("Failed to create directory for group " + groupId)
     }
   }

@@ -3,6 +3,7 @@ package org.aphreet.c3.snippet.groups.snippet
 import com.ifunsoftware.c3.access.fs.C3FileSystemNode
 import org.aphreet.c3.lib.metadata.Metadata._
 import org.aphreet.c3.model.User
+import net.liftweb.common.Full
 
 /**
  * @author Koyushev Sergey (mailto: serjk91@gmail.com)
@@ -57,7 +58,13 @@ trait C3FileAccessHelpers extends C3FileAccess with C3ResourceHelpers{
 
   def hasSuperAccess(resource:C3FileSystemNode) =  {
     val owner = nodeOwner(resource)
-    User.currentUserUnsafe.superUser.is || User.containsCurrent(owner.toList)
+    User.currentUser match {
+      case Full(user) => user.superUser.is || User.containsCurrent(owner.toList)
+      case _ => false
+    }
+
+
+
   }
 
 }

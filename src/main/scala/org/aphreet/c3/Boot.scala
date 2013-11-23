@@ -9,7 +9,7 @@ import Helpers._
 import org.aphreet.c3.model._
 import net.liftweb.mapper._
 import net.liftweb.http._
-import net.liftweb.http.js.jquery.{JQueryArtifacts, JQuery14Artifacts}
+import net.liftweb.http.js.jquery.JQueryArtifacts
 import net.liftmodules.widgets.logchanger._
 import net.liftmodules.widgets.uploadprogress._
 import net.liftmodules.widgets.tablesorter.TableSorter
@@ -19,7 +19,6 @@ import snippet.categories.CategoriesSection
 import snippet.groups.GroupsSection
 import snippet.logging.LogLevel
 import snippet.notifications.NotificationsSection
-import snippet.search.SearchSection
 import snippet.users.UsersSection
 import util.helpers.C3Streamer
 import util.{DefaultAuthDataLoader, TextileRenderer}
@@ -41,7 +40,7 @@ import org.aphreet.c3.snippet.approve.ApproveSection
  */
 class Boot extends Bootable{
   private val sections: List[Section] = List(BaseSection, UsersSection, GroupsSection,
-    SearchSection, CategoriesSection, NotificationsSection,ApproveSection)
+    CategoriesSection, NotificationsSection,ApproveSection)
 
   private val plabAddress = "https://194.85.162.171/"
 
@@ -57,7 +56,7 @@ class Boot extends Bootable{
             "jdbc:h2:lift_proto.db;AUTO_SERVER=TRUE",
           Props.get("db.user"), Props.get("db.password"))
 
-      LiftRules.unloadHooks.append(vendor.closeAllConnections_! _)
+      LiftRules.unloadHooks.append(vendor.closeAllConnections_!)
 
       DB.defineConnectionManager(DefaultConnectionIdentifier, vendor)
     }
@@ -90,28 +89,16 @@ class Boot extends Bootable{
       () => RedirectWithState("/index", RedirectState(() => {}, "Not a super user" -> NoticeType.Notice))
     )
 
-    /**
-     * LocParam check that current user is an admin of requested group (group name is sent via request param)
-     * Because of If(..) cannot be easily composed there should be loggedIn check performed before
-     */
-    val isGroupAdmin = If(
-      () => (for {
-               user      <- User.currentUser
-               groupName <- S.param("groupname")
-               group     <- Group.find(By(Group.name,groupName))
-            } yield user.id.is == group.owner.is) openOr false,
-      () => RedirectWithState("/index", RedirectState( () => {} ,"Not a group admin" -> NoticeType.Notice )))
-
     // Build SiteMap
     def sitemap() = SiteMap(
 
-      Menu("Home") / "index",
+      Menu("index") / "index",
 
       Menu("About") / "about" >> LocGroup("footerMenu"),
 
       Menu("Faq") / "faq" >> LocGroup("footerMenu"),
 
-      Menu("Groups") / "groups" >> loggedIn >> LocGroup("mainmenu") submenus {
+      Menu("Groups") / "groups" >> LocGroup("mainmenu") submenus {
         GroupsSection.menus:_*
       },
       Menu("users", "Users") / "users" >> loggedIn >> LocGroup("mainmenu") submenus {
@@ -139,9 +126,8 @@ class Boot extends Bootable{
 
       LogLevel.menu, // default log level menu is located at /loglevel/change
 
-      Menu("UserEdit") / "users" / "edituser" >> loggedIn >> Hidden,
+      Menu("UserEdit") / "users" / "edituser" >> loggedIn >> Hidden
 
-      Menu("Search") / "search" >> loggedIn >> Hidden
     )
 
     LiftRules.setSiteMapFunc(() => User.sitemapMutator(sitemap()))

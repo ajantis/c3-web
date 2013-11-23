@@ -1,4 +1,4 @@
-package org.aphreet.c3.snippet.search.snippet
+package org.aphreet.c3.snippet
 
 import net.liftweb.util._
 import Helpers._
@@ -18,7 +18,6 @@ import org.aphreet.c3.snippet.groups.snippet.C3ResourceHelpers
 import org.aphreet.c3.lib.metadata.Metadata._
 import scala.Some
 import com.ifunsoftware.c3.access.SearchResultEntry
-import org.aphreet.c3.snippet.search.snippet.SearchQuery
 import net.liftweb.mapper.By
 import net.liftweb.common.Empty
 
@@ -26,7 +25,7 @@ import net.liftweb.common.Empty
  * @author Sergey Koyushev (mailto: serjk91@gmail.com)
  * @author Dmitry Ivanov (mailto: id.ajantis@gmail.com)
  */
-class SearchForm extends PaginatorSnippet[SearchResultEntry] with C3Loggable{
+class Search extends PaginatorSnippet[SearchResultEntry] with C3Loggable{
 
   private val c3 = inject[C3System].openOrThrowException("c3Storage is not accessible")
   private val dateFormat = new SimpleDateFormat("MMM dd, yyyy")
@@ -163,7 +162,7 @@ class SearchForm extends PaginatorSnippet[SearchResultEntry] with C3Loggable{
   def miniSearch = {
     def process(query: String){
       if (!query.isEmpty){
-        S.redirectTo("/search?query=" + urlEncode(query))
+        S.redirectTo("/index?query=" + urlEncode(query))
       }
       else S.notice("Empty search query")
     }
@@ -283,24 +282,14 @@ class SearchForm extends PaginatorSnippet[SearchResultEntry] with C3Loggable{
 
   private def search(query: String): List[SearchResultEntry] = {
     logger.debug("Query to C3: " + query)
-    val userGroupsIds = User.currentUser.map(_.groups.map(_.id.is)).openOr(Nil)
-    val openGroups = Group.findOpenGroups.map(_.id.is)
-    c3.search(query).filter{p =>
-      if (p.path != null && !p.path.isEmpty){
-        val groupId = C3Path(p.path).groupName.toLong
-        userGroupsIds.contains(groupId) || openGroups.contains(groupId)
-      }else{
-        false
-      }
+    c3.search(query)
 
-    }
   }
 
   private def initSearchParams(){
     queryString.set(S.param("query").openOr(""))
     tags.set(Set())
     metadata.set(Set())
-    results.set(search(createC3SearchQuery(queryString, tags,metadata)))
   }
 }
 
