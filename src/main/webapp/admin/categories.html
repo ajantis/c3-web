@@ -2,6 +2,22 @@
     <div class="lift:bind-at?name=content">
         <div class="lift:CategoryListPage.list">
             <div class="cat well table tags_cont tags_cont_all">
+                <!--<div class="lift:CategoryListPage.adm">-->
+                    <a type="button" href="#edit_category" class="btn btn-success edit_cat" data-toggle="modal" title="Edit">Edit</a>
+                    <div id="edit_category" class="modal hide fade">
+                        <h4 class = "modal-header">New category name</h4>
+                        <div class="edit_meta">
+                            <form id="category_new_name">
+                                <input class="input_categoty disp_none" name="category_id"/>
+                                <input name="category_new_name" placeholder="Enter new category name..."/>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" data-dismiss="modal" class="btn">Cancel</button>
+                            <button type="submit" class="btn btn-success" form="category_new_name">Accept</button>
+                        </div>
+                    </div>
+                <!--</div>-->
                 <button type="submit" class="close close_orient"><i class="icon-remove-sign icon-white"></i></button>
                 <h4 class="muted">Economy</h4>
                 <hr class="border_none">
