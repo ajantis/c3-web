@@ -45,6 +45,7 @@ body > .navbar .brand:hover {
 -------------------------------------------------- */
 .main{
     min-height: 70%;
+    margin-top: 50px;
 }
 
 /* Header

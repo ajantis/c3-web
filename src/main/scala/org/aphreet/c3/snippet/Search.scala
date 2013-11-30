@@ -30,8 +30,6 @@ class Search extends PaginatorSnippet[SearchResultEntry] with C3Loggable{
   private val c3 = inject[C3System].openOrThrowException("c3Storage is not accessible")
   private val dateFormat = new SimpleDateFormat("MMM dd, yyyy")
 
-  val selectedTagsContainerId = "selected_tags"
-  val selectedMetadataContainerId = "metadata_container"
   val tagTemplate = <li class="tag"><a href="#" class="label btn-info name">Sample tag</a></li>
   var entryHtml = NodeSeq.Empty
   var noResultsHtml = NodeSeq.Empty
@@ -43,8 +41,6 @@ class Search extends PaginatorSnippet[SearchResultEntry] with C3Loggable{
   val paginationBarId = "pagination"
 
   object queryString extends SessionVar[String]("")
-  object tags extends SessionVar[Set[String]](Set())
-  object metadata extends SessionVar[Set[String]](Set())
   object firstP extends RequestVar[Long](S.param(offsetParam).map(toLong) openOr _first max 0)
   object results extends RequestVar[List[SearchResultEntry]](Nil)
 
@@ -68,7 +64,7 @@ class Search extends PaginatorSnippet[SearchResultEntry] with C3Loggable{
         if (first == newFirst)
           ("active", "#")
         else
-          ("", SHtml.ajaxCall(JE.ValById(queryInputId), s => redoSearch(newFirst, SearchQuery(s, Set(),Set())))._2.toJsCmd)
+          ("", SHtml.ajaxCall(JE.ValById(queryInputId), s => redoSearch(newFirst, SearchQuery(s)))._2.toJsCmd)
 
       <li class={liClass}><a onclick={onClick}>{ns}</a></li>
     }
@@ -81,20 +77,14 @@ class Search extends PaginatorSnippet[SearchResultEntry] with C3Loggable{
 
   private def redoSearch(pageNum: Long, q: SearchQuery): JsCmd = {
     firstP.set(pageNum)
-
     queryString.set(q.value)
-    tags.set(q.tags)
-    metadata.set(q.metadata)
-
-    results.set(search(createC3SearchQuery(queryString, tags,metadata)))
-
+    results.set(search(createC3SearchQuery(queryString)))
     val resultsHtml: NodeSeq = {
       if (results.isEmpty)
         (".query *" #> queryString.get).apply(noResultsHtml)
       else
         page.flatMap(entry => toCss(entry).apply(entryHtml))
     }
-
 
     JsCmds.SetHtml("results", resultsHtml) &
       JsCmds.SetHtml(paginationBarId, renderPagination(paginationHtml))
@@ -103,14 +93,8 @@ class Search extends PaginatorSnippet[SearchResultEntry] with C3Loggable{
   private def toCss(result: SearchResultEntry): CssSel = {
     val resource = c3.getResource(result.address, List("c3.ext.fs.path"))
     val c3Path = C3Path(result.path)
-    //    lazy val nodeName = resource.systemMetadata.getOrElse("c3.fs.nodename", "<Unknown>")
     val content = result.fragments.headOption.flatMap(_.strings.headOption.map(_.take(50)))
-    //      val resourceName = c3Path.resourceType match {
-    //        case MessagesType => "Message in group: " + c3Path.groupName
-    //        case _ => c3Path.resourceName
-    //      }
     val tags = resource.metadata.get(Metadata.TAGS_META).map(_.split(",").toList).getOrElse(Nil)
-
     val owner = resource.metadata.get(OWNER_ID_META) match {
       case Some(id) if !id.isEmpty => User.find(By(User.id, id.toLong))
       case _ => resource.metadata.get(MSG_CREATOR_META) match {
@@ -132,92 +116,12 @@ class Search extends PaginatorSnippet[SearchResultEntry] with C3Loggable{
       }
   }
 
-  private def selectTag(tag: Tag, q: String): JsCmd = {
-    val newSQuery = SearchQuery(q, tags.get + tag.name.is,metadata)
-
-    JsCmds.Replace("tag_" + tag.id.is, NodeSeq.Empty) &
-      JqJsCmds.AppendHtml(selectedTagsContainerId,
-        <li id={"sel_tag_" + tag.id.is} class="label btn-info sel-tag">
-          <span>{tag.name.is}</span>
-          <a onclick={SHtml.ajaxCall(JE.ValById(queryInputId), s => unselectTag(tag, s))._2.cmd.toJsCmd}>
-            <i class="icon-remove-sign icon-white"></i>
-          </a>
-        </li>
-      ) & redoSearch(0, newSQuery)
-  }
-
-  private def unselectTag(tag: Tag, q: String): JsCmd = {
-    val newSQuery = SearchQuery(q, tags.get - tag.name.is,metadata)
-
-    JqJsCmds.AppendHtml("category_" + tag.category.get + "_tags", tagToCss(tag)(tagTemplate)) &
-      JsCmds.Replace("sel_tag_" + tag.id.is, NodeSeq.Empty) &
-      redoSearch(0, newSQuery)
-  }
-
   private def tagToCss(tag: Tag) = {
     "li [id]" #> ("tag_" + tag.id.is) &
-      ".name *" #> tag.name.is &
-      ".name [onclick]" #> SHtml.ajaxCall(JE.ValById(queryInputId), s => selectTag(tag, s))
-  }
-
-  def miniSearch = {
-    def process(query: String){
-      if (!query.isEmpty){
-        S.redirectTo("/index?query=" + urlEncode(query))
-      }
-      else S.notice("Empty search query")
-    }
-    "name=query [value]" #> S.param("query") &
-      "name=query" #> SHtml.onSubmit(process _)
+      ".name *" #> tag.name.is
   }
 
   private def renderPagination(xml: NodeSeq) = paginate(xml)
-
-  def unselectMetadata(idMetadata:String, metadataInst: String, q: String): JsCmd = {
-    val newSQuery = SearchQuery(q, tags,metadata.get-metadataInst)
-    JsCmds.Replace(idMetadata, NodeSeq.Empty) &
-      redoSearch(0, newSQuery)
-  }
-
-  def addMetadataPair:CssSel = {
-    var key = ""
-    var value = ""
-
-    def addMetadataInst(metadataInst:String): JsCmd  = {
-
-      if(!metadata.contains(metadataInst)){
-        val newSQuery = SearchQuery(queryString, tags.get, metadata.get+metadataInst)
-        val idMetadata = key+"_"+value
-
-        JqJsCmds.AppendHtml(selectedMetadataContainerId,
-          <li id={idMetadata} class="label btn-success sel-tag">
-            <span>{key}</span>
-            <span> : </span>
-            <span>{value}</span>
-            <a onclick={SHtml.ajaxCall(JE.ValById(queryInputId), s => unselectMetadata(idMetadata,metadataInst, s))._2.cmd.toJsCmd}>
-              <i class="icon-remove-sign icon-white"></i>
-            </a>
-          </li>
-        ) & redoSearch(0, newSQuery)
-      }else JsCmds.Noop
-
-    }
-
-    ".add_metadata *" #> { (xml: NodeSeq) =>
-      SHtml.ajaxForm(
-        ( "name=key" #> SHtml.onSubmit(key=_) &
-          "name=value" #> SHtml.onSubmit(value=_) &
-          "type=submit" #> ( (xml: NodeSeq) =>
-            xml ++ SHtml.hidden{ () =>
-              if(key=="" || value=="")
-                JsCmds.Noop
-              else
-                addMetadataInst(key+":\""+value+"\"")
-            })).apply(xml)
-      )
-    }
-  }
-
 
   def render = {
     initSearchParams()
@@ -244,11 +148,10 @@ class Search extends PaginatorSnippet[SearchResultEntry] with C3Loggable{
                 if(queryString.isEmpty)
                   JsCmds.Noop
                 else
-                  redoSearch(0, SearchQuery(queryString, tags,metadata))
+                  redoSearch(0, SearchQuery(queryString))
               })).apply(xml)
         )
       } &
-      ".add_metadata" #> addMetadataPair &
       "#results *" #> {
         val results = page
         if (results.isEmpty && !queryString.isEmpty ){
@@ -273,31 +176,20 @@ class Search extends PaginatorSnippet[SearchResultEntry] with C3Loggable{
       ("#" + paginationBarId + " *") #> { (xml: NodeSeq) => { paginationHtml = xml; renderPagination(paginationHtml) } }
   }
 
-  private def createC3SearchQuery(contentQuery: String, tags: Iterable[String],metadata: Iterable[String]) = {
-    val correctQueryString = if(!contentQuery.isEmpty) contentQuery.trim.split(" ").map(str=>{""+str+""}).mkString(" ")  else contentQuery
-    correctQueryString+
-      (if (!tags.isEmpty){
-        " " +
-          tags.map { t => Metadata.TAGS_META + ":\"" + t + "\"" }.mkString(" ") +
-          ""
-      } else "")+
-      (if(!metadata.isEmpty)
-        " " + metadata.mkString(" ")
-      else ""
-        )
+  private def createC3SearchQuery(contentQuery: String) = {
+    if(!contentQuery.isEmpty) contentQuery.trim.split(" ").map(str=>{""+str+""}).mkString(" ")
+      else contentQuery
+
   }
 
   private def search(query: String): List[SearchResultEntry] = {
     logger.debug("Query to C3: " + query)
     c3.search(query)
-
   }
 
   private def initSearchParams(){
     queryString.set(S.param("query").openOr(""))
-    tags.set(Set())
-    metadata.set(Set())
   }
 }
 
-case class SearchQuery(value: String, tags: Set[String],metadata: Set[String])
+case class SearchQuery(value: String)
