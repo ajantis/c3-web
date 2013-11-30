@@ -39,9 +39,19 @@ class GroupTabMenu {
     def tabMenu(id: String, active: String) = {
       "li" #> tabs.get(id).map{
         case (key, tab) =>
-          "a *" #> tab.name &
+          val iconClass = tab.name match {
+            case "About" => "icon-star"
+            case "Files" => "icon-file"
+            case "Messages" => "icon-comment"
+            case "Settings" => "icon-wrench"
+            case _ => "icon-heart"
+          }
+          val activeClass =  if(key == active) "active" else ""
+          "span *" #> tab.name &
             "a [href]" #> tab.path &
-            "li [class+]" #> (if(key == active) "active" else "")
+            ".iconClass [class+]"#>  iconClass &
+            ".btn-small [class+]" #> activeClass
+
       }
     }
 
