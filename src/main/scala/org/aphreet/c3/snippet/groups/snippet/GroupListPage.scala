@@ -29,7 +29,7 @@ class GroupListPage {
 
     val groupList =  User.currentUser match {
       case Full(u) =>   if(u.superUser.is) Group.findAll().toList
-      else u.groups.toList ::: Group.findAll(By(Group.isOpen,true))
+        else u.groups.toList ::: Group.findAll(By(Group.isOpen,true))
 
       case Empty => Group.findAll(By(Group.isOpen,true))
     }
