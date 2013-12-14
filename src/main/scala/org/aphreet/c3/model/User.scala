@@ -371,8 +371,6 @@ object User extends User with MetaMegaProtoUser[User]{
       case _ => false
     }
   }
-
-
 }
 
 /**

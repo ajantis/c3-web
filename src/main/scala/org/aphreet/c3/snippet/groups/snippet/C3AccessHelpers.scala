@@ -4,11 +4,12 @@ import com.ifunsoftware.c3.access.fs.C3FileSystemNode
 import org.aphreet.c3.lib.metadata.Metadata._
 import org.aphreet.c3.model.User
 import net.liftweb.common.Full
+import org.aphreet.c3.model.Group
 
 /**
  * @author Koyushev Sergey (mailto: serjk91@gmail.com)
  */
-trait C3FileAccessHelpers extends C3FileAccess with C3ResourceHelpers{
+trait C3AccessHelpers extends C3FileAccess with C3ResourceHelpers{
 
   //default value acl
   def acl(acl:String) = {
@@ -19,6 +20,20 @@ trait C3FileAccessHelpers extends C3FileAccess with C3ResourceHelpers{
         "r---"
     else
       acl
+  }
+
+  def hasWriteAccess(group:Group) = {
+    User.currentUser match {
+      case Full(user) => !user.groups.filter(_==group).isEmpty
+      case _ => false
+    }
+  }
+
+  def hasSuperAccess = {
+    User.currentUser match {
+      case Full(user) => user.superUser.is
+      case _ => false
+    }
   }
 
   def isGroupRead(resource:C3FileSystemNode) = {
@@ -41,31 +56,26 @@ trait C3FileAccessHelpers extends C3FileAccess with C3ResourceHelpers{
     metaACL.charAt(3) == 'w'
   }
 
-  def checkReadAccess(resource:C3FileSystemNode) = {
+  def checkReadAccessResource(resource:C3FileSystemNode) = {
     if(User.containsCurrent(group.users.toList))
       isGroupRead(resource)
     else
       isOtherUserRead(resource)
-
   }
 
-  def hasWriteAccess(resource:C3FileSystemNode) = {
+  def hasWriteAccessResource(resource:C3FileSystemNode) = {
     if(User.containsCurrent(group.users.toList))
       isGroupWrite(resource)
     else
       isOtherUserWrite(resource)
   }
 
-  def hasSuperAccess(resource:C3FileSystemNode) =  {
+  def hasSuperAccessResource(resource:C3FileSystemNode) =  {
     val owner = nodeOwner(resource)
     User.currentUser match {
       case Full(user) => user.superUser.is || User.containsCurrent(owner.toList)
       case _ => false
     }
-
-
-
   }
-
 }
 
