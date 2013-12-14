@@ -1,52 +1,36 @@
 <div class="lift:surround?with=default">
     <div class="lift:bind-at?name=left-panel">
-        <div class="well message_cont">
-            <div class="lift:GroupPageMessages.putCometChat">
-                <div id="main_ul_id">
-                    <div id="main_li_id">
-                        <h5><span name="who">Dmitry Ivanov</span>: <span class="message_data" name="when">2012-08-02</span></h5>
-                        <p name="body" class="message_text">
-                            My Message
-                        </p>
-                        <hr/>
-                    </div>
-                </div>
-            </div>
-            <div class="lift:GroupPageMessages.linkMessages">
-                <a href="#" class="btn btn-mini message_button">Journal</a>
-            </div>
+        <div><img src="http://lorempixel.com/200/200/"/></div>
+        <div class="row-fluid lift:GroupPage.info">
+        <hr class="hr_group"/>
+        <div id="legend">
+            <h2 class="GroupName">Group name</h2>
         </div>
-    </div>
-    <div class="lift:bind-at?name=content">
-        <div id="group-tab-wrapper">
-            <div class="tabbable"> <!-- Only required for left/right tabs -->
-                <div class="row-fluid lift:GroupPage.embedTabMenu">
-                </div>
-                <div class="row-fluid lift:GroupPage.info">
-                    <div id="legend">
-                        <h2 class="GroupName">Group name</h2>
+            <div class="lift:GroupPage.embedTabMenu">
+            </div>
+            <div class="accordion" id="accordion2">
+                <div class="accordion-group">
+                    <div class="accordion-heading">
+                        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseOne">
+                            Info
+                        </a>
                     </div>
-                    <div>
-                        <p class="GroupDescription description_box" rows="20" cols="150">Group description</p>
-                    </div>
-                    <hr class="hr_group"/>
-                    <div>
-                        <img class="inf_left" src="/images/tag.png">
-                        <span class="tags_group label label btn-info inf_left">table</span>
-                    </div>
-                    <br/>
-
-                    <div class="lift:GroupPageSettings.listShortUser">
-                        <span class="lead">In the group:</span>
-                        <div class="ListShortGroupUser">
-                                <i class="icon-user inf_left"></i>
-                                <a class="short_name inf_left" href="#">Users</a>
-                                <span class="inf_left"> | </span>
+                    <div id="collapseOne" class="accordion-body collapse in">
+                        <div class="accordion-inner">
+                            <p class="GroupDescription description_box">Group description</p>
+                            <div class="lift:GroupPageSettings.owner">
+                                <span class="lead">Owner: <a class="GroupOwner">User Name</a></span>
+                            </div>
                         </div>
                     </div>
 
                 </div>
             </div>
+    <div class="lift:bind-at?name=content">
+        <div id="group-tab-wrapper">
+            <div class="tabbable"> <!-- Only required for left/right tabs -->
+                </div>
+            </div>
         </div>
     </div>
-</div>
+</div> </div>

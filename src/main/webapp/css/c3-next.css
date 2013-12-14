@@ -778,6 +778,8 @@ tr.metadata_form_header th{
 .hr_group{
     margin:0!important;
     border-bottom: 1px solid #ddd!important;
+    padding-bottom:10px;
+    padding-top:10px;
 }
 .checkbox_public{
     margin-top: -4px!important;
@@ -832,3 +834,5 @@ tr.metadata_form_header th{
 .tags_margin{
     margin-right:3px;
 }
+
+/* FOR GROUP PAGE SECTION*/

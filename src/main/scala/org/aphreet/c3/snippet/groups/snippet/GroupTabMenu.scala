@@ -18,10 +18,10 @@ class GroupTabMenu {
   object tabs extends RequestVar[GroupTabsFunc](defaultTabs)
 
   private def defaultTabs(groupId: String): List[(String, GroupTab)] =
-    List("about" -> AboutTab(groupId),
-      "files" -> FilesTab(groupId)
-    )
+    List("files" -> FilesTab(groupId),
+      "about" -> AboutTab(groupId)
 
+    )
   def render: CssSel = {
     val activeTab = S.attr("active")
     val groupId = S.attr("group_id")
@@ -35,6 +35,7 @@ class GroupTabMenu {
           tabs.set(groupId => defaultTabs(groupId) ::: List("messages" -> MessagesTab(groupId)))
       }
       case _ =>
+
     }
     def tabMenu(id: String, active: String) = {
       "li" #> tabs.get(id).map{
@@ -75,5 +76,5 @@ class GroupTabMenu {
 sealed abstract class GroupTab(val name: String, val path: String)
 case class AboutTab(groupId: String) extends GroupTab("About", "/groups/" + groupId)
 case class FilesTab(groupId: String) extends GroupTab("Files", "/groups/" + groupId + "/files/")
-case class MessagesTab(groupId: String) extends GroupTab("Messages", "/groups/" + groupId + "/messages")
+case class MessagesTab(groupId: String) extends GroupTab("Journal", "/groups/" + groupId + "/messages")
 case class SettingsTab(groupId: String) extends GroupTab("Settings", "/groups/" + groupId + "/settings")

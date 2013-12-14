@@ -44,7 +44,7 @@ class GroupListPage {
       }) &
         ".inf_left_groups [src]"#> ("/images/"+picName)&
         "a *" #> group.name.is &
-        "a [href]" #> ("/groups/"+group.id)&
+        "a [href]" #> ("/groups/"+group.id+"/files/")&
         ".description_group *"#> group.getDescription
     }
     }
