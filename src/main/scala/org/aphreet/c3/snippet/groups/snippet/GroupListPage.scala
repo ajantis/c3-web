@@ -29,7 +29,7 @@ class GroupListPage {
 
     val groupList =  User.currentUser match {
       case Full(u) =>   if(u.superUser.is) Group.findAll().toList
-      else u.groups.toList ::: Group.findAll(By(Group.isOpen,true))
+        else u.groups.toList ::: Group.findAll(By(Group.isOpen,true))
 
       case Empty => Group.findAll(By(Group.isOpen,true))
     }
@@ -67,8 +67,8 @@ class GroupListPage {
       }) &
         ".inf_left_groups [src]"#> ("/images/"+picName)&
         "a *" #> group.name.is &
-        "a [href]" #> ("/groups/"+group.id)&
-        ".description_group *"#> group.getDescription &
+        "a [href]" #> ("/groups/"+group.id+"/files/")&
+        ".description_group *"#> group.getDescription
         ".owner_group  *" #> group.owner.name
     }
     }

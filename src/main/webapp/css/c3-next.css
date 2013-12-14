@@ -45,6 +45,7 @@ body > .navbar .brand:hover {
 -------------------------------------------------- */
 .main{
     min-height: 70%;
+    margin-top: 50px;
 }
 
 /* Header
@@ -782,6 +783,8 @@ overflow: hidden;
 .hr_group{
     margin:0!important;
     border-bottom: 1px solid #ddd!important;
+    padding-bottom:10px;
+    padding-top:10px;
 }
 .checkbox_public{
     margin-top: -4px!important;
@@ -835,4 +838,7 @@ overflow: hidden;
 }
 .tags_margin{
     margin-right:3px;
+}
+
+/* FOR GROUP PAGE SECTION*/
 }

@@ -1,192 +1,173 @@
 <!DOCTYPE html>
 <html>
-    <head xmlns="http://www.w3.org/1999/xhtml">
-        <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <meta name="description" content="" />
-        <meta name="keywords" content="" />
+<head xmlns="http://www.w3.org/1999/xhtml">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="" />
+    <meta name="keywords" content="" />
 
-        <title>CSE vLaboratory</title>
-        <link rel="icon" href="/images/c3favicon.ico" />
+    <title>CSE vLaboratory</title>
+    <link rel="icon" href="/images/c3favicon.ico" />
 
-        <!-- Le styles -->
-        <link href="/bootstrap/css/bootstrap.css" rel="stylesheet"/>
+    <!-- Le styles -->
+    <link href="/bootstrap/css/bootstrap.css" rel="stylesheet"/>
 
-        <link href="/css/c3-next.css" rel="stylesheet"/>
-        <link href="/bootstrap/css/bootstrap-responsive.css" rel="stylesheet"/>
+    <link href="/css/c3-next.css" rel="stylesheet"/>
+    <link href="/bootstrap/css/bootstrap-responsive.css" rel="stylesheet"/>
 
-        <!--Old links -->
-        <link rel="icon" href="/images/c3favicon.ico" />
+    <!--Old links -->
+    <link rel="icon" href="/images/c3favicon.ico" />
 
-        <script id="jquery" src="/js/jquery-1.7.2.js" type="text/javascript"></script>
-        <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.11/themes/base/jquery-ui.css" id="theme"/>
-        <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.11/jquery-ui.min.js"></script>
-
-        <script src="/js/jquery.blockUI.js" type="text/javascript"></script>
-        <script src="/js/categories.js" type="text/javascript"></script>
-        <script src="/js/search.js"  type="text/javascript"></script>
-        <!--End-->
-
-        <link href="/css/fileupload5.0.2/jquery.fileupload-ui.css" type="text/css" rel="stylesheet"/>
-        <script src="http://ajax.aspnetcdn.com/ajax/jquery.templates/beta1/jquery.tmpl.min.js"></script>
-        <script src="/js/fileupload5.0.2/jquery.fileupload.js" type="text/javascript"></script>
-        <script src="/js/fileupload5.0.2/jquery.fileupload-ui.js" type="text/javascript"></script>
-        <script id="json" src="/classpath/json.js" type="text/javascript"></script>
-
-        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
-        <!--[if lt IE 9]>
-        <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
-        <![endif]-->
-
-    </head>
-    <body>
-        <div class="navbar navbar-inverse navbar-fixed-top">
-            <div class="navbar-inner">
-                <div class="container">
-                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                    </a>
-                    <a class="brand" href="/">CSE vLab</a>
-                    <div class="nav-collapse">
-                        <span class="lift:Menu.builder?linkToSelf=true&group=mainmenu&li_item:class=active;ul:class=nav"></span>
-                    </div>
-                    <img class="ajax-loader" alt="" id="ajax-loader" src="/images/ajax-loader.gif" />
-
-                    <div class="list-menu pull-right user-menu">
-                            <div class="lift:MainSnippet.currentUser">
-                                    <div class="user">
-                                        <div class="btn-group lift:NotificationsUserBar">
-                                            <a class="btn btn-primary" href="/user_mgt/edit">
-                                                <i class="icon-user icon-white"></i> <span class="username">Ivan Petrov</span>
-                                            </a>
-                                            <a class="btn btn-primary dropdown-toggle" data-toggle="dropdown" href="#">
-                                                <span class="badge unread_count">1</span>
-                                                <span class="caret"></span>
-                                            </a>
-                                            <ul class="dropdown-menu menu_users">
-                                                <li class="admin_section">
-                                                    <lift:Menu.item name="admin">
-                                                        <i class="icon-wrench"></i> Administration
-                                                    </lift:Menu.item>
-                                                </li>
-                                                <li class="divider admin_section"></li>
-                                                <li>
-                                                    <lift:Menu.item name="notifications">
-                                                        <span class="badge unread_count">1</span> Notifications
-                                                    </lift:Menu.item>
-                                                </li>
-                                                <li>
-                                                    <lift:Menu.item name="ChangePassword"><i class="icon-pencil"></i> Change password</lift:Menu.item>
-                                                </li>
-                                                <li class="divider"></li>
-                                                <li>
-                                                    <lift:Menu.item name="Logout">
-                                                        <i class="icon-off"></i> Sign out
-                                                    </lift:Menu.item>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                    <div class="not_logged_in">
-                                        <div class="btn-group">
-                                            <a class="btn btn-primary" href="/user_mgt/login"><span class="username">Login</span></a>
-                                        </div>
-                                    </div>
-                            </div>
-                    </div>
-
-                    <form class="lift:Search.miniSearch?form=post navbar-search pull-right">
-                        <input name="query" type="text" class="search-query span3" style="width: 80%" placeholder="Search" />
-                    </form>
-
-                </div>
-            </div>
-        </div>
-
-        <div class="container main">
-
-            <div class="row">
-                <div class="span12">
-                    <ul class="lift:Breadcrumbs.breadcrumb breadcrumb">
-                        <li>
-                            <a class="link" href="#">Home</a> <span class="divider">></span>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-
-            <div class="lift:LiftMessages row">
-                <div class="lift_messages_container span4 offset4">
-                    <div id="s_errors" class="errors">
-                        <div class="alert alert-error fade in">
-                            <button type="button" class="close" data-dismiss="alert">×</button>
-                            <p class="message">Here go all errors</p>
-                        </div>
-                    </div>
-
-                    <div id="s_warnings" class="warnings">
-                        <div class="alert alert-warning fade in">
-                            <button type="button" class="close" data-dismiss="alert">×</button>
-                            <p class="message">Here go all warnings</p>
-                        </div>
-                    </div>
-
-                    <div id="s_notices" class="notices">
-                        <div class="alert alert-info fade in">
-                            <button type="button" class="close" data-dismiss="alert">×</button>
-                            <p class="message">Here go all notices</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div id="categories_s" class="row">
-                <div class="span10 offset1" id="categories_search">
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="span2" id="left-panel">
-                    <!--Sidebar content-->
-                    <div id="left-panel-content"></div>
-                </div>
-                <div class="span10" id="content">
-                    <!--Body content-->
-                </div>
-            </div>
-
-        </div>
-
-        <footer class="footer">
-           <div class="container">
-             <p class="pull-right"><a href="#">Back to top</a></p>
-             <p>&copy; <a href="http://www.ifunsoftware.com"><i>iFunSoftware</i></a></p>
-             <ul class="footer-links">
-               <li><a href="https://github.com/ifunsoftware/c3-web">Source code</a></li>
-               <li><a href="https://github.com/ifunsoftware/c3-web/wiki">Roadmap and changelog</a></li>
-             </ul>
-           </div>
-         </footer>
-
-        <!-- javascript
-        ================================================== -->
-        <!-- Placed at the end of the document so the pages load faster -->
-        <!--<script src="/bootstrap/js/bootstrap.js"></script> -->
-        <script src="/bootstrap/js/bootstrap-transition.js"></script>
-        <script src="/bootstrap/js/bootstrap-alert.js"></script>
-        <script src="/bootstrap/js/bootstrap-modal.js"></script>
-        <script src="/bootstrap/js/bootstrap-dropdown.js"></script>
-        <script src="/bootstrap/js/bootstrap-scrollspy.js"></script>
-        <script src="/bootstrap/js/bootstrap-tab.js"></script>
-        <script src="/bootstrap/js/bootstrap-tooltip.js"></script>
-        <script src="/bootstrap/js/bootstrap-popover.js"></script>
-        <script src="/bootstrap/js/bootstrap-button.js"></script>
+    <script id="jquery" src="/js/jquery-1.7.2.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.11/themes/base/jquery-ui.css" id="theme"/>
+    <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.11/jquery-ui.min.js"></script>
         <script src="/bootstrap/js/bootstrap-collapse.js"></script>
-        <script src="/bootstrap/js/bootstrap-carousel.js"></script>
-        <script src="/bootstrap/js/bootstrap-typeahead.js"></script>
+    <script src="/js/jquery.blockUI.js" type="text/javascript"></script>
+    <script src="/js/categories.js" type="text/javascript"></script>
+    <script src="/js/search.js"  type="text/javascript"></script>
+    <!--End-->
 
-    </body>
+    <link href="/css/fileupload5.0.2/jquery.fileupload-ui.css" type="text/css" rel="stylesheet"/>
+    <script src="http://ajax.aspnetcdn.com/ajax/jquery.templates/beta1/jquery.tmpl.min.js"></script>
+    <script src="/js/fileupload5.0.2/jquery.fileupload.js" type="text/javascript"></script>
+    <script src="/js/fileupload5.0.2/jquery.fileupload-ui.js" type="text/javascript"></script>
+    <script id="json" src="/classpath/json.js" type="text/javascript"></script>
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+</head>
+<body>
+<div class="navbar navbar-inverse navbar-fixed-top">
+    <div class="navbar-inner">
+        <div class="container">
+            <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </a>
+            <a class="brand" href="/">CSE vLab</a>
+            <div class="nav-collapse">
+                <span class="lift:Menu.builder?linkToSelf=true&group=mainmenu&li_item:class=active;ul:class=nav"></span>
+            </div>
+            <img class="ajax-loader" alt="" id="ajax-loader" src="/images/ajax-loader.gif" />
+
+            <div class="list-menu pull-right user-menu">
+                <div class="lift:MainSnippet.currentUser">
+                    <div class="user">
+                        <div class="btn-group lift:NotificationsUserBar">
+                            <a class="btn btn-primary" href="/user_mgt/edit">
+                                <i class="icon-user icon-white"></i> <span class="username">Ivan Petrov</span>
+                            </a>
+                            <a class="btn btn-primary dropdown-toggle" data-toggle="dropdown" href="#">
+                                <span class="badge unread_count">1</span>
+                                <span class="caret"></span>
+                            </a>
+                            <ul class="dropdown-menu menu_users">
+                                <li class="admin_section">
+                                    <lift:Menu.item name="admin">
+                                        <i class="icon-wrench"></i> Administration
+                                    </lift:Menu.item>
+                                </li>
+                                <li class="divider admin_section"></li>
+                                <li>
+                                    <lift:Menu.item name="notifications">
+                                        <span class="badge unread_count">1</span> Notifications
+                                    </lift:Menu.item>
+                                </li>
+                                <li>
+                                    <lift:Menu.item name="ChangePassword"><i class="icon-pencil"></i> Change password</lift:Menu.item>
+                                </li>
+                                <li class="divider"></li>
+                                <li>
+                                    <lift:Menu.item name="Logout">
+                                        <i class="icon-off"></i> Sign out
+                                    </lift:Menu.item>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="not_logged_in">
+                        <div class="btn-group">
+                            <a class="btn btn-primary" href="/user_mgt/login"><span class="username">Login</span></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container main">
+    <div class="lift:LiftMessages row">
+        <div class="lift_messages_container span4 offset4">
+            <div id="s_errors" class="errors">
+                <div class="alert alert-error fade in">
+                    <button type="button" class="close" data-dismiss="alert">×</button>
+                    <p class="message">Here go all errors</p>
+                </div>
+            </div>
+            <div id="s_warnings" class="warnings">
+                <div class="alert alert-warning fade in">
+                    <button type="button" class="close" data-dismiss="alert">×</button>
+                    <p class="message">Here go all warnings</p>
+                </div>
+            </div>
+            <div id="s_notices" class="notices">
+                <div class="alert alert-info fade in">
+                    <button type="button" class="close" data-dismiss="alert">×</button>
+                    <p class="message">Here go all notices</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="categories_s" class="row">
+        <div class="span10 offset1" id="categories_search">
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="span2" id="left-panel">
+            <!--Sidebar content-->
+            <div id="left-panel-content"></div>
+        </div>
+        <div class="span10" id="content">
+            <!--Body content-->
+        </div>
+    </div>
+
+</div>
+
+<footer class="footer">
+    <div class="container">
+        <p class="pull-right"><a href="#">Back to top</a></p>
+        <p>&copy; <a href="http://www.ifunsoftware.com"><i>iFunSoftware</i></a></p>
+        <ul class="footer-links">
+            <li><a href="https://github.com/ifunsoftware/c3-web">Source code</a></li>
+            <li><a href="https://github.com/ifunsoftware/c3-web/wiki">Roadmap and changelog</a></li>
+        </ul>
+    </div>
+</footer>
+
+<!-- javascript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+<!--<script src="/bootstrap/js/bootstrap.js"></script> -->
+<script src="/bootstrap/js/bootstrap-transition.js"></script>
+<script src="/bootstrap/js/bootstrap-alert.js"></script>
+<script src="/bootstrap/js/bootstrap-modal.js"></script>
+<script src="/bootstrap/js/bootstrap-dropdown.js"></script>
+<script src="/bootstrap/js/bootstrap-scrollspy.js"></script>
+<script src="/bootstrap/js/bootstrap-tab.js"></script>
+<script src="/bootstrap/js/bootstrap-tooltip.js"></script>
+<script src="/bootstrap/js/bootstrap-popover.js"></script>
+<script src="/bootstrap/js/bootstrap-button.js"></script>
+<script src="/bootstrap/js/bootstrap-collapse.js"></script>
+<script src="/bootstrap/js/bootstrap-carousel.js"></script>
+<script src="/bootstrap/js/bootstrap-typeahead.js"></script>
+
+</body>
 
 </html>
