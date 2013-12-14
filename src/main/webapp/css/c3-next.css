@@ -734,7 +734,7 @@ tr.metadata_form_header th{
 }
 .inf_right   {
     float: right;
-    margin-left: 5px;
+    margin-left: 15px;
     margin-top: 2px;
     margin-right: 5px;
 }
@@ -754,11 +754,16 @@ tr.metadata_form_header th{
 }
 .description_group{
     margin-left: 20px;
-    margin-top:-20px;
+    margin-top:0px;
     color: #666;
     font-size: 13px;
     font-style: italic;
     padding-top:5px;
+}
+
+.desc_panel {
+height: 25px;
+overflow: hidden;
 }
 
 .description_group_settings{
