@@ -30,7 +30,6 @@ object AddTag {
 
     def process() = {
       val category = Category.find(categoryId)
-
       if(category.isEmpty)
         S.error("Category is not found!")
       else if (tags=="")
@@ -54,7 +53,7 @@ object AddTag {
 
         })
         if (successfully)
-          S.notice("Tags is added.")
+          S.notice("Tag is added.")
 
       }
     }

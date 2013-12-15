@@ -735,7 +735,7 @@ tr.metadata_form_header th{
 }
 .inf_right   {
     float: right;
-    margin-left: 5px;
+    margin-left: 15px;
     margin-top: 2px;
     margin-right: 5px;
 }
@@ -755,11 +755,16 @@ tr.metadata_form_header th{
 }
 .description_group{
     margin-left: 20px;
-    margin-top:-20px;
+    margin-top:0px;
     color: #666;
     font-size: 13px;
     font-style: italic;
     padding-top:5px;
+}
+
+.desc_panel {
+height: 25px;
+overflow: hidden;
 }
 
 .description_group_settings{
@@ -778,6 +783,8 @@ tr.metadata_form_header th{
 .hr_group{
     margin:0!important;
     border-bottom: 1px solid #ddd!important;
+    padding-bottom:10px;
+    padding-top:10px;
 }
 .checkbox_public{
     margin-top: -4px!important;
@@ -831,4 +838,7 @@ tr.metadata_form_header th{
 }
 .tags_margin{
     margin-right:3px;
+}
+
+/* FOR GROUP PAGE SECTION*/
 }

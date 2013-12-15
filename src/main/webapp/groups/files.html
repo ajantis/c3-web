@@ -1,10 +1,35 @@
 <div class="lift:surround?with=default;at=content" xmlns="http://www.w3.org/1999/html">
 <div class="lift:bind-at?name=left-panel">
+    <div><img src="http://lorempixel.com/200/200/"/></div>
+    <div class="row-fluid lift:GroupPage.info">
+        <hr class="hr_group"/>
+        <div id="legend">
+            <h2 class="GroupName">Group name</h2>
+        </div>
+        <div class="lift:GroupPageFiles.embedTabMenu">
+        </div>
+        <div class="accordion" id="accordion2">
+            <div class="accordion-group">
+                <div class="accordion-heading">
+                    <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseOne">
+                        Info
+                    </a>
+                </div>
+                <div id="collapseOne" class="accordion-body collapse in">
+                    <div class="accordion-inner">
+                        <p class="GroupDescription description_box">Group description</p>
+                        <div class="lift:GroupPageSettings.owner">
+                            <span class="lead">Owner: <a class="GroupOwner">User Name</a></span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
 </div>
 <div id="group-tab-wrapperwell message_cont">
     <div class="tabbable"> <!-- Only required for left/right tabs -->
-
-        <div class="row-fluid lift:GroupPageFiles.embedTabMenu"></div>
 
         <!-- select2 -->
         <link href="/assets/select2/select2.css" rel="stylesheet">

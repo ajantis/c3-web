@@ -36,7 +36,30 @@ class GroupListPage {
 
     ".container_groups" #> groupList.toSet.filter(_.isApprove==true).map{ group:Group => {
 
-      val picName = if(!group.isOpen) "glyphicons_203_lock.png" else "glyphicons_043_group.png"
+      val picName = if(!group.isOpen)
+      {
+        User.currentUser match {
+          case Full(u) =>
+          if(u.groups.contains(group))
+          {
+            "glyphicons_203_openlock.png"
+          }
+          else
+          {
+            group.owner.obj match {
+              case Full(own) =>
+                if (own.id == u.id) "glyphicons_043_203_openlock_admin.png"
+                else "glyphicons_203_lock.png"
+              case Empty => "glyphicons_203_lock.png"
+            }
+          }
+          case Empty => "glyphicons_043_group.png"
+        }
+      }
+      else
+      {
+        "glyphicons_043_group.png"
+      }
 
       val groupTags = group.getTags
       ".tags_group" #> groupTags.map((tag: String) => {
@@ -44,8 +67,9 @@ class GroupListPage {
       }) &
         ".inf_left_groups [src]"#> ("/images/"+picName)&
         "a *" #> group.name.is &
-        "a [href]" #> ("/groups/"+group.id)&
+        "a [href]" #> ("/groups/"+group.id+"/files/")&
         ".description_group *"#> group.getDescription
+        ".owner_group  *" #> group.owner.name
     }
     }
   }
