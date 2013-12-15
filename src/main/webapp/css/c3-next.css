@@ -766,6 +766,9 @@ tr.metadata_form_header th{
 height: 25px;
 overflow: hidden;
 }
+.info_group{
+    padding-top:8px;
+}
 
 .description_group_settings{
     margin-top: 0;

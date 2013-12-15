@@ -68,7 +68,7 @@ class GroupListPage {
         ".inf_left_groups [src]"#> ("/images/"+picName)&
         "a *" #> group.name.is &
         "a [href]" #> ("/groups/"+group.id+"/files/")&
-        ".description_group *"#> group.getDescription
+        ".description_group *"#> group.getDescription &
         ".owner_group  *" #> group.owner.name
     }
     }
@@ -76,7 +76,6 @@ class GroupListPage {
 
   def action = {
     "#add_group" #> add
-
   }
 
   def add:CssSel = {

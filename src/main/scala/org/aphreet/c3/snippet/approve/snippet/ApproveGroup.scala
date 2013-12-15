@@ -11,9 +11,9 @@ import org.aphreet.c3.snippet.LiftMessages
 import org.aphreet.c3.lib.{NotificationManagerRef, DependencyFactory}
 import org.aphreet.c3.service.groups.GroupService
 import org.aphreet.c3.lib.DependencyFactory._
-import net.liftweb.common.Full
 import org.aphreet.c3.service.notifications.NotificationManagerProtocol.CreateNotification
 import org.aphreet.c3.service.notifications.{ApproveGroupMsg, AddedToGroupMsg}
+//import com.ifunsoftware.c3.access.C3NotFoundException
 
 /**
  * @author Koyushev Sergey (mailto: serjk91@gmail.com)
@@ -34,29 +34,25 @@ class ApproveGroup {
 
         def approveGroup(): JsCmd = {
           group.getGroupC3 match {
-            case Full(groupFileNode)             =>
+            case Full(groupFileNode) => {
               // we don't need to create a C3 mapping for this group, it already exists
               processGroupApproval(group, owner) &
-              LiftMessages.ajaxNotice(s"Group ${group.name} is approved")
-
-            case Failure("File not found", _, _) =>
+                LiftMessages.ajaxNotice(s"Group ${group.name} is approved")
+            }
+            case Failure(msg,Full(e), _) =>
               // we need to create a C3 mapping first and then create a group
               createAndApprove(group, owner)
-
-
-            case Failure(msg, _, _)              =>
-              LiftMessages.ajaxError(msg)
           }
         }
 
-        val groupTags = group.getTags
+        val groupTags = group.tags.split(",")
 
         ".tags_group"              #> groupTags.map { ".tags_group *" #> _ } &
-        ".list_group_approve [id]" #> group.id &
-        ".group_name *"            #> group.name &
-        ".group_description *"     #> group.description &
-        ".group_owner *"           #> owner.niceName&
-        ".approve_group [onclick]" #> SHtml.ajaxInvoke(()=>approveGroup())
+          ".list_group_approve [id]" #> group.id &
+          ".group_name *"            #> group.name &
+          ".group_description *"     #> group.description &
+          ".group_owner *"           #> owner.niceName&
+          ".approve_group [onclick]" #> SHtml.ajaxInvoke(()=>approveGroup())
 
       }
     }
@@ -65,7 +61,6 @@ class ApproveGroup {
   private def processGroupApproval(group: Group, owner: User): JsCmd = {
     group.isApprove(true).save
     notificationManager ! CreateNotification(ApproveGroupMsg(group, owner.id.is))
-
     JsCmds.Replace(group.id.is.toString, NodeSeq.Empty)
   }
 
@@ -77,7 +72,7 @@ class ApproveGroup {
       case Failure(msg, _, _) =>
         LiftMessages.ajaxError(msg)
 
-      case _                  =>
+      case _ =>
         LiftMessages.ajaxError("Group is not approved")
     }
   }
