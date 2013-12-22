@@ -66,13 +66,14 @@ class ApproveGroup {
   private def createAndApprove(group: Group, owner: User): JsCmd = {
     groupService.createGroup(group, group.tags, group.description) match {
       case Full(g) =>
-        processGroupApproval(group, owner) & LiftMessages.ajaxNotice(s"Group ${g.name} is approved and created")
+        processGroupApproval(group, owner) & LiftMessages.ajaxNotice(s"Group ${g.name} is created and approved")
 
-      case Failure(msg, _, _) =>
-        LiftMessages.ajaxError(msg)
-
-      case _ =>
-        LiftMessages.ajaxError("Group is not approved")
+      case other   =>
+        val reason = other match {
+          case Failure(msg, _, _) => msg
+          case _                  => null
+        }
+        LiftMessages.ajaxError(s"Group is not created. Reason: $reason")
     }
   }
 }
