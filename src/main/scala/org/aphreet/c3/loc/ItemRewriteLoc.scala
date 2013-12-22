@@ -66,10 +66,10 @@ trait ItemRewriteLoc[S, T <: PageData] extends Loc[T] {
   private class PrefixRewriteRequest(prefix: List[String]) {
     def unapply(in: RewriteRequest): Option[T] = {
       in.path.partPath.splitAt(prefix.length) match {
-        case (`prefix`, id :: rest) => {
+        case (`prefix`, id :: rest) =>
           //wrapItem(getItem(id))
           finishPath(getItem(id), rest, in.path.suffix)
-        }
+
         case _ => Empty
       }
     }
@@ -79,8 +79,9 @@ trait ItemRewriteLoc[S, T <: PageData] extends Loc[T] {
 
   override def rewrite: LocRewrite = Full({
     case ItemRewriteRequest(item) =>
-      (RewriteResponse(ParsePath(pathList, "", true, false), Map.empty, true),
-       item)
+      val response = RewriteResponse(
+        ParsePath(pathList, suffix = "", absolute = true, endSlash = false), Map.empty, stopRewriting = true)
+      response -> item
   })
 }
 

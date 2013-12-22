@@ -1,20 +1,22 @@
-package org.aphreet.c3.comet
+package org.aphreet.c3
+package comet
 
-import net.liftweb.http._
-import js.{JsCmds, JsCmd}
-import net.liftweb.common._
 import org.aphreet.c3.util.C3Exception
 import org.aphreet.c3.model.{Group, User, Message}
-import net.liftweb.util.{ClearClearable, Helpers}
-import net.liftweb.util.Helpers._
-import scala.xml.{Text, NodeSeq}
-import js.jquery.JqJsCmds.PrependHtml
-import net.liftweb.http.js.JsCmds._
-import java.util
-import net.liftmodules.textile.TextileParser
 import org.aphreet.c3.util.helpers.DateTimeHelpers
+
+import net.liftweb.util.Helpers
+import net.liftmodules.textile.TextileParser
+import net.liftweb.common._
+import net.liftweb.http._
+import js.{JsCmds, JsCmd}
+import js.jquery.JqJsCmds.PrependHtml
+import js.JE.JsVar
+import js.JsCmds._
+
+import scala.xml.{Text, NodeSeq}
 import scala.language.postfixOps
-import net.liftweb.http.js.JE.JsVar
+import java.util.Date
 
 /**
  * @author Dmitry Ivanov (mailto: id.ajantis@gmail.com)
@@ -24,7 +26,7 @@ trait GroupMessagesLog extends CometActor with CometListener {
 
   private val logger: Logger = Logger(classOf[GroupMessagesLog])
 
-  private val group: Box[Group] = S.attr("group_id").flatMap(Group.find(_))
+  private val group: Box[Group] = S.attr("group_id").flatMap(Group.find)
   private val messageServer: Box[MessageServer] = group.map(MessageServerFactory(_))
 
   private var messages: List[Message] = Nil
@@ -45,13 +47,13 @@ trait GroupMessagesLog extends CometActor with CometListener {
   // by diffing the lists and then sending a partial update
   // to the browser
   override def lowPriority = {
-    case MessageServerUpdate(value) => {
+    case MessageServerUpdate(value) =>
       val update = (value filterNot (messages contains)).reverse.
         map(b => PrependHtml(ulId, line(b)))
 
       partialUpdate(update)
       messages = value
-    }
+
     case _ => logger.error("Not sure how we got here.")
   }
 
@@ -111,7 +113,7 @@ trait GroupMessagesLog extends CometActor with CometListener {
         } &
         "#tags_input *" #> Text("") &
         "#postit" #> SHtml.onSubmit((s: String) => content = s.trim) &
-        "type=submit" #> ((xml: NodeSeq) => xml ++ SHtml.hidden(sendMessage _)) apply(xml)
+        "type=submit" #> ((xml: NodeSeq) => xml ++ SHtml.hidden(sendMessage)) apply xml
       }
     }}
   }
@@ -137,7 +139,7 @@ trait GroupMessagesLog extends CometActor with CometListener {
    */
   def toHtml(msg: String): NodeSeq = TextileParser.paraFixer(TextileParser.toHtml(msg, Empty))
 
-  private def formatMsgCreationDate(date: util.Date): String = DateTimeHelpers.todayTimeOrPastDate(date)
+  private def formatMsgCreationDate(date: Date): String = DateTimeHelpers.todayTimeOrPastDate(date)
 
 }
 

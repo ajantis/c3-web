@@ -34,7 +34,7 @@ class GroupListPage {
       case Empty => Group.findAll(By(Group.isOpen,true))
     }
 
-    ".container_groups" #> groupList.toSet.filter(_.isApprove==true).map{ group:Group => {
+    ".container_groups" #> groupList.toSet.filter(_.isApproved).map{ group:Group => {
 
       val picName = if(!group.isOpen)
       {

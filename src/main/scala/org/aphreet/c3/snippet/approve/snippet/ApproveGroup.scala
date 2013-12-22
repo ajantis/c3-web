@@ -34,12 +34,12 @@ class ApproveGroup {
 
         def approveGroup(): JsCmd = {
           group.getGroupC3 match {
-            case Full(groupFileNode) => {
+            case Full(groupFileNode) =>
               // we don't need to create a C3 mapping for this group, it already exists
               processGroupApproval(group, owner) &
-                LiftMessages.ajaxNotice(s"Group ${group.name} is approved")
-            }
-            case Failure(msg,Full(e), _) =>
+              LiftMessages.ajaxNotice(s"Group ${group.name} is approved")
+
+            case _                   =>
               // we need to create a C3 mapping first and then create a group
               createAndApprove(group, owner)
           }
@@ -48,12 +48,11 @@ class ApproveGroup {
         val groupTags = group.tags.split(",")
 
         ".tags_group"              #> groupTags.map { ".tags_group *" #> _ } &
-          ".list_group_approve [id]" #> group.id &
-          ".group_name *"            #> group.name &
-          ".group_description *"     #> group.description &
-          ".group_owner *"           #> owner.niceName&
-          ".approve_group [onclick]" #> SHtml.ajaxInvoke(()=>approveGroup())
-
+        ".list_group_approve [id]" #> group.id &
+        ".group_name *"            #> group.name &
+        ".group_description *"     #> group.description &
+        ".group_owner *"           #> owner.niceName&
+        ".approve_group [onclick]" #> SHtml.ajaxInvoke(() => approveGroup())
       }
     }
   }
@@ -67,13 +66,14 @@ class ApproveGroup {
   private def createAndApprove(group: Group, owner: User): JsCmd = {
     groupService.createGroup(group, group.tags, group.description) match {
       case Full(g) =>
-        processGroupApproval(group, owner) & LiftMessages.ajaxNotice(s"Group ${g.name} is approved and created")
+        processGroupApproval(group, owner) & LiftMessages.ajaxNotice(s"Group ${g.name} is created and approved")
 
-      case Failure(msg, _, _) =>
-        LiftMessages.ajaxError(msg)
-
-      case _ =>
-        LiftMessages.ajaxError("Group is not approved")
+      case other   =>
+        val reason = other match {
+          case Failure(msg, _, _) => msg
+          case _                  => null
+        }
+        LiftMessages.ajaxError(s"Group is not created. Reason: $reason")
     }
   }
 }

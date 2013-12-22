@@ -15,14 +15,14 @@ object DateTimeHelpersTest extends Specification{
      val currentDayDate = TimeHelpers.dayNow
      currentDayDate.setHours(22)
      currentDayDate.setMinutes(4)
-     todayTimeOrPastDate(currentDayDate) must be equalTo("22:04")
+     todayTimeOrPastDate(currentDayDate) must be equalTo "22:04"
   }
 
   "'DateTimeHelpers' should format a date for date of past or future days with pattern like '15 Jan 2013'" in {
     val someDate = new SimpleDateFormat("dd/MMM/yyyy").parse("22/Jan/2013")
     val someFutureDate = new SimpleDateFormat("dd/MMM/yyyy").parse("05/Feb/2050")
 
-    todayTimeOrPastDate(someDate) must be equalTo("22 Jan 2013")
-    todayTimeOrPastDate(someFutureDate) must be equalTo("05 Feb 2050")
+    todayTimeOrPastDate(someDate) must be equalTo "22 Jan 2013"
+    todayTimeOrPastDate(someFutureDate) must be equalTo "05 Feb 2050"
   }
 }
