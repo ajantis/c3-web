@@ -40,9 +40,9 @@ import snippet.users.UsersSection
  * A class that's instantiated early and run.  It allows the application
  * to modify lift's environment
  */
-class Boot extends Bootable{
-  private val sections: List[Section] = List(BaseSection, UsersSection, GroupsSection,
-    CategoriesSection, NotificationsSection,ApproveSection)
+class Boot extends Bootable {
+  private val sections: List[Section] =
+    List(BaseSection, UsersSection, GroupsSection, CategoriesSection, NotificationsSection, ApproveSection)
 
   private val plabAddress = "https://194.85.162.171/"
 
@@ -77,7 +77,8 @@ class Boot extends Bootable{
     // stateful redirect after login
     def loginAndComeBack: RedirectWithState = {
       val uri = S.uriAndQueryString
-      RedirectWithState ( loginUrl, RedirectState( () => User.loginRedirect.set(uri) , "Not logged in" -> NoticeType.Notice ) )
+      RedirectWithState(
+        loginUrl, RedirectState( () => User.loginRedirect.set(uri) , "Not logged in" -> NoticeType.Notice ) )
     }
 
     val loggedIn = If(() => User.loggedIn_?, loginAndComeBack)
