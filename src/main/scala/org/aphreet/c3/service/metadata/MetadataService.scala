@@ -34,16 +34,16 @@ class MetadataService(notificationManager: ActorRef) extends Actor with C3Loggab
   }
 
   def receive = {
-    case CheckForMetadataUpdates => {
+    case CheckForMetadataUpdates =>
       // query C3 for resources with special S4 meta processed tag
       logger.debug("Querying C3 system for S4 processed resources...")
-      c3.query(Map((S4_PROCESSED_FLAG_META -> "true")), res => self ! ProcessC3Resource(res))
-    }
-    case task @ ProcessC3Resource(res) => {
-      logger.debug("C3 resource " + res.address + " is retrieved. Forwarding for processing...")
+      c3.query(Map(S4_PROCESSED_FLAG_META -> "true"), res => self ! ProcessC3Resource(res))
+
+    case task @ ProcessC3Resource(res) =>
+      logger.debug(s"C3 resource ${res.address} is retrieved. Forwarding for processing...")
       // forward to actual workers to process
       workersRouted forward task
-    }
+
     case msg => logger.error("Unknown message is received: " + msg)
   }
 
