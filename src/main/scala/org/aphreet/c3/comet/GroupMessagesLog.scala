@@ -47,13 +47,13 @@ trait GroupMessagesLog extends CometActor with CometListener {
   // by diffing the lists and then sending a partial update
   // to the browser
   override def lowPriority = {
-    case MessageServerUpdate(value) => {
+    case MessageServerUpdate(value) =>
       val update = (value filterNot (messages contains)).reverse.
         map(b => PrependHtml(ulId, line(b)))
 
       partialUpdate(update)
       messages = value
-    }
+
     case _ => logger.error("Not sure how we got here.")
   }
 
