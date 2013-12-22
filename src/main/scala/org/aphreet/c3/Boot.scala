@@ -44,22 +44,12 @@ class Boot extends Bootable {
   private val sections: List[Section] =
     List(BaseSection, UsersSection, GroupsSection, CategoriesSection, NotificationsSection, ApproveSection)
 
-  private val plabAddress = "https://194.85.162.171/"
-
-  private val defaultMailHost = "smtp.gmail.com"
-  private val defaultMailUser = "c3-project@ifunsoftware.com"
-  private val defaultMailPassword = "myverysecretpassword"
+  import Boot._
 
   def boot() {
     if (!DB.jndiJdbcConnAvailable_?) {
-      val vendor =
-        new StandardDBVendor(Props.get("db.driver") openOr "org.h2.Driver",
-          Props.get("db.url") openOr
-            "jdbc:h2:lift_proto.db;AUTO_SERVER=TRUE",
-          Props.get("db.user"), Props.get("db.password"))
-
+      val vendor = new StandardDBVendor(dbDriver, dbUrl, dbUserOpt, dbPassOpt)
       LiftRules.unloadHooks.append(vendor.closeAllConnections_!)
-
       DB.defineConnectionManager(DefaultConnectionIdentifier, vendor)
     }
 
@@ -232,9 +222,7 @@ class Boot extends Bootable {
       case r if r.path.partPath.headOption.exists(_ == "dav") => false
     })
 
-    configMailer(Props.get("mail.host").openOr(defaultMailHost),
-                 Props.get("mail.user").openOr(defaultMailUser),
-                 Props.get("mail.password").openOr(defaultMailPassword))
+    configMailer(mailHost, mailUser, mailPass)
 
     FileUpload.init()
 
@@ -266,4 +254,22 @@ class Boot extends Bootable {
       override def getPasswordAuthentication = new PasswordAuthentication(user, password)
     })
   }
+}
+
+object Boot {
+  private val defaultMailHost = "smtp.gmail.com"
+  private val defaultMailUser = "c3-project@ifunsoftware.com"
+  private val defaultMailPassword = "myverysecretpassword"
+  private val defaultPlabUrl = "https://194.85.162.171/"
+
+  val plabAddress = Props.get("plab.address", defaultPlabUrl)
+
+  val mailHost = Props.get("mail.host", defaultMailHost)
+  val mailUser = Props.get("mail.user").openOr(defaultMailUser)
+  val mailPass = Props.get("mail.password").openOr(defaultMailPassword)
+
+  val dbDriver = Props.get("db.driver", "org.h2.Driver")
+  val dbUrl = Props.get("db.url", "jdbc:h2:lift_proto.db;AUTO_SERVER=TRUE")
+  val dbUserOpt = Props.get("db.user")
+  val dbPassOpt = Props.get("db.password")
 }
