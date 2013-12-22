@@ -1,11 +1,13 @@
-package org.aphreet.c3.util.helpers
+package org.aphreet.c3
+package util.helpers
 
-import concurrent.duration
-import duration._
-import org.aphreet.c3.lib.DependencyFactory
+import lib.DependencyFactory
+
+import scala.concurrent.duration._
+import scala.language.postfixOps
+
 import akka.actor.ActorSystem
 import akka.util.Timeout
-import scala.languageFeature.postfixOps
 
 /**
  * @author Dmitry Ivanov (mailto: id.ajantis@gmail.com)
