@@ -48,12 +48,11 @@ class ApproveGroup {
         val groupTags = group.tags.split(",")
 
         ".tags_group"              #> groupTags.map { ".tags_group *" #> _ } &
-          ".list_group_approve [id]" #> group.id &
-          ".group_name *"            #> group.name &
-          ".group_description *"     #> group.description &
-          ".group_owner *"           #> owner.niceName&
-          ".approve_group [onclick]" #> SHtml.ajaxInvoke(()=>approveGroup())
-
+        ".list_group_approve [id]" #> group.id &
+        ".group_name *"            #> group.name &
+        ".group_description *"     #> group.description &
+        ".group_owner *"           #> owner.niceName&
+        ".approve_group [onclick]" #> SHtml.ajaxInvoke(() => approveGroup())
       }
     }
   }
