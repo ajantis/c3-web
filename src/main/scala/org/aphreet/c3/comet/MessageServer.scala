@@ -23,7 +23,9 @@ class MessageServer(val group: Group) extends LiftActor with ListenerManager {
       logger.debug("Received a message: " + msg + ". Saving...")
       msgService.save(msg)
       updateListeners()
-    case _ =>
+
+    case msg @ _ =>
+      logger.error(s"Unknown message received from comet actor: $msg")
   }
 
   def createUpdate = MessageServerUpdate(msgService.findAll(group).take(15).toList)
