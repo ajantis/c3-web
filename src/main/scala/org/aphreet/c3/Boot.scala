@@ -1,12 +1,9 @@
 package org.aphreet.c3
 
-import _root_.net.liftweb.util._
-import _root_.net.liftweb.common._
-import _root_.net.liftweb.http.provider._
-import _root_.net.liftweb.sitemap._
+import net.liftweb.util._
+import net.liftweb.http.provider._
+import net.liftweb.sitemap._
 import net.liftweb.sitemap.Loc._
-import Helpers._
-import org.aphreet.c3.model._
 import net.liftweb.mapper._
 import net.liftweb.http._
 import net.liftweb.http.js.jquery.JQueryArtifacts
@@ -15,14 +12,6 @@ import net.liftmodules.widgets.uploadprogress._
 import net.liftmodules.widgets.tablesorter.TableSorter
 import net.liftmodules.widgets.autocomplete.AutoComplete
 import net.liftmodules.widgets.menu.MenuWidget
-import snippet.categories.CategoriesSection
-import snippet.groups.GroupsSection
-import snippet.logging.LogLevel
-import snippet.notifications.NotificationsSection
-import snippet.users.UsersSection
-import util.helpers.C3Streamer
-import util.{DefaultAuthDataLoader, TextileRenderer}
-import javax.mail.{Authenticator, PasswordAuthentication}
 import net.liftweb.util.Props
 import net.liftweb.http.Html5Properties
 import net.liftweb.http.InMemoryResponse
@@ -32,7 +21,20 @@ import net.liftweb.http.NotFoundAsTemplate
 import net.liftweb.sitemap.Loc.LocGroup
 import net.liftweb.http.ServiceUnavailableResponse
 import net.liftweb.sitemap.Loc.If
-import org.aphreet.c3.snippet.approve.ApproveSection
+
+import javax.mail.{ Authenticator, PasswordAuthentication }
+
+import util.helpers.C3Streamer
+import util.{ DefaultAuthDataLoader, TextileRenderer }
+import model._
+
+import snippet.approve.ApproveSection
+import snippet.categories.CategoriesSection
+import snippet.groups.GroupsSection
+import snippet.logging.LogLevel
+import snippet.notifications.NotificationsSection
+import snippet.users.UsersSection
+
 
 /**
  * A class that's instantiated early and run.  It allows the application
