@@ -11,6 +11,8 @@ import org.aphreet.c3.lib.metadata.Metadata
 import Metadata._
 
 import scala.concurrent.duration._
+import scala.language.postfixOps
+
 import akka.actor
 import akka.routing.FromConfig
 import actor.{ActorRef, Actor, OneForOneStrategy}
