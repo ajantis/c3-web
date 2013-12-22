@@ -19,8 +19,7 @@ import scala.language.postfixOps
  * Copyright iFunSoftware 2013
  * @author Dmitry Ivanov
  */
-class MetadataService(notificationManager: ActorRef) extends Actor with C3Loggable{
-
+class MetadataService(notificationManager: ActorRef) extends Actor with C3Loggable {
   private val c3 = inject[C3System].open_!
 
   val workersRouted =
