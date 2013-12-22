@@ -1,19 +1,20 @@
-package org.aphreet.c3.service.metadata
+package org.aphreet.c3
+package service.metadata
+
+import com.ifunsoftware.c3.access.{C3Resource, C3System}
+import com.ifunsoftware.c3.access.C3System._
 
 import org.aphreet.c3.service.metadata.MetadataServiceProtocol._
 import org.aphreet.c3.lib.DependencyFactory._
-import com.ifunsoftware.c3.access.{C3Resource, C3System}
-import com.ifunsoftware.c3.access.C3System._
-import concurrent.duration
-import duration._
-import akka.routing.FromConfig
-import akka.actor
-import actor.{ActorRef, Actor, OneForOneStrategy}
-import actor.SupervisorStrategy.Resume
 import org.aphreet.c3.util.C3Loggable
 import org.aphreet.c3.lib.metadata.Metadata
 import Metadata._
-import scala.language.postfixOps
+
+import scala.concurrent.duration._
+import akka.actor
+import akka.routing.FromConfig
+import actor.{ActorRef, Actor, OneForOneStrategy}
+import actor.SupervisorStrategy.Resume
 
 /**
  * Copyright iFunSoftware 2013
