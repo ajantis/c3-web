@@ -37,11 +37,10 @@ class GroupServiceImpl extends GroupService with C3Loggable {
       addUsersToGroup(group,members)
       Full(group)
     } catch {
-      case e: Exception => {
+      case e: Exception =>
         logger.error("Couldn't create group C3 FS mapping: " + newGroup.name.is)
         group.delete_! // rollback
         Failure("Couldn't create group C3 FS mapping", Full(e), Empty)
-      }
     }
   }
 
@@ -53,12 +52,10 @@ class GroupServiceImpl extends GroupService with C3Loggable {
     try {
       removeGroupMapping(group.id.is.toString)
     } catch {
-      case e: Exception => {
+      case e: Exception =>
         logger.error("Error while removing group mapping from C3: " + e.getMessage, e)
         false
-      }
     }
-
     group.delete_!
   }
 
@@ -66,10 +63,9 @@ class GroupServiceImpl extends GroupService with C3Loggable {
     try{
        UserGroup.findAll(By(UserGroup.user, user),By(UserGroup.group, group)).foreach(_.delete_!)
     } catch {
-      case e: Exception => {
+      case e: Exception =>
         logger.error("Error while removing user" + e.getMessage, e)
         false
-      }
     }
     true
   }
@@ -111,23 +107,23 @@ class GroupServiceImpl extends GroupService with C3Loggable {
     def removeDirectory(dir: C3Directory) {
       for(child <- dir.children()){
         child match {
-          case d: C3Directory => {
+          case d: C3Directory =>
             logger.debug("Removing directory " + d.fullname + " from group " + name)
             removeDirectory(d)
-          }
-          case f: C3File => {
+
+          case f: C3File =>
             logger.debug("Removing file " + f.fullname + " from group " + name)
             c3.deleteFile(f.fullname)
-          }
+
         }
       }
       c3.deleteFile(dir.fullname)
     }
 
     root.getChild(name).filter(_.isDirectory) match {
-      case Some(groupDir) => {
+      case Some(groupDir) =>
         removeDirectory(groupDir.asDirectory)
-      }
+
       case _ => throw new C3Exception("Group directory is not found!")
     }
   }
