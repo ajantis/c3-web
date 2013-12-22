@@ -1,22 +1,22 @@
-package org.aphreet.c3.service.groups.impl
+package org.aphreet.c3
+package service.groups.impl
 
+import net.liftweb.common.{Box, Full, Empty, Failure}
+import net.liftweb.mapper.By
+
+import com.ifunsoftware.c3.access.fs.{C3File, C3Directory}
+import com.ifunsoftware.c3.access.C3System
+import com.ifunsoftware.c3.access.C3System._
+
+import org.aphreet.c3.lib.metadata.Metadata
+import org.aphreet.c3.lib.metadata.Metadata._
 import org.aphreet.c3.lib.DependencyFactory._
 import org.aphreet.c3.util.{C3Loggable, C3Exception}
 import org.aphreet.c3.model.{UserGroup, Group, User}
 import org.aphreet.c3.service.groups.GroupService
-import com.ifunsoftware.c3.access.C3System
-import com.ifunsoftware.c3.access.C3System._
-import net.liftweb.common.{Box, Empty, Failure}
-import com.ifunsoftware.c3.access.fs.{C3File, C3Directory}
-import net.liftweb.mapper.By
-import org.aphreet.c3.lib.metadata.Metadata
-import org.aphreet.c3.lib.metadata.Metadata._
-import net.liftweb.common.Full
-import scala.Some
+import org.aphreet.c3.service.notifications.AddedToGroupMsg
 import org.aphreet.c3.service.notifications.NotificationManagerProtocol.CreateNotification
 import org.aphreet.c3.lib.NotificationManagerRef
-import java.lang.Exception
-import org.aphreet.c3.service.notifications.AddedToGroupMsg
 
 class GroupServiceImpl extends GroupService with C3Loggable{
 
