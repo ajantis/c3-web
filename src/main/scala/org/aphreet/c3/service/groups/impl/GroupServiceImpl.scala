@@ -18,14 +18,17 @@ import org.aphreet.c3.service.notifications.AddedToGroupMsg
 import org.aphreet.c3.service.notifications.NotificationManagerProtocol.CreateNotification
 import org.aphreet.c3.lib.NotificationManagerRef
 
-class GroupServiceImpl extends GroupService with C3Loggable{
+class GroupServiceImpl extends GroupService with C3Loggable {
 
   lazy val c3 = inject[C3System].open_!
 
   lazy val notificationManager = inject[NotificationManagerRef].open_!.actorRef
 
   override def createGroup(newGroup: Group, members: Iterable[User], tags:String, description:String): Box[Group] = {
-    val metadata: Map[String, String] = Map(TAGS_META -> tags.split(",").map(_.trim).mkString(","),DESCRIPTION_META -> description)
+    val metadata: Map[String, String] = Map(
+      TAGS_META        -> tags.split(",").map(_.trim).mkString(","),
+      DESCRIPTION_META -> description)
+
     val group = newGroup.saveMe()
 
     try {
@@ -41,6 +44,7 @@ class GroupServiceImpl extends GroupService with C3Loggable{
       }
     }
   }
+
   override def createGroup(newGroup: Group, tags:String, description:String): Box[Group] = {
     createGroup(newGroup, List(), tags, description)
   }
@@ -88,6 +92,7 @@ class GroupServiceImpl extends GroupService with C3Loggable{
 
     val defaultMeta: Map[String, String] = Map(Metadata.GROUP_ID_META -> groupId) ++
       owner.map(u => Map[String, String](Metadata.OWNER_ID_META -> u.id.is.toString)).getOrElse(Map())
+
     val metadataGroup: Map[String, String] = defaultMeta ++ metadata
 
     root.createDirectory(groupId, metadataGroup)
