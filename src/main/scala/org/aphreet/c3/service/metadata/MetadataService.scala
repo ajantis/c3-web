@@ -30,6 +30,7 @@ class MetadataService(notificationManager: ActorRef) extends Actor with C3Loggab
 
   override def supervisorStrategy = OneForOneStrategy() {
     case _: Exception => Resume
+    case t            => super.supervisorStrategy.decider.apply(t)
   }
 
   def receive = {
