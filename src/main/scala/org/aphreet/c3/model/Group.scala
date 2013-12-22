@@ -85,7 +85,7 @@ class Group extends LongKeyedMapper[Group] with IdPK with ManyToMany{
     override def defaultValue = false
   }
 
-  object isApprove extends MappedBoolean(this) {
+  object isApproved extends MappedBoolean(this) {
     override def defaultValue = false
   }
 
