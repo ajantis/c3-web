@@ -1,20 +1,22 @@
-package org.aphreet.c3.comet
+package org.aphreet.c3
+package comet
 
-import net.liftweb.http._
-import js.{JsCmds, JsCmd}
-import net.liftweb.common._
 import org.aphreet.c3.util.C3Exception
 import org.aphreet.c3.model.{Group, User, Message}
-import net.liftweb.util.{ClearClearable, Helpers}
-import net.liftweb.util.Helpers._
-import scala.xml.{Text, NodeSeq}
-import js.jquery.JqJsCmds.PrependHtml
-import net.liftweb.http.js.JsCmds._
-import java.util
-import net.liftmodules.textile.TextileParser
 import org.aphreet.c3.util.helpers.DateTimeHelpers
+
+import net.liftweb.util.Helpers
+import net.liftmodules.textile.TextileParser
+import net.liftweb.common._
+import net.liftweb.http._
+import js.{JsCmds, JsCmd}
+import js.jquery.JqJsCmds.PrependHtml
+import js.JE.JsVar
+import js.JsCmds._
+
+import scala.xml.{Text, NodeSeq}
 import scala.language.postfixOps
-import net.liftweb.http.js.JE.JsVar
+import java.util.Date
 
 /**
  * @author Dmitry Ivanov (mailto: id.ajantis@gmail.com)
