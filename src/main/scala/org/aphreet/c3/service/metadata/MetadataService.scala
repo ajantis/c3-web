@@ -52,6 +52,6 @@ class MetadataService(notificationManager: ActorRef) extends Actor with C3Loggab
 }
 
 object MetadataServiceProtocol {
-  object CheckForMetadataUpdates
+  case object CheckForMetadataUpdates
   case class ProcessC3Resource(resource: C3Resource)
 }
