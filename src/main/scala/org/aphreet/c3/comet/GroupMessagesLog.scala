@@ -139,7 +139,7 @@ trait GroupMessagesLog extends CometActor with CometListener {
    */
   def toHtml(msg: String): NodeSeq = TextileParser.paraFixer(TextileParser.toHtml(msg, Empty))
 
-  private def formatMsgCreationDate(date: util.Date): String = DateTimeHelpers.todayTimeOrPastDate(date)
+  private def formatMsgCreationDate(date: Date): String = DateTimeHelpers.todayTimeOrPastDate(date)
 
 }
 
