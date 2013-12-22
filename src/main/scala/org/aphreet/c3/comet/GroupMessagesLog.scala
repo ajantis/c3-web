@@ -26,7 +26,7 @@ trait GroupMessagesLog extends CometActor with CometListener {
 
   private val logger: Logger = Logger(classOf[GroupMessagesLog])
 
-  private val group: Box[Group] = S.attr("group_id").flatMap(Group.find(_))
+  private val group: Box[Group] = S.attr("group_id").flatMap(Group.find)
   private val messageServer: Box[MessageServer] = group.map(MessageServerFactory(_))
 
   private var messages: List[Message] = Nil
@@ -113,7 +113,7 @@ trait GroupMessagesLog extends CometActor with CometListener {
         } &
         "#tags_input *" #> Text("") &
         "#postit" #> SHtml.onSubmit((s: String) => content = s.trim) &
-        "type=submit" #> ((xml: NodeSeq) => xml ++ SHtml.hidden(sendMessage _)) apply(xml)
+        "type=submit" #> ((xml: NodeSeq) => xml ++ SHtml.hidden(sendMessage)) apply xml
       }
     }}
   }
