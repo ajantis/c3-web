@@ -64,7 +64,7 @@ class Group extends LongKeyedMapper[Group] with IdPK with ManyToMany{
   object users extends MappedManyToMany(UserGroup, UserGroup.group, UserGroup.user, User)
 
   object name extends MappedString(this,64){
-    override def validations = nonEmpty _ :: isUnique _ :: Nil
+    override def validations = nonEmpty  _ :: isUnique _ :: Nil
 
     def isUnique(s: String): List[FieldError] = {
       if(!Group.find(Cmp(Group.name, OprEnum.Eql, Full(s.toLowerCase), None, Full("LOWER"))).isEmpty )
@@ -85,7 +85,7 @@ class Group extends LongKeyedMapper[Group] with IdPK with ManyToMany{
     override def defaultValue = false
   }
 
-  object isApprove extends MappedBoolean(this) {
+  object isApproved extends MappedBoolean(this) {
     override def defaultValue = false
   }
 
@@ -103,7 +103,7 @@ class Group extends LongKeyedMapper[Group] with IdPK with ManyToMany{
       c3.getFile(baseGroupDirectory).metadata.get(TAGS_META).map(_.split(TAGS_SEPARATOR).toList).getOrElse(Nil)
     }
     catch {
-      case x:Exception=>Nil
+      case x:Exception => Nil
     }
 
   }

@@ -18,12 +18,10 @@ class GroupTabMenu {
   object tabs extends RequestVar[GroupTabsFunc](defaultTabs)
 
   private def defaultTabs(groupId: String): List[(String, GroupTab)] =
-    List("about" -> AboutTab(groupId),
-      "files" -> FilesTab(groupId),
-      "messages" -> MessagesTab(groupId)
-//      "members" -> MembersTab(groupId)
-  )
+    List("files" -> FilesTab(groupId),
+      "about" -> AboutTab(groupId)
 
+    )
   def render: CssSel = {
     val activeTab = S.attr("active")
     val groupId = S.attr("group_id")
@@ -32,16 +30,29 @@ class GroupTabMenu {
     (User.currentUser, group) match {
       case (Full(user), Full(g)) => {
         if (user.email.is == g.owner.obj.map(_.email).open_!.is ||user.superUser.is)
-          tabs.set(groupId => defaultTabs(groupId) ::: List("settings" -> SettingsTab(groupId)))
+          tabs.set(groupId => defaultTabs(groupId) ::: List("settings" -> SettingsTab(groupId),"messages" -> MessagesTab(groupId)))
+        else
+          tabs.set(groupId => defaultTabs(groupId) ::: List("messages" -> MessagesTab(groupId)))
       }
       case _ =>
+
     }
     def tabMenu(id: String, active: String) = {
       "li" #> tabs.get(id).map{
         case (key, tab) =>
-          "a *" #> tab.name &
-          "a [href]" #> tab.path &
-          "li [class+]" #> (if(key == active) "active" else "")
+          val iconClass = tab.name match {
+            case "About" => "icon-star"
+            case "Files" => "icon-file"
+            case "Messages" => "icon-comment"
+            case "Settings" => "icon-wrench"
+            case _ => "icon-heart"
+          }
+          val activeClass =  if(key == active) "active" else ""
+          "span *" #> tab.name &
+            "a [href]" #> tab.path &
+            ".iconClass [class+]"#>  iconClass &
+            ".btn-small [class+]" #> activeClass
+
       }
     }
 
@@ -65,6 +76,5 @@ class GroupTabMenu {
 sealed abstract class GroupTab(val name: String, val path: String)
 case class AboutTab(groupId: String) extends GroupTab("About", "/groups/" + groupId)
 case class FilesTab(groupId: String) extends GroupTab("Files", "/groups/" + groupId + "/files/")
-case class MessagesTab(groupId: String) extends GroupTab("Messages", "/groups/" + groupId + "/messages")
-case class MembersTab(groupId: String) extends GroupTab("Members", "/groups/" + groupId + "/members")
+case class MessagesTab(groupId: String) extends GroupTab("Journal", "/groups/" + groupId + "/messages")
 case class SettingsTab(groupId: String) extends GroupTab("Settings", "/groups/" + groupId + "/settings")

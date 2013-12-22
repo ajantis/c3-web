@@ -8,9 +8,7 @@ function SelectAll(sel){
         if(SelectedOptions.options[i].selected)
             msg +=SelectedOptions.options[i].value+'%';
     }
-    //alert(msg);
     return msg;
-
 }
 
 //get url param by name
@@ -32,7 +30,7 @@ $(document).ready( function(){
 
     //update url
      $(".search_form").submit(function(){
-        var url = "/search?query=" + $(".search_query").val();
+        var url = "/index?query=" + $(".search_query").val();
         history.pushState(null, null, url);
      });
 
@@ -151,46 +149,14 @@ $(document).ready( function(){
         $("#value_cont").val(value);
      });
 
-    // add tag in search
-    $(".margn").live("click",function(){
-       $(this).appendTo(".flt");
-       $(this).removeClass();
-       $(this).wrap('<div class="label-info margn_search"></div>');
-       $(this).after('<a class="close cls">&times;</a>');
+     $(".label").live("click",function(){
+        var valueTag = $(this).text();
+        var input = $("#s_query");
+        if(input.val() == "")  input.val(valueTag);
+        else input.val(input.val() +" "+ valueTag);
+     });
 
-    });
-    // delete tag from search
-    $(".cls").live("click",function(){
-      var $parent = $(this).parent();
-      var id = $parent.children("span").attr("id");
-      var id_new = "";
-      var i = 0;
-      while(true){
-          if(id[i]!='_'){
-            id_new = id_new + id[i];
-          }else{
-            break;
-          }
-      i++;
-      }
-      $parent.children("span").addClass("label margn");
-      $parent.children("span").appendTo("#"+id_new);
-      $parent.remove();
-    });
-    //current pick tags
-    $(".btn_search").live("click",function(){
-        var tags="";
-        var flag = true;
-        $(".flt").find("span").each( function () {
-            if(flag){
-                tags = $(this).text();
-                flag = false;
-            } else{
-                tags = tags+","+$(this).text();
-            }
-        });
-        $(".tags_input").val(tags);
-    });
+     //drop down left category
      $('.con_category').hover(function(){
         $('.category_tags').css("display","none");
         $(this).next().css("display","block");
@@ -202,39 +168,33 @@ $(document).ready( function(){
      });
 
      $( '.root ul' ).hide();
-                             $( 'li.branch > a' ).prepend( '<i class="icon-chevron-up"></i>' );
 
-                             $( 'li.branch > a' ).click( function ( event ) {
-                                 event.preventDefault();
+     $( 'li.branch > a' ).prepend( '<i class="icon-chevron-up"></i>' );
 
-                                 var leaves = $( this ).parent( 'li' ).children( 'ul' );
+     $( 'li.branch > a' ).click( function ( event ) {
+         event.preventDefault();
 
-                                 if ( leaves.is( ':visible' ) ) {
-                                     $( 'i.icon-chevron-down', this ).removeClass( 'icon-chevron-down' ).addClass( 'icon-chevron-up' );
-                                     leaves.slideUp();
-                                 }
-                                 else {
-                                     $( 'i.icon-chevron-up', this ).removeClass( 'icon-chevron-up' ).addClass( 'icon-chevron-down' );
-                                     leaves.slideDown();
-                                 }
-                             } );
+         var leaves = $( this ).parent( 'li' ).children( 'ul' );
 
-                             $( '.collapse-all' ).click( function ( event ) {
-                                 event.preventDefault();
-                                 $( '.root ul' ).slideUp();
-                                 $( 'li.branch > a > i.icon-chevron-down' ).removeClass( 'icon-chevron-down' ).addClass( 'icon-chevron-up' );
+         if ( leaves.is( ':visible' ) ) {
+             $( 'i.icon-chevron-down', this ).removeClass( 'icon-chevron-down' ).addClass( 'icon-chevron-up' );
+             leaves.slideUp();
+         }
+         else {
+             $( 'i.icon-chevron-up', this ).removeClass( 'icon-chevron-up' ).addClass( 'icon-chevron-down' );
+             leaves.slideDown();
+         }
+     });
 
-                             } );
+     $( '.collapse-all' ).click( function ( event ) {
+         event.preventDefault();
+         $( '.root ul' ).slideUp();
+         $( 'li.branch > a > i.icon-chevron-down' ).removeClass( 'icon-chevron-down' ).addClass( 'icon-chevron-up' );
+     });
 
-                             $( '.expand-all' ).click( function ( event ) {
-                                 event.preventDefault();
-                                 $( '.root ul' ).slideDown();
-                                 $( 'li.branch > a > i.icon-chevron-up' ).removeClass( 'icon-chevron-up' ).addClass( 'icon-chevron-down' );
-
-                             } );
-
-
-
-
-
+     $( '.expand-all' ).click( function ( event ) {
+         event.preventDefault();
+         $( '.root ul' ).slideDown();
+         $( 'li.branch > a > i.icon-chevron-up' ).removeClass( 'icon-chevron-up' ).addClass( 'icon-chevron-down' );
+     });
 });

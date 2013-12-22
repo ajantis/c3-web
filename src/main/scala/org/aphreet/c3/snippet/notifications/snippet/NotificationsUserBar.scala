@@ -1,23 +1,28 @@
-package org.aphreet.c3.snippet.notifications.snippet
+package org.aphreet.c3
+package snippet.notifications.snippet
 
-import scala.concurrent.{duration, Future, Await}
-import org.aphreet.c3.lib.DependencyFactory._
-import org.aphreet.c3.lib.NotificationManagerRef
-import org.aphreet.c3.model.User
-import org.aphreet.c3.service.notifications.NotificationManagerProtocol.GetUserNotificationStats
-import akka.pattern.ask
-import org.aphreet.c3.service.notifications.NotificationStats
+import service.notifications.NotificationStats
+import service.notifications.NotificationManagerProtocol.GetUserNotificationStats
+
+import lib.DependencyFactory._
+import lib.NotificationManagerRef
+import util.helpers.AkkaAwareSnippet
+import model.User
+
 import net.liftweb.common.Box
-import duration._
 import net.liftweb.util.BindHelpers._
-import org.aphreet.c3.util.helpers.AkkaAwareSnippet
 
+import scala.concurrent.{Future, Await}
+import scala.concurrent.duration._
+import scala.language.postfixOps
+
+import akka.pattern.ask
 
 /**
  * Copyright iFunSoftware 2013
  * @author Dmitry Ivanov
  */
-class NotificationsUserBar extends AkkaAwareSnippet{
+class NotificationsUserBar extends AkkaAwareSnippet {
 
   val notificationManager = inject[NotificationManagerRef].
     openOrThrowException("Notification manager is not available").actorRef

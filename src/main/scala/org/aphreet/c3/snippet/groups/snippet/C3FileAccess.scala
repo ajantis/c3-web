@@ -7,10 +7,10 @@ import com.ifunsoftware.c3.access.fs.C3FileSystemNode
 */
 trait C3FileAccess {
 
-  def checkReadAccess(resource:C3FileSystemNode): Boolean
+  def checkReadAccessResource(resource:C3FileSystemNode): Boolean
 
-  def hasWriteAccess(resource:C3FileSystemNode): Boolean
+  def hasWriteAccessResource(resource:C3FileSystemNode): Boolean
 
-  def hasSuperAccess(resource:C3FileSystemNode): Boolean
+  def hasSuperAccessResource(resource:C3FileSystemNode): Boolean
 
 }

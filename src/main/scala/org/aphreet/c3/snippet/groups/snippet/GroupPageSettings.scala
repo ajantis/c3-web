@@ -93,7 +93,7 @@ class GroupPageSettings (data: GroupPageData) extends GroupPageHelpers{
     })
   }
 
-  def addUser = {
+  def addUser() = {
     var users = User.findAll().filter(_.id.is != User.currentUserUnsafe.id.is)
     members.map(user =>{
       users = users.filter(_.id.is != user.id.is)
@@ -118,7 +118,6 @@ class GroupPageSettings (data: GroupPageData) extends GroupPageHelpers{
 
   def publicSettings = {
 
-
     def saveCheckbox(b:Boolean):JsCmd = {
       group.isOpen(b).saveMe()
       JsCmds.Noop
@@ -130,9 +129,9 @@ class GroupPageSettings (data: GroupPageData) extends GroupPageHelpers{
       JsCmds.Noop // bootstrap-editable will update text value on page by itself
     }
 
-    ".checkbox_public" #> SHtml.ajaxCheckbox(group.isOpen.is,saveCheckbox(_)) &
+    ".checkbox_public" #> SHtml.ajaxCheckbox(group.isOpen.is,saveCheckbox) &
       ".name_group_settings *" #> group.name.is &
-    ".description_box *"#> group.getDescription &
+      ".description_box *"#> group.getDescription &
       ".description_submit_func *" #> {
         Script(
           Function("updateDescriptionCallback", List("description"),

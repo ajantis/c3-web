@@ -49,7 +49,7 @@ import util._
 import Helpers._
 import xml.NodeSeq
 import org.aphreet.c3.apiaccess.C3
-import com.ifunsoftware.c3.access.C3AccessException
+import com.ifunsoftware.c3.access.{C3IncorrectRequestException, C3AccessException}
 import org.aphreet.c3.util.C3Loggable
 import net.liftweb.http.S
 import org.aphreet.c3.model.User
@@ -232,12 +232,12 @@ class CreateDirectoryDialog extends AbstractFormDialog with C3ResourceMetadataFo
             S.notice("Directory " + name + " created")
             Unblock & RedirectTo("")
           } catch {
+            case e: C3IncorrectRequestException => {
+              S.error("Directory " + name + " is exists!")
+              Unblock
+            }
             case e: C3AccessException => {
-              if(e.code == 400) {
-                S.error("Directory " + name + " is exists!")
-              } else{
-                S.error("Directory " + name + " wasn't created!")
-              }
+              S.error("Directory " + name + " wasn't created!")
               Unblock
             }
           }

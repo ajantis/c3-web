@@ -6,7 +6,6 @@ import util._
 import org.aphreet.c3.apiaccess.C3
 import org.aphreet.c3.service.groups.impl.GroupServiceImpl
 import org.aphreet.c3.service.groups.messages.impl.MessageStorageServiceImpl
-import org.aphreet.c3.service.groups.wiki.impl.WikiServiceImpl
 import akka.actor.{ActorRef, Props, ActorSystem}
 import org.aphreet.c3.service.metadata.MetadataService
 import org.aphreet.c3.service.notifications.NotificationManager
@@ -27,8 +26,6 @@ object DependencyFactory extends Factory {
 
   implicit object c3 extends FactoryMaker(C3.apply _ )
 
-  implicit object wikiService extends FactoryMaker(WikiServiceImpl.apply _)
-
   implicit object messageService extends FactoryMaker(MessageStorageServiceImpl.apply _)
 
   implicit object groupService extends FactoryMaker(GroupServiceImpl.apply _)
@@ -44,7 +41,7 @@ object DependencyFactory extends Factory {
    * registering their types with the dependency injector
    */
   private def init() {
-    List(time, c3, wikiService, messageService, groupService, akkaSystem, metadataService, notificationManager)
+    List(time, c3, messageService, groupService, akkaSystem, metadataService, notificationManager)
   }
 
   // Akka stuff

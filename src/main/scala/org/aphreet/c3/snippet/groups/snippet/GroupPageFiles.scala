@@ -67,7 +67,7 @@ object GroupPageFiles extends AbstractGroupPageLoc[GroupPageFilesData] with Suff
 }
 
 class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers
-with GroupPageHelpers with FSHelpers with TagForms with C3FileAccessHelpers{
+with GroupPageHelpers with FSHelpers with TagForms with C3AccessHelpers{
 
   import DependencyFactory._
 
@@ -112,7 +112,7 @@ with GroupPageHelpers with FSHelpers with TagForms with C3FileAccessHelpers{
         ".link *" #> group.name.is
       ) &
       ".bcrumb *" #> (pathLocs.map{ (loc: Loc[_]) =>
-        ( if (isLocCurrent(pathLocs, loc) && (hasSuperAccess(currentResource)||hasWriteAccess(currentResource))){
+        ( if (isLocCurrent(pathLocs, loc) && (hasSuperAccessResource(currentResource)||hasWriteAccessResource(currentResource))){
           ".link" #>
             <span class="hide name_submit_func">
               {
@@ -184,7 +184,7 @@ with GroupPageHelpers with FSHelpers with TagForms with C3FileAccessHelpers{
 
     "#edit_tags_form *" #> meta.get(TAGS_META).map(_.split(",").mkString(", ")).getOrElse("") &
       ".description_box *" #> meta.get(DESCRIPTION_META).getOrElse("") &
-      (if(hasWriteAccess(node) || hasSuperAccess(node)){
+      (if(hasWriteAccessResource(node) || hasSuperAccessResource(node)){
         ".edit_tags_form_func *" #> {
           Script(
             Function("updateTagsCallback", List("tags"),
@@ -220,14 +220,27 @@ with GroupPageHelpers with FSHelpers with TagForms with C3FileAccessHelpers{
 
   protected def renderDirectoryLoc(d: C3Directory): CssSel = {
     object selectedResourcePaths extends RequestVar[Set[String]](Set())
-
     val currentPathLink = data.group.createLink + "/files" + data.currentAddress
-    (if(hasSuperAccess(d)){
+    def writeTools():CssSel = {
+      "#file_upload_form [action]" #> ("/upload/file/groups/" + group.id.is + "/files" + data.currentAddress) &
+        "#file_upload_close_btn [onclick]" #> SHtml.ajaxInvoke(() => JsCmds.Reload) &
+        "#new-directory" #> newDirectoryForm(d, currentPath = currentPathLink)
+    }
+    (if(hasSuperAccess){
       ".delete_selected_btn [onclick]" #> SHtml.ajaxInvoke(() =>
-      { selectedResourcePaths.foreach(c3.deleteFile _); JsCmds.RedirectTo(currentPathLink) })
+      { selectedResourcePaths.foreach(c3.deleteFile); JsCmds.RedirectTo(currentPathLink) })
+
+    } else if(hasWriteAccess(group)) {
+      ".delete_selected_form_button" #> NodeSeq.Empty &
+        ".delete_selected_form" #> NodeSeq.Empty&
+        writeTools()
     } else {
       ".delete_selected_form_button" #> NodeSeq.Empty &
-        ".delete_selected_form" #> NodeSeq.Empty
+        ".delete_selected_form" #> NodeSeq.Empty &
+        "#new-directory" #> NodeSeq.Empty &
+        ".new_directory_btn" #> NodeSeq.Empty &
+        ".upload_files_btn" #>  NodeSeq.Empty &
+        "#file_upload_form" #> NodeSeq.Empty
     }) &
       tagsForm(d) &
       ".child *" #> group.getChildren(data.currentAddress).map {
@@ -244,14 +257,9 @@ with GroupPageHelpers with FSHelpers with TagForms with C3FileAccessHelpers{
               JsCmds.Noop
             })
         }
-      } &
-      ".delete_selected_btn [onclick]" #> SHtml.ajaxInvoke(() =>
-      { selectedResourcePaths.foreach(c3.deleteFile _); JsCmds.RedirectTo(currentPathLink) }) &
-      ".file-view" #> NodeSeq.Empty &
-      "#file_upload_form [action]" #> ("/upload/file/groups/" + group.id.is + "/files" + data.currentAddress) &
-      "#file_upload_close_btn [onclick]" #> SHtml.ajaxInvoke(() => JsCmds.Reload) &
-      "#new-directory" #> newDirectoryForm(d, currentPath = currentPathLink) &
-      commonForms(d)
+      }&
+    ".file-view" #> NodeSeq.Empty &
+    commonForms(d)
   }
 
   protected def renderFileLoc(f: C3File): CssSel = {
@@ -308,9 +316,9 @@ with GroupPageHelpers with FSHelpers with TagForms with C3FileAccessHelpers{
   protected def metadataView(f: C3FileSystemNode, metadataUsr:scala.collection.Map[String,String]) = {
     ".metadata_form *" #> combineUserMetadata(metadataUsr).map{ case (k, v) => {
       ".metadata_key [value]" #> k &
-      ".metadata_value [value]" #> v &
-      ".remove_metadata"#> NodeSeq.Empty &
-      ".metadata_value [readonly+]" #> "readonly"
+        ".metadata_value [value]" #> v &
+        ".remove_metadata"#> NodeSeq.Empty &
+        ".metadata_value [readonly+]" #> "readonly"
     }}&
       ".add_metadata" #> NodeSeq.Empty &
       ".btn_save_metadata" #> NodeSeq.Empty &
@@ -412,14 +420,14 @@ with GroupPageHelpers with FSHelpers with TagForms with C3FileAccessHelpers{
 
     val owner = nodeOwner(directory)
     val metaACL = acl(directory.metadata.get(ACL_META).getOrElse(""))
-    (if(hasSuperAccess(directory)){
+    (if(hasSuperAccessResource(directory)){
       ".rules *" #> metaACL  &
         ".rules [id]" #> directory.fullname.hashCode &
         ".rules [onclick]" #> SHtml.ajaxInvoke(()=>currentResource(directory.fullname.hashCode.toString,metaACL))&
         ".link [href]" #> (directory.name + "/") &
         ".child_td [onclick]" #> SHtml.ajaxInvoke(() => JsCmds.RedirectTo(directory.name + "/"))
     }else{
-      (if(checkReadAccess(directory)){
+      (if(checkReadAccessResource(directory)){
         ".link [href]" #> (directory.name + "/") &
           ".child_td [onclick]" #> SHtml.ajaxInvoke(() => JsCmds.RedirectTo(directory.name + "/"))
       }else {
@@ -441,14 +449,14 @@ with GroupPageHelpers with FSHelpers with TagForms with C3FileAccessHelpers{
     val owner = nodeOwner(file)
     val metaACL = acl(file.metadata.get(ACL_META).getOrElse(""))
 
-    (if(hasSuperAccess(file)){
+    (if(hasSuperAccessResource(file)){
       ".rules *" #> metaACL  &
         ".rules [id]" #> file.fullname.hashCode &
         ".rules [onclick]" #> SHtml.ajaxInvoke(()=>currentResource(file.fullname.hashCode.toString,metaACL))&
         ".link [href]" #> file.name &
         ".child_td [onclick]" #> SHtml.ajaxInvoke(() => JsCmds.RedirectTo(file.name))
     } else {
-      (if(checkReadAccess(file)){
+      (if(checkReadAccessResource(file)){
         ".link [href]" #> (file.name + "/") &
           ".child_td [onclick]" #> SHtml.ajaxInvoke(() => JsCmds.RedirectTo(file.name))
       } else {
@@ -486,9 +494,7 @@ with GroupPageHelpers with FSHelpers with TagForms with C3FileAccessHelpers{
           val aclVal =  if(b)"r---" else "----"
           currentAclValue = aclVal
         }
-
       })
-
       JsCmds.Noop
     }
 
@@ -556,10 +562,10 @@ with GroupPageHelpers with FSHelpers with TagForms with C3FileAccessHelpers{
       JsCmds.Noop
     }
 
-    ".group_read" #> SHtml.ajaxCheckbox(defaultValueCheckbox,groupReadSave(_))&
-      ".group_write" #> SHtml.ajaxCheckbox(defaultValueCheckbox,groupWriteSave(_))&
-      ".all_read" #> SHtml.ajaxCheckbox(defaultValueCheckbox,otherUsersReadSave(_))&
-      ".all_write" #> SHtml.ajaxCheckbox(defaultValueCheckbox,otherUsersWriteSave(_))
+    ".group_read" #> SHtml.ajaxCheckbox(defaultValueCheckbox,groupReadSave)&
+      ".group_write" #> SHtml.ajaxCheckbox(defaultValueCheckbox,groupWriteSave)&
+      ".all_read" #> SHtml.ajaxCheckbox(defaultValueCheckbox,otherUsersReadSave)&
+      ".all_write" #> SHtml.ajaxCheckbox(defaultValueCheckbox,otherUsersWriteSave)
   }
 
   def buildPathLocs: List[Loc[_]] = {
