@@ -24,9 +24,11 @@ class MetadataService(notificationManager: ActorRef) extends Actor with C3Loggab
   private val c3 = inject[C3System].open_!
 
   val workersRouted =
-    context.actorOf(actor.Props(creator = new MetadataServiceWorker(c3, notificationManager)).withRouter(FromConfig()), name = "metadataServiceWorkerRoutedActor")
+    context.actorOf(
+      actor.Props(new MetadataServiceWorker(c3, notificationManager)).withRouter(FromConfig()),
+      name = "metadataServiceWorkerRoutedActor")
 
-  override def supervisorStrategy() = OneForOneStrategy(){
+  override def supervisorStrategy = OneForOneStrategy() {
     case _: Exception => Resume
   }
 
