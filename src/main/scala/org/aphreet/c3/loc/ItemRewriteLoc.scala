@@ -79,8 +79,9 @@ trait ItemRewriteLoc[S, T <: PageData] extends Loc[T] {
 
   override def rewrite: LocRewrite = Full({
     case ItemRewriteRequest(item) =>
-      (RewriteResponse(ParsePath(pathList, "", true, false), Map.empty, true),
-       item)
+      val response = RewriteResponse(
+        ParsePath(pathList, suffix = "", absolute = true, endSlash = false), Map.empty, stopRewriting = true)
+      response -> item
   })
 }
 
