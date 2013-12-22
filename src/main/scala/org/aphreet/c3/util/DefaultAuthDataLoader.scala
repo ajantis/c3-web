@@ -23,7 +23,8 @@ object DefaultAuthDataLoader {
     User.find(By(User.email, defaultAdminEmail)) match {
       case Full(existingUser) =>
         logger info String.format("User %s exists.", defaultAdminEmail)
-      case _                  => {
+
+      case _                  =>
         logger info String.format("Creating default user with e-mail %s...", defaultAdminEmail)
         val defaultAdminPassword = Props.get("default_admin_password").openOr("admin")
         val adminUser = User.create
@@ -34,9 +35,7 @@ object DefaultAuthDataLoader {
           .superUser(true)
           .enabled(true)
           .saveMe()
-
         logger info String.format("User %s is created.", adminUser.email.is)
-      }
     }
   }
 }

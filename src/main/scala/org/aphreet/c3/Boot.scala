@@ -1,12 +1,9 @@
 package org.aphreet.c3
 
-import _root_.net.liftweb.util._
-import _root_.net.liftweb.common._
-import _root_.net.liftweb.http.provider._
-import _root_.net.liftweb.sitemap._
+import net.liftweb.util._
+import net.liftweb.http.provider._
+import net.liftweb.sitemap._
 import net.liftweb.sitemap.Loc._
-import Helpers._
-import org.aphreet.c3.model._
 import net.liftweb.mapper._
 import net.liftweb.http._
 import net.liftweb.http.js.jquery.JQueryArtifacts
@@ -15,14 +12,6 @@ import net.liftmodules.widgets.uploadprogress._
 import net.liftmodules.widgets.tablesorter.TableSorter
 import net.liftmodules.widgets.autocomplete.AutoComplete
 import net.liftmodules.widgets.menu.MenuWidget
-import snippet.categories.CategoriesSection
-import snippet.groups.GroupsSection
-import snippet.logging.LogLevel
-import snippet.notifications.NotificationsSection
-import snippet.users.UsersSection
-import util.helpers.C3Streamer
-import util.{DefaultAuthDataLoader, TextileRenderer}
-import javax.mail.{Authenticator, PasswordAuthentication}
 import net.liftweb.util.Props
 import net.liftweb.http.Html5Properties
 import net.liftweb.http.InMemoryResponse
@@ -32,32 +21,35 @@ import net.liftweb.http.NotFoundAsTemplate
 import net.liftweb.sitemap.Loc.LocGroup
 import net.liftweb.http.ServiceUnavailableResponse
 import net.liftweb.sitemap.Loc.If
-import org.aphreet.c3.snippet.approve.ApproveSection
+
+import javax.mail.{ Authenticator, PasswordAuthentication }
+
+import util.helpers.C3Streamer
+import util.{ DefaultAuthDataLoader, TextileRenderer }
+import model._
+
+import snippet.approve.ApproveSection
+import snippet.categories.CategoriesSection
+import snippet.groups.GroupsSection
+import snippet.logging.LogLevel
+import snippet.notifications.NotificationsSection
+import snippet.users.UsersSection
+
 
 /**
  * A class that's instantiated early and run.  It allows the application
  * to modify lift's environment
  */
-class Boot extends Bootable{
-  private val sections: List[Section] = List(BaseSection, UsersSection, GroupsSection,
-    CategoriesSection, NotificationsSection,ApproveSection)
+class Boot extends Bootable {
+  private val sections: List[Section] =
+    List(BaseSection, UsersSection, GroupsSection, CategoriesSection, NotificationsSection, ApproveSection)
 
-  private val plabAddress = "https://194.85.162.171/"
-
-  private val defaultMailHost = "smtp.gmail.com"
-  private val defaultMailUser = "c3-project@ifunsoftware.com"
-  private val defaultMailPassword = "myverysecretpassword"
+  import Boot._
 
   def boot() {
     if (!DB.jndiJdbcConnAvailable_?) {
-      val vendor =
-        new StandardDBVendor(Props.get("db.driver") openOr "org.h2.Driver",
-          Props.get("db.url") openOr
-            "jdbc:h2:lift_proto.db;AUTO_SERVER=TRUE",
-          Props.get("db.user"), Props.get("db.password"))
-
+      val vendor = new StandardDBVendor(dbDriver, dbUrl, dbUserOpt, dbPassOpt)
       LiftRules.unloadHooks.append(vendor.closeAllConnections_!)
-
       DB.defineConnectionManager(DefaultConnectionIdentifier, vendor)
     }
 
@@ -75,7 +67,8 @@ class Boot extends Bootable{
     // stateful redirect after login
     def loginAndComeBack: RedirectWithState = {
       val uri = S.uriAndQueryString
-      RedirectWithState ( loginUrl, RedirectState( () => User.loginRedirect.set(uri) , "Not logged in" -> NoticeType.Notice ) )
+      RedirectWithState(
+        loginUrl, RedirectState( () => User.loginRedirect.set(uri) , "Not logged in" -> NoticeType.Notice ) )
     }
 
     val loggedIn = If(() => User.loggedIn_?, loginAndComeBack)
@@ -229,9 +222,7 @@ class Boot extends Bootable{
       case r if r.path.partPath.headOption.exists(_ == "dav") => false
     })
 
-    configMailer(Props.get("mail.host").openOr(defaultMailHost),
-                 Props.get("mail.user").openOr(defaultMailUser),
-                 Props.get("mail.password").openOr(defaultMailPassword))
+    configMailer(mailHost, mailUser, mailPass)
 
     FileUpload.init()
 
@@ -263,4 +254,22 @@ class Boot extends Bootable{
       override def getPasswordAuthentication = new PasswordAuthentication(user, password)
     })
   }
+}
+
+object Boot {
+  private val defaultMailHost = "smtp.gmail.com"
+  private val defaultMailUser = "c3-project@ifunsoftware.com"
+  private val defaultMailPassword = "myverysecretpassword"
+  private val defaultPlabUrl = "https://194.85.162.171/"
+
+  val plabAddress = Props.get("plab.address", defaultPlabUrl)
+
+  val mailHost = Props.get("mail.host", defaultMailHost)
+  val mailUser = Props.get("mail.user").openOr(defaultMailUser)
+  val mailPass = Props.get("mail.password").openOr(defaultMailPassword)
+
+  val dbDriver = Props.get("db.driver", "org.h2.Driver")
+  val dbUrl = Props.get("db.url", "jdbc:h2:lift_proto.db;AUTO_SERVER=TRUE")
+  val dbUserOpt = Props.get("db.user")
+  val dbPassOpt = Props.get("db.password")
 }

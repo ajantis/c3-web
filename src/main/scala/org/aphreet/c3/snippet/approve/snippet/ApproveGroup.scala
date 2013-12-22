@@ -26,7 +26,7 @@ class ApproveGroup {
     .openOrThrowException("Notification manager should be here").actorRef
 
   def render = {
-    val groupsToApprove = Group.findAll(By(Group.isApprove, false))
+    val groupsToApprove = Group.findAll(By(Group.isApproved, false))
 
     ".list_group_approve" #> groupsToApprove.map {
       group: Group => {
@@ -59,7 +59,7 @@ class ApproveGroup {
   }
 
   private def processGroupApproval(group: Group, owner: User): JsCmd = {
-    group.isApprove(true).save
+    group.isApproved(true).save
     notificationManager ! CreateNotification(ApproveGroupMsg(group, owner.id.is))
     JsCmds.Replace(group.id.is.toString, NodeSeq.Empty)
   }
