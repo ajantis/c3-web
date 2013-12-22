@@ -34,12 +34,12 @@ class ApproveGroup {
 
         def approveGroup(): JsCmd = {
           group.getGroupC3 match {
-            case Full(groupFileNode) => {
+            case Full(groupFileNode) =>
               // we don't need to create a C3 mapping for this group, it already exists
               processGroupApproval(group, owner) &
-                LiftMessages.ajaxNotice(s"Group ${group.name} is approved")
-            }
-            case Failure(msg,Full(e), _) =>
+              LiftMessages.ajaxNotice(s"Group ${group.name} is approved")
+
+            case _                   =>
               // we need to create a C3 mapping first and then create a group
               createAndApprove(group, owner)
           }
