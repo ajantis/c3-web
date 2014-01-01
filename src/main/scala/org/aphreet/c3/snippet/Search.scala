@@ -93,7 +93,7 @@ class Search extends PaginatorSnippet[SearchResultEntry] with C3Loggable{
   private def toCss(result: SearchResultEntry): CssSel = {
     val resource = c3.getResource(result.address, List("c3.ext.fs.path"))
     val c3Path = C3Path(result.path)
-    val content = result.fragments.headOption.flatMap(_.strings.headOption.map(_.take(50)))
+    val content = result.fragments.headOption.flatMap(_.strings.headOption.map(_.take(150)))
     val tags = resource.metadata.get(Metadata.TAGS_META).map(_.split(",").toList).getOrElse(Nil)
     val owner = resource.metadata.get(OWNER_ID_META) match {
       case Some(id) if !id.isEmpty => User.find(By(User.id, id.toLong))
@@ -105,9 +105,9 @@ class Search extends PaginatorSnippet[SearchResultEntry] with C3Loggable{
 
     ".result_header *" #> c3Path.resourceName &
       ".result_header [href]" #> c3Path.resourceParentDir &
-      ".result_link [href]" #> c3Path.resourceUri &
-      ".result_link *" #> c3Path.resourceUri &
-      ".result_content *" #> Unparsed(content.getOrElse("")) &
+//      ".result_link [href]" #> c3Path.resourceUri &
+//      ".result_link *" #> c3Path.resourceUri &
+      ".result_content *" #> content.getOrElse("") &
       ".result_date *" #> dateFormat.format(resource.date) &
       ".owner *" #> owner.map(_.shortName).getOrElse("Unknown") &
       ".owner [href]" #> owner.map(_.createLink) &
