@@ -1,6 +1,6 @@
 package org.aphreet.c3.model
 
-import net.liftweb.mapper.{IdPK, LongKeyedMetaMapper, MappedLongForeignKey, LongKeyedMapper}
+import net.liftweb.mapper._
 
 /**
  * Copyright (c) 2011, Dmitry Ivanov
@@ -43,6 +43,9 @@ class UserGroup extends LongKeyedMapper[UserGroup] with IdPK {
 
   object group extends MappedLongForeignKey(this,Group)
 
+  object isApproved extends MappedBoolean(this){
+    override def defaultValue = false
+  }
 }
 
 object UserGroup extends UserGroup with LongKeyedMetaMapper[UserGroup] {
