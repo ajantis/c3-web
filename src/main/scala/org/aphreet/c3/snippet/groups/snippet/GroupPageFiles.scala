@@ -226,10 +226,18 @@ with GroupPageHelpers with FSHelpers with TagForms with C3AccessHelpers{
         "#file_upload_close_btn [onclick]" #> SHtml.ajaxInvoke(() => JsCmds.Reload) &
         "#new-directory" #> newDirectoryForm(d, currentPath = currentPathLink)
     }
-    (if(hasSuperAccess){
+    def superAccessTools():CssSel = {
       ".delete_selected_btn [onclick]" #> SHtml.ajaxInvoke(() =>
       { selectedResourcePaths.foreach(c3.deleteFile); JsCmds.RedirectTo(currentPathLink) })
+    }
 
+    (if(hasSuperAccess) {
+      if (hasWriteAccess(group)) {
+        superAccessTools()
+        writeTools()
+      } else {
+        superAccessTools()
+      }
     } else if(hasWriteAccess(group)) {
       ".delete_selected_form_button" #> NodeSeq.Empty &
         ".delete_selected_form" #> NodeSeq.Empty&
