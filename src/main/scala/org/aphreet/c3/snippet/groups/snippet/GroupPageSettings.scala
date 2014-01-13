@@ -2,7 +2,7 @@ package org.aphreet.c3.snippet.groups.snippet
 
 import org.aphreet.c3.snippet.groups.{GroupPageData, AbstractGroupPageLoc}
 import org.aphreet.c3.loc.SuffixLoc
-import org.aphreet.c3.model.{User, Group}
+import org.aphreet.c3.model.{UserGroup, User, Group}
 import net.liftweb.common.Box
 import net.liftweb.sitemap.Loc.Link
 import org.aphreet.c3.lib.DependencyFactory._
@@ -20,6 +20,7 @@ import net.liftweb.http.js.JE.JsVar
 import com.ifunsoftware.c3.access.fs.C3FileSystemNode
 import org.aphreet.c3.lib.metadata.Metadata._
 import net.liftweb.http.js.JE.JsVar
+import net.liftweb.mapper.By
 
 
 /**
@@ -46,6 +47,8 @@ class GroupPageSettings (data: GroupPageData) extends GroupPageHelpers{
 
   override lazy val group = data.group
   override lazy val activeLocId = "settings"
+//  val members = UserGroup.findAll(By(UserGroup.group,group),By(UserGroup.isApproved,true))
+//    .map(User.find(_.user).open_!).toList
   val members = group.users.all
 
   def owner = {
@@ -142,6 +145,11 @@ class GroupPageSettings (data: GroupPageData) extends GroupPageHelpers{
           )
         )
       }
-
   }
+
+//  def listUserApprove = {
+////    ".ListGroupUser" #>
+//
+//  }
+
 }
