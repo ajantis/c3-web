@@ -1,4 +1,4 @@
-package org.aphreet.c3.snippet.groups.snippet
+package org.aphreet.c3.acl.resources
 
 import com.ifunsoftware.c3.access.fs.C3FileSystemNode
 

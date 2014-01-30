@@ -1,14 +1,18 @@
-package org.aphreet.c3.snippet.groups.snippet
+package org.aphreet.c3.acl.resources
 
 import com.ifunsoftware.c3.access.fs.C3FileSystemNode
 import org.aphreet.c3.lib.metadata.Metadata._
 import org.aphreet.c3.model.User
 import net.liftweb.common.Full
 import org.aphreet.c3.model.Group
+import org.aphreet.c3.snippet.groups.snippet.C3ResourceHelpers
 
 /**
  * @author Koyushev Sergey (mailto: serjk91@gmail.com)
  */
+
+//[TODO] need correct with opportunity approve user in group
+//[TODO] may be inheritance acl at directory
 trait C3AccessHelpers extends C3FileAccess with C3ResourceHelpers{
 
   //default value acl

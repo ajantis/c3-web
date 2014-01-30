@@ -25,6 +25,7 @@ import org.aphreet.c3.snippet.groups.GroupPageFilesData
 import net.liftweb.http.js.JE.{JsVar, JsRaw}
 import org.aphreet.c3.snippet.LiftMessages
 import net.liftweb.http.js.jquery.JqJsCmds
+import org.aphreet.c3.acl.resources.C3AccessHelpers
 
 /**
  * @author Dmitry Ivanov (mailto: id.ajantis@gmail.com)

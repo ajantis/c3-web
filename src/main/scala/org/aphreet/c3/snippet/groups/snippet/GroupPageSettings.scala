@@ -47,9 +47,14 @@ class GroupPageSettings (data: GroupPageData) extends GroupPageHelpers{
 
   override lazy val group = data.group
   override lazy val activeLocId = "settings"
-//  val members = UserGroup.findAll(By(UserGroup.group,group),By(UserGroup.isApproved,true))
-//    .map(User.find(_.user).open_!).toList
-  val members = group.users.all
+  val members = UserGroup.findAll(By(UserGroup.group,group))
+
+
+  val approvedMembers = members.filter(_.isApproved)
+    .map(_.user.obj.openOrThrowException("Error open user"))
+
+  val otherMembers = members.filter(_.isApproved!=true)
+    .map(_.user.obj.openOrThrowException("Error open user"))
 
   def owner = {
     ".GroupOwner *" #> group.owner.obj.map(_.shortName).openOr("N/A")&
@@ -59,13 +64,16 @@ class GroupPageSettings (data: GroupPageData) extends GroupPageHelpers{
 
   def listUserAdd = {
     var users = User.findAll().filter(_.id.is != User.currentUserUnsafe.id.is)
-    members.map(user =>{
+    approvedMembers.map(user =>{
+      users = users.filter(_.id.is != user.id.is)
+    })
+    otherMembers.map(user =>{
       users = users.filter(_.id.is != user.id.is)
     })
   }
 
   def listUser = {
-    ".ListGroupUser" #> members.map(user =>{
+    ".ListGroupUser" #> approvedMembers.map(user =>{
 
       def deleteUser():JsCmd = {
         val currentUser = User.currentUserUnsafe
@@ -84,21 +92,24 @@ class GroupPageSettings (data: GroupPageData) extends GroupPageHelpers{
         ".last_name *" #> user.lastName.is &
         ".email *" #> user.email.is  &
         ".full_name *" #> user.shortName &
-        ".delete_member [onclick]" #> SHtml.ajaxInvoke(()=>deleteUser())
+        ".delete_member " #> SHtml.ajaxInvoke(()=>deleteUser())
     })
   }
 
   def listShortUser = {
-    ".ListShortGroupUser" #> members.map(user =>{
+    ".ListShortGroupUser" #> approvedMembers.map(user =>{
       ".email *" #> user.email &
         ".short_name [href]" #> user.createLink &
         ".short_name *" #> user.shortName
     })
   }
-
+  //[TODO] need make immutable
   def addUser() = {
     var users = User.findAll().filter(_.id.is != User.currentUserUnsafe.id.is)
-    members.map(user =>{
+    approvedMembers.map(user =>{
+      users = users.filter(_.id.is != user.id.is)
+    })
+    otherMembers.map(user =>{
       users = users.filter(_.id.is != user.id.is)
     })
     val data:List[String] = users.map(user=> user.email.is)
@@ -147,9 +158,27 @@ class GroupPageSettings (data: GroupPageData) extends GroupPageHelpers{
       }
   }
 
-//  def listUserApprove = {
-////    ".ListGroupUser" #>
-//
-//  }
+  def listUserApprove = {
+    ".ListGroupUser" #> otherMembers.map{user:User =>
 
+      def approveUser():JsCmd = {
+        val (added, notAdded) = groupService.approveUsersToGroup(group,Iterable(user)).partition(_.isDefined)
+        if(!added.isEmpty) {
+          LiftMessages.ajaxNotice(user.niceName +" is approved to group " + group.name.is)&
+          JsCmds.Replace(user.id.is.toString, NodeSeq.Empty)
+        }
+        if(!notAdded.isEmpty){
+          // normally shouldn't happen
+          LiftMessages.ajaxError(user.niceName +" is not approved to group: " + group.name.is)
+        }
+      }
+
+      ".ListGroupUser [id]" #> user.id.is &
+        ".first_name *" #> user.firstName.is &
+        ".last_name *" #> user.lastName.is &
+        ".email *" #> user.email.is  &
+        ".full_name *" #> user.shortName &
+        ".approve_member [onclick]" #> SHtml.ajaxInvoke(()=>approveUser())
+    }
+  }
 }

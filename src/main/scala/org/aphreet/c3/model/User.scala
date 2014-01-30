@@ -47,8 +47,8 @@ object User extends User with MetaMegaProtoUser[User]{
   override def logUserIn(who: User, postLogin: () => Nothing) : Nothing = {
     val currentRedirect : Box[String] = loginRedirect
     super.logUserIn(who, () => {
-        loginRedirect(currentRedirect)
-        postLogin()
+      loginRedirect(currentRedirect)
+      postLogin()
     })
   }
 
@@ -56,34 +56,34 @@ object User extends User with MetaMegaProtoUser[User]{
 
   // define the order fields will appear in forms and output
   override def fieldOrder = List(id, firstName, lastName, email,
-  locale, timezone, password, textArea)
+    locale, timezone, password, textArea)
 
   // comment this line out to require email validations
   override def skipEmailValidation = true
 
   override def lostPassword = {
-      bind("user", lostPasswordXhtml,
-        "email" -> SHtml.text("", sendPasswordReset _, ("placeholder" -> S.?("email.placeholder")),("id"->"log inputIcon"),("class"->"username span2")),
-        "submit" -> lostPasswordSubmitButton(S.?("lost_password.send")))
+    bind("user", lostPasswordXhtml,
+      "email" -> SHtml.text("", sendPasswordReset _, ("placeholder" -> S.?("email.placeholder")),("id"->"log inputIcon"),("class"->"username span2")),
+      "submit" -> lostPasswordSubmitButton(S.?("lost_password.send")))
   }
 
   override def lostPasswordXhtml = {
     (<div class="forgot_password_form form-holder login-form well well_login">
-        <form action={S.uri} method="POST" class="form">
-          <fieldset>
-            <legend>{S.?("lost_password.legend")}</legend>
-            <label for="username">Email</label>
-            <div class="div_text">
-              <div class="input-prepend"><span class="add-on"><i class="icon-lock"></i></span><user:email/></div>
-            </div>
+      <form action={S.uri} method="POST" class="form">
+        <fieldset>
+          <legend>{S.?("lost_password.legend")}</legend>
+          <label for="username">Email</label>
+          <div class="div_text">
+            <div class="input-prepend"><span class="add-on"><i class="icon-lock"></i></span><user:email/></div>
+          </div>
 
-            <div class="button_div">
-              <user:submit />
-            </div>
+          <div class="button_div">
+            <user:submit />
+          </div>
 
-          </fieldset>
-        </form>
-      </div>)
+        </fieldset>
+      </form>
+    </div>)
   }
 
   // password recovery form
@@ -104,7 +104,7 @@ object User extends User with MetaMegaProtoUser[User]{
             <user:submit/>
           </div>
         </fieldset>
-    </form>
+      </form>
     </div>)
   }
 
@@ -114,8 +114,8 @@ object User extends User with MetaMegaProtoUser[User]{
         def finishSet() {
           user.validate match {
             case Nil => S.notice(S.?("password.changed"))
-            user.resetUniqueId().save
-            logUserIn(user, () => S.redirectTo(homePage))
+              user.resetUniqueId().save
+              logUserIn(user, () => S.redirectTo(homePage))
 
             case xs => S.error(xs.str)
           }
@@ -197,8 +197,8 @@ object User extends User with MetaMegaProtoUser[User]{
             <div class="clear"></div>
           </fieldset>
         </form>
-     </div>
-    )
+      </div>
+      )
   }
   override protected def localForm(user: TheUserType, ignorePassword: Boolean, fields: List[FieldPointerType]): NodeSeq = {
     for {
@@ -215,7 +215,7 @@ object User extends User with MetaMegaProtoUser[User]{
       <form action={S.uri} method="POST" class="form">
         <fieldset>
           <legend>{S.?("signup.legend")}</legend>
-            {localForm(user, false, signupFields)}
+          {localForm(user, false, signupFields)}
           <div class="button_div">
             <user:submit/>
           </div>
@@ -226,16 +226,16 @@ object User extends User with MetaMegaProtoUser[User]{
 
   override def editXhtml(user: TheUserType) = {
     ( <div class="form-holder edit-form login-form well well_login">
-        <form action={S.uri} method="POST" class="form">
-          <fieldset>
-            <legend>{S.?("edit.legend")}</legend>
-              {localForm(user, true, editFields)}
-            <div class="button_div">
+      <form action={S.uri} method="POST" class="form">
+        <fieldset>
+          <legend>{S.?("edit.legend")}</legend>
+          {localForm(user, true, editFields)}
+          <div class="button_div">
             <user:submit/>
-              </div>
-          </fieldset>
-        </form>
-      </div>)
+          </div>
+        </fieldset>
+      </form>
+    </div>)
   }
   override def changePasswordXhtml = {
     (<div class="form-holder edit-form login-form well well_login">
@@ -245,9 +245,9 @@ object User extends User with MetaMegaProtoUser[User]{
 
           <label for="username">{S.?("old.password")}</label>
           <div class="div_text">
-              <div class="input-prepend">
-                <span class="add-on"><i class="icon-lock"></i></span><user:old_pwd />
-              </div>
+            <div class="input-prepend">
+              <span class="add-on"><i class="icon-lock"></i></span><user:old_pwd />
+            </div>
           </div>
           <label for="username">{S.?("new.password")}</label>
           <div class="div_text">
@@ -256,65 +256,63 @@ object User extends User with MetaMegaProtoUser[User]{
             </div>
           </div>
           <label for="username">{S.?("repeatPassword.label")}</label>
-            <div class="div_text">
-              <div class="input-prepend">
-                <span class="add-on"><i class="icon-repeat"></i></span><user:new_pwd />
-              </div>
+          <div class="div_text">
+            <div class="input-prepend">
+              <span class="add-on"><i class="icon-repeat"></i></span><user:new_pwd />
             </div>
+          </div>
           <div class="button_div">
             <user:submit />
           </div>
         </fieldset>
-        </form>
-      </div>)
+      </form>
+    </div>)
   }
   override def changePassword = {
-      val user = currentUser.open_! // we can do this because the logged in test has happened
-      var oldPassword = ""
-      var newPassword: List[String] = Nil
+    val user = currentUser.open_! // we can do this because the logged in test has happened
+    var oldPassword = ""
+    var newPassword: List[String] = Nil
 
-      def testAndSet() {
-        if (!user.testPassword(Full(oldPassword))) S.error(S.?("wrong.old.password"))
-        else {
-          user.setPasswordFromListString(newPassword)
-          user.validate match {
-            case Nil => user.save; S.notice(S.?("changePassword.changed")); S.redirectTo(homePage)
-            case xs => S.error(xs.str)
-          }
+    def testAndSet() {
+      if (!user.testPassword(Full(oldPassword))) S.error(S.?("wrong.old.password"))
+      else {
+        user.setPasswordFromListString(newPassword)
+        user.validate match {
+          case Nil => user.save; S.notice(S.?("changePassword.changed")); S.redirectTo(homePage)
+          case xs => S.error(xs.str)
         }
       }
-      bind("user", changePasswordXhtml,
-        "old_pwd" -> SHtml.password("", s => oldPassword = s,("class","username span2")),
-        "new_pwd" -> SHtml.password_*("", LFuncHolder(s => newPassword = s),("class","username span2")),
-        "submit" -> changePasswordSubmitButton(S.?("changePassword.button"), testAndSet _))
-      }
+    }
+    bind("user", changePasswordXhtml,
+      "old_pwd" -> SHtml.password("", s => oldPassword = s,("class","username span2")),
+      "new_pwd" -> SHtml.password_*("", LFuncHolder(s => newPassword = s),("class","username span2")),
+      "submit" -> changePasswordSubmitButton(S.?("changePassword.button"), testAndSet _))
+  }
   override def screenWrap = Full(
     <lift:surround with="default" at="content">
 
       <div class="user-form">
-          <lift:bind />
+        <lift:bind />
       </div>
 
     </lift:surround>
   )
   override def edit = {
     super.edit ++
-    <br/>
-    <lift:Menu.item name="ChangePassword">
-      Change password
-    </lift:Menu.item>.toList
+        <br/>
+      <lift:Menu.item name="ChangePassword">
+        Change password
+      </lift:Menu.item>.toList
   } : NodeSeq
   override def signup = {
     val theUser: TheUserType = mutateUserOnSignup(createNewUserInstance())
 
     def testSignup() {
       validateSignup(theUser) match {
-        case Nil =>{
-          theUser.setValidated(skipEmailValidation).resetUniqueId()
-          theUser.save
-          S.notice((S.?("approve.list.user")+theUser.niceName))
-          S.redirectTo("/")
-        }
+        case Nil =>
+          actionsAfterSignup(theUser, () => {S.notice(S.?("signup.user"))
+            S.redirectTo(homePage)})
+
         case xs => S.error(xs.str);signupFunc(Full(innerSignup _))
       }
     }
@@ -365,9 +363,8 @@ object User extends User with MetaMegaProtoUser[User]{
 
   def containsCurrent(users: List[User]): Boolean = {
     User.currentUser match {
-      case Full(user) => {
+      case Full(user) =>
         users.exists((u: User) => u.id.is == user.id.is)
-      }
       case _ => false
     }
   }
@@ -393,8 +390,8 @@ class User extends MegaProtoUser[User] with ManyToMany {
       if(!this.toList.isEmpty) {
         {<ul>{
           for(group <- this.toList) yield
-          (<li>{Text(group.name.is).toSeq ++ SHtml.checkbox(true, (selected: Boolean) => if(! selected) UserGroup.find(By(UserGroup.group,group),By(UserGroup.user,thisuser)).open_!.delete_!).toSeq}</li>).flatten
-         }</ul>}.flatten
+            (<li>{Text(group.name.is).toSeq ++ SHtml.checkbox(true, (selected: Boolean) => if(! selected) UserGroup.find(By(UserGroup.group,group),By(UserGroup.user,thisuser)).open_!.delete_!).toSeq}</li>).flatten
+          }</ul>}.flatten
       }
       else Text("No groups.")
     }
@@ -409,17 +406,17 @@ class User extends MegaProtoUser[User] with ManyToMany {
     override def _toForm: Box[Elem] =
       fmapFunc({s: List[String] => this.setFromAny(s)}){name =>
         Full( <div class="input-prepend">
-                <label for="password">{S.?("email.label")}</label>
-                  {appendFieldId(
-                    <div class="input-prepend">
-                      <span class="add-on"><i class="icon-envelope"></i></span>
-                      <input type={formInputType}
-                                name={name}
-                                class="username span2"
-                                placeholder ={S.?("email.placeholder")}
-                                value={is match {case null => "" case s => s.toString}}/>
-                    </div>)}
-              </div>)}
+          <label for="password">{S.?("email.label")}</label>
+          {appendFieldId(
+            <div class="input-prepend">
+              <span class="add-on"><i class="icon-envelope"></i></span>
+              <input type={formInputType}
+                     name={name}
+                     class="username span2"
+                     placeholder ={S.?("email.placeholder")}
+                     value={is match {case null => "" case s => s.toString}}/>
+            </div>)}
+        </div>)}
 
   }
 
@@ -429,10 +426,10 @@ class User extends MegaProtoUser[User] with ManyToMany {
         Full(<div class="input-prepend">
           <label for="password">{S.?("firstName.label")}</label>
           {appendFieldId(<div class="input-prepend"><span class="add-on"><i class="icon-user"></i></span><input type={formInputType} maxlength={maxLen.toString}
-                                  name={name}
-                                  class="username span2"
-                                  placeholder ={S.?("firstName.placeholder")}
-                                  value={is match {case null => "" case s => s.toString}}/>
+                                                                                                                name={name}
+                                                                                                                class="username span2"
+                                                                                                                placeholder ={S.?("firstName.placeholder")}
+                                                                                                                value={is match {case null => "" case s => s.toString}}/>
           </div>)}
         </div>)}
   }
@@ -443,26 +440,26 @@ class User extends MegaProtoUser[User] with ManyToMany {
         Full(<div class="input-prepend">
           <label for="password">{S.?("lastName.label")}</label>
           {appendFieldId(<div class="input-prepend"><span class="add-on"><i class="icon-user"></i></span><input type={formInputType} maxlength={maxLen.toString}
-                                  name={name}
-                                  class="username span2"
-                                  placeholder ={S.?("lastName.placeholder")}
-                                  value={is match {case null => "" case s => s.toString}}/></div>)}
+                                                                                                                name={name}
+                                                                                                                class="username span2"
+                                                                                                                placeholder ={S.?("lastName.placeholder")}
+                                                                                                                value={is match {case null => "" case s => s.toString}}/></div>)}
         </div>)}
   }
   override lazy val password: MappedPassword[T] = new MyPassword(this){
-   // <div class="input-prepend"><label for="password">{field.displayName}</label>{form}</div>
+    // <div class="input-prepend"><label for="password">{field.displayName}</label>{form}</div>
 
 
     override def _toForm: Box[NodeSeq] = {
       S.fmapFunc({s: List[String] => this.setFromAny(s)}){funcName =>
         Full(<div class="input-prepend">
-            <label for="password">{S.?("password.label")}</label>
-            {appendFieldId(
+          <label for="password">{S.?("password.label")}</label>
+          {appendFieldId(
             <div class="input-prepend">
               <span class="add-on"><i class="icon-lock"></i></span>
               <input type={formInputType} name={funcName} class="password span2" value={is.toString}/>
             </div>)
-            }</div>
+          }</div>
           <div class="input-prepend">
             <label for="password">{S.?("repeatPassword.label")}</label>
             <div class="input-prepend">
