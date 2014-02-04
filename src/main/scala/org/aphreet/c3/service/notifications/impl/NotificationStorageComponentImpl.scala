@@ -2,14 +2,14 @@ package org.aphreet.c3.service.notifications.impl
 
 import org.aphreet.c3.util.C3Loggable
 import org.aphreet.c3.model.{Notification, User}
-import org.aphreet.c3.service.notifications.{NotificationStats, NotifyMsg, NotificationStorageComponent}
+import org.aphreet.c3.service.notifications.{NotificationManager, NotificationStats, NotifyMsg, NotificationStorageComponent}
 import net.liftweb.util.FieldError
 
 /**
  * Copyright iFunSoftware 2013
  * @author Dmitry Ivanov
  */
-trait NotificationStorageComponentImpl extends NotificationStorageComponent{
+class NotificationStorageComponentImpl extends NotificationStorageComponent with NotificationManager {
 
   override val notificationStorage: NotificationStorage = new NotificationStorageImpl
 

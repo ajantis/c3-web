@@ -5,14 +5,14 @@ Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.aphreet.c3.web
 Web-ContextPath: /
 Bundle-ClassPath: WEB-INF/classes,
- WEB-INF/lib/accesslib-1.0.26.jar,
- WEB-INF/lib/akka-actor_2.10-2.1.2.jar,
+ WEB-INF/lib/accesslib-1.0.27.jar,
+ WEB-INF/lib/akka-actor_2.10-2.2.3.jar,
  WEB-INF/lib/commons-codec-1.6.jar,
  WEB-INF/lib/commons-fileupload-1.2.2.jar,
  WEB-INF/lib/commons-httpclient-3.1.jar,
  WEB-INF/lib/commons-io-1.3.2.jar,
  WEB-INF/lib/commons-lang-2.4.jar,
- WEB-INF/lib/config-1.0.0.jar,
+ WEB-INF/lib/config-1.0.2.jar,
  WEB-INF/lib/joda-time-1.6.1.jar,
  WEB-INF/lib/h2-1.2.138.jar,
  WEB-INF/lib/htmlparser-1.4.jar,
@@ -33,12 +33,11 @@ Bundle-ClassPath: WEB-INF/classes,
  WEB-INF/lib/widgets_2.5_2.10-1.3.jar
 Import-Bundle: javax.servlet;version="[2.5.0,3.1.0]",
  org.scala-lang.scala-library;version="[2.10.1,2.11)",
- org.scala-lang.scala-actors;version="[2.10.1,2.11)",
  org.slf4j.api,
  org.aphreet.c3.platform.core,
  org.aphreet.c3.platform.accesscontrol,
  org.aphreet.c3.platform.filesystem,
- org.aphreet.c3.platform.search
+ org.aphreet.c3.platform.search.api
 Import-Package: javax.naming,
  javax.activation,
  javax.mail,
