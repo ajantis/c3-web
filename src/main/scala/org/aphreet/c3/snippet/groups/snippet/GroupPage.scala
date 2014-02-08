@@ -9,6 +9,7 @@ import org.aphreet.c3.lib.DependencyFactory._
 import com.ifunsoftware.c3.access.C3System
 import xml.Text
 import net.liftweb.common.Full
+import org.aphreet.c3.util.helpers.GroupPageHelpers
 
 /**
  * Copyright iFunSoftware 2011
@@ -44,21 +45,13 @@ class GroupPage(data: GroupPageData) extends GroupPageHelpers{
     ".tags_group" #> groupTags.map((tag: String) => {
       ".tags_group *" #> tag
     }) &
-    ".GroupOwner *" #> group.owner.obj.map(_.shortName).openOr("N/A") &
-    ".GroupOwner [href]" #> group.owner.obj.map(_.createLink) &
-    ".GroupName *" #> group.name.is &
-    ".GroupAccess *" #> status &
+      ".GroupOwner *" #> group.owner.obj.map(_.shortName).openOr("N/A") &
+      ".GroupOwner [href]" #> group.owner.obj.map(_.createLink) &
+      ".GroupName *" #> group.name.is &
+      ".GroupAccess *" #> status &
       ".GroupAccess [class+]" #> background &
-    ".GroupDescription *" #>group.getDescription
+      ".GroupDescription *" #>group.getDescription
   }
+
+
 }
-
-trait GroupPageHelpers {
-  val group: Group
-  val activeLocId: String
-
-  def embedTabMenu = {
-    "* *" #> <lift:embed what="/groups/_group_tab_menu" active={activeLocId} group_id={group.id.is.toString} />
-  }
-}
-

@@ -19,7 +19,7 @@ import org.aphreet.c3.lib.DependencyFactory
 import com.ifunsoftware.c3.access.{StringMetadataValue, C3System, MetadataUpdate, MetadataRemove}
 import com.ifunsoftware.c3.access.C3System._
 import net.liftweb.http.js.JsCmds.{Function, Script}
-import org.aphreet.c3.util.helpers.{ConvertHelpers, ByteCalculatorHelpers}
+import org.aphreet.c3.util.helpers.{GroupPageHelpers, ConvertHelpers, ByteCalculatorHelpers}
 import net.liftweb.common.Full
 import org.aphreet.c3.snippet.groups.GroupPageFilesData
 import net.liftweb.http.js.JE.{JsVar, JsRaw}

@@ -21,6 +21,7 @@ import com.ifunsoftware.c3.access.fs.C3FileSystemNode
 import org.aphreet.c3.lib.metadata.Metadata._
 import net.liftweb.http.js.JE.JsVar
 import net.liftweb.mapper.By
+import org.aphreet.c3.util.helpers.GroupPageHelpers
 
 
 /**
