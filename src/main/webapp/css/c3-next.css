@@ -842,5 +842,13 @@ overflow: hidden;
     margin-right:3px;
 }
 
-/* FOR GROUP PAGE SECTION*/
+/*Search section*/
+div.row > cite {
+ font-size: 14px;
+ color: rgb(0, 102, 33);
+ font-style: normal;
+}
+.a, cite {
+ color: rgb(0, 102, 33);
+ font-style: normal;
 }
