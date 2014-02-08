@@ -46,6 +46,8 @@ class UserGroup extends LongKeyedMapper[UserGroup] with IdPK {
   object isApproved extends MappedBoolean(this){
     override def defaultValue = false
   }
+
+
 }
 
 object UserGroup extends UserGroup with LongKeyedMetaMapper[UserGroup] {

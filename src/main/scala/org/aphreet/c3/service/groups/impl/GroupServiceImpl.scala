@@ -94,11 +94,14 @@ class GroupServiceImpl extends GroupService with C3Loggable {
   override def approveUsersToGroup(group: Group, members: Iterable[User]): Iterable[Box[User]] = {
     members.map{member:User =>
       val userGroups = UserGroup.findAll(By(UserGroup.user, member), By(UserGroup.group, group))
-      userGroups.map{ userGroup:UserGroup =>
-        UserGroup.isApproved(true).save()
-        notificationManager ! CreateNotification(AddedToGroupMsg(group = group, recipientId = member.id.is))
+      if(!userGroups.isEmpty){
+        userGroups.map{ userGroup:UserGroup =>
+          userGroup.isApproved(true).save()
+          notificationManager ! CreateNotification(AddedToGroupMsg(group = group, recipientId = member.id.is))
+        }
         Full(member)
-      }.head
+      }
+     else Failure("User " + member.email + " is not a member of this group!")
     }
   }
 

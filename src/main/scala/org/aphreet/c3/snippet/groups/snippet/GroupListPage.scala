@@ -73,34 +73,38 @@ class GroupListPage extends GroupsAccess{
       }
 
       def sendRequest():JsCmd = {
-        JsCmds.Noop
+        val user = User.currentUserUnsafe
+        groupService.addUsersToApproveListGroup(group,Iterable(user))
+        LiftMessages.ajaxNotice(user.niceName +" is add to approve list of group " + group.name.is)&
+          JsCmds.Replace(group.id.is.toString, NodeSeq.Empty)
       }
 
       (User.currentUser match {
         case Full(u) => checkAccess(u,group) match {
           case UserStatusGroup.Admin =>
-              adminGroup()
+            adminGroup()
 
           case UserStatusGroup.Owner   =>
-              adminGroup()
+            adminGroup()
 
           case UserStatusGroup.Member  =>
-              userGroup()&
+            userGroup()&
               ".cog" #> NodeSeq.Empty
 
           case UserStatusGroup.Request =>
-              lockGroup()&
+            lockGroup()&
               ".plus" #> NodeSeq.Empty
 
           case UserStatusGroup.Other   =>
-              lockGroup()&
+            lockGroup()&
+              ".plus [id]" #> group.id.is&
               ".plus [onclick]" #> SHtml.ajaxInvoke(()=> sendRequest())
         }
         case Empty =>
-            lockGroup()&
+          lockGroup()&
             ".plus [onclick]" #> SHtml.ajaxInvoke(()=>  LiftMessages.ajaxNotice(S.?("response.login")))
       })&
-      infoGroup(groupIcon)
+        infoGroup(groupIcon)
     }
   }
 
@@ -130,4 +134,6 @@ class GroupListPage extends GroupsAccess{
       "name=tags_edit" #> SHtml.onSubmit(newGroup.tags(_)) &
       "type=submit" #> SHtml.onSubmitUnit(saveMe)
   }
+
+
 }

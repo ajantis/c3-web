@@ -784,9 +784,10 @@ overflow: hidden;
 }
 .hr_group{
     margin:0!important;
-    border-bottom: 1px solid #ddd!important;
     padding-bottom:10px;
-    padding-top:10px;
+}
+.hr_groups_list {
+    margin:0!important;
 }
 .checkbox_public{
     margin-top: -4px!important;

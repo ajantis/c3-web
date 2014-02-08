@@ -3,7 +3,7 @@ package org.aphreet.c3.snippet.groups.snippet
 import org.aphreet.c3.snippet.groups.{GroupPageData, AbstractGroupPageLoc}
 import org.aphreet.c3.loc.SuffixLoc
 import org.aphreet.c3.model.{UserGroup, User, Group}
-import net.liftweb.common.Box
+import net.liftweb.common.{Full, Box}
 import net.liftweb.sitemap.Loc.Link
 import org.aphreet.c3.lib.DependencyFactory._
 import com.ifunsoftware.c3.access.{StringMetadataValue, MetadataUpdate, C3System}
@@ -51,10 +51,10 @@ class GroupPageSettings (data: GroupPageData) extends GroupPageHelpers{
 
 
   val approvedMembers = members.filter(_.isApproved)
-    .map(_.user.obj.openOrThrowException("Error open user"))
+    .map(_.user.obj.openOrThrowException("Error open user")).filter(_.id.is!=group.owner.is)
 
   val otherMembers = members.filter(_.isApproved!=true)
-    .map(_.user.obj.openOrThrowException("Error open user"))
+    .map(_.user.obj.openOrThrowException("Error open user")).filter(_.id.is!=group.owner.is)
 
   def owner = {
     ".GroupOwner *" #> group.owner.obj.map(_.shortName).openOr("N/A")&
@@ -92,7 +92,7 @@ class GroupPageSettings (data: GroupPageData) extends GroupPageHelpers{
         ".last_name *" #> user.lastName.is &
         ".email *" #> user.email.is  &
         ".full_name *" #> user.shortName &
-        ".delete_member " #> SHtml.ajaxInvoke(()=>deleteUser())
+        ".delete_member [onclick]" #> SHtml.ajaxInvoke(()=>deleteUser())
     })
   }
 
@@ -162,15 +162,9 @@ class GroupPageSettings (data: GroupPageData) extends GroupPageHelpers{
     ".ListGroupUser" #> otherMembers.map{user:User =>
 
       def approveUser():JsCmd = {
-        val (added, notAdded) = groupService.approveUsersToGroup(group,Iterable(user)).partition(_.isDefined)
-        if(!added.isEmpty) {
-          LiftMessages.ajaxNotice(user.niceName +" is approved to group " + group.name.is)&
+        groupService.approveUsersToGroup(group,Iterable(user))
+        LiftMessages.ajaxNotice(user.niceName +" is approved to group " + group.name.is)&
           JsCmds.Replace(user.id.is.toString, NodeSeq.Empty)
-        }
-        if(!notAdded.isEmpty){
-          // normally shouldn't happen
-          LiftMessages.ajaxError(user.niceName +" is not approved to group: " + group.name.is)
-        }
       }
 
       ".ListGroupUser [id]" #> user.id.is &
