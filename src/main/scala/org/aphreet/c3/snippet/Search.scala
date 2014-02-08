@@ -5,16 +5,13 @@ import Helpers._
 import org.aphreet.c3.model._
 import net.liftweb.http._
 import net.liftweb.http.js.{JE, JsCmd, JsCmds}
-import net.liftweb.http.js.jquery.JqJsCmds
-import xml.{Unparsed, NodeSeq}
+import xml.NodeSeq
 import org.aphreet.c3.lib.DependencyFactory._
 import com.ifunsoftware.c3.access.C3System
 import net.liftweb.util.CssSel
 import java.text.SimpleDateFormat
 import org.aphreet.c3.lib.metadata.Metadata
 import org.aphreet.c3.util.C3Loggable
-import com.ifunsoftware.c3.access.SearchResultEntry
-import org.aphreet.c3.snippet.groups.snippet.C3ResourceHelpers
 import org.aphreet.c3.lib.metadata.Metadata._
 import scala.Some
 import com.ifunsoftware.c3.access.SearchResultEntry

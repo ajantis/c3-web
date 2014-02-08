@@ -8,7 +8,6 @@ import org.aphreet.c3.service.groups.impl.GroupServiceImpl
 import org.aphreet.c3.service.groups.messages.impl.MessageStorageServiceImpl
 import akka.actor.{ActorRef, Props, ActorSystem}
 import org.aphreet.c3.service.metadata.MetadataService
-import org.aphreet.c3.service.notifications.NotificationManager
 import org.aphreet.c3.service.notifications.impl.NotificationStorageComponentImpl
 
 /**
@@ -49,13 +48,15 @@ object DependencyFactory extends Factory {
   private val metadataServiceName = "MetadataService"
   private val notificationManagerName = "NotificationManager"
 
+  //TODO rewrite this on actorSystem.actorSelection
   private def metadataServiceRef = actorSystem.actorFor("/user/" + metadataServiceName)
   private def notificationManagerRef = actorSystem.actorFor("/user/" + notificationManagerName)
 
   private def bootAkkaSystem: ActorSystem = {
     val actorSystem = ActorSystem("C3WebSystem")
-    val notificationManager = actorSystem.actorOf(Props(new NotificationManager with NotificationStorageComponentImpl), name = notificationManagerName)
-    val metadataService = actorSystem.actorOf(Props(new MetadataService(notificationManager)), name = metadataServiceName)
+
+    val notificationManager = actorSystem.actorOf(Props.create(classOf[NotificationStorageComponentImpl]), name = notificationManagerName)
+    actorSystem.actorOf(Props.create(classOf[MetadataService], notificationManager), name = metadataServiceName)
 
     actorSystem
   }
