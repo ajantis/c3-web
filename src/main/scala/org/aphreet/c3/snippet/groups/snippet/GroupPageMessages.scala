@@ -7,6 +7,7 @@ import org.aphreet.c3.snippet.groups.{AbstractGroupPageLoc, GroupPageData}
 import net.liftweb.sitemap.Loc.Link
 import net.liftweb.util.Helpers._
 import org.aphreet.c3.loc.SuffixLoc
+import org.aphreet.c3.util.helpers.GroupPageHelpers
 
 /**
  * Copyright iFunSoftware 2011

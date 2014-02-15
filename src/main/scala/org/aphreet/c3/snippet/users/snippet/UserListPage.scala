@@ -6,26 +6,30 @@ import net.liftweb.http.SHtml
 import xml.NodeSeq
 import net.liftweb.http.js.{JsCmds, JsCmd}
 import net.liftweb.mapper.By
+import org.aphreet.c3.util.helpers.AdminPageHelpers
 
 /**
  * Copyright iFunSoftware 2011
  * @author Dmitry Ivanov
  */
 
-class UserListPage extends UserHelpers{
+class UserListPage extends UserHelpers with AdminPageHelpers{
+
+  override lazy val activeLocId = "users"
+
   def list = {
     val users = User.findAll(By(User.enabled,true))
     val current = User.currentUser.openOrThrowException("User is not detected!")
     ".user-head *" #> (
       if (current.superUser.is)
       {
-//        ".name-admin *" #> "Admin" &
-          ".name-enabled *" #> "Enabled"
+        //        ".name-admin *" #> "Admin" &
+        ".name-enabled *" #> "Enabled"
       }
       else
       {
-//        ".name-admin *" #> NodeSeq.Empty &
-          ".name-enabled *" #> NodeSeq.Empty
+        //        ".name-admin *" #> NodeSeq.Empty &
+        ".name-enabled *" #> NodeSeq.Empty
       })&
       ".user " #> users.map {user => {
 
@@ -54,15 +58,15 @@ class UserListPage extends UserHelpers{
                   (if(user.id != current.id)
                   {
                     ".deluser *" #> SHtml.memoize(f => f ++ SHtml.hidden(deleteUser _))&
-                    ".admin_checkbox " #> SHtml.ajaxCheckbox(user.superUser.is,setSuperAdmin(_))
+                      ".admin_checkbox " #> SHtml.ajaxCheckbox(user.superUser.is,setSuperAdmin(_))
                   }else
                   {
                     ".admin_checkbox" #> NodeSeq.Empty &
-                    ".deluser *" #> NodeSeq.Empty
+                      ".deluser *" #> NodeSeq.Empty
 
                   }
                     )
-                ).apply(n)
+                  ).apply(n)
               ))
 
         }

@@ -15,6 +15,7 @@ import net.liftweb.http.js.{JsCmds, JsCmd}
 import org.aphreet.c3.service.groups.GroupService
 import net.liftweb.util.CssSel
 import net.liftmodules.widgets.autocomplete.AutoComplete
+import org.aphreet.c3.util.helpers.GroupPageHelpers
 
 /**
  * @author Serjk (mailto: serjk91@gmail.com)

@@ -8,12 +8,16 @@ import net.liftweb.http.js.JsCmds.{OnLoad, Script}
 import net.liftweb.http.{SHtml, S}
 import net.liftweb.common.{Empty, Full}
 import net.liftweb.mapper.By
+import org.aphreet.c3.util.helpers.AdminPageHelpers
 
 /**
  * @author Serjk (mailto: serjk91@gmail.com)
  */
 
-class CategoryListPage {
+class CategoryListPage extends AdminPageHelpers {
+
+  override lazy val activeLocId = "categories"
+
   def list = {
     val categories = Category.findAll()
 
@@ -46,8 +50,7 @@ class CategoryListPage {
     }
     ".tags_cont" #> categories.map{ cat:Category =>  categoryContents(cat) } &
       "#new_tags" #> AddTag.addTags &
-      "#edit_category" #> editCategory andThen
-      "* *" #> ((x: NodeSeq) => x ++ Script(OnLoad(JsCmds.JsHideId("left-panel"))))
+      "#edit_category" #> editCategory
   }
 
   def adm = {

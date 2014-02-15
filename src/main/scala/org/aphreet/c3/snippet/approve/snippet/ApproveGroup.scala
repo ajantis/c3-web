@@ -13,12 +13,16 @@ import org.aphreet.c3.service.groups.GroupService
 import org.aphreet.c3.lib.DependencyFactory._
 import org.aphreet.c3.service.notifications.NotificationManagerProtocol.CreateNotification
 import org.aphreet.c3.service.notifications.{ApproveGroupMsg, AddedToGroupMsg}
+import org.aphreet.c3.util.helpers.AdminPageHelpers
+
 //import com.ifunsoftware.c3.access.C3NotFoundException
 
 /**
  * @author Koyushev Sergey (mailto: serjk91@gmail.com)
  */
-class ApproveGroup {
+class ApproveGroup extends AdminPageHelpers{
+
+  override lazy val activeLocId = "groupApprove"
 
   lazy val groupService = DependencyFactory.inject[GroupService]
     .openOrThrowException("Group service should be always here")
