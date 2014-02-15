@@ -108,7 +108,8 @@ class Search extends PaginatorSnippet[SearchResultEntry] with C3Loggable{
     ".result_header *" #> c3Path.resourceName &
       ".result_header [href]" #> c3Path.resourceParentDir &
       ".result_header_path" #> result_header_path &
-      ".result_content *" #> Unparsed(content.getOrElse("")) &
+    // Todo Добавить Unparsed
+      ".result_content *" #> content.getOrElse("") &
       ".result_date *" #> dateFormat.format(resource.date) &
       ".owner *" #> owner.map(_.shortName).getOrElse("Unknown") &
       ".owner [href]" #> owner.map(_.createLink) &
