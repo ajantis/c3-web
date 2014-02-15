@@ -8,11 +8,7 @@ import xml.NodeSeq
 import org.aphreet.c3.model.{User, Group}
 
 /**
- * Created with IntelliJ IDEA.
- * User: Alexey
- * Date: 08.02.14
- * Time: 14:01
- * To change this template use File | Settings | File Templates.
+ * @author Aleksey Tkachev (mailto: imsiral1@mail.ru)
  */
 
 
