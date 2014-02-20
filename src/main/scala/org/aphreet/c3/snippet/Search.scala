@@ -5,7 +5,7 @@ import Helpers._
 import org.aphreet.c3.model._
 import net.liftweb.http._
 import net.liftweb.http.js.{JE, JsCmd, JsCmds}
-import xml.NodeSeq
+import scala.xml.{Unparsed, NodeSeq}
 import org.aphreet.c3.lib.DependencyFactory._
 import com.ifunsoftware.c3.access.C3System
 import net.liftweb.util.CssSel
@@ -108,8 +108,7 @@ class Search extends PaginatorSnippet[SearchResultEntry] with C3Loggable{
     ".result_header *" #> c3Path.resourceName &
       ".result_header [href]" #> c3Path.resourceParentDir &
       ".result_header_path" #> result_header_path &
-    // Todo Добавить Unparsed
-      ".result_content *" #> content.getOrElse("") &
+      ".result_content *" #> Unparsed(content.getOrElse("")) &
       ".result_date *" #> dateFormat.format(resource.date) &
       ".owner *" #> owner.map(_.shortName).getOrElse("Unknown") &
       ".owner [href]" #> owner.map(_.createLink) &

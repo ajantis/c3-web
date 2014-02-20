@@ -39,6 +39,12 @@ class GroupListPage extends GroupsAccess{
       case Empty => Group.findAll(By(Group.isOpen,true))
     }
 
+    (User.currentUser match {
+      case Full(u)=> "#add_group" #> addGroup()
+      case Empty =>
+        ".btn_add_user" #> NodeSeq.Empty &
+          "#add_group" #> NodeSeq.Empty
+    })&
     ".container_groups" #> groupList.toSet.filter(_.isApproved).map{ group:Group =>
 
       val groupIcon = if(group.isOpen.is) openGroupIcon else lockGroupIcon
@@ -108,11 +114,7 @@ class GroupListPage extends GroupsAccess{
     }
   }
 
-  def action = {
-    "#add_group" #> add
-  }
-
-  def add:CssSel = {
+  def addGroup():CssSel = {
     var newGroup = Group.create
     var public = ""
 
