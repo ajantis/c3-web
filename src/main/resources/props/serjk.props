@@ -3,10 +3,6 @@ c3_host=http://node0.c3.ifunsoftware.com
 #c3_domain_secret=
 
 #c3_host=http://node0.c3.ifunsoftware.com
-#work domain
-#c3_domain_name=96cc532e-81ff-4091-9678-320299dca27c
-#c3_domain_secret=cc70f24da82c7a7e41ae092a4913b01d
-
 c3_domain_name=576caf7e-380c-48ea-a005-9dd392bbe426
 c3_domain_secret=947e83d99dc01eb0b86acbd994e249b7
 
