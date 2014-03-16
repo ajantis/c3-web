@@ -215,7 +215,8 @@ with GroupPageHelpers with FSHelpers with TagForms with C3AccessHelpers {
             )
           } &
           ".delete_file_btn [onclick]" #> SHtml.ajaxInvoke(() => {
-            c3.deleteFile(node.fullname); JsCmds.RedirectTo(parentNodeLink)
+            c3.deleteFile(node.fullname);
+            JsCmds.RedirectTo(parentNodeLink)
           })
       } else {
         "#edit_tags_form [data-disabled]" #> "true" &
@@ -238,7 +239,8 @@ with GroupPageHelpers with FSHelpers with TagForms with C3AccessHelpers {
     }
     def superAccessTools(): CssSel = {
       ".delete_selected_btn [onclick]" #> SHtml.ajaxInvoke(() => {
-        selectedResourcePaths.foreach(c3.deleteFile); JsCmds.RedirectTo(currentPathLink)
+        selectedResourcePaths.foreach(c3.deleteFile);
+        JsCmds.RedirectTo(currentPathLink)
       })
     }
 
@@ -454,6 +456,14 @@ with GroupPageHelpers with FSHelpers with TagForms with C3AccessHelpers {
 
     val owner = nodeOwner(directory)
     val metaACL = acl(directory.metadata.get(ACL_META).getOrElse(""))
+    def redirectToDirectory: CssSel = {
+      ".link [href]" #> (directory.name + "/") &
+        ".child_td [onclick]" #> SHtml.ajaxInvoke(() => JsCmds.RedirectTo(directory.name + "/"))
+    }
+    def accessRestricted: CssSel = {
+      ".link [href]" #> "#" &
+        ".child_td [onclick]" #> SHtml.ajaxInvoke(() => (LiftMessages.ajaxError(S.?("access.restricted"))))
+    }
     (if (hasSuperAccessResource(directory)) {
       ".rules *" #> metaACL &
         ".rules [id]" #> directory.fullname.hashCode &
@@ -462,29 +472,20 @@ with GroupPageHelpers with FSHelpers with TagForms with C3AccessHelpers {
         ".child_td [onclick]" #> SHtml.ajaxInvoke(() => JsCmds.RedirectTo(directory.name + "/"))
     } else {
       (if (checkReadAccessResource(directory)) {
-        (User.currentUser match {
-          case Full(u) => checkAccess(u, group) match {
-            case UserStatusGroup.Admin =>
-              ".link [href]" #> (directory.name + "/") &
-                ".child_td [onclick]" #> SHtml.ajaxInvoke(() => JsCmds.RedirectTo(directory.name + "/"))
-            case UserStatusGroup.Owner =>
-              ".link [href]" #> (directory.name + "/") &
-                ".child_td [onclick]" #> SHtml.ajaxInvoke(() => JsCmds.RedirectTo(directory.name + "/"))
-            case UserStatusGroup.Member =>
-              ".link [href]" #> (directory.name + "/") &
-                ".child_td [onclick]" #> SHtml.ajaxInvoke(() => JsCmds.RedirectTo(directory.name + "/"))
-            case UserStatusGroup.Request =>
-              ".link [href]" #> "#" &
-                ".child_td [onclick]" #> SHtml.ajaxInvoke(() => (LiftMessages.ajaxError(S.?("access.restricted"))))
 
+        val groupAccess = new GroupsAccess {};
+        (User.currentUser match {
+          case Full(u) => groupAccess.checkAccess(u, group) match {
+            case UserStatusGroup.Admin | UserStatusGroup.Owner | UserStatusGroup.Member | UserStatusGroup.Other =>
+              redirectToDirectory
+            case UserStatusGroup.Request =>
+              accessRestricted
           }
           case Empty =>
-            ".link [href]" #> (directory.name + "/") &
-              ".child_td [onclick]" #> SHtml.ajaxInvoke(() => JsCmds.RedirectTo(directory.name + "/"))
+            redirectToDirectory
         })
       } else {
-        ".link [href]" #> "#" &
-          ".child_td [onclick]" #> SHtml.ajaxInvoke(() => (LiftMessages.ajaxError(S.?("access.restricted"))))
+        accessRestricted
       }) &
         ".acl_cont *" #> metaACL
     }) &
@@ -647,31 +648,4 @@ with GroupPageHelpers with FSHelpers with TagForms with C3AccessHelpers {
   }
 
   def isLocCurrent(allLocs: List[Loc[_]], loc: Loc[_]) = allLocs.lastOption.map(_ == loc).getOrElse(false)
-
-  def checkAccess(user:User,group:Group) = {
-
-    val members = UserGroup.findAll(By(UserGroup.group,group))
-
-    val approvedMembers = members.filter(_.isApproved)
-      .map(_.user.obj.openOrThrowException("Error open user"))
-
-    lazy val otherMembers = members.filter(_.isApproved!=true)
-      .map(_.user.obj.openOrThrowException("Error open user"))
-
-    def checkMember() = {
-      if(approvedMembers.contains(user))
-        UserStatusGroup.Member
-      else if(otherMembers.contains(user))
-        UserStatusGroup.Request
-      else UserStatusGroup.Other
-    }
-
-    if (user.superUser.is) UserStatusGroup.Admin else {
-      group.owner.obj match {
-        case Full(own) => if (own.id == user.id) UserStatusGroup.Owner else
-          checkMember()
-        case Empty => checkMember()
-      }
-    }
-  }
 }
