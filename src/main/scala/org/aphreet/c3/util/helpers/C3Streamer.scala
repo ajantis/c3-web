@@ -53,7 +53,7 @@ object C3Streamer{
         if (dl == "true"){
           contentType = "application/force-download"
         }else{
-          contentType = metadata.getOrElse("content.type", "application/octet-stream")
+          contentType = metadata.getOrElse("content-type", "application/octet-stream")
         }
         //If you see an error here, it is an issue of the IDEA scala plugin
         Full(StreamingResponse(stream, ()=> stream.close(), length, List("Content-Type" -> contentType), Nil, 200))
