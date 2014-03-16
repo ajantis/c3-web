@@ -1,0 +1,7 @@
+c3_host=http://node0.c3.ifunsoftware.com
+c3_domain_name=40c0505e-3617-42ab-9782-8c2883c51337
+#c3_domain_name=dev-alexandr
+c3_domain_secret= ba047c90a541febf50b772ea162b65a9
+
+default_admin_email=admin@admin.com
+default_admin_password=admin
