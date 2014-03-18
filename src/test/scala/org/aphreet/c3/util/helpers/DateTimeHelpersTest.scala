@@ -9,13 +9,13 @@ import java.text.SimpleDateFormat
  * @author Dmitry Ivanov (mailto: id.ajantis@gmail.com)
  *         iFunSoftware
  */
-object DateTimeHelpersTest extends Specification{
+object DateTimeHelpersTest extends Specification {
 
   "'DateTimeHelpers.todayTimeOrPastDate' should format a date for current day with pattern like '22:04'" in {
-     val currentDayDate = TimeHelpers.dayNow
-     currentDayDate.setHours(22)
-     currentDayDate.setMinutes(4)
-     todayTimeOrPastDate(currentDayDate) must be equalTo "22:04"
+    val currentDayDate = TimeHelpers.dayNow
+    currentDayDate.setHours(22)
+    currentDayDate.setMinutes(4)
+    todayTimeOrPastDate(currentDayDate) must be equalTo "22:04"
   }
 
   "'DateTimeHelpers' should format a date for date of past or future days with pattern like '15 Jan 2013'" in {

@@ -7,6 +7,6 @@ trait AdminPageHelpers {
   val activeLocId: String
 
   def embedTabMenu = {
-    "* *" #> <lift:embed what="/admin/_admin_tab_menu" active={activeLocId} />
+    "* *" #> <lift:embed what="/admin/_admin_tab_menu" active={ activeLocId }/>
   }
 }

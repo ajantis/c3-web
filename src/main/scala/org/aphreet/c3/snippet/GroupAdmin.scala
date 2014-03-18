@@ -6,7 +6,7 @@
  * modification, are permitted provided that the following conditions
  * are met:
  *
-
+ *
  * 1. Redistributions of source code must retain the above copyright
  * notice, this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above
@@ -32,23 +32,22 @@
 package org.aphreet.c3.snippet
 
 import net.liftweb.mapper.By
-import net.liftweb.http.{SHtml, S}
-import org.aphreet.c3.model.{UserGroup, User, Group}
-import xml.{Text, NodeSeq}
-import net.liftweb.common.{Empty, Full}
+import net.liftweb.http.{ SHtml, S }
+import org.aphreet.c3.model.{ UserGroup, User, Group }
+import xml.{ Text, NodeSeq }
+import net.liftweb.common.{ Empty, Full }
 import net.liftweb.util.BindHelpers._
 
 class GroupAdmin {
 
-  def addUsers(html: NodeSeq) : NodeSeq = {
+  def addUsers(html: NodeSeq): NodeSeq = {
     S.param("groupname") match {
       case Full(name) => {
-        Group.find(By(Group.name,name)) match {
+        Group.find(By(Group.name, name)) match {
           case Full(group) => {
             bind("addUsers", html,
-              "user" -> SHtml.selectObj[User](User.findAll.filter(user => UserGroup.find(By(UserGroup.user,user),By(UserGroup.group,group)).isEmpty).map(user => (user,user.email.is)),Empty, usr => UserGroup.join(usr,group)),
-              "submit" -> SHtml.submit("Add", ()=> {S.redirectTo(S.uri)})
-            )
+              "user" -> SHtml.selectObj[User](User.findAll.filter(user => UserGroup.find(By(UserGroup.user, user), By(UserGroup.group, group)).isEmpty).map(user => (user, user.email.is)), Empty, usr => UserGroup.join(usr, group)),
+              "submit" -> SHtml.submit("Add", () => { S.redirectTo(S.uri) }))
           }
           case _ => Text("")
         }
@@ -56,30 +55,29 @@ class GroupAdmin {
       case _ => Text("")
     }
 
-
   }
 
-  def editGroup(html: NodeSeq) : NodeSeq = {
-
+  def editGroup(html: NodeSeq): NodeSeq = {
 
     S.param("groupname") match {
       case Full(name) => {
-        Group.find(By(Group.name,name)) match {
+        Group.find(By(Group.name, name)) match {
           case Full(group) => {
             bind("groupadmin", html, "groupname" -> SHtml.text(group.name, group.name(_)),
-              "users" -> {(ns: NodeSeq) => {
-                group.users.flatMap(user => bind("groupuser",ns,"username" -> user.email.is,
-                  "selectuser" -> {
-                    val isCurrent = if(User.currentUser == user) true
-                    else false
+              "users" -> { (ns: NodeSeq) =>
+                {
+                  group.users.flatMap(user => bind("groupuser", ns, "username" -> user.email.is,
+                    "selectuser" -> {
+                      val isCurrent = if (User.currentUser == user) true
+                      else false
 
-                    SHtml.checkbox(true,
-                      (check) => if(!check && !isCurrent) UserGroup.find(By(UserGroup.user,user),By(UserGroup.group,group)).open_!.delete_! ,
-                      // "disable" attribute to disable possibility for user to exclude himself from group
-                      if(isCurrent)("disabled" -> "true") else ("enabled" -> "enabled") )
-                  }
-                ))
-              }:NodeSeq },
+                      SHtml.checkbox(true,
+                        (check) => if (!check && !isCurrent) UserGroup.find(By(UserGroup.user, user), By(UserGroup.group, group)).open_!.delete_!,
+                        // "disable" attribute to disable possibility for user to exclude himself from group
+                        if (isCurrent) ("disabled" -> "true") else ("enabled" -> "enabled"))
+                    }))
+                }: NodeSeq
+              },
               "submitGroup" -> SHtml.submit("Save", () => {
                 group.validate match {
                   case Nil => {
@@ -88,8 +86,7 @@ class GroupAdmin {
                   }
                   case xs => S.error(xs)
                 }
-              })
-            )
+              }))
           }
           case _ => Text("")
         }

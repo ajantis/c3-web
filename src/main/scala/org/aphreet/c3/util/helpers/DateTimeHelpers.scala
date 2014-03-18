@@ -14,9 +14,9 @@ object DateTimeHelpers {
   private val customDateFormatter = new SimpleDateFormat("dd MMM yyyy")
 
   def todayTimeOrPastDate(date: util.Date): String = {
-    if (millisToDays(date.getTime) == millisToDays(now.getTime)){ // today
+    if (millisToDays(date.getTime) == millisToDays(now.getTime)) { // today
       todayFormatter.format(date)
-    } else  // not today
+    } else // not today
       customDateFormatter.format(date)
   }
 }

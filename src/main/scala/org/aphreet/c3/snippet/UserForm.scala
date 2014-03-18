@@ -6,7 +6,7 @@
  * modification, are permitted provided that the following conditions
  * are met:
  *
-
+ *
  * 1. Redistributions of source code must retain the above copyright
  * notice, this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above
@@ -32,19 +32,17 @@
 package org.aphreet.c3.snippet
 
 import net.liftweb.util.BindHelpers._
-import net.liftweb.http.{SHtml, S}
-import xml.{Text, NodeSeq}
+import net.liftweb.http.{ SHtml, S }
+import xml.{ Text, NodeSeq }
 import net.liftweb.common.Full
 import net.liftweb.mapper.By
-import org.aphreet.c3.model.{Group, User}
+import org.aphreet.c3.model.{ Group, User }
 
- 
 class UserForm {
 
-  def add(form: NodeSeq) : NodeSeq = {
+  def add(form: NodeSeq): NodeSeq = {
     val invokedAs = S.invokedAs
     var user = User.create
-
 
     def newUser(form: NodeSeq): NodeSeq = {
       def saveMe(): Unit = {
@@ -52,58 +50,56 @@ class UserForm {
           case Nil => {
             user.save
 
-            S.notice("Added user: " + user.firstName+" "+user.lastName)
+            S.notice("Added user: " + user.firstName + " " + user.lastName)
             S.redirectTo("/users/")
           }
-          case xs => S.error(xs) ; S.mapSnippet(invokedAs, newUser)
+          case xs => S.error(xs); S.mapSnippet(invokedAs, newUser)
 
         }
       }
 
       bind("user", form,
-           "firstName" -> user.firstName.toForm,
-           "lastName" -> user.lastName.toForm,
-           "admin" -> user.superUser.toForm,
-           "submit" -> SHtml.submit("add", saveMe))
+        "firstName" -> user.firstName.toForm,
+        "lastName" -> user.lastName.toForm,
+        "admin" -> user.superUser.toForm,
+        "submit" -> SHtml.submit("add", saveMe))
     }
 
     newUser(form)
   }
 
-  def edit (form: NodeSeq) : NodeSeq = {
+  def edit(form: NodeSeq): NodeSeq = {
 
     val invokedAs = S.invokedAs
 
-
-    def editUser(form: NodeSeq, user: User) : NodeSeq = {
-      def saveUser (): Unit = {
+    def editUser(form: NodeSeq, user: User): NodeSeq = {
+      def saveUser(): Unit = {
         user.validate match {
           case Nil => {
             user.save
-            S.notice("User " + user.firstName+" "+user.lastName + " saved."); S.redirectTo("/users/")
+            S.notice("User " + user.firstName + " " + user.lastName + " saved."); S.redirectTo("/users/")
           }
           case xs => {
             S.error(xs)
-            S.redirectTo("/user/"+user.email.is)
+            S.redirectTo("/user/" + user.email.is)
           }
         }
       }
 
       bind("user", form,
-                 "firstName" -> user.firstName.toForm,
-                 "lastName" -> user.lastName.toForm,
-                 "email" -> user.email.toForm,
-                 "superUser" -> user.superUser.toForm,
-                 "usergroups" -> user.groups.toForm,
-                 "submit" -> SHtml.submit("Save",saveUser) )
+        "firstName" -> user.firstName.toForm,
+        "lastName" -> user.lastName.toForm,
+        "email" -> user.email.toForm,
+        "superUser" -> user.superUser.toForm,
+        "usergroups" -> user.groups.toForm,
+        "submit" -> SHtml.submit("Save", saveUser))
     }
-
 
     S.param("useremail") match {
       case Full(email) => {
-        User.find(By(User.email,email)) match {
+        User.find(By(User.email, email)) match {
           case Full(user: User) => {
-            editUser(form,user)
+            editUser(form, user)
           }
           case _ => Text("User wasn't found.")
         }

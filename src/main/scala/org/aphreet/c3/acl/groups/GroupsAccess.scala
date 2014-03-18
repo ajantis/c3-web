@@ -1,26 +1,25 @@
 package org.aphreet.c3.acl.groups
 
-import org.aphreet.c3.model.{UserGroup, Group, User}
-import net.liftweb.common.{Empty, Full}
+import org.aphreet.c3.model.{ UserGroup, Group, User }
+import net.liftweb.common.{ Empty, Full }
 import net.liftweb.mapper.By
-
 
 trait GroupsAccess {
 
-  def checkAccess(user:User,group:Group) = {
+  def checkAccess(user: User, group: Group) = {
 
-    val members = UserGroup.findAll(By(UserGroup.group,group))
+    val members = UserGroup.findAll(By(UserGroup.group, group))
 
     val approvedMembers = members.filter(_.isApproved)
       .map(_.user.obj.openOrThrowException("Error open user"))
 
-    lazy val otherMembers = members.filter(_.isApproved!=true)
+    lazy val otherMembers = members.filter(_.isApproved != true)
       .map(_.user.obj.openOrThrowException("Error open user"))
 
     def checkMember() = {
-      if(approvedMembers.contains(user))
+      if (approvedMembers.contains(user))
         UserStatusGroup.Member
-      else if(otherMembers.contains(user))
+      else if (otherMembers.contains(user))
         UserStatusGroup.Request
       else UserStatusGroup.Other
     }

@@ -8,6 +8,6 @@ trait GroupPageHelpers {
   val activeLocId: String
 
   def embedTabMenu = {
-    "* *" #> <lift:embed what="/groups/_group_tab_menu" active={activeLocId} group_id={group.id.is.toString} />
+    "* *" #> <lift:embed what="/groups/_group_tab_menu" active={ activeLocId } group_id={ group.id.is.toString }/>
   }
 }

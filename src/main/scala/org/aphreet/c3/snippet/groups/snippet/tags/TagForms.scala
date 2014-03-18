@@ -1,11 +1,11 @@
 package org.aphreet.c3.snippet.groups.snippet.tags
 
 import xml.NodeSeq
-import net.liftweb.http.js.{JsExp, JsCmd, JsCmds}
-import net.liftweb.http.js.JsCmds.{Script, OnLoad}
+import net.liftweb.http.js.{ JsExp, JsCmd, JsCmds }
+import net.liftweb.http.js.JsCmds.{ Script, OnLoad }
 import net.liftweb.http.js.jquery.JqJsCmds
 import org.aphreet.c3.lib.metadata.Metadata._
-import net.liftweb.http.js.JE.{JsVar, JsRaw}
+import net.liftweb.http.js.JE.{ JsVar, JsRaw }
 import net.liftweb.util.CssSel
 import com.ifunsoftware.c3.access.fs.C3FileSystemNode
 import net.liftweb.util.Helpers._
@@ -56,6 +56,6 @@ trait TagForms {
   }
 
   private def getTags(node: C3FileSystemNode): List[String] =
-      node.metadata.get(TAGS_META).map(_.split(TAGS_SEPARATOR).toList).getOrElse(Nil)
+    node.metadata.get(TAGS_META).map(_.split(TAGS_SEPARATOR).toList).getOrElse(Nil)
 
 }

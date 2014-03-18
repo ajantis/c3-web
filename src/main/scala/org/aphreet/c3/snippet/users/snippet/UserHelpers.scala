@@ -12,9 +12,9 @@ import xml.Text
 trait UserHelpers {
   def toCssBindings(user: User) = {
     ".email *" #> user.email &
-    ".mailto [href]" #> Text("mailto:"+user.email.is) &
-    ".link [href]" #> user.createLink &
-    ".name *" #> user.shortName &
-    ".name [class+]" #> (if(user.superUser.is) "admin" else "")
+      ".mailto [href]" #> Text("mailto:" + user.email.is) &
+      ".link [href]" #> user.createLink &
+      ".name *" #> user.shortName &
+      ".name [class+]" #> (if (user.superUser.is) "admin" else "")
   }
 }

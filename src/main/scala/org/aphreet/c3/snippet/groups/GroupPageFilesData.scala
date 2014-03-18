@@ -6,7 +6,7 @@ import org.aphreet.c3.model.Group
  * @author Dmitry Ivanov (mailto: id.ajantis@gmail.com)
  *         iFunSoftware
  */
-case class GroupPageFilesData(override val group: Group, private val _path: List[String]) extends GroupPageData(group){
+case class GroupPageFilesData(override val group: Group, private val _path: List[String]) extends GroupPageData(group) {
   val isDirectoryLoc = _path.lastOption.map(_ == "index").getOrElse(true)
   val path = _path.lastOption match {
     case Some("index") => {
@@ -15,5 +15,5 @@ case class GroupPageFilesData(override val group: Group, private val _path: List
     case _ => _path
   }
 
-  val currentAddress = if (!path.isEmpty) path.mkString("/","/", if(isDirectoryLoc) "/" else "") else "/"
+  val currentAddress = if (!path.isEmpty) path.mkString("/", "/", if (isDirectoryLoc) "/" else "") else "/"
 }

@@ -1,9 +1,9 @@
 package org.aphreet.c3.snippet.groups.snippet
 
 import org.aphreet.c3.model.Group
-import net.liftweb.sitemap.Loc.{LinkText, Link}
+import net.liftweb.sitemap.Loc.{ LinkText, Link }
 import net.liftweb.common.Box
-import org.aphreet.c3.snippet.groups.{AbstractGroupPageLoc, GroupPageData}
+import org.aphreet.c3.snippet.groups.{ AbstractGroupPageLoc, GroupPageData }
 import net.liftweb.util.BindHelpers._
 import org.aphreet.c3.lib.DependencyFactory._
 import com.ifunsoftware.c3.access.C3System
@@ -23,24 +23,24 @@ object GroupPage extends AbstractGroupPageLoc[GroupPageData] {
 
   override val pathPrefix = "groups" :: Nil
   override lazy val pathList = pathPrefix ++ List("index")
-  override def link = new Link[GroupPageData](pathList){
+  override def link = new Link[GroupPageData](pathList) {
     override def pathList(value: GroupPageData): List[String] = pathPrefix ::: value.group.id.is.toString :: Nil
   }
   override def getItem(id: String) = Group.find(id)
   override def wrapItem(groupBox: Box[Group]) = groupBox.map(new GroupPageData(_))
   override def canonicalUrl(data: GroupPageData) = {
-    Full((pathPrefix:::List(data.group.id.is.toString)).mkString("/","/",""))
+    Full((pathPrefix ::: List(data.group.id.is.toString)).mkString("/", "/", ""))
   }
 }
 
-class GroupPage(data: GroupPageData) extends GroupPageHelpers{
+class GroupPage(data: GroupPageData) extends GroupPageHelpers {
   override lazy val group = data.group
   override lazy val activeLocId = "about"
   lazy val c3 = inject[C3System].open_!
 
   def info = {
-    val status =  if(group.isOpen) "Public" else "Private"
-    val background =  if(group.isOpen) "btn-info" else "btn-warning"
+    val status = if (group.isOpen) "Public" else "Private"
+    val background = if (group.isOpen) "btn-info" else "btn-warning"
     val groupTags = group.getTags
     ".tags_group" #> groupTags.map((tag: String) => {
       ".tags_group *" #> tag
@@ -50,8 +50,7 @@ class GroupPage(data: GroupPageData) extends GroupPageHelpers{
       ".GroupName *" #> group.name.is &
       ".GroupAccess *" #> status &
       ".GroupAccess [class+]" #> background &
-      ".GroupDescription *" #>group.getDescription
+      ".GroupDescription *" #> group.getDescription
   }
-
 
 }

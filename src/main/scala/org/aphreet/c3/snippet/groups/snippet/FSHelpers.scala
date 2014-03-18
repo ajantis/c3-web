@@ -8,7 +8,7 @@ import scala.annotation.tailrec
  */
 trait FSHelpers {
 
-  case class FSLoc(path: List[String]){
+  case class FSLoc(path: List[String]) {
     def title: String = path.lastOption.getOrElse("N/A")
   }
 
@@ -16,9 +16,9 @@ trait FSHelpers {
     @tailrec
     def transform(acc: List[List[String]], fullPath: List[String]): List[List[String]] = {
       fullPath match {
-        case x :: Nil => acc
+        case x :: Nil  => acc
         case _ :: tail => transform(tail.reverse :: acc, tail)
-        case Nil => acc
+        case Nil       => acc
       }
     }
 

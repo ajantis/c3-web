@@ -29,13 +29,13 @@
  */
 package org.aphreet.c3.model
 
-case class C3Path(path:String){
+case class C3Path(path: String) {
 
-  var groupName:String = ""
+  var groupName: String = ""
 
-  var resourceName:String = ""
+  var resourceName: String = ""
 
-  var resourceType:ResourceType = UnknownType
+  var resourceType: ResourceType = UnknownType
 
   var resourceUri = ""
 
@@ -47,9 +47,9 @@ case class C3Path(path:String){
         groupName = group
         resourceName = filePath.last
         resourceUri = "/groups/" + group + "/files/" + filePath.mkString("/")
-        var resourceLink = filePath.filter(_!=resourceName).mkString("/")
-        if (!resourceLink.isEmpty){
-          resourceLink+='/'
+        var resourceLink = filePath.filter(_ != resourceName).mkString("/")
+        if (!resourceLink.isEmpty) {
+          resourceLink += '/'
         }
         resourceType = FileType
         resourceParentDir = "/groups/" + group + "/files/" + resourceLink
@@ -66,7 +66,7 @@ case class C3Path(path:String){
         resourceName = "Message"
         resourceType = MessagesType
         resourceUri = "/groups/" + group + "/messages"
-        resourceParentDir = "/groups/" + group + "/messages" +"#"+ filePath.last
+        resourceParentDir = "/groups/" + group + "/messages" + "#" + filePath.last
       }
 
       case _ =>
@@ -77,14 +77,14 @@ case class C3Path(path:String){
 
 object C3Path {
 
-  def apply(groupId:String, path:List[String], extension:String):String = {
+  def apply(groupId: String, path: List[String], extension: String): String = {
     "/" + groupId + "/" + path.init.mkString("/") + "/" +
       path.last + {
-      extension match {
-        case "" => ""
-        case ext => "." + ext
+        extension match {
+          case ""  => ""
+          case ext => "." + ext
+        }
       }
-    }
   }
 }
 

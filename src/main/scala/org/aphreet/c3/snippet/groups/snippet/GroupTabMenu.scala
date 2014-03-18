@@ -1,11 +1,11 @@
 package org.aphreet.c3.snippet.groups.snippet
 
 import net.liftweb.util.BindHelpers._
-import net.liftweb.http.{RequestVar, S}
-import net.liftweb.common.{Failure, Full}
-import net.liftweb.util.{PassThru, CssSel}
+import net.liftweb.http.{ RequestVar, S }
+import net.liftweb.common.{ Failure, Full }
+import net.liftweb.util.{ PassThru, CssSel }
 import xml.NodeSeq
-import org.aphreet.c3.model.{User, Group}
+import org.aphreet.c3.model.{ User, Group }
 
 /**
  * Copyright iFunSoftware 2011
@@ -19,9 +19,7 @@ class GroupTabMenu {
 
   private def defaultTabs(groupId: String): List[(String, GroupTab)] =
     List("files" -> FilesTab(groupId),
-      "about" -> AboutTab(groupId)
-
-    )
+      "about" -> AboutTab(groupId))
   def render: CssSel = {
     val activeTab = S.attr("active")
     val groupId = S.attr("group_id")
@@ -29,8 +27,8 @@ class GroupTabMenu {
 
     (User.currentUser, group) match {
       case (Full(user), Full(g)) => {
-        if (user.email.is == g.owner.obj.map(_.email).open_!.is ||user.superUser.is)
-          tabs.set(groupId => defaultTabs(groupId) ::: List("settings" -> SettingsTab(groupId),"messages" -> MessagesTab(groupId)))
+        if (user.email.is == g.owner.obj.map(_.email).open_!.is || user.superUser.is)
+          tabs.set(groupId => defaultTabs(groupId) ::: List("settings" -> SettingsTab(groupId), "messages" -> MessagesTab(groupId)))
         else
           tabs.set(groupId => defaultTabs(groupId) ::: List("messages" -> MessagesTab(groupId)))
       }
@@ -38,35 +36,35 @@ class GroupTabMenu {
 
     }
     def tabMenu(id: String, active: String) = {
-      "li" #> tabs.get(id).map{
+      "li" #> tabs.get(id).map {
         case (key, tab) =>
           val iconClass = tab.name match {
-            case "About" => "icon-star"
-            case "Files" => "icon-file"
+            case "About"    => "icon-star"
+            case "Files"    => "icon-file"
             case "Messages" => "icon-comment"
             case "Settings" => "icon-wrench"
-            case _ => "icon-heart"
+            case _          => "icon-heart"
           }
-          val activeClass =  if(key == active) "active" else ""
+          val activeClass = if (key == active) "active" else ""
           "span *" #> tab.name &
             "a [href]" #> tab.path &
-            ".iconClass [class+]"#>  iconClass &
+            ".iconClass [class+]" #> iconClass &
             ".btn-small [class+]" #> activeClass
 
       }
     }
 
-    val cssSel = for{
-      active <- activeTab ?~ "Active tab is undefined!"
-      groupId <- groupId ?~ "Current group id is undefined"
+    val cssSel = for {
+      active ← activeTab ?~ "Active tab is undefined!"
+      groupId ← groupId ?~ "Current group id is undefined"
     } yield tabMenu(groupId, active)
 
     lazy val empty = "* *" #> NodeSeq.Empty
 
     cssSel match {
-      case Full(c) => c
+      case Full(c)    => c
       case f: Failure => S.error(f.msg); empty
-      case _ => empty
+      case _          => empty
     }
 
   }
