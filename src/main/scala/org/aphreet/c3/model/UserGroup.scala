@@ -10,7 +10,7 @@ import net.liftweb.mapper._
  * modification, are permitted provided that the following conditions
  * are met:
  *
-
+ *
  * 1. Redistributions of source code must retain the above copyright
  * notice, this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above
@@ -32,30 +32,27 @@ import net.liftweb.mapper._
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
- 
- 
- 
+
 class UserGroup extends LongKeyedMapper[UserGroup] with IdPK {
 
   def getSingleton = UserGroup
 
-  object user extends MappedLongForeignKey(this,User)
+  object user extends MappedLongForeignKey(this, User)
 
-  object group extends MappedLongForeignKey(this,Group)
+  object group extends MappedLongForeignKey(this, Group)
 
-  object isApproved extends MappedBoolean(this){
+  object isApproved extends MappedBoolean(this) {
     override def defaultValue = false
   }
-
 
 }
 
 object UserGroup extends UserGroup with LongKeyedMetaMapper[UserGroup] {
 
-   override def dbTableName = "usergroup"
+  override def dbTableName = "usergroup"
 
-   override def fieldOrder = Nil
+  override def fieldOrder = Nil
 
-   def join(usr: User, grp: Group) = this.create.user(usr).group(grp).save()
+  def join(usr: User, grp: Group) = this.create.user(usr).group(grp).save()
 
 }

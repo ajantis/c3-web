@@ -13,12 +13,12 @@ import org.aphreet.c3.snippet.groups.snippet.C3ResourceHelpers
 
 //[TODO] need correct with opportunity approve user in group
 //[TODO] may be inheritance acl at directory
-trait C3AccessHelpers extends C3FileAccess with C3ResourceHelpers{
+trait C3AccessHelpers extends C3FileAccess with C3ResourceHelpers {
 
   //default value acl
-  def acl(acl:String) = {
-    if(acl == "")
-      if(group.isOpen.is)
+  def acl(acl: String) = {
+    if (acl == "")
+      if (group.isOpen.is)
         "r-r-"
       else
         "r---"
@@ -26,59 +26,59 @@ trait C3AccessHelpers extends C3FileAccess with C3ResourceHelpers{
       acl
   }
 
-  def hasWriteAccess(group:Group) = {
+  def hasWriteAccess(group: Group) = {
     User.currentUser match {
-      case Full(user) => !user.groups.filter(_==group).isEmpty
-      case _ => false
+      case Full(user) => !user.groups.filter(_ == group).isEmpty
+      case _          => false
     }
   }
 
   def hasSuperAccess = {
     User.currentUser match {
       case Full(user) => user.superUser.is
-      case _ => false
+      case _          => false
     }
   }
 
-  def isGroupRead(resource:C3FileSystemNode) = {
+  def isGroupRead(resource: C3FileSystemNode) = {
     val metaACL = acl(resource.metadata.get(ACL_META).getOrElse(""))
     metaACL.charAt(0) == 'r'
   }
 
-  def isGroupWrite(resource:C3FileSystemNode) = {
+  def isGroupWrite(resource: C3FileSystemNode) = {
     val metaACL = acl(resource.metadata.get(ACL_META).getOrElse(""))
     metaACL.charAt(1) == 'w'
   }
 
-  def isOtherUserRead(resource:C3FileSystemNode) = {
+  def isOtherUserRead(resource: C3FileSystemNode) = {
     val metaACL = acl(resource.metadata.get(ACL_META).getOrElse(""))
     metaACL.charAt(2) == 'r'
   }
 
-  def isOtherUserWrite(resource:C3FileSystemNode) = {
+  def isOtherUserWrite(resource: C3FileSystemNode) = {
     val metaACL = acl(resource.metadata.get(ACL_META).getOrElse(""))
     metaACL.charAt(3) == 'w'
   }
 
-  def checkReadAccessResource(resource:C3FileSystemNode) = {
-    if(User.containsCurrent(group.users.toList))
+  def checkReadAccessResource(resource: C3FileSystemNode) = {
+    if (User.containsCurrent(group.users.toList))
       isGroupRead(resource)
     else
       isOtherUserRead(resource)
   }
 
-  def hasWriteAccessResource(resource:C3FileSystemNode) = {
-    if(User.containsCurrent(group.users.toList))
+  def hasWriteAccessResource(resource: C3FileSystemNode) = {
+    if (User.containsCurrent(group.users.toList))
       isGroupWrite(resource)
     else
       isOtherUserWrite(resource)
   }
 
-  def hasSuperAccessResource(resource:C3FileSystemNode) =  {
+  def hasSuperAccessResource(resource: C3FileSystemNode) = {
     val owner = nodeOwner(resource)
     User.currentUser match {
       case Full(user) => user.superUser.is || User.containsCurrent(owner.toList)
-      case _ => false
+      case _          => false
     }
   }
 }

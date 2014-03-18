@@ -29,7 +29,6 @@ package org.aphreet.c3.snippet.logging
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
- 
 
 import net.liftmodules.widgets.logchanger._
 import net.liftweb.sitemap.Loc
@@ -37,31 +36,26 @@ import org.aphreet.c3.model.User
 import net.liftweb.util.Props
 import net.liftweb.common.Full
 
-
 object LogLevel extends LogLevelChanger with LogbackLoggingBackend {
 
   override def menuLocParams: List[Loc.AnyLocParam] = if (User.loggedIn_?) {
     if (Props.productionMode)
       List(User.testSuperUser)
-    else Nil  // in production mode only super users have access to logging management
-  }
-  else Nil // In all modes only authenticated users can see the menu
-
+    else Nil // in production mode only super users have access to logging management
+  } else Nil // In all modes only authenticated users can see the menu
 
   override def screenWrap = Full(
 
     <lift:surround with="default">
-        <lift:bind-at name="content-header">
-             Log manager
-        </lift:bind-at>
-        <lift:bind-at name="content">
-
-                <div>
-                   <lift:bind/>
-                </div>
-
-        </lift:bind-at>
-        <!--
+      <lift:bind-at name="content-header">
+        Log manager
+      </lift:bind-at>
+      <lift:bind-at name="content">
+        <div>
+          <lift:bind/>
+        </div>
+      </lift:bind-at>
+      <!--
         <lift:bind-at name="right-panel-content">
             <div class="right-panel-content">
                 <div class="right-panel-section right-panel-section-first">
@@ -73,10 +67,7 @@ object LogLevel extends LogLevelChanger with LogbackLoggingBackend {
             </div>
         </lift:bind-at>
         -->
-    </lift:surround>
-
-  )
+    </lift:surround>)
 
 }
-
 

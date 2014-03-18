@@ -13,7 +13,7 @@ object AppTest {
     suite
   }
 
-  def main(args : Array[String]) {
+  def main(args: Array[String]) {
     _root_.junit.textui.TestRunner.run(suite)
   }
 }
@@ -40,8 +40,7 @@ class AppTest extends TestCase("app") {
 
     def wellFormed(file: File) {
       if (file.isDirectory)
-        for (f <- file.listFiles) wellFormed(f)
-
+        for (f ← file.listFiles) wellFormed(f)
 
       if (file.isFile && file.exists && handledXml(file.getName)) {
         try {

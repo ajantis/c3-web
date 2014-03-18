@@ -2,19 +2,19 @@ package org.aphreet.c3
 package comet
 
 import org.aphreet.c3.util.C3Exception
-import org.aphreet.c3.model.{Group, User, Message}
+import org.aphreet.c3.model.{ Group, User, Message }
 import org.aphreet.c3.util.helpers.DateTimeHelpers
 
 import net.liftweb.util.Helpers
 import net.liftmodules.textile.TextileParser
 import net.liftweb.common._
 import net.liftweb.http._
-import js.{JsCmds, JsCmd}
+import js.{ JsCmds, JsCmd }
 import js.jquery.JqJsCmds.PrependHtml
 import js.JE.JsVar
 import js.JsCmds._
 
-import scala.xml.{Text, NodeSeq}
+import scala.xml.{ Text, NodeSeq }
 import scala.language.postfixOps
 import java.util.Date
 
@@ -31,7 +31,6 @@ trait GroupMessagesLog extends CometActor with CometListener {
 
   private var messages: List[Message] = Nil
 
-
   /* need these vals to be set eagerly, within the scope
    * of Comet component constructor
    */
@@ -41,7 +40,7 @@ trait GroupMessagesLog extends CometActor with CometListener {
   private val inputTextContainerId = S.attr("input_container_id") openOr "input_container"
 
   private lazy val li = liId.
-    flatMap{ Helpers.findId(defaultHtml, _) } openOr NodeSeq.Empty
+    flatMap { Helpers.findId(defaultHtml, _) } openOr NodeSeq.Empty
 
   // handle an update to the message logs
   // by diffing the lists and then sending a partial update
@@ -63,14 +62,14 @@ trait GroupMessagesLog extends CometActor with CometListener {
   // display a line
   private def line(c: Message) = {
     ("name=when *" #> formatMsgCreationDate(c.creationDate) &
-     "name=who *" #> c.author.map(_.shortName) &
-     "name=body *" #> toHtml(c.content) &
-     ".msg_id [id]"#> ("msg-" + c.uuid.toString) &
+      "name=who *" #> c.author.map(_.shortName) &
+      "name=body *" #> toHtml(c.content) &
+      ".msg_id [id]" #> ("msg-" + c.uuid.toString) &
       ".tags *" #> {
-       ".tag *" #> c.tags.map{ (tag: String) =>
-         <span class="label label-info">{tag}</span>
-       }
-     })(li)
+        ".tag *" #> c.tags.map { (tag: String) =>
+          <span class="label label-info">{ tag }</span>
+        }
+      })(li)
   }
 
   // display a list of messages
@@ -88,34 +87,33 @@ trait GroupMessagesLog extends CometActor with CometListener {
   override def render = {
 
     "name=user_name" #> User.currentUser.map(_.shortName) &
-    ("#" + ulId + " *") #> displayList &
-    ("#" + inputTextContainerId + " *") #> { (xml: NodeSeq) => {
-      var content = ""
+      ("#" + ulId + " *") #> displayList &
+      ("#" + inputTextContainerId + " *") #> { (xml: NodeSeq) =>
+        {
+          var content = ""
 
-      def sendMessage(): JsCmd = {
-        messageServer.foreach(_ ! MessageServerMsg(User.currentUser.open_!, group.open_!, content, tags))
-        tags.set(Nil)
+          def sendMessage(): JsCmd = {
+            messageServer.foreach(_ ! MessageServerMsg(User.currentUser.open_!, group.open_!, content, tags))
+            tags.set(Nil)
 
-        SetValById("postit", "") &
-        JsCmds.Run("$('#" + inputTextContainerId + "').modal('hide');")
+            SetValById("postit", "") &
+              JsCmds.Run("$('#" + inputTextContainerId + "').modal('hide');")
+          }
+
+          SHtml.ajaxForm {
+            ".edit_tags_form_func *" #> {
+              Script(
+                Function("updateTagsCallback", List("tags"),
+                  SHtml.ajaxCall(
+                    JsVar("tags"),
+                    (d: String) => updateTags(d))._2.cmd))
+            } &
+              "#tags_input *" #> Text("") &
+              "#postit" #> SHtml.onSubmit((s: String) => content = s.trim) &
+              "type=submit" #> ((xml: NodeSeq) => xml ++ SHtml.hidden(sendMessage)) apply xml
+          }
+        }
       }
-
-      SHtml.ajaxForm {
-        ".edit_tags_form_func *" #> {
-          Script(
-            Function("updateTagsCallback", List("tags"),
-              SHtml.ajaxCall(
-                JsVar("tags"),
-                (d: String) => updateTags(d)
-              )._2.cmd
-            )
-          )
-        } &
-        "#tags_input *" #> Text("") &
-        "#postit" #> SHtml.onSubmit((s: String) => content = s.trim) &
-        "type=submit" #> ((xml: NodeSeq) => xml ++ SHtml.hidden(sendMessage)) apply xml
-      }
-    }}
   }
 
   // setup the component
@@ -125,7 +123,7 @@ trait GroupMessagesLog extends CometActor with CometListener {
 
   // register as a listener
   override def registerWith = {
-    if(messageServer.isEmpty)
+    if (messageServer.isEmpty)
       throw new C3Exception("Cannot instantiate group message log outside group context!")
     else messageServer.open_!
   }

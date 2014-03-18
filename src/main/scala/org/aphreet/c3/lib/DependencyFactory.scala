@@ -6,7 +6,7 @@ import util._
 import org.aphreet.c3.apiaccess.C3
 import org.aphreet.c3.service.groups.impl.GroupServiceImpl
 import org.aphreet.c3.service.groups.messages.impl.MessageStorageServiceImpl
-import akka.actor.{ActorRef, Props, ActorSystem}
+import akka.actor.{ ActorRef, Props, ActorSystem }
 import org.aphreet.c3.service.metadata.MetadataService
 import org.aphreet.c3.service.notifications.impl.NotificationStorageComponentImpl
 
@@ -23,7 +23,7 @@ object DependencyFactory extends Factory {
 
   implicit object time extends FactoryMaker(Helpers.now _)
 
-  implicit object c3 extends FactoryMaker(C3.apply _ )
+  implicit object c3 extends FactoryMaker(C3.apply _)
 
   implicit object messageService extends FactoryMaker(MessageStorageServiceImpl.apply _)
 

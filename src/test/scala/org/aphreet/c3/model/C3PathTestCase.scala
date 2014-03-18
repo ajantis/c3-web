@@ -3,9 +3,9 @@ package org.aphreet.c3.model
 import junit.framework.TestCase
 import junit.framework.Assert._
 
-class C3PathTestCase extends TestCase{
+class C3PathTestCase extends TestCase {
 
-  def testWikiParse(){
+  def testWikiParse() {
 
     val path = "/groupName/wiki/Main"
 
@@ -17,7 +17,7 @@ class C3PathTestCase extends TestCase{
     assertEquals("/groups/groupName/wiki/Main", c3Path.resourceUri)
   }
 
-  def testFileParse(){
+  def testFileParse() {
     val path = "/groupName/files/directory1/directory2/file.jpg"
 
     val c3Path = C3Path(path)

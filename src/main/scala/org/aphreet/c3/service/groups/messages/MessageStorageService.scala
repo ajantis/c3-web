@@ -1,6 +1,6 @@
 package org.aphreet.c3.service.groups.messages
 
-import org.aphreet.c3.model.{User, Group, Message}
+import org.aphreet.c3.model.{ User, Group, Message }
 import java.util
 import org.aphreet.c3.util.C3Exception
 import net.liftweb.common.Box

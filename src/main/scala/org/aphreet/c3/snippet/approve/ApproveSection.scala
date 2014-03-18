@@ -6,6 +6,6 @@ import net.liftweb.sitemap.Menu
 /**
  * @author Koyushev Sergey (mailto: serjk91@gmail.com)
  */
-object ApproveSection extends Section{
+object ApproveSection extends Section {
   override lazy val menus: List[Menu] = List()
 }

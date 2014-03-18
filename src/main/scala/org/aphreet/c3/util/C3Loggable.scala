@@ -6,7 +6,7 @@ import net.liftweb.common.Loggable
  * Copyright iFunSoftware 2011
  * @author Dmitry Ivanov
  */
-trait C3Loggable extends Loggable{
+trait C3Loggable extends Loggable {
   def trace(msg: => AnyRef) { logger trace msg }
 
   def trace(msg: => AnyRef, t: Throwable) { logger.trace(msg, t) }

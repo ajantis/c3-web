@@ -12,7 +12,7 @@ import net.liftweb.common.Full
  * modification, are permitted provided that the following conditions
  * are met:
  *
-
+ *
  * 1. Redistributions of source code must retain the above copyright
  * notice, this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above
@@ -35,26 +35,24 @@ import net.liftweb.common.Full
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-class Category extends LongKeyedMapper[Category] with IdPK with OneToMany[Long, Category]{
+class Category extends LongKeyedMapper[Category] with IdPK with OneToMany[Long, Category] {
 
   def getSingleton = Category
 
-  object name extends MappedString(this,64){
+  object name extends MappedString(this, 64) {
     override def validations = nonEmpty _ :: isUnique _ :: Nil
 
     private def isUnique(s: String): List[FieldError] = {
-      if(!Category.find(Cmp(Category.name, OprEnum.Eql, Full(s.toLowerCase), None, Full("LOWER"))).isEmpty)
+      if (!Category.find(Cmp(Category.name, OprEnum.Eql, Full(s.toLowerCase), None, Full("LOWER"))).isEmpty)
         List(FieldError(this, "Category with name " + s + " already exists"))
       else Nil
     }
 
     private def nonEmpty(s: String) =
-      if(s.isEmpty) List(FieldError(this, "Category's name cannot be empty"))
+      if (s.isEmpty) List(FieldError(this, "Category's name cannot be empty"))
       else Nil
 
   }
-
-
 
   object tags extends MappedOneToMany(Tag, Tag.category)
 

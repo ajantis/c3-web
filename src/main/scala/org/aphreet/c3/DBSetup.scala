@@ -9,7 +9,7 @@ import net.liftweb.mapper.Schemifier
  */
 
 object DBSetup {
-  def setup(){
+  def setup() {
     Schemifier.schemify(true, Schemifier.infoF _, User, Group, Category, Tag, UserGroup, Notification)
   }
 }

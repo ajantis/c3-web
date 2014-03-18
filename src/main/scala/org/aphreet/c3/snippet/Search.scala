@@ -4,8 +4,8 @@ import net.liftweb.util._
 import Helpers._
 import org.aphreet.c3.model._
 import net.liftweb.http._
-import net.liftweb.http.js.{JE, JsCmd, JsCmds}
-import scala.xml.{Unparsed, NodeSeq}
+import net.liftweb.http.js.{ JE, JsCmd, JsCmds }
+import scala.xml.{ Unparsed, NodeSeq }
 import org.aphreet.c3.lib.DependencyFactory._
 import com.ifunsoftware.c3.access.C3System
 import net.liftweb.util.CssSel
@@ -22,7 +22,7 @@ import net.liftweb.common.Empty
  * @author Sergey Koyushev (mailto: serjk91@gmail.com)
  * @author Dmitry Ivanov (mailto: id.ajantis@gmail.com)
  */
-class Search extends PaginatorSnippet[SearchResultEntry] with C3Loggable{
+class Search extends PaginatorSnippet[SearchResultEntry] with C3Loggable {
 
   private val c3 = inject[C3System].openOrThrowException("c3Storage is not accessible")
   private val dateFormat = new SimpleDateFormat("MMM dd, yyyy")
@@ -55,7 +55,7 @@ class Search extends PaginatorSnippet[SearchResultEntry] with C3Loggable{
    */
   override def pageXml(newFirst: Long, ns: NodeSeq): NodeSeq =
     if (newFirst < 0 || newFirst >= count)
-      <li><a href="#">{ns}</a></li>
+      <li><a href="#">{ ns }</a></li>
     else {
       val (liClass, onClick) =
         if (first == newFirst)
@@ -63,7 +63,7 @@ class Search extends PaginatorSnippet[SearchResultEntry] with C3Loggable{
         else
           ("", SHtml.ajaxCall(JE.ValById(queryInputId), s => redoSearch(newFirst, SearchQuery(s)))._2.toJsCmd)
 
-      <li class={liClass}><a onclick={onClick}>{ns}</a></li>
+      <li class={ liClass }><a onclick={ onClick }>{ ns }</a></li>
     }
 
   /**
@@ -96,14 +96,14 @@ class Search extends PaginatorSnippet[SearchResultEntry] with C3Loggable{
       case Some(id) if !id.isEmpty => User.find(By(User.id, id.toLong))
       case _ => resource.metadata.get(MSG_CREATOR_META) match {
         case Some(id) if !id.isEmpty => User.find(By(User.id, id.toLong))
-        case _ => Empty
+        case _                       => Empty
       }
     }
     var result_header_path = ""
-     if (c3Path.resourceParentDir.length < 32)
-       result_header_path = c3Path.resourceParentDir
+    if (c3Path.resourceParentDir.length < 32)
+      result_header_path = c3Path.resourceParentDir
     else
-        result_header_path = c3Path.resourceParentDir.substring(0,32) + "..."
+      result_header_path = c3Path.resourceParentDir.substring(0, 32) + "..."
 
     ".result_header *" #> c3Path.resourceName &
       ".result_header [href]" #> c3Path.resourceParentDir &
@@ -128,14 +128,15 @@ class Search extends PaginatorSnippet[SearchResultEntry] with C3Loggable{
     initSearchParams()
 
     ".category *" #> Category.findAll().map {
-      category => {
-        val tags = category.tags.toList
-        "ul [id]" #> ("category_" + category.id.is + "_tags") &
-          ".name *" #> category.name.is &
-          ".tag" #> tags.map { tag =>
-            tagToCss(tag)
-          }
-      }
+      category =>
+        {
+          val tags = category.tags.toList
+          "ul [id]" #> ("category_" + category.id.is + "_tags") &
+            ".name *" #> category.name.is &
+            ".tag" #> tags.map { tag =>
+              tagToCss(tag)
+            }
+        }
     } &
       ".search_form *" #> { (xml: NodeSeq) =>
         SHtml.ajaxForm(
@@ -144,29 +145,27 @@ class Search extends PaginatorSnippet[SearchResultEntry] with C3Loggable{
             ".search_query" #> SHtml.onSubmit(s => {
               queryString.set(s)
             }) &
-            "type=submit" #> ( (xml: NodeSeq) =>
-              xml ++ SHtml.hidden{ () =>
-                if(queryString.isEmpty)
+            "type=submit" #> ((xml: NodeSeq) =>
+              xml ++ SHtml.hidden { () =>
+                if (queryString.isEmpty)
                   JsCmds.Noop
                 else
                   redoSearch(0, SearchQuery(queryString))
-              })).apply(xml)
-        )
+              })).apply(xml))
       } &
       "#results *" #> {
         val results = page
-        if (results.isEmpty && !queryString.isEmpty ){
+        if (results.isEmpty && !queryString.isEmpty) {
           ".entry *" #> ((xml: NodeSeq) => { entryHtml = xml; NodeSeq.Empty }) &
             ".no_results" #> { (xml: NodeSeq) =>
-            { noResultsHtml = xml; (".query *" #> queryString.get).apply(xml) }
-            }&
-            ".index"#> ((xml:NodeSeq)=> { welcomeHtml = xml; NodeSeq.Empty})
-        } else if(results.isEmpty && queryString.isEmpty){
+              { noResultsHtml = xml; (".query *" #> queryString.get).apply(xml) }
+            } &
+            ".index" #> ((xml: NodeSeq) => { welcomeHtml = xml; NodeSeq.Empty })
+        } else if (results.isEmpty && queryString.isEmpty) {
           ".entry *" #> ((xml: NodeSeq) => { entryHtml = xml; NodeSeq.Empty }) &
-          ".no_results" #> ((xml: NodeSeq) =>{noResultsHtml = xml; NodeSeq.Empty})&
-          ".index" #> ((xml:NodeSeq)=> { welcomeHtml = xml; xml})
-        }
-        else {
+            ".no_results" #> ((xml: NodeSeq) => { noResultsHtml = xml; NodeSeq.Empty }) &
+            ".index" #> ((xml: NodeSeq) => { welcomeHtml = xml; xml })
+        } else {
           ".entry" #> ((xml: NodeSeq) => { entryHtml = xml; xml }) &
             ".entry *" #> page.map { res: SearchResultEntry =>
               toCss(res)
@@ -178,8 +177,8 @@ class Search extends PaginatorSnippet[SearchResultEntry] with C3Loggable{
   }
 
   private def createC3SearchQuery(contentQuery: String) = {
-    if(!contentQuery.isEmpty) contentQuery.trim.split(" ").map(str=>{""+str+""}).mkString(" ")
-      else contentQuery
+    if (!contentQuery.isEmpty) contentQuery.trim.split(" ").map(str => { "" + str + "" }).mkString(" ")
+    else contentQuery
 
   }
 
@@ -188,7 +187,7 @@ class Search extends PaginatorSnippet[SearchResultEntry] with C3Loggable{
     c3.search(query)
   }
 
-  private def initSearchParams(){
+  private def initSearchParams() {
     queryString.set(S.param("query").openOr(""))
   }
 }

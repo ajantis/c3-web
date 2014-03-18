@@ -16,10 +16,10 @@ case class Message(groupId: String, authorId: String, creationDate: util.Date, c
   override def toString = {
     val builder = new StringBuilder("Message{")
     builder.append("authorId=").append(authorId).
-    append(", groupId=").append(groupId).
-    append(", creationDate=").append(creationDate.getTime).
-    append(", content=").append(content).
-    append("}")
+      append(", groupId=").append(groupId).
+      append(", creationDate=").append(creationDate.getTime).
+      append(", content=").append(content).
+      append("}")
 
     builder.toString()
   }

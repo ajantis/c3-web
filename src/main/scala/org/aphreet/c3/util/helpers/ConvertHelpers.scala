@@ -9,9 +9,9 @@ package org.aphreet.c3.util.helpers
  */
 object ConvertHelpers {
 
-  def ShortString(text: String,size:Int = 80)=
-  {
-    if (text == null || text.length < 100) text
-    else text.substring(0,size/2)+" ... "+text.substring(text.length - size/2)
-  }
+  def ShortString(text: String, size: Int = 80) =
+    {
+      if (text == null || text.length < 100) text
+      else text.substring(0, size / 2) + " ... " + text.substring(text.length - size / 2)
+    }
 }

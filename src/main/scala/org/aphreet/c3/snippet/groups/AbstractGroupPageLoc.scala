@@ -1,8 +1,8 @@
 package org.aphreet.c3.snippet.groups
 
-import org.aphreet.c3.model.{User, Group}
-import org.aphreet.c3.loc.{PageData, ItemRewriteLoc}
-import xml.{Text, NodeSeq}
+import org.aphreet.c3.model.{ User, Group }
+import org.aphreet.c3.loc.{ PageData, ItemRewriteLoc }
+import xml.{ Text, NodeSeq }
 import net.liftweb.sitemap.Loc.Link
 
 /**
@@ -11,7 +11,7 @@ import net.liftweb.sitemap.Loc.Link
  */
 trait AbstractGroupPageLoc[Data <: GroupPageData] extends ItemRewriteLoc[Group, Data] {
   def isAccessiblePage(page: Data): Boolean = {
-    User.currentUser.map(_.superUser.is).openOr(false)||
+    User.currentUser.map(_.superUser.is).openOr(false) ||
       page.group.isOpen.is ||
       User.currentUser.map(_.groups.exists(_.name.is == page.group.name.is)).openOr(false)
   }

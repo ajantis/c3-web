@@ -1,9 +1,9 @@
 package org.aphreet.c3.snippet.categories.snippet
 
-import org.aphreet.c3.model.{User, Category, Tag}
-import net.liftweb.mapper.{By, OprEnum, Cmp}
+import org.aphreet.c3.model.{ User, Category, Tag }
+import net.liftweb.mapper.{ By, OprEnum, Cmp }
 import net.liftweb.common.Full
-import net.liftweb.http.{SHtml, S}
+import net.liftweb.http.{ SHtml, S }
 import net.liftweb.util.BindHelpers._
 import net.liftweb.util.Helpers
 import xml.NodeSeq
@@ -18,7 +18,7 @@ object AddTag {
       case Full(user) => {
         "* *" #> ((x: NodeSeq) => x)
       }
-      case _ =>{
+      case _ => {
         ".add_cat" #> NodeSeq.Empty
       }
     }
@@ -30,14 +30,14 @@ object AddTag {
 
     def process() = {
       val category = Category.find(categoryId)
-      if(category.isEmpty)
+      if (category.isEmpty)
         S.error("Category is not found!")
-      else if (tags=="")
+      else if (tags == "")
         None
-      else{
+      else {
         val tagsList = tags.split(",").map(_.trim)
         var successfully = true
-        tagsList.map(tagAdd=>{
+        tagsList.map(tagAdd => {
           val tag = Tag.create
           tag.name(tagAdd)
           tag.category(category.open_!)
@@ -57,8 +57,8 @@ object AddTag {
 
       }
     }
-    "name=category_id" #> SHtml.onSubmit(categoryId = _)&
-      "name=tags_add" #> SHtml.onSubmit(tags =_)&
+    "name=category_id" #> SHtml.onSubmit(categoryId = _) &
+      "name=tags_add" #> SHtml.onSubmit(tags = _) &
       "type=submit" #> SHtml.onSubmitUnit(process)
   }
 
