@@ -138,7 +138,10 @@ object FileUpload extends RestHelper with C3Loggable{
 
   private def uploadToC3(fph: FileParamHolder, filePath: List[String], metadata: Map[String, String]){
     logger info String.format("Uploading file %s to C3..", fph.name)
-    c3.getFile(filePath.mkString("/", "/", "")).asDirectory.createFile(fph.fileName, metadata, DataStream(fph.file))
+    val parentDirectory = c3.getFile(filePath.mkString("/", "/", "")).asDirectory
+    // add to file ACL_META from parent directory
+    val newMD:Map[String,String] =  metadata + (ACL_META -> parentDirectory.metadata.get(ACL_META).getOrElse(""))
+    parentDirectory.createFile(fph.fileName, newMD, DataStream(fph.file))
     logger info String.format("File %s is uploaded to C3!", fph.name)
   }
 

@@ -285,18 +285,27 @@ with GroupPageHelpers with FSHelpers with TagForms with C3AccessHelpers {
 
   protected def renderFileLoc(f: C3File): CssSel = {
     val owner = nodeOwner(f)
+    def doRenderFileLoc: CssSel = {
+      ".file-table" #> NodeSeq.Empty &
+        ".fs_toolbar" #> NodeSeq.Empty &
+        "#upload_form" #> NodeSeq.Empty &
+        "#directory_tags" #> NodeSeq.Empty &
+        ".name_file *" #> f.name &
+        ".download_btn [href]" #> fileDownloadUrl(f) &
+        ".view_btn [href]" #> fileViewUrl(f) &
+        ".data_file *" #> internetDateFormatter.format(f.date) &
+        ".owner_file *" #> owner.map(_.shortName).getOrElse("Unknown") &
+        ".size_file *" #> ByteCalculatorHelpers.convert(f.versions.lastOption.map(_.length.toString).getOrElse("None")) &
+        commonForms(f)
+    }
+    (if (hasSuperAccess || checkReadAccessResource(f)) {
+      doRenderFileLoc
+    }
+    else {
+      ".child_td [onclick]" #> SHtml.ajaxInvoke(() => (LiftMessages.ajaxError(S.?("access.restricted"))))
+      doRenderFileLoc
 
-    ".file-table" #> NodeSeq.Empty &
-      ".fs_toolbar" #> NodeSeq.Empty &
-      "#upload_form" #> NodeSeq.Empty &
-      "#directory_tags" #> NodeSeq.Empty &
-      ".name_file *" #> f.name &
-      ".download_btn [href]" #> fileDownloadUrl(f) &
-      ".view_btn [href]" #> fileViewUrl(f) &
-      ".data_file *" #> internetDateFormatter.format(f.date) &
-      ".owner_file *" #> owner.map(_.shortName).getOrElse("Unknown") &
-      ".size_file *" #> ByteCalculatorHelpers.convert(f.versions.lastOption.map(_.length.toString).getOrElse("None")) &
-      commonForms(f)
+    })
   }
 
   def removeMeta(f: C3FileSystemNode, key: String, value: String): JsCmd = {
@@ -419,7 +428,8 @@ with GroupPageHelpers with FSHelpers with TagForms with C3AccessHelpers {
       } else {
         val metadata = Map(OWNER_ID_META -> User.currentUserUnsafe.id.is.toString,
           GROUP_ID_META -> data.group.id.is.toString,
-          TAGS_META -> tags.trim)
+          TAGS_META -> tags.trim,
+        ACL_META -> currentDirectory.metadata.get(ACL_META).getOrElse(""))
         currentDirectory.createDirectory(name.trim, metadata)
         S.redirectTo(currentPath) // redirect on the same page
       }
@@ -471,7 +481,8 @@ with GroupPageHelpers with FSHelpers with TagForms with C3AccessHelpers {
         ".link [href]" #> (directory.name + "/") &
         ".child_td [onclick]" #> SHtml.ajaxInvoke(() => JsCmds.RedirectTo(directory.name + "/"))
     } else {
-      (if (checkReadAccessResource(directory)) {
+      val haveReadRight = checkReadAccessResource(directory)
+      (if (haveReadRight) {
 
         val groupAccess = new GroupsAccess {};
         (User.currentUser match {
@@ -479,7 +490,10 @@ with GroupPageHelpers with FSHelpers with TagForms with C3AccessHelpers {
             case UserStatusGroup.Admin | UserStatusGroup.Owner | UserStatusGroup.Member | UserStatusGroup.Other =>
               redirectToDirectory
             case UserStatusGroup.Request =>
-              accessRestricted
+              if(haveReadRight)
+                redirectToDirectory
+              else
+                accessRestricted
           }
           case Empty =>
             redirectToDirectory
