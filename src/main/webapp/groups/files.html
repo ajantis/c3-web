@@ -279,13 +279,14 @@
                                                       <!--<input type="file" name="files" multiple="multiple">-->
                                                     <!--</span>-->
                                 </div>
+
+                                <div class="fileupload-content">
+                                    <table class="files">
+                                        <tbody></tbody>
+                                    </table>
+                                    <div class="fileupload-progressbar"></div>
+                                </div>
                             </form>
-                            <div class="fileupload-content">
-                                <table class="files">
-                                    <tbody></tbody>
-                                </table>
-                                <div class="fileupload-progressbar"></div>
-                            </div>
                         </div>
                         <div class="modal-footer fileupload-buttonbar">
                             <button id="file_upload_close_btn" type="button" data-dismiss="modal" class="btn btn-primary cancel">
@@ -346,6 +347,8 @@
                                 <td class="preview"></td>
                                 <td class="name">${name}</td>
                                 <td class="size">${sizef}</td>
+                                <td class="description"><input type="text" name="description_${name}" required></td>
+                                <td class="tags"><input type="text" name="tags_${name}" required></td>
                                 {{if error}}
                                 <td class="error" colspan="2">Error:
                                     {{if error === 'maxFileSize'}}File is too big
@@ -356,9 +359,9 @@
                                     {{/if}}
                                 </td>
                                 {{else}}
-                                <td class="progress"><div></div></td>
-                                <td class="start" style="min-width: 90px;">
-                                    <button type="submit" class="btn btn-primary start">
+                                <td class="progress" style="display: none;"><div></div></td>
+                                <td class="start" style="display: none; min-width: 90px;">
+                                    <button type="submit" class="btn btn-primary start start_upload">
                                         <i class="icon-white icon-upload"></i>
                                         <span>Start</span>
                                     </button>
@@ -417,7 +420,21 @@
                         </script>
                         <script>
                             // <![CDATA[
+                            $(".start_upload").live("click",function(){
+                            var parent = $(this).parent().parent();
+                            var progress_bar = parent.children(".progress");
+                            progress_bar.show();
+                            })
+                            $(".description").live("keyup", function(){
+                            var parent = $(this).parent();
+                            var start_button = parent.children(".start");
+                            start_button.hide();
 
+                            var description_text = $(this).children().val();
+                            if(description_text.length > 0){
+                            start_button.show();
+                            }
+                            })
                             $('#file_upload').fileupload( {
                                 form: "file_upload",
                                 autoUpload: false
