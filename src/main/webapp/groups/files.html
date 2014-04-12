@@ -478,7 +478,8 @@
                             $('#node_name').editable({
                                 url: function(params) {
                                     renameNodeCallback(params.value);
-                                }
+                                },
+                                placement : 'bottom'
                             });
                             $('#edit_tags_form').editable({
                                 inputclass: 'input-large',
