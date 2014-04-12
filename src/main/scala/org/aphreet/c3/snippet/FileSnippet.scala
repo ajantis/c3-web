@@ -31,7 +31,7 @@ package org.aphreet.c3.snippet
 
 import org.aphreet.c3.model.Group
 import net.liftweb.mapper.By
-import net.liftweb.common.{Logger, Full}
+import net.liftweb.common.{ Logger, Full }
 import net.liftweb.util.BindHelpers._
 import net.liftweb.http.S
 import xml.NodeSeq
@@ -42,45 +42,42 @@ import com.ifunsoftware.c3.access.C3AccessException
 class FileSnippet {
 
   val logger = Logger(classOf[FileSnippet])
-  
-  def fileDirectory(group:String):String = {
+
+  def fileDirectory(group: String): String = {
     "/" + group + "/files/"
   }
 
-  def overview(html: NodeSeq) : NodeSeq = {
+  def overview(html: NodeSeq): NodeSeq = {
     S.param("groupname") match {
       case Full(groupName) => {
 
-        Group.find(By(Group.name,groupName)) match {
+        Group.find(By(Group.name, groupName)) match {
           case Full(group) => {
 
             S.param("filepath") match {
               case Full(filepath) => {
                 // TODO C3 get resource
-                try{
+                try {
 
                   C3().getFile(fileDirectory(groupName) + filepath).metadata
 
                   val fileName = filepath.split("/").last
-                  val url = URIUtil.encodeQuery("/download/"+groupName+"/files/"+filepath,"UTF-8")
+                  val url = URIUtil.encodeQuery("/download/" + groupName + "/files/" + filepath, "UTF-8")
 
                   bind("resource", html,
-                    "preview" -> <iframe src={url}></iframe>,
+                    "preview" -> <iframe src={ url }></iframe>,
                     "group_name" -> groupName,
                     "file_name" -> fileName,
-                    "url" -> ( (ns: NodeSeq) => <a href={url}>{ns}</a> )
-                    //"md" -> resMD
-                  )
+                    "url" -> ((ns: NodeSeq) => <a href={ url }>{ ns }</a>) //"md" -> resMD
+                    )
 
-                }
-                catch {
+                } catch {
                   case e: C3AccessException => {
                     S error e.toString
                     logger error e.toString
                     NodeSeq.Empty
                   }
                 }
-
 
               }
               case _ => {
@@ -91,7 +88,7 @@ class FileSnippet {
 
           }
           case _ => {
-            S.error("Group "+groupName+" was not found.")
+            S.error("Group " + groupName + " was not found.")
             NodeSeq.Empty
           }
         }

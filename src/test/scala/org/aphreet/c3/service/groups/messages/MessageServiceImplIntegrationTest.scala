@@ -1,8 +1,8 @@
 package org.aphreet.c3.service.groups.messages
 
 import impl.MessageStorageServiceImpl
-import org.aphreet.c3.model.{Message, Group}
-import junit.framework.{Assert, TestCase}
+import org.aphreet.c3.model.{ Message, Group }
+import junit.framework.{ Assert, TestCase }
 import net.liftweb.mapper._
 import net.liftweb.db.StandardDBVendor
 import net.liftweb.util.Props
@@ -26,7 +26,7 @@ class MessageServiceImplIntegrationTest extends TestCase {
 
   private var group: Group = null
 
-  override def setUp(){
+  override def setUp() {
     if (!DB.jndiJdbcConnAvailable_?) {
       val vendor =
         new StandardDBVendor(Props.get("db.driver") openOr "org.h2.Driver",
@@ -37,14 +37,14 @@ class MessageServiceImplIntegrationTest extends TestCase {
       LiftRules.unloadHooks.append(vendor.closeAllConnections_! _)
       DB.defineConnectionManager(DefaultConnectionIdentifier, vendor)
     }
-    group = groupService.createGroup(Group.create.name("TestGroup2"), Nil,"","").open_!
+    group = groupService.createGroup(Group.create.name("TestGroup2"), Nil, "", "").open_!
   }
 
-  override def tearDown(){
+  override def tearDown() {
     groupService.removeGroup(group)
   }
 
-  def testMessageCreation(){
+  def testMessageCreation() {
 
     val msg1 = Message(group.id.is.toString, "1", "This is test message!", util.UUID.randomUUID().toString, Nil)
     val msg2 = Message(group.id.is.toString, "1", "If u don't like C3 get lost", util.UUID.randomUUID().toString, Nil)
@@ -71,7 +71,7 @@ class MessageServiceImplIntegrationTest extends TestCase {
 
   }
 
-  def testMessageDeletion(){
+  def testMessageDeletion() {
     // Storing some messages to delete them further
     service.save(Message(group.id.is.toString, "1", "This is test message!", util.UUID.randomUUID().toString, List()))
     service.save(Message(group.id.is.toString, "1", "If u don't like C3 get lost", util.UUID.randomUUID().toString, List()))

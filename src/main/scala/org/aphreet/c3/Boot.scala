@@ -35,7 +35,6 @@ import snippet.logging.LogLevel
 import snippet.notifications.NotificationsSection
 import snippet.users.UsersSection
 
-
 /**
  * A class that's instantiated early and run.  It allows the application
  * to modify lift's environment
@@ -68,7 +67,7 @@ class Boot extends Bootable {
     def loginAndComeBack: RedirectWithState = {
       val uri = S.uriAndQueryString
       RedirectWithState(
-        loginUrl, RedirectState( () => User.loginRedirect.set(uri) , "Not logged in" -> NoticeType.Notice ) )
+        loginUrl, RedirectState(() => User.loginRedirect.set(uri), "Not logged in" -> NoticeType.Notice))
     }
 
     val loggedIn = If(() => User.loggedIn_?, loginAndComeBack)
@@ -79,8 +78,7 @@ class Boot extends Bootable {
      */
     val isSuperAdmin = If(
       () => User.currentUser.map(_.superUser.is) openOr false,
-      () => RedirectWithState("/index", RedirectState(() => {}, "Not a super user" -> NoticeType.Notice))
-    )
+      () => RedirectWithState("/index", RedirectState(() => {}, "Not a super user" -> NoticeType.Notice)))
 
     // Build SiteMap
     def sitemap() = SiteMap(
@@ -92,22 +90,21 @@ class Boot extends Bootable {
       Menu("Faq") / "faq" >> LocGroup("footerMenu"),
 
       Menu("Groups") / "groups" >> LocGroup("mainmenu") submenus {
-        GroupsSection.menus:_*
+        GroupsSection.menus: _*
       },
       Menu("users", "Users") / "users" >> loggedIn >> LocGroup("mainmenu") submenus {
-        UsersSection.menus:_*
+        UsersSection.menus: _*
       },
       Menu("admin", "Admin") / "admin" >> LocGroup("admin_menus") >> isSuperAdmin submenus {
         List(Menu("categories", "Categories") / "admin" / "categories" submenus {
-          CategoriesSection.menus:_*
+          CategoriesSection.menus: _*
         },
-        Menu("group_admin","Approve group") / "admin" / "group_admin" submenus {
-          ApproveSection.menus:_*
-        }
-        )
+          Menu("group_admin", "Approve group") / "admin" / "group_admin" submenus {
+            ApproveSection.menus: _*
+          })
       },
       Menu("notifications", "Notifications") / "notifications" >> loggedIn submenus {
-        NotificationsSection.menus:_*
+        NotificationsSection.menus: _*
       },
       Menu("Experiments") / "experiments" >> LocGroup("mainmenu"),
 
@@ -117,18 +114,15 @@ class Boot extends Bootable {
 
       LogLevel.menu, // default log level menu is located at /loglevel/change
 
-      Menu("UserEdit") / "users" / "edituser" >> loggedIn >> Hidden
-
-    )
+      Menu("UserEdit") / "users" / "edituser" >> loggedIn >> Hidden)
 
     LiftRules.setSiteMapFunc(() => User.sitemapMutator(sitemap()))
 
     // Custom 404 page
-    LiftRules.uriNotFound.prepend(NamedPF("404handler"){
-      case (req,failure) =>
-        NotFoundAsTemplate(ParsePath(List("404"),"html", absolute = false, endSlash = false))
+    LiftRules.uriNotFound.prepend(NamedPF("404handler") {
+      case (req, failure) =>
+        NotFoundAsTemplate(ParsePath(List("404"), "html", absolute = false, endSlash = false))
     })
-
 
     LiftRules.dispatch.append {
       case Req("download" :: groupname :: filePath, extension, GetRequest) =>
@@ -141,12 +135,11 @@ class Boot extends Bootable {
     // attempt to save the response as a downloaded file.
     LiftRules.responseTransformers.append {
       resp =>
-        (for (req <- S.request) yield {
+        (for (req ← S.request) yield {
           resp match {
-            case InMemoryResponse(data, headers, cookies, code)
-              if ! req.uploadedFiles.isEmpty &&
-                req.isIE &&
-                req.path.wholePath.head == LiftRules.ajaxPath =>
+            case InMemoryResponse(data, headers, cookies, code) if !req.uploadedFiles.isEmpty &&
+              req.isIE &&
+              req.path.wholePath.head == LiftRules.ajaxPath =>
               val contentlessHeaders = headers.filterNot(_._1.toLowerCase == "content-type")
               InMemoryResponse(data, ("Content-Type", "text/plain; charset=utf-8") :: contentlessHeaders, cookies, code)
             case _ => resp
@@ -207,7 +200,7 @@ class Boot extends Bootable {
       val opl = LiftRules.progressListener
       val ret: (Long, Long, Int) => Unit =
         (a, b, c) => {
-          opl(a,b,c)
+          opl(a, b, c)
         }
       ret
     }
@@ -245,7 +238,6 @@ class Boot extends Bootable {
     System.setProperty("mail.smtp.host", host)
     // Enable authentication
     System.setProperty("mail.smtp.auth", "true")
-
 
     // Provide a means for authentication. Pass it a Box, which can either be Full or Empty
     Mailer.authenticator = Full(new Authenticator {

@@ -12,7 +12,7 @@ import model.User
 import net.liftweb.common.Box
 import net.liftweb.util.BindHelpers._
 
-import scala.concurrent.{Future, Await}
+import scala.concurrent.{ Future, Await }
 import scala.concurrent.duration._
 import scala.language.postfixOps
 
@@ -30,8 +30,8 @@ class NotificationsUserBar extends AkkaAwareSnippet {
   def render = {
     val unread: Box[Long] = notificationStats.map(Await.result(_, 2 seconds)).map(_.unread)
 
-    ".unread_count *" #>  unread.getOrElse(0L) &
-    ".unread_count [class+]" #> (if(unread.map(_ > 0).getOrElse(false)) "badge-important" else "")
+    ".unread_count *" #> unread.getOrElse(0L) &
+      ".unread_count [class+]" #> (if (unread.map(_ > 0).getOrElse(false)) "badge-important" else "")
   }
 
   protected def notificationStats: Box[Future[NotificationStats]] = {

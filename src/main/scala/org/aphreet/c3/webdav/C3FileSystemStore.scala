@@ -1,33 +1,33 @@
 package org.aphreet.c3.webdav
 
-import net.sf.webdav.{StoredObject, ITransaction, IWebdavStore}
-import java.io.{File, InputStream}
+import net.sf.webdav.{ StoredObject, ITransaction, IWebdavStore }
+import java.io.{ File, InputStream }
 import java.security.Principal
 import org.slf4j.LoggerFactory
 import org.aphreet.c3.apiaccess.C3
 import com.ifunsoftware.c3.access.fs.C3FileSystemNode
-import java.nio.file.{StandardCopyOption, Files}
-import com.ifunsoftware.c3.access.{C3AccessException, DataStream}
+import java.nio.file.{ StandardCopyOption, Files }
+import com.ifunsoftware.c3.access.{ C3AccessException, DataStream }
 import javax.servlet.http.HttpServletRequest
 import org.aphreet.c3.model.User
 import net.liftweb.mapper.By
 import org.apache.commons.codec.binary.Base64
 import net.liftweb.common.Full
-import net.sf.webdav.exceptions.{AccessDeniedException, UnauthenticatedException}
+import net.sf.webdav.exceptions.{ AccessDeniedException, UnauthenticatedException }
 import scala.language.implicitConversions
 
-class C3FileSystemStore(val root:File) extends IWebdavStore{
+class C3FileSystemStore(val root: File) extends IWebdavStore {
 
   val log = LoggerFactory.getLogger(getClass)
 
   val c3System = C3()
 
-  def createPrincipal(request: HttpServletRequest):Principal = {
+  def createPrincipal(request: HttpServletRequest): Principal = {
 
     val authHeader = request.getHeader("Authorization")
 
-    if(authHeader != null){
-      val loginPassword = new String(Base64.decodeBase64(authHeader.replaceFirst("Basic\\s+", "") .getBytes("UTF-8")), "UTF-8")
+    if (authHeader != null) {
+      val loginPassword = new String(Base64.decodeBase64(authHeader.replaceFirst("Basic\\s+", "").getBytes("UTF-8")), "UTF-8")
 
       val credentials = loginPassword.split(":", 2)
 
@@ -36,26 +36,25 @@ class C3FileSystemStore(val root:File) extends IWebdavStore{
 
       User.find(By(User.email, mail)) match {
         case Full(user) => {
-          if(user.password.match_?(password)){
+          if (user.password.match_?(password)) {
             new C3Principal(user)
-          }
-          else throw new AccessDeniedException()
+          } else throw new AccessDeniedException()
         }
         case _ => throw new AccessDeniedException()
       }
 
-    }else{
+    } else {
       throw new UnauthenticatedException()
     }
   }
 
-  def begin(principal: Principal):ITransaction = {
+  def begin(principal: Principal): ITransaction = {
     log.debug("begin()")
     new C3Transaction(principal)
   }
 
   def checkAuthentication(tx: ITransaction) {
-    if(tx.getPrincipal == null){
+    if (tx.getPrincipal == null) {
       throw new AccessDeniedException()
     }
   }
@@ -104,10 +103,10 @@ class C3FileSystemStore(val root:File) extends IWebdavStore{
 
     val tmpFile = File.createTempFile("dav_upload-", null).toPath
 
-    try{
+    try {
       Files.copy(content, tmpFile, StandardCopyOption.REPLACE_EXISTING)
 
-      if(tx.createdFiles.contains(uri)){
+      if (tx.createdFiles.contains(uri)) {
 
         val splitUri = uri.split("/")
 
@@ -117,34 +116,33 @@ class C3FileSystemStore(val root:File) extends IWebdavStore{
         getFSNode(tx, parent).asDirectory.createFile(child, Map(), DataStream(tmpFile.toFile))
 
         tx.createdFiles.remove(uri)
-      }else{
+      } else {
         getFSNode(tx, uri).update(DataStream(tmpFile.toFile))
       }
 
       tmpFile.toFile.length()
-    }finally {
+    } finally {
       Files.deleteIfExists(tmpFile)
     }
   }
 
-  def getChildrenNames(tx: ITransaction, uri: String):Array[String] = {
-    log.debug("getChildrenNames() {}", uri )
+  def getChildrenNames(tx: ITransaction, uri: String): Array[String] = {
+    log.debug("getChildrenNames() {}", uri)
 
     val file = getFSNode(tx, uri)
 
-    if(file.isDirectory){
+    if (file.isDirectory) {
       val dir = file.asDirectory
 
-      val groupFilter = if (uri == "/"){
+      val groupFilter = if (uri == "/") {
         (name: String) => tx.getPrincipal.groups.contains(name)
-      }else{
+      } else {
         (name: String) => true
       }
 
       dir.children().map(node =>
-        cacheNode(tx, node.fullname, node).name
-      ).filter(groupFilter).toArray
-    }else{
+        cacheNode(tx, node.fullname, node).name).filter(groupFilter).toArray
+    } else {
       Array()
     }
   }
@@ -163,7 +161,7 @@ class C3FileSystemStore(val root:File) extends IWebdavStore{
   def getStoredObject(tx: ITransaction, uri: String) = {
     log.debug("getStoredObject() {}", uri)
 
-    try{
+    try {
       val file = getFSNode(tx, uri)
 
       val storedObject = new StoredObject
@@ -174,13 +172,13 @@ class C3FileSystemStore(val root:File) extends IWebdavStore{
       storedObject.setLastModified(file.versions.last.date)
 
       storedObject
-    }catch{
-      case e: C3AccessException => null
+    } catch {
+      case e: C3AccessException          => null
       case e: GroupAccessDeniedException => null
     }
   }
 
-  private def getFSNode(tx:ITransaction, uri:String):C3FileSystemNode = {
+  private def getFSNode(tx: ITransaction, uri: String): C3FileSystemNode = {
 
     val translatedUri = translateUri(uri.replaceAll("/+", "/"), tx)
 
@@ -192,7 +190,7 @@ class C3FileSystemStore(val root:File) extends IWebdavStore{
     }
   }
 
-  private def translateUri(uri:String, tx:ITransaction):String = {
+  private def translateUri(uri: String, tx: ITransaction): String = {
 
     val splitUri = uri.split("/", 3).filter(!_.isEmpty)
 
@@ -202,7 +200,7 @@ class C3FileSystemStore(val root:File) extends IWebdavStore{
       case _ => "/" + verifyGroupAccess(splitUri(0), tx) + "/files/" + splitUri(1)
     }
 
-    if (log.isDebugEnabled){
+    if (log.isDebugEnabled) {
       log.debug("URI " + uri + " translated to " + translatedUri)
     }
 
@@ -210,23 +208,23 @@ class C3FileSystemStore(val root:File) extends IWebdavStore{
   }
 
   private def verifyGroupAccess(groupId: String, tx: ITransaction): String = {
-    if (!tx.getPrincipal.groups.contains(groupId)){
+    if (!tx.getPrincipal.groups.contains(groupId)) {
       log.debug("Access denied to group " + groupId + " for principal " + tx.getPrincipal.getName)
       throw new GroupAccessDeniedException
-    }else
+    } else
       groupId
   }
 
-  private def deleteFromCache(tx:ITransaction, uri:String) = {
+  private def deleteFromCache(tx: ITransaction, uri: String) = {
     tx.cachedFiles.remove(uri.replaceAll("/+", "/"))
   }
 
-  private def cacheNode(tx:ITransaction, uri:String, node:C3FileSystemNode):C3FileSystemNode = {
+  private def cacheNode(tx: ITransaction, uri: String, node: C3FileSystemNode): C3FileSystemNode = {
     tx.cachedFiles.put(uri.replaceAll("/+", "/"), node)
     node
   }
 
-  implicit def txToc3Tx(tx:ITransaction):C3Transaction = {
+  implicit def txToc3Tx(tx: ITransaction): C3Transaction = {
     tx.asInstanceOf[C3Transaction]
   }
 

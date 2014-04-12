@@ -1,10 +1,10 @@
 package org.aphreet.c3.service.notifications
 
-import org.scalatest.{BeforeAndAfterAll, WordSpec}
+import org.scalatest.{ BeforeAndAfterAll, WordSpec }
 import org.scalatest.matchers.ShouldMatchers
 import akka.testkit.TestKit
-import akka.actor.{Props, ActorSystem}
-import org.aphreet.c3.model.{Notification, User}
+import akka.actor.{ Props, ActorSystem }
+import org.aphreet.c3.model.{ Notification, User }
 import concurrent.duration
 import duration._
 import org.scalatest.mock.MockitoSugar
@@ -17,10 +17,10 @@ import scala.language.postfixOps
  * @author Dmitry Ivanov
  */
 class NotificationManagerSpec extends TestKit(ActorSystem("TestActorSystem"))
-  with WordSpec
-  with BeforeAndAfterAll
-  with ShouldMatchers
-  with MockitoSugar{
+    with WordSpec
+    with BeforeAndAfterAll
+    with ShouldMatchers
+    with MockitoSugar {
 
   import NotificationManagerProtocol._
 
@@ -37,7 +37,7 @@ class NotificationManagerSpec extends TestKit(ActorSystem("TestActorSystem"))
     }
   }
 
-  trait NotificationStorageComponentMock extends NotificationStorageComponent{
+  trait NotificationStorageComponentMock extends NotificationStorageComponent {
     override val notificationStorage: NotificationStorage = mock[NotificationStorage]
     when(notificationStorage.getNotificationsForUser(user)).thenReturn(notifications)
   }

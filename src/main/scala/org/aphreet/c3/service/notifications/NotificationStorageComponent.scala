@@ -7,7 +7,7 @@ import org.aphreet.c3.model.User
  * Copyright iFunSoftware 2013
  * @author Dmitry Ivanov
  */
-trait NotificationStorageComponent{
+trait NotificationStorageComponent {
 
   val notificationStorage: NotificationStorage
 

@@ -6,7 +6,7 @@
  * modification, are permitted provided that the following conditions
  * are met:
  *
-
+ *
  * 1. Redistributions of source code must retain the above copyright
  * notice, this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above
@@ -32,12 +32,12 @@ package org.aphreet.c3.model
 
 import net.liftweb.mapper._
 import net.liftweb.util.FieldError
-import xml.{NodeSeq, Text}
+import xml.{ NodeSeq, Text }
 import net.liftweb.common._
 import net.liftweb.http.SHtml
 import org.aphreet.c3.apiaccess.C3
 import net.liftweb.util.Helpers._
-import com.ifunsoftware.c3.access.fs.{C3File, C3FileSystemNode}
+import com.ifunsoftware.c3.access.fs.{ C3File, C3FileSystemNode }
 import org.aphreet.c3.lib.metadata.Metadata._
 import net.liftweb.mapper.Cmp
 import org.aphreet.c3.lib.DependencyFactory
@@ -49,32 +49,30 @@ import net.liftweb.common.Full
 import net.liftweb.mapper.Cmp
 import scala.collection.immutable.Stream
 
-
-class Group extends LongKeyedMapper[Group] with IdPK with ManyToMany{
+class Group extends LongKeyedMapper[Group] with IdPK with ManyToMany {
 
   thisgroup =>
 
   def getSingleton = Group
   private val c3 = inject[C3System].open_!
 
-  object owner extends MappedLongForeignKey(this,User){
-    override def toForm = Box.!!(SHtml.selectObj[User](User.findAll().map(user => (user,user.email.is)),User.currentUser, usr => thisgroup.owner(usr)))
+  object owner extends MappedLongForeignKey(this, User) {
+    override def toForm = Box.!!(SHtml.selectObj[User](User.findAll().map(user => (user, user.email.is)), User.currentUser, usr => thisgroup.owner(usr)))
   }
 
   object users extends MappedManyToMany(UserGroup, UserGroup.group, UserGroup.user, User)
 
-  object name extends MappedString(this,64){
-    override def validations = nonEmpty  _ :: isUnique _ :: Nil
+  object name extends MappedString(this, 64) {
+    override def validations = nonEmpty _ :: isUnique _ :: Nil
 
     def isUnique(s: String): List[FieldError] = {
-      if(!Group.find(Cmp(Group.name, OprEnum.Eql, Full(s.toLowerCase), None, Full("LOWER"))).isEmpty )
+      if (!Group.find(Cmp(Group.name, OprEnum.Eql, Full(s.toLowerCase), None, Full("LOWER"))).isEmpty)
         List(FieldError(this, "Group with name " + s + " already exists"))
       else Nil
     }
     private def nonEmpty(s: String) =
-      if(s.isEmpty) List(FieldError(this, "Groups's name cannot be empty"))
+      if (s.isEmpty) List(FieldError(this, "Groups's name cannot be empty"))
       else Nil
-
 
   }
   object description extends MappedText(this)
@@ -91,7 +89,7 @@ class Group extends LongKeyedMapper[Group] with IdPK with ManyToMany{
 
   def getChildren: List[C3FileSystemNode] = getChildren("")
 
-  def getChildren(directory: String) : List[C3FileSystemNode] =
+  def getChildren(directory: String): List[C3FileSystemNode] =
     c3.getFile(baseFilePath + directory).asDirectory.children()
 
   def getFile(path: String): Box[C3FileSystemNode] = tryo {
@@ -99,32 +97,29 @@ class Group extends LongKeyedMapper[Group] with IdPK with ManyToMany{
   }
 
   def getTags = {
-    try{
+    try {
       c3.getFile(baseGroupDirectory).metadata.get(TAGS_META).map(_.split(TAGS_SEPARATOR).toList).getOrElse(Nil)
-    }
-    catch {
-      case x:Exception => Nil
+    } catch {
+      case x: Exception => Nil
     }
 
   }
   def getDescription = {
-    try{
+    try {
       c3.getFile(baseGroupDirectory).metadata.get(DESCRIPTION_META).getOrElse("")
-    }
-    catch {
-      case x:Exception=>""
+    } catch {
+      case x: Exception => ""
     }
 
   }
 
-  def getGroupC3:Box[C3FileSystemNode] = {
+  def getGroupC3: Box[C3FileSystemNode] = {
     tryo(c3.getFile(baseGroupDirectory))
   }
 
-
   override def delete_! : Boolean = {
     UserGroup.findAll(By(UserGroup.group, this)).foreach(_.delete_!)
-    Category.findAll(By(Category.linkedGroup,this)).foreach(_.delete_!)
+    Category.findAll(By(Category.linkedGroup, this)).foreach(_.delete_!)
     super.delete_!
   }
 

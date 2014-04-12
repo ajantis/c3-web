@@ -33,13 +33,13 @@ import groups.snippet.GroupListPage
 import net.liftweb.util._
 import net.liftweb.common._
 import junit.framework.TestCase
-import net.liftweb.http.{LiftRules, S, LiftSession}
+import net.liftweb.http.{ LiftRules, S, LiftSession }
 import net.liftweb.mapper._
 import org.aphreet.c3.model._
 import org.aphreet.c3.DBSetup
 import org.aphreet.c3.lib.DependencyFactory
 import org.aphreet.c3.apiaccess.C3
-import org.mockito.{Matchers, Mockito}
+import org.mockito.{ Matchers, Mockito }
 import com.ifunsoftware.c3.access.C3System
 import com.ifunsoftware.c3.access.fs.C3FileSystemNode
 import Mockito._
@@ -49,13 +49,13 @@ import org.junit
 @junit.Ignore
 class GroupFormTest extends TestCase {
 
-  private val session : LiftSession = new LiftSession("", StringHelpers.randomString(20), Empty)
+  private val session: LiftSession = new LiftSession("", StringHelpers.randomString(20), Empty)
   private val groupsData: List[(String, String)] =
     List(("group1", "Very interesting group"),
-         ("group2", "Politics and other boring stuff"),
-         ("group3", "Sports! Everything about it"),
-         ("group4", "Green gardens fans united"),
-         ("group5", "We love cats and hate dogs"))
+      ("group2", "Politics and other boring stuff"),
+      ("group3", "Sports! Everything about it"),
+      ("group4", "Green gardens fans united"),
+      ("group5", "We love cats and hate dogs"))
 
   private var groups: List[Group] = Nil
 
@@ -77,13 +77,13 @@ class GroupFormTest extends TestCase {
     DBSetup.setup()
   }
 
-  override def tearDown(){
+  override def tearDown() {
     // tear down your db here
     User.currentUser.map(user => user.delete_!).openOr(false)
     Group.findAll().foreach(_.delete_!)
   }
 
-  private def getGroups(){
+  private def getGroups() {
 
     val xml = {
       <h3 class="nav-header groupsHeader">Groups</h3>
@@ -110,16 +110,16 @@ class GroupFormTest extends TestCase {
 
     // Do verification of data returned; assert if something is amiss
 
-    assert ( (output \\ "a").length == groups.size)
+    assert((output \\ "a").length == groups.size)
 
-    (output \\ "a" ).foreach { node =>
-      assert ( groups.map(_.name.is).contains(node.text))
-      assert (node.attributes.get("href").isDefined)
-      assert ( groups.map(_.createLink).contains(node.attributes.get("href").get.text) )
+    (output \\ "a").foreach { node =>
+      assert(groups.map(_.name.is).contains(node.text))
+      assert(node.attributes.get("href").isDefined)
+      assert(groups.map(_.createLink).contains(node.attributes.get("href").get.text))
     }
   }
 
-  def testValue(){
+  def testValue() {
     // Initialize session state if it is not already
     S.initIfUninitted(session) {
       // Create and log-in the user
@@ -130,7 +130,7 @@ class GroupFormTest extends TestCase {
       //mock c3 storage
       val c3mock: C3System = mock(classOf[C3System])
       val c3File = mock(classOf[C3FileSystemNode])
-      val map = Map(TAGS_META->"")
+      val map = Map(TAGS_META -> "")
       when(c3File.metadata).thenReturn(map)
       when(c3mock.getFile(Matchers.anyString())).thenReturn(c3File)
 
@@ -145,11 +145,12 @@ class GroupFormTest extends TestCase {
     ()
   }
 
-  private def createGroups(owner: User, data: List[(String, String)]){
-    groups = data.map { case (name, description) =>
-      val group = Group.create.name(name).owner(owner).saveMe()
-      UserGroup.create.user(owner).group(group).save()
-      group
+  private def createGroups(owner: User, data: List[(String, String)]) {
+    groups = data.map {
+      case (name, description) =>
+        val group = Group.create.name(name).owner(owner).saveMe()
+        UserGroup.create.user(owner).group(group).save()
+        group
     }
   }
 }

@@ -1,35 +1,35 @@
 package org.aphreet.c3.snippet.groups.snippet
 
 import org.aphreet.c3.loc.SuffixLoc
-import org.aphreet.c3.model.{UserGroup, User, Group}
+import org.aphreet.c3.model.{ UserGroup, User, Group }
 import net.liftweb.common._
-import net.liftweb.sitemap.Loc.{Hidden, LinkText, Link}
+import net.liftweb.sitemap.Loc.{ Hidden, LinkText, Link }
 import tags.TagForms
-import xml.{NodeSeq, Text}
+import xml.{ NodeSeq, Text }
 import net.liftweb.util.Helpers._
-import net.liftweb.http.{SessionVar, RequestVar, SHtml, S}
+import net.liftweb.http.{ SessionVar, RequestVar, SHtml, S }
 import org.aphreet.c3.snippet.groups.AbstractGroupPageLoc
-import com.ifunsoftware.c3.access.fs.{C3FileSystemNode, C3File, C3Directory}
+import com.ifunsoftware.c3.access.fs.{ C3FileSystemNode, C3File, C3Directory }
 import org.aphreet.c3.lib.metadata.Metadata
 import Metadata._
-import net.liftweb.util.{CssSel, PassThru}
-import net.liftweb.sitemap.{Menu, SiteMap, Loc}
-import net.liftweb.http.js.{JsCmds, JsCmd}
+import net.liftweb.util.{ CssSel, PassThru }
+import net.liftweb.sitemap.{ Menu, SiteMap, Loc }
+import net.liftweb.http.js.{ JsCmds, JsCmd }
 import org.aphreet.c3.lib.DependencyFactory
-import com.ifunsoftware.c3.access.{StringMetadataValue, C3System, MetadataUpdate, MetadataRemove}
+import com.ifunsoftware.c3.access.{ StringMetadataValue, C3System, MetadataUpdate, MetadataRemove }
 import com.ifunsoftware.c3.access.C3System._
-import net.liftweb.http.js.JsCmds.{Function, Script}
-import org.aphreet.c3.util.helpers.{GroupPageHelpers, ConvertHelpers, ByteCalculatorHelpers}
+import net.liftweb.http.js.JsCmds.{ Function, Script }
+import org.aphreet.c3.util.helpers.{ GroupPageHelpers, ConvertHelpers, ByteCalculatorHelpers }
 import net.liftweb.common.Full
 import org.aphreet.c3.snippet.groups.GroupPageFilesData
-import net.liftweb.http.js.JE.{JsVar, JsRaw}
+import net.liftweb.http.js.JE.{ JsVar, JsRaw }
 import org.aphreet.c3.snippet.LiftMessages
 import net.liftweb.http.js.jquery.JqJsCmds
 import org.aphreet.c3.acl.resources.C3AccessHelpers
 import org.aphreet.c3.acl.groups.UserStatusGroup
 import net.liftweb.mapper.By
 import net.liftweb.common.Full
-import org.aphreet.c3.acl.groups.{UserStatusGroup, GroupsAccess}
+import org.aphreet.c3.acl.groups.{ UserStatusGroup, GroupsAccess }
 import org.aphreet.c3.snippet.LiftMessages
 
 /**
@@ -74,7 +74,7 @@ object GroupPageFiles extends AbstractGroupPageLoc[GroupPageFilesData] with Suff
 }
 
 class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers
-with GroupPageHelpers with FSHelpers with TagForms with C3AccessHelpers {
+    with GroupPageHelpers with FSHelpers with TagForms with C3AccessHelpers {
 
   import DependencyFactory._
 
@@ -96,7 +96,7 @@ with GroupPageHelpers with FSHelpers with TagForms with C3AccessHelpers {
   def parentNodeLink: String = {
     (pathLocs.reverse match {
       case Nil => groupFilesLink
-      case xs => xs.tail.headOption.map((l: Loc[_]) => l.createDefaultLink.get.text).getOrElse(groupFilesLink)
+      case xs  => xs.tail.headOption.map((l: Loc[_]) => l.createDefaultLink.get.text).getOrElse(groupFilesLink)
     })
   }
 
@@ -118,27 +118,23 @@ with GroupPageHelpers with FSHelpers with TagForms with C3AccessHelpers {
 
     ".base_files_path *" #> (
       ".link [href]" #> groupFilesLink &
-        ".link *" #> group.name.is
-      ) &
+      ".link *" #> group.name.is) &
       ".bcrumb *" #> (pathLocs.map {
         (loc: Loc[_]) =>
           (if (isLocCurrent(pathLocs, loc) && (hasSuperAccessResource(currentResource) || hasWriteAccessResource(currentResource))) {
             ".link" #>
               <span class="hide name_submit_func">
-                {Script(
-                Function("renameNodeCallback", List("name"),
-                  SHtml.ajaxCall(
-                    JsVar("name"),
-                    (name: String) => renameCurrentNode(name)
-                  )._2.cmd
-                )
-              )}
+                {
+                  Script(
+                    Function("renameNodeCallback", List("name"),
+                      SHtml.ajaxCall(
+                        JsVar("name"),
+                        (name: String) => renameCurrentNode(name))._2.cmd))
+                }
               </span>
-                <a href="#" id="node_name" data-type="text" data-pk="2"
-                   data-placeholder="Name..." data-original-title="Rename"
-                   class="editable editable-click">
-                  {loc.title}
-                </a>
+              <a href="#" id="node_name" data-type="text" data-pk="2" data-placeholder="Name..." data-original-title="Rename" class="editable editable-click">
+                { loc.title }
+              </a>
           } else {
             ".link [href]" #> loc.createDefaultLink &
               ".link *" #> loc.title
@@ -146,9 +142,8 @@ with GroupPageHelpers with FSHelpers with TagForms with C3AccessHelpers {
             ".divider" #> (
               data.isDirectoryLoc match {
                 case false if loc == pathLocs.last => (_: NodeSeq) => NodeSeq.Empty // if it is a file then we want to skip last "/" divider
-                case _ => PassThru
-              }
-              )
+                case _                             => PassThru
+              })
       }) &
       ".current_path *" #> Text(data.currentAddress) &
       ".edit_access *" #> acl() &
@@ -198,10 +193,7 @@ with GroupPageHelpers with FSHelpers with TagForms with C3AccessHelpers {
             Function("updateTagsCallback", List("tags"),
               SHtml.ajaxCall(
                 JsVar("tags"),
-                (d: String) => updateTags(node, d)
-              )._2.cmd
-            )
-          )
+                (d: String) => updateTags(node, d))._2.cmd))
         } &
           "#meta" #> metadataEdit(node, metadataUser) &
           ".description_submit_func *" #> {
@@ -209,10 +201,7 @@ with GroupPageHelpers with FSHelpers with TagForms with C3AccessHelpers {
               Function("updateDescriptionCallback", List("description"),
                 SHtml.ajaxCall(
                   JsVar("description"),
-                  (d: String) => updateDescription(node, d)
-                )._2.cmd
-              )
-            )
+                  (d: String) => updateDescription(node, d))._2.cmd))
           } &
           ".delete_file_btn [onclick]" #> SHtml.ajaxInvoke(() => {
             c3.deleteFile(node.fullname);
@@ -265,19 +254,20 @@ with GroupPageHelpers with FSHelpers with TagForms with C3AccessHelpers {
     }) &
       tagsForm(d) &
       ".child *" #> group.getChildren(data.currentAddress).map {
-        resource => {
-          (resource.isDirectory match {
-            case true => toCss(resource.asDirectory)
-            case _ => toCss(resource.asFile)
-          }) &
-            ".select_resource" #> SHtml.ajaxCheckbox(value = false, (value: Boolean) => {
-              if (value)
-                selectedResourcePaths.set(selectedResourcePaths.get + resource.fullname)
-              else
-                selectedResourcePaths.set(selectedResourcePaths.get - resource.fullname)
-              JsCmds.Noop
-            })
-        }
+        resource =>
+          {
+            (resource.isDirectory match {
+              case true => toCss(resource.asDirectory)
+              case _    => toCss(resource.asFile)
+            }) &
+              ".select_resource" #> SHtml.ajaxCheckbox(value = false, (value: Boolean) => {
+                if (value)
+                  selectedResourcePaths.set(selectedResourcePaths.get + resource.fullname)
+                else
+                  selectedResourcePaths.set(selectedResourcePaths.get - resource.fullname)
+                JsCmds.Noop
+              })
+          }
       } &
       ".file-view" #> NodeSeq.Empty &
       commonForms(d)
@@ -382,20 +372,19 @@ with GroupPageHelpers with FSHelpers with TagForms with C3AccessHelpers {
         f.update(MetadataUpdate(metadata))
         val idMetadataContainer = "metadata_container"
         JqJsCmds.AppendHtml(idMetadataContainer,
-          <tr class="metadata_form" id={key + value}>
+          <tr class="metadata_form" id={ key + value }>
             <td>
-              <input class="metadata_key" value={key} readonly="readonly"/>
+              <input class="metadata_key" value={ key } readonly="readonly"/>
             </td>
             <td>
-              <input type="text" class="metadata_value" value={value}/>
+              <input type="text" class="metadata_value" value={ value }/>
             </td>
             <td>
-              <button class="close remove_metadata" onclick={SHtml.ajaxInvoke(() => removeMeta(f, key, value))._2.toJsCmd}>
+              <button class="close remove_metadata" onclick={ SHtml.ajaxInvoke(() => removeMeta(f, key, value))._2.toJsCmd }>
                 &times;
               </button>
             </td>
-          </tr>
-        )
+          </tr>)
       } else
         JsCmds.Noop
 
@@ -413,8 +402,7 @@ with GroupPageHelpers with FSHelpers with TagForms with C3AccessHelpers {
                     JsCmds.Noop
                   else
                     addMetadataInst(key, value)
-              })).apply(xml)
-        )
+              })).apply(xml))
     }
   }
 
@@ -537,15 +525,15 @@ with GroupPageHelpers with FSHelpers with TagForms with C3AccessHelpers {
       ".name *" #> ConvertHelpers.ShortString(file.name, 40) &
       ".description_box *" #> ConvertHelpers.ShortString(file.metadata.get(DESCRIPTION_META).getOrElse(""), if (file.name.length > 40) 60 else (110 - file.name.length)) &
       ".icon [src]" #> (file.metadata.get(CONTENT_TYPE) match {
-        case Some("application/vnd.ms-excel") => "/images/excel_type.png"
-        case Some("image/png") => "/images/png_type.png"
-        case Some("image/gif") => "/images/gif_type.png"
-        case Some("application/pdf") => "/images/pdf_type.png"
-        case Some("application/msword") => "/images/word_type.png"
-        case Some("application/zip") => "/images/zip_type.png"
+        case Some("application/vnd.ms-excel")     => "/images/excel_type.png"
+        case Some("image/png")                    => "/images/png_type.png"
+        case Some("image/gif")                    => "/images/gif_type.png"
+        case Some("application/pdf")              => "/images/pdf_type.png"
+        case Some("application/msword")           => "/images/word_type.png"
+        case Some("application/zip")              => "/images/zip_type.png"
         case Some("application/x-rar-compressed") => "/images/rar_type.png"
         // case Some(s) => if s.contains("text/plain") "/images/document_letter.png"
-        case _ => "/images/unkhown_type.png"
+        case _                                    => "/images/unkhown_type.png"
       }) &
       ".created_date *" #> internetDateFormatter.format(file.date)
     //40 - max vizible symbols, when size file name is big
@@ -576,8 +564,7 @@ with GroupPageHelpers with FSHelpers with TagForms with C3AccessHelpers {
             var aclVal = ""
             newACL.map(aclVal += _)
             currentAclValue = aclVal
-          }
-          else {
+          } else {
             val newAcl = metaACL.replace('w', '-')
             currentAclValue = newAcl
           }
@@ -597,8 +584,7 @@ with GroupPageHelpers with FSHelpers with TagForms with C3AccessHelpers {
             var aclVal = ""
             newACL.map(aclVal += _)
             currentAclValue = aclVal
-          }
-          else {
+          } else {
             val newACL = metaACL.toCharArray
             newACL.update(3, '-')
             newACL.update(2, '-')

@@ -1,6 +1,6 @@
 package org.aphreet.c3
 
-import net.liftweb.sitemap.{Menu, Loc}
+import net.liftweb.sitemap.{ Menu, Loc }
 
 /**
  * Copyright iFunSoftware 2011
