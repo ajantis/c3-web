@@ -69,9 +69,9 @@ object FileUpload extends RestHelper with C3Loggable{
           try{
             val ojv: List[JObject] = uploads.map { fph =>
                 val url = removeTrailingIndex(currentPath).mkString("/", "/", "/") + fph.fileName
-                val description = req.param("description_"+fph.fileName) match {case Full(temp) => temp; case _ => ""}
+                val description = req.param(s"description_${fph.fileName}") match {case Full(temp) => temp; case _ => ""}
 
-                val tags = req.param("tags_"+fph.fileName) match {case Full(temp) => temp; case _ => ""}
+                val tags = req.param(s"tags_${fph.fileName}") match {case Full(temp) => temp; case _ => ""}
                 val fileMetadata: Map[String, String] =
                   Map((OWNER_ID_META -> userGroupIds.userId), (GROUP_ID_META -> userGroupIds.groupId),(DESCRIPTION_META -> description),(TAGS_META -> tags))
                 //req param("metadata") map(s => Map((TAGS_META -> s))) openOr Map()

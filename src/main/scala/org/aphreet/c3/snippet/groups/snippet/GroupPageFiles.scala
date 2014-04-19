@@ -290,8 +290,7 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers
     }
     (if (hasSuperAccess || checkReadAccessResource(f)) {
       doRenderFileLoc
-    }
-    else {
+    } else {
       ".child_td [onclick]" #> SHtml.ajaxInvoke(() => (LiftMessages.ajaxError(S.?("access.restricted"))))
       doRenderFileLoc
 
