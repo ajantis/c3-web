@@ -40,11 +40,16 @@ object C3Streamer {
   def apply(groupId: String, path: List[String], extension: String) = {
     () =>
       {
-
         val c3 = inject[C3System].open_!
 
         try {
-          val file = c3.getFile(C3Path(groupId, path, extension))
+
+          val correctPath:List[String] = path.last match{
+            case "index" => path.take(path.length - 1)
+            case _ => path
+          }
+
+          val file = c3.getFile(C3Path(groupId, correctPath, extension))
           val metadata = file.metadata
 
           val stream = file.versions.last.getDataStream
@@ -59,11 +64,10 @@ object C3Streamer {
           //If you see an error here, it is an issue of the IDEA scala plugin
           Full(StreamingResponse(stream, () => stream.close(), length, List("Content-Type" -> contentType), Nil, 200))
         } catch {
-          case e: Exception => {
-            e.printStackTrace()
+          case e: Exception =>
+//            e.printStackTrace()
             S.notice("No file found!")
             S.redirectTo("/groups/" + groupId + "/files/" + path.init.mkString("/"))
-          }
         }
       }
   }
