@@ -69,9 +69,9 @@ object FileUpload extends RestHelper with C3Loggable{
           try{
             val ojv: List[JObject] = uploads.map { fph =>
                 val url = removeTrailingIndex(currentPath).mkString("/", "/", "/") + fph.fileName
-                val description = req.param("description_"+fph.fileName) match {case Full(temp) => temp; case _ => ""}
+                val description = req.param(s"description_${fph.fileName}") match {case Full(temp) => temp; case _ => ""}
 
-                val tags = req.param("tags_"+fph.fileName) match {case Full(temp) => temp; case _ => ""}
+                val tags = req.param(s"tags_${fph.fileName}") match {case Full(temp) => temp; case _ => ""}
                 val fileMetadata: Map[String, String] =
                   Map((OWNER_ID_META -> userGroupIds.userId), (GROUP_ID_META -> userGroupIds.groupId),(DESCRIPTION_META -> description),(TAGS_META -> tags))
                 //req param("metadata") map(s => Map((TAGS_META -> s))) openOr Map()
@@ -140,7 +140,10 @@ object FileUpload extends RestHelper with C3Loggable{
 
   private def uploadToC3(fph: FileParamHolder, filePath: List[String], metadata: Map[String, String]){
     logger info String.format("Uploading file %s to C3..", fph.name)
-    c3.getFile(filePath.mkString("/", "/", "")).asDirectory.createFile(fph.fileName, metadata, DataStream(fph.file))
+    val parentDirectory = c3.getFile(filePath.mkString("/", "/", "")).asDirectory
+    // add to file ACL_META from parent directory
+    val newMD:Map[String,String] =  metadata + (ACL_META -> parentDirectory.metadata.get(ACL_META).getOrElse(""))
+    parentDirectory.createFile(fph.fileName, newMD, DataStream(fph.file))
     logger info String.format("File %s is uploaded to C3!", fph.name)
   }
 
