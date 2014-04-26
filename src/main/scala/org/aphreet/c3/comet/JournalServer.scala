@@ -6,7 +6,7 @@ import net.liftweb.common.Logger
 
 import org.aphreet.c3.model.{Group, User, Message}
 import org.aphreet.c3.lib.DependencyFactory._
-import org.aphreet.c3.service.groups.messages.MessageStorageService
+import org.aphreet.c3.service.groups.messages.JournalStorageService
 
 import java.util
 
@@ -14,10 +14,10 @@ import java.util
  * @author Dmitry Ivanov (mailto: id.ajantis@gmail.com)
  *         iFunSoftware
  */
-class MessageServer(val group: Group) extends LiftActor with ListenerManager {
+class JournalServer(val group: Group) extends LiftActor with ListenerManager {
 
-  private val logger = Logger(classOf[MessageServer])
-  private lazy val msgService = inject[MessageStorageService].open_!
+  private val logger = Logger(classOf[JournalServer])
+  private lazy val msgService = inject[JournalStorageService].open_!
 
   override def lowPriority = {
     case MessageServerMsg(user, messageGroup, content, tags) if content.length > 0 =>
@@ -30,7 +30,7 @@ class MessageServer(val group: Group) extends LiftActor with ListenerManager {
       logger.error(s"Unknown message received from comet actor: $msg")
   }
 
-  def createUpdate = MessageServerUpdate(msgService.findAll(group).take(15).toList)
+  def createUpdate = MessageServerUpdate(msgService.findMsgAll(group).take(15).toList)
 
 }
 
@@ -39,18 +39,18 @@ object MessageServerFactory{
   private val logger = Logger("MessageServerFactory")
 
   // message servers simple cache =)
-  private var messageServers = Map[String, MessageServer]()
+  private var messageServers = Map[String, JournalServer]()
 
-  def apply(group: Group): MessageServer = {
+  def apply(group: Group): JournalServer = {
     messageServers.get(group.name.is) match {
       case Some(ms) => ms
       case _ => addMessageServer(group)
     }
   }
 
-  private def addMessageServer(group: Group): MessageServer = {
+  private def addMessageServer(group: Group): JournalServer = {
     logger.info("Creating new message server for group " + group.name.is)
-    val ms = new MessageServer(group)
+    val ms = new JournalServer(group)
     val newMap = messageServers + (group.name.is -> ms)
     messageServers.synchronized{
       messageServers = newMap
