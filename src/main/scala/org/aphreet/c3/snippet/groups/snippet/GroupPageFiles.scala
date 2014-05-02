@@ -416,7 +416,7 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers
         val metadata = Map(OWNER_ID_META -> User.currentUserUnsafe.id.is.toString,
           GROUP_ID_META -> data.group.id.is.toString,
           TAGS_META -> tags.trim,
-        ACL_META -> currentDirectory.metadata.get(ACL_META).getOrElse(""))
+          ACL_META -> currentDirectory.metadata.get(ACL_META).getOrElse(""))
         currentDirectory.createDirectory(name.trim, metadata)
         S.redirectTo(currentPath) // redirect on the same page
       }
@@ -477,7 +477,7 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers
             case UserStatusGroup.Admin | UserStatusGroup.Owner | UserStatusGroup.Member | UserStatusGroup.Other =>
               redirectToDirectory
             case UserStatusGroup.Request =>
-              if(haveReadRight)
+              if (haveReadRight)
                 redirectToDirectory
               else
                 accessRestricted
