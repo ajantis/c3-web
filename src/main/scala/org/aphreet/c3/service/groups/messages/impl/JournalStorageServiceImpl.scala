@@ -85,6 +85,16 @@ class JournalStorageServiceImpl extends JournalStorageService with C3Loggable {
   }
 
   @throws(classOf[MessageStorageException])
+  def findAll(group: Group): Traversable[Either[Event, Message]]= {
+    val msg =  findMsgAll(group)
+    val events = findEventAll(group)
+    (msg.map(Right(_)) ++ events.map(Left(_))).toList.sortBy {
+      case Right(m) => m.creationDate
+      case Left(e) => e.creationDate
+    }
+  }
+
+  @throws(classOf[MessageStorageException])
   override def save(msg: Message): Box[Message] = {
     for {
       group ← msg.group ?~ "Group message belongs to is not defined!"

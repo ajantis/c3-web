@@ -19,6 +19,9 @@ trait JournalStorageService {
   def findEventAll(group: Group): Traversable[Event]
 
   @throws(classOf[MessageStorageException])
+  def findAll(group: Group): Traversable[Either[Event, Message]]
+
+  @throws(classOf[MessageStorageException])
   def save(msg: Message): Box[Message]
 
   @throws(classOf[MessageStorageException])
