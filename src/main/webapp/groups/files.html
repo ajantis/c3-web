@@ -29,474 +29,505 @@
     </div>
 </div>
 <div id="group-tab-wrapperwell message_cont">
-    <div class="tabbable"> <!-- Only required for left/right tabs -->
+<div class="tabbable"> <!-- Only required for left/right tabs -->
 
-        <!-- select2 -->
-        <link href="/assets/select2/select2.css" rel="stylesheet">
-        <script src="/assets/select2/select2.js"></script>
+<!-- select2 -->
+<link href="/assets/select2/select2.css" rel="stylesheet">
+<script src="/assets/select2/select2.js"></script>
 
-        <div class="lift:TableSorters.defaultTableSorter"></div>
+<div class="lift:TableSorters.defaultTableSorter"></div>
 
-        <div class="row-fluid">
-            <div class="tab-content">
-                <div id="files" class="lift:GroupPageFiles tag-pane">
-                    <div>
-                        <ul class="breadcrumbs breadcrumb" style="background-color: white; font-size: 20px;">
-                            <li class="base_files_path">
-                                <a class="link" href="#">Group</a> <span class="divider">/</span>
-                            </li>
-                            <li class="bcrumb">
-                                <a class="link" href="#">dir</a> <span class="divider">/</span>
-                            </li>
-                            <li>
-                                <div class="file-table">
-                                    <a type="button" href="#new-directory" data-toggle="modal" class="new_directory_btn">
-                                        <img src="/images/folder_plus.png" title="Create directory"/>
-                                    </a>
-                                    <a type="button" href="#upload_form" data-toggle="modal" class="upload_files_btn" >
-                                        <img src="/images/cloud_upload_2.png" title="Upload files"/>
-                                    </a>
-                                    <a type="button" href="#delete_selected_form" data-toggle="modal" class="delete_selected_form_button">
-                                        <img src="/images/remove.png" title="Delete files"/>
-                                    </a>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="file-table">
-                        <div>
-                            <table class="table table-striped" style="width: 100%">
-                                <tbody>
-                                    <tr>
-                                        <td style="width: 15%"><i class="icon-info-sign"></i> Description</td>
-                                        <td>
-                                            <span class="hide description_submit_func"></span>
-                                            <a href="#" id="description" data-type="text" data-pk="1"
-                                               data-placeholder="File description..." data-original-title="Edit description"
-                                               class="editable editable-click description_box">
-                                                Engineering Science is a comprehensive textbook suitable for all <br/>
-                                                vocational and pre-degree courses.
-                                            </a>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <i class="icon-tags"></i> Tags
-                                        </td>
-                                        <td>
-                                            <span class="hide edit_tags_form_func"></span>
-                                            <a href="#" id="edit_tags_form" data-type="select2" data-pk="1" data-original-title="Enter tags">
-                                                html, javascript
-                                            </a>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
+<div class="row-fluid">
+<div class="tab-content">
+<div id="files" class="lift:GroupPageFiles tag-pane">
+<div>
+    <ul class="breadcrumbs breadcrumb" style="background-color: white; font-size: 20px;">
+        <li class="base_files_path">
+            <a class="link" href="#">Group</a> <span class="divider">/</span>
+        </li>
+        <li class="bcrumb">
+            <a class="link" href="#">dir</a> <span class="divider">/</span>
+        </li>
+        <li>
+            <div class="file-table">
+                <a type="button" href="#new-directory" data-toggle="modal" class="new_directory_btn">
+                    <img src="/images/folder_plus.png" title="Create directory"/>
+                </a>
+                <a type="button" href="#upload_form" data-toggle="modal" class="upload_files_btn" >
+                    <img src="/images/cloud_upload_2.png" title="Upload files"/>
+                </a>
+                <a type="button" href="#delete_selected_form" data-toggle="modal" class="delete_selected_form_button">
+                    <img src="/images/remove.png" title="Delete files"/>
+                </a>
+            </div>
+        </li>
+    </ul>
+</div>
+<div class="file-table">
+    <div>
+        <table class="table table-striped" style="width: 100%">
+            <tbody>
+            <tr>
+                <td style="width: 15%"><i class="icon-info-sign"></i> Description</td>
+                <td>
+                    <span class="hide description_submit_func"></span>
+                    <a href="#" id="description" data-type="text" data-pk="1"
+                       data-placeholder="File description..." data-original-title="Edit description"
+                       class="editable editable-click description_box">
+                        Engineering Science is a comprehensive textbook suitable for all <br/>
+                        vocational and pre-degree courses.
+                    </a>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <i class="icon-tags"></i> Tags
+                </td>
+                <td>
+                    <span class="hide edit_tags_form_func"></span>
+                    <a href="#" id="edit_tags_form" data-type="select2" data-pk="1" data-original-title="Enter tags">
+                        html, javascript
+                    </a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
 
-                        <table class="tablesorter" id="table-sort">
-                            <thead>
-                                <tr>
-                                    <th class="file_checkbox"><input type="checkbox" name="check_all"/></th>
-                                    <th class="resource_icon"></th>
-                                    <th class="file-table-name"><b>Name</b></th>
-                                    <th class="file-table-owner"><b>Owner</b></th>
-                                    <th class="file-table-date"><b>Modify date</b></th>
-                                    <th class="file-table-rules" style="width: 7%"><b>Access</b></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr class="child">
-                                    <td><input class="select_resource" name="check_file" type="checkbox" /></td>
-                                    <td class="child_td"><img class="icon"/></td>
-                                    <td class="child_td file-table-name"><a class="link" href="#"><span class="name"></span></a>
-                                        <span class="description_box last_changed short_description"></span></td>
-                                    <td class="child_td file-table-owner"><a class="owner" href="#">Aphreet</a></td>
-                                    <td class="child_td file-table-date"><span class="created_date"></span></td>
-                                    <td class="file-table-rules acl_cont">
-                                        <a href="#acl" class="acl_button" data-toggle="modal">
-                                            <span class="rules">rw--</span></a>
-                                    </td>
+    <table class="tablesorter" id="table-sort">
+        <thead>
+        <tr>
+            <th class="file_checkbox"><input type="checkbox" name="check_all"/></th>
+            <th class="resource_icon"></th>
+            <th class="file-table-name"><b>Name</b></th>
+            <th class="file-table-owner"><b>Owner</b></th>
+            <th class="file-table-date"><b>Modify date</b></th>
+            <th class="file-table-rules" style="width: 7%"><b>Access</b></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr class="child">
+            <td><input class="select_resource" name="check_file" type="checkbox" /></td>
+            <td class="child_td"><img class="icon"/></td>
+            <td class="child_td file-table-name"><a class="link" href="#"><span class="name"></span></a>
+                <span class="description_box last_changed short_description"></span></td>
+            <td class="child_td file-table-owner"><a class="owner" href="#">Aphreet</a></td>
+            <td class="child_td file-table-date"><span class="created_date"></span></td>
+            <td class="file-table-rules acl_cont">
+                <a href="#acl" class="acl_button" data-toggle="modal">
+                    <span class="rules">rw--</span></a>
+            </td>
 
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="file-view">
-                        <div class="row-fluid">
-                            <div class="span12">
-                                <table class="table table-striped" style="width: 90%">
+        </tr>
+        </tbody>
+    </table>
+</div>
+<div class="file-view">
+    <div class="row-fluid">
+        <div class="span12">
+            <table class="table table-striped" style="width: 90%">
+                <thead>
+                <tr>
+                    <th style="width: 20%"></th>
+                    <th style="width: 80%"></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td><i class="icon-calendar"></i> Created</td>
+                    <td><span class="data_file">Sept 16th, 2012</span></td>
+                </tr>
+                <tr>
+                    <td><i class="icon-user"></i> Owner</td>
+                    <td><span class="owner_file">Kobtsev Sergey</span></td>
+                </tr>
+                <tr>
+                    <td><i class="icon-hdd"></i> Size</td>
+                    <td><span class="size_file">196,8 Мб</span></td>
+                </tr>
+                <tr>
+                    <td><i class="icon-info-sign"></i> Description</td>
+                    <td>
+                        <span class="hide description_submit_func"></span>
+                        <a href="#" id="description" data-type="text" data-pk="1"
+                           data-placeholder="File description..." data-original-title="Edit description"
+                           class="editable editable-click description_box">
+                            Engineering Science is a comprehensive textbook suitable for all <br/>
+                            vocational and pre-degree courses.
+                        </a>
+                    </td>
+                </tr>
+                <tr>
+                    <td><i class="icon-tags"></i> Tags</td>
+                    <td>
+                        <span class="hide edit_tags_form_func"></span>
+                        <a href="#" id="edit_tags_form" data-type="select2" data-pk="1" data-original-title="Enter tags">
+                            html, javascript
+                        </a>
+                    </td>
+                </tr>
+                <tr>
+                    <td><i class="icon-tags"></i> Metadata</td>
+                    <td>
+                        <a class="metadata_btn cursor_pointer editable"><i id="icon_meta" class="test icon-chevron-up"></i>Metadata</a>
+                        <div id="meta" class="edit_metadata hide">
+                            <div class="edit_meta">
+                                <table class="tablesorter table_meta">
                                     <thead>
-                                        <tr>
-                                            <th style="width: 20%"></th>
-                                            <th style="width: 80%"></th>
-                                        </tr>
+                                    <tr class="metadata_form_header">
+                                        <th>Key</th>
+                                        <th>Value</th>
+                                        <th style="width:70px;"></th>
+                                    </tr>
                                     </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td><i class="icon-calendar"></i> Created</td>
-                                            <td><span class="data_file">Sept 16th, 2012</span></td>
-                                        </tr>
-                                        <tr>
-                                            <td><i class="icon-user"></i> Owner</td>
-                                            <td><span class="owner_file">Kobtsev Sergey</span></td>
-                                        </tr>
-                                        <tr>
-                                            <td><i class="icon-hdd"></i> Size</td>
-                                            <td><span class="size_file">196,8 Мб</span></td>
-                                        </tr>
-                                        <tr>
-                                            <td><i class="icon-info-sign"></i> Description</td>
-                                            <td>
-                                                <span class="hide description_submit_func"></span>
-                                                <a href="#" id="description" data-type="text" data-pk="1"
-                                                   data-placeholder="File description..." data-original-title="Edit description"
-                                                   class="editable editable-click description_box">
-                                                    Engineering Science is a comprehensive textbook suitable for all <br/>
-                                                    vocational and pre-degree courses.
-                                                </a>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td><i class="icon-tags"></i> Tags</td>
-                                            <td>
-                                                <span class="hide edit_tags_form_func"></span>
-                                                <a href="#" id="edit_tags_form" data-type="select2" data-pk="1" data-original-title="Enter tags">
-                                                    html, javascript
-                                                </a>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td><i class="icon-tags"></i> Metadata</td>
-                                            <td>
-                                                <a class="metadata_btn cursor_pointer editable"><i id="icon_meta" class="test icon-chevron-up"></i>Metadata</a>
-                                                <div id="meta" class="edit_metadata hide">
-                                                    <div class="edit_meta">
-                                                        <table class="tablesorter table_meta">
-                                                            <thead>
-                                                            <tr class="metadata_form_header">
-                                                                <th>Key</th>
-                                                                <th>Value</th>
-                                                                <th style="width:70px;"></th>
-                                                            </tr>
-                                                            </thead>
-                                                            <tbody id="metadata_container">
-                                                            <tr class="metadata_form">
-                                                                <td><input class="metadata_key" value="" readonly/></td>
-                                                                <td><input type="text" class="metadata_value" value=""/></td>
-                                                                <td><button class="close remove_metadata">&times;</button></td>
-                                                            </tr>
-                                                            </tbody>
-                                                        </table>
-                                                        <hr/>
-                                                        <div class="add_metadata">
-                                                            <input name="key" class="span5 input_meta_add" type="text"  placeholder="Keyword" >
-                                                            <input name="value" class="span5 input_meta_add" type="text"  placeholder="Value">
-                                                            <button type="submit" name="btn_add_metadata" class="btn_add_metadata btn btn-primary">Add</button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                        </tr>
+                                    <tbody id="metadata_container">
+                                    <tr class="metadata_form">
+                                        <td><input class="metadata_key" value="" readonly/></td>
+                                        <td><input type="text" class="metadata_value" value=""/></td>
+                                        <td><button class="close remove_metadata">&times;</button></td>
+                                    </tr>
                                     </tbody>
                                 </table>
-                            </div>
-
-                            <div id="delete_file_form" class="modal hide fade">
-                                <h4 class="modal-header">Delete file</h4>
-                                <div class="modal-body">
-                                    <p>Are you sure you want to delete this file?</p>
-                                </div>
-                                <div class ="modal-footer">
-                                    <button type="button" data-dismiss="modal" class="btn">Cancel</button>
-                                    <button type="button" class="delete_file_btn btn btn-danger">Delete</button>
+                                <hr/>
+                                <div class="add_metadata">
+                                    <input name="key" class="span5 input_meta_add" type="text"  placeholder="Keyword" >
+                                    <input name="value" class="span5 input_meta_add" type="text"  placeholder="Value">
+                                    <button type="submit" name="btn_add_metadata" class="btn_add_metadata btn btn-primary">Add</button>
                                 </div>
                             </div>
-
                         </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
 
-                        <div class="row-fluid">
-                            <div class="span6">
-                                <a type="button" href="#" class="btn btn-primary view_btn" style="margin-right: 10px;">
-                                    <i class="icon-white icon-eye-open"></i> View
-                                </a>
-                                <a type="button" href="#" class="btn btn-primary download_btn" style="margin-right: 10px;">
-                                    <i class="icon-white icon-download-alt"></i> Download
-                                </a>
-                                <a type="button" href="#delete_file_form" data-toggle="modal" title="Delete file" class="remove_resource btn btn-danger" style="margin-right: 10px;">
-                                    <i class="icon-white icon-remove"></i> Delete
-                                </a>
-                            </div>
-                        </div>
-
-                    </div>
-
-                    <div id="acl" class="modal hide fade">
-                        <h4 class = "modal-header">Edit Access</h4>
-                        <div class="edit_access">
-                            <table class="table-striped table-condensed">
-                                <thead>
-                                <tr>
-                                    <th></th>
-                                    <th>Read</th>
-                                    <th>Write</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                    <tr class="" >
-                                        <td class="">Group</td>
-                                        <td class=""><input class="group_read"  type="checkbox"></td>
-                                        <td class=""><input class="group_write"  type="checkbox"></td>
-                                    </tr>
-                                    <tr class="" >
-                                        <td class="">Other users</td>
-                                        <td class=""><input class="all_read"  type="checkbox"></td>
-                                        <td class=""><input class="all_write"  type="checkbox"></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            <input type="hidden" id="name_resource" value="default">
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" data-dismiss="modal" class="btn">Cancel</button>
-                            <button type="button" class="btn btn-success submit_acl">Save</button>
-                        </div>
-                    </div>
-
-
-                    <div id="upload_form" class="modal hide fade">
-                        <h4 class = "modal-header">Upload files to directory</h4>
-                        <div id="file_upload">
-                            <form id="file_upload_form" action="/upload/file/path" method="POST" enctype="multipart/form-data">
-                                <div class="fileupload-buttonbar" style="margin: 10px;">
-                                                    <!-- The fileinput-button span is used to style the file input field as button -->
-                                                    <span class="btn btn-success fileinput-button">
-                                                        <i class="icon-plus icon-white"></i>
-                                                        <span>Add files...</span>
-                                                        <input type="file" name="files[]" multiple>
-                                                    </span>
-                                                    <!--<span class="fileinput-button">-->
-                                                      <!--<input type="file" name="files" multiple="multiple">-->
-                                                    <!--</span>-->
-                                </div>
-
-                                <div class="fileupload-content">
-                                    <table class="files">
-                                        <tbody></tbody>
-                                    </table>
-                                    <div class="fileupload-progressbar"></div>
-                                </div>
-                            </form>
-                        </div>
-                        <div class="modal-footer fileupload-buttonbar">
-                            <button id="file_upload_close_btn" type="button" data-dismiss="modal" class="btn btn-primary cancel">
-                                <span>Finish</span>
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="modal hide fade" id="new-directory">
-                        <div class="modal-header">
-                            <a class="close" data-dismiss="modal">&times;</a>
-                            <h3>New directory</h3>
-                        </div>
-
-                        <div class="modal-body">
-                            <form id="new_directory_form" class="form-horizontal">
-                                <fieldset>
-                                    <div class="control-group">
-                                        <!-- Text input-->
-                                        <label class="control-label" for="input01">Name</label>
-                                        <div class="controls">
-                                            <input type="text" name="name" id="input01" placeholder="name your directory..." class="input-xlarge">
-                                            <p class="help-block"></p>
-                                        </div>
-                                    </div>
-                                    <div class="control-group">
-                                        <!-- Text input-->
-                                        <label class="control-label" id="input02" for="input02">Tags</label>
-                                        <div class="controls">
-                                            <input type="text" name="tags" placeholder="docs, main, etc..." class="input-xlarge">
-                                            <p class="help-block">tags must be comma-separated</p>
-                                        </div>
-                                    </div>
-                                </fieldset>
-                            </form>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" data-dismiss="modal" class="btn">Cancel</button>
-                            <button type="submit" class="btn btn-success" form="new_directory_form">Create</button>
-                            </div>
-                        </div>
-
-                    <div id="delete_selected_form" class="modal hide fade">
-                        <h4 class="modal-header">Delete files</h4>
-                        <div class="modal-body">
-                            <p>Are you sure you want to delete selected files?</p>
-                        </div>
-                        <div class ="modal-footer">
-                            <button type="button" data-dismiss="modal" class="btn">Cancel</button>
-                            <button type="button" class="delete_selected_btn btn btn-danger">Delete</button>
-                        </div>
-                    </div>
-
-
-                    <tail>
-                        <script id="template-upload" type="text/x-jquery-tmpl">
-                            <tr class="template-upload{{if error}} ui-state-error{{/if}}">
-                                <td class="preview"></td>
-                                <td class="name">${name}</td>
-                                <td class="size">${sizef}</td>
-                                <td class="description"><input type="text" name="description_${name}" required></td>
-                                <td class="tags"><input type="text" name="tags_${name}" required></td>
-                                {{if error}}
-                                <td class="error" colspan="2">Error:
-                                    {{if error === 'maxFileSize'}}File is too big
-                                    {{else error === 'minFileSize'}}File is too small
-                                    {{else error === 'acceptFileTypes'}}Filetype not allowed
-                                    {{else error === 'maxNumberOfFiles'}}Max number of files exceeded
-                                    {{else}}${error}
-                                    {{/if}}
-                                </td>
-                                {{else}}
-                                <td class="progress" style="display: none;"><div></div></td>
-                                <td class="start" style="display: none; min-width: 90px;">
-                                    <button type="submit" class="btn btn-primary start start_upload">
-                                        <i class="icon-white icon-upload"></i>
-                                        <span>Start</span>
-                                    </button>
-                                </td>
-                                {{/if}}
-                                <td class="cancel" style="min-width: 100px;">
-                                    <button type="reset" class="btn btn-warning cancel">
-                                        <i class="icon-ban-circle icon-white"></i>
-                                        <span>Cancel</span>
-                                    </button>
-                                </td>
-                            </tr>
-                        </script>
-                        <script id="template-download" type="text/x-jquery-tmpl">
-                            <tr class="template-download{{if error}} ui-state-error{{/if}}">
-                                {{if error}}
-                                <td></td>
-                                <td class="name">${name}</td>
-                                <td class="size">${sizef}</td>
-                                <td class="error" colspan="2">Error:
-                                    {{if error === 1}}File exceeds upload_max_filesize (php.ini directive)
-                                    {{else error === 2}}File exceeds MAX_FILE_SIZE (HTML form directive)
-                                    {{else error === 3}}File was only partially uploaded
-                                    {{else error === 4}}No File was uploaded
-                                    {{else error === 5}}Missing a temporary folder
-                                    {{else error === 6}}Failed to write file to disk
-                                    {{else error === 7}}File upload stopped by extension
-                                    {{else error === 'maxFileSize'}}File is too big
-                                    {{else error === 'minFileSize'}}File is too small
-                                    {{else error === 'acceptFileTypes'}}Filetype not allowed
-                                    {{else error === 'maxNumberOfFiles'}}Max number of files exceeded
-                                    {{else error === 'uploadedBytes'}}Uploaded bytes exceed file size
-                                    {{else error === 'emptyResult'}}Empty file upload result
-                                    {{else}}${error}
-                                    {{/if}}
-                                </td>
-                                {{else}}
-                                <td class="preview">
-                                    {{if thumbnail_url}}
-                                    <a href="${url}" target="_blank"><img src="${thumbnail_url}"></a>
-                                    {{/if}}
-                                </td>
-                                <td class="name">
-                                    <a href="${url}"{{if thumbnail_url}} target="_blank"{{/if}}>${name}</a>
-                                </td>
-                                <td class="size">${sizef}</td>
-                                <td colspan="2"></td>
-                                {{/if}}
-                                <td class="delete" style="min-width: 90px;">
-                                    <button type="button" data-type="${delete_type}" data-url="${delete_url}" class="btn btn-danger delete">
-                                        <i class="icon-trash icon-white"></i>
-                                        <span>Delete</span>
-                                    </button>
-                                </td>
-                            </tr>
-                        </script>
-                        <script>
-                            // <![CDATA[
-                            $(".start_upload").live("click",function(){
-                            var parent = $(this).parent().parent();
-                            var progress_bar = parent.children(".progress");
-                            progress_bar.show();
-                            })
-                            $(".description").live("keyup", function(){
-                            var parent = $(this).parent();
-                            var start_button = parent.children(".start");
-                            start_button.hide();
-                            var description_text = $(this).children().val();
-                            if(description_text.length > 0){
-                            start_button.show();
-                            }
-                            })
-                            $('#file_upload').fileupload( {
-                                form: "file_upload",
-                                autoUpload: false
-                            });
-
-                            $('#upload_form').modal({
-                                backdrop: true,
-                                keyboard: true,
-                                show: false
-                            }).css({
-                                        // make width n * 10 % of screen
-                                        'width': function () {
-                                            return ($(document).width() * .7) + 'px';
-                                        },
-                                        // center model
-                                        'margin-left': function () {
-                                            return -($(this).width() / 2);
-                                        }
-                                    });
-
-                            // ]]>
-                        </script>
-
-                        <!-- x-editable (bootstrap) -->
-                        <link href="/bootstrap-editable/css/bootstrap-editable.css" rel="stylesheet">
-                        <script src="/bootstrap-editable/js/bootstrap-editable.js"></script>
-
-                        <script>
-                            // <![CDATA[
-                            $(':checkbox[name=check_all]').click(function () {
-                              $(':checkbox[name=check_file]').prop('checked', this.checked);
-                            });
-
-                            $.fn.editable.defaults.mode = 'popover';
-                            $('#description').editable({
-                                url: function(params) {
-                                    updateDescriptionCallback(params.value);
-                                },
-                                rows: 2
-                            });
-                            $('#node_name').editable({
-                                url: function(params) {
-                                    renameNodeCallback(params.value);
-                                },
-                                placement : 'bottom'
-                            });
-                            $('#edit_tags_form').editable({
-                                inputclass: 'input-large',
-                                select2: {
-                                    tags: [],
-                                    tokenSeparators: [","]
-                                },
-                                url: function(params) {
-                                    updateTagsCallback(params.value);
-                                }
-                            });
-                            // ]]>
-                        </script>
-
-                    </tail>
-                </div>
+        <div id="delete_file_form" class="modal hide fade">
+            <h4 class="modal-header">Delete file</h4>
+            <div class="modal-body">
+                <p>Are you sure you want to delete this file?</p>
+            </div>
+            <div class ="modal-footer">
+                <button type="button" data-dismiss="modal" class="btn">Cancel</button>
+                <button type="button" class="delete_file_btn btn btn-danger">Delete</button>
             </div>
         </div>
+
     </div>
+
+    <div class="row-fluid">
+        <div class="span6">
+            <a type="button" href="#" class="btn btn-primary view_btn" style="margin-right: 10px;">
+                <i class="icon-white icon-eye-open"></i> View
+            </a>
+            <a type="button" href="#" class="btn btn-primary download_btn" style="margin-right: 10px;">
+                <i class="icon-white icon-download-alt"></i> Download
+            </a>
+            <a type="button" href="#delete_file_form" data-toggle="modal" title="Delete file" class="remove_resource btn btn-danger" style="margin-right: 10px;">
+                <i class="icon-white icon-remove"></i> Delete
+            </a>
+        </div>
+    </div>
+
+</div>
+
+<div id="acl" class="modal hide fade">
+    <h4 class = "modal-header">Edit Access</h4>
+    <div class="edit_access">
+        <table class="table-striped table-condensed">
+            <thead>
+            <tr>
+                <th></th>
+                <th>Read</th>
+                <th>Write</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr class="" >
+                <td class="">Group</td>
+                <td class=""><input class="group_read"  type="checkbox"></td>
+                <td class=""><input class="group_write"  type="checkbox"></td>
+            </tr>
+            <tr class="" >
+                <td class="">Other users</td>
+                <td class=""><input class="all_read"  type="checkbox"></td>
+                <td class=""><input class="all_write"  type="checkbox"></td>
+            </tr>
+            </tbody>
+        </table>
+        <input type="hidden" id="name_resource" value="default">
+    </div>
+    <div class="modal-footer">
+        <button type="button" data-dismiss="modal" class="btn">Cancel</button>
+        <button type="button" class="btn btn-success submit_acl">Save</button>
+    </div>
+</div>
+
+
+<div id="upload_form" class="modal hide fade">
+    <div class="modal-content">
+        <h4 class = "modal-header">Upload files to directory</h4>
+        <div id="file_upload">
+            <form id="file_upload_form" action="/upload/file/path" method="POST" enctype="multipart/form-data">
+                <div class="fileupload-buttonbar" style="margin: 10px;">
+                    <!-- The fileinput-button span is used to style the file input field as button -->
+                                                        <span class="btn btn-success fileinput-button">
+                                                            <i class="icon-plus icon-white"></i>
+                                                            <span>Add files...</span>
+                                                            <input type="file" name="files[]" multiple>
+                                                        </span>
+                    <!--<span class="fileinput-button">-->
+                    <!--<input type="file" name="files" multiple="multiple">-->
+                    <!--</span>-->
+                </div>
+
+                <div style="clear:left;" class="fileupload-content">
+                    <ul class="files">
+
+                    </ul>
+                    <div class="fileupload-progressbar"></div>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer fileupload-buttonbar">
+            <button id="file_upload_close_btn" type="button" data-dismiss="modal" class="btn btn-primary cancel">
+                <span>Finish</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="modal hide fade" id="new-directory">
+    <div class="modal-header">
+        <a class="close" data-dismiss="modal">&times;</a>
+        <h3>New directory</h3>
+    </div>
+
+    <div class="modal-body">
+        <form id="new_directory_form" class="form-horizontal">
+            <fieldset>
+                <div class="control-group">
+                    <!-- Text input-->
+                    <label class="control-label" for="input01">Name</label>
+                    <div class="controls">
+                        <input type="text" name="name" id="input01" placeholder="name your directory..." class="input-xlarge">
+                        <p class="help-block"></p>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <!-- Text input-->
+                    <label class="control-label" id="input02" for="input02">Tags</label>
+                    <div class="controls">
+                        <input type="text" name="tags" placeholder="docs, main, etc..." class="input-xlarge">
+                        <p class="help-block">tags must be comma-separated</p>
+                    </div>
+                </div>
+            </fieldset>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button type="button" data-dismiss="modal" class="btn">Cancel</button>
+        <button type="submit" class="btn btn-success" form="new_directory_form">Create</button>
+    </div>
+</div>
+
+<div id="delete_selected_form" class="modal hide fade">
+    <h4 class="modal-header">Delete files</h4>
+    <div class="modal-body">
+        <p>Are you sure you want to delete selected files?</p>
+    </div>
+    <div class ="modal-footer">
+        <button type="button" data-dismiss="modal" class="btn">Cancel</button>
+        <button type="button" class="delete_selected_btn btn btn-danger">Delete</button>
+    </div>
+</div>
+
+
+<tail>
+    <script id="template-upload" type="text/x-jquery-tmpl">
+        <li class="template-upload{{if error}} ui-state-error{{/if}}">
+            <table class="table table-striped table_ul">
+                <colgroup>
+                    <col style="width: 125px">
+                    <col style="width: 300px">
+                    <col style="width: 10%">
+                </colgroup>
+                <tbody class="t_tbody">
+                <tr>
+                    <td class="preview" rowspan="2"></td>
+                    <td class="name">${name}</td>
+                    <td class="size">${sizef}</td>
+                </tr>
+                <tr class="progress_error">
+                    {{if error}}
+                    <td class="error" colspan="2">Error:
+                        {{if error === 'maxFileSize'}}File is too big
+                        {{else error === 'minFileSize'}}File is too small
+                        {{else error === 'acceptFileTypes'}}Filetype not allowed
+                        {{else error === 'maxNumberOfFiles'}}Max number of files exceeded
+                        {{else}}${error}
+                        {{/if}}
+                    </td>
+                    {{else}}
+                    <td class="progress" colspan="2" style="display: none;"><div></div></td>
+                    {{/if}}
+                </tr>
+                <tr >
+                    <td ><i class="icon-info-sign"></i> Description</td>
+                    <td colspan="2">
+                        <textarea class="description input_box" cols="500" rows="2" type="text" name="description_${name}" required placeholder="description of the file loaded in system..."></textarea>
+                    </td>
+                </tr>
+                <tr class="tag_start_stop">
+                    <td class="tags"><i class="icon-tags"></i> Tags</td>
+                    <td><input class="input_box" type="text" name="tags_${name}" required placeholder="docs, main, etc..." ></td>
+                    <td class="start_stop">
+                        <div class="start">
+                            <button type="submit" style="display: none; min-width: 100px;" class="btn btn-primary start start_upload">
+                                <i class="icon-white icon-upload"></i>
+                                <span>Start</span>
+                            </button>
+                        </div>
+                        <div class="cancel">
+                            <button type="reset" style="min-width: 100px;" class="btn btn-warning cancel">
+                                <i class="icon-ban-circle icon-white"></i>
+                                <span>Cancel</span>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </li>
+    </script>
+    <script id="template-download" type="text/x-jquery-tmpl">
+        <li class="template-download{{if error}} ui-state-error{{/if}}">
+            <table class="table table-striped">
+                <tr>
+                    {{if error}}
+                    <td></td>
+                    <td class="name">${name}</td>
+                    <td class="size">${sizef}</td>
+                    <td class="error" colspan="2">Error:
+                        {{if error === 1}}File exceeds upload_max_filesize (php.ini directive)
+                        {{else error === 2}}File exceeds MAX_FILE_SIZE (HTML form directive)
+                        {{else error === 3}}File was only partially uploaded
+                        {{else error === 4}}No File was uploaded
+                        {{else error === 5}}Missing a temporary folder
+                        {{else error === 6}}Failed to write file to disk
+                        {{else error === 7}}File upload stopped by extension
+                        {{else error === 'maxFileSize'}}File is too big
+                        {{else error === 'minFileSize'}}File is too small
+                        {{else error === 'acceptFileTypes'}}Filetype not allowed
+                        {{else error === 'maxNumberOfFiles'}}Max number of files exceeded
+                        {{else error === 'uploadedBytes'}}Uploaded bytes exceed file size
+                        {{else error === 'emptyResult'}}Empty file upload result
+                        {{else}}${error}
+                        {{/if}}
+                    </td>
+                    {{else}}
+                    <td class="preview">
+                        {{if thumbnail_url}}
+                        <a href="${url}" target="_blank"><img src="${thumbnail_url}"></a>
+                        {{/if}}
+                    </td>
+                    <td class="name">
+                        <a href="${url}"{{if thumbnail_url}} target="_blank"{{/if}}>${name}</a>
+                    </td>
+                    <td class="size">${sizef}</td>
+                    <td colspan="2"></td>
+                    {{/if}}
+                    <td class="delete" style="min-width: 90px;">
+                        <button type="button" data-type="${delete_type}" data-url="${delete_url}" class="btn btn-danger delete floatRight">
+                            <i class="icon-trash icon-white"></i>
+                            <span>Delete</span>
+                        </button>
+                    </td>
+                </tr>
+            </table>
+        </li>
+    </script>
+    <script>
+        // <![CDATA[
+        $(".start_upload").live("click",function(){
+        var parent = $(this).parent().parent().parent();
+        var progress_bar = parent.children(".progress_error").children(".progress");
+        progress_bar.show();
+        })
+        $(".description").live("keyup", function(){
+        var parent = $(this).parent().parent().parent();
+
+        var start_button = parent.children(".tag_start_stop").children(".start_stop").children(".start").children();
+        start_button.hide();
+
+        var description_text = $(this).val();
+        if(description_text.length > 0){
+        start_button.show();
+        }
+        })
+        $('#file_upload').fileupload( {
+        form: "file_upload",
+        autoUpload: false
+        });
+
+        $('#upload_form').modal({
+        backdrop: true,
+        keyboard: true,
+        show: false
+        }).css({
+        // make width n * 10 % of screen
+        'width': function () {
+        return ($(document).width() * .7) + 'px';
+        },
+        // center model
+        'margin-left': function () {
+        return -($(this).width() / 2);
+        }
+        });
+
+        // ]]>
+    </script>
+
+    <!-- x-editable (bootstrap) -->
+    <link href="/bootstrap-editable/css/bootstrap-editable.css" rel="stylesheet">
+    <script src="/bootstrap-editable/js/bootstrap-editable.js"></script>
+
+    <script>
+        // <![CDATA[
+        $(':checkbox[name=check_all]').click(function () {
+        $(':checkbox[name=check_file]').prop('checked', this.checked);
+        });
+
+        $.fn.editable.defaults.mode = 'popover';
+        $('#description').editable({
+        url: function(params) {
+        updateDescriptionCallback(params.value);
+        },
+        rows: 2
+        });
+        $('#node_name').editable({
+        url: function(params) {
+        renameNodeCallback(params.value);
+        },
+        placement : 'bottom'
+        });
+        $('#edit_tags_form').editable({
+        inputclass: 'input-large',
+        select2: {
+        tags: [],
+        tokenSeparators: [","]
+        },
+        url: function(params) {
+        updateTagsCallback(params.value);
+        }
+        });
+        // ]]>
+    </script>
+
+</tail>
+</div>
+</div>
+</div>
+</div>
 </div>
 </div>

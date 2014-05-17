@@ -89,7 +89,9 @@
   margin: 10px 0;
   border-collapse: collapse;
 }
-
+.files .table_ul{
+  margin-bottom: 0px !important;
+}
 .files td {
   padding: 5px;
   border-spacing: 5px;
@@ -98,7 +100,10 @@
 .files img {
   border: none;
 }
-
+.input_box{
+    width: 99%;
+    margin-bottom: 0px;
+}
 .files .name {
   padding: 0 10px;
 }
@@ -112,7 +117,9 @@
   text-align: right;
   white-space: nowrap;
 }
-
+.files .error {
+  padding: 0 10px;
+}
 .ui-state-disabled .ui-state-disabled {
   opacity: 1;
   filter: alpha(opacity=100);

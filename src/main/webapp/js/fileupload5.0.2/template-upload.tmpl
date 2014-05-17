@@ -1,26 +1,43 @@
-            <tr class="template-upload{{if error}} ui-state-error{{/if}}">
-                <td class="preview"></td>
-                <td class="name">${name}</td>
-                <td class="size">${sizef}</td>
-                {{if error}}<td class="error" colspan="2">Error:
-                    {{if error === 'maxFileSize'}}File is too big
-                    {{else error === 'minFileSize'}}File is too small
-                    {{else error === 'acceptFileTypes'}}Filetype not allowed
-                    {{else error === 'maxNumberOfFiles'}}Max number of files exceeded
-                    {{else}}${error}
-                    {{/if}}</td>
-                {{else}}<td class="progress">
-                    <div>
-                    </div>
-                </td>
-                <td class="start">
-                    <button>
-                        Start
-                    </button>
-                </td>
-                {{/if}}<td class="cancel">
-                    <button>
-                        Cancel
-                    </button>
-                </td>
-            </tr>
+<tr>
+                    <td class="preview" rowspan="2"></td>
+                    <td class="name">${name}</td>
+                    <td class="size">${sizef}</td>
+                </tr>
+                <tr class="progress_error">
+                    {{if error}}
+                    <td class="error" colspan="2">Error:
+                        {{if error === 'maxFileSize'}}File is too big
+                        {{else error === 'minFileSize'}}File is too small
+                        {{else error === 'acceptFileTypes'}}Filetype not allowed
+                        {{else error === 'maxNumberOfFiles'}}Max number of files exceeded
+                        {{else}}${error}
+                        {{/if}}
+                    </td>
+                    {{else}}
+                    <td class="progress" colspan="2" style="display: none;"><div></div></td>
+                    {{/if}}
+                </tr>
+                <tr >
+                    <td ><i class="icon-info-sign"></i> Description</td>
+                    <td colspan="2">
+                        <textarea class="description" cols="500" rows="2" type="text" name="description_${name}" required placeholder="description of the file loaded in system..." style="width: 99%;">  </textarea>
+                    </td>
+                </tr>
+                <tr class="tag_start_stop">
+                    <td class="tags"><i class="icon-tags"></i> Tags</td>
+                    <td><input type="text" name="tags_${name}" required placeholder="docs, main, etc..." style="width: 99%;"></td>
+                    <td class="start_stop">
+                        <div class="start">
+                            <button type="submit" style="display: none; min-width: 100px;" class="btn btn-primary start start_upload">
+                                <i class="icon-white icon-upload"></i>
+                                <span>Start</span>
+                            </button>
+                        </div>
+                        <div class="cancel">
+                            <button type="reset" style="min-width: 100px;" class="btn btn-warning cancel">
+                                <i class="icon-ban-circle icon-white"></i>
+                                <span>Cancel</span>
+                            </button>
+                        </div>
+                    </td>
+                </tr>

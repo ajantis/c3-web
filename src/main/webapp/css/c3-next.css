@@ -436,6 +436,9 @@ body > .navbar .brand:hover {
 .floatLeft{
     float:left!important;
 }
+.floatRight{
+    float:right!important;
+}
 .hide_button{
     float:right;
     margin-right:63px;
@@ -853,3 +856,10 @@ div.row > cite {
  color: rgb(0, 102, 33);
  font-style: normal;
 }
+ #file_upload_form,    files{
+ width:100%;
+ margin-bottom: 0px;
+ }
+  #file_upload_form,    table{
+  margin-bottom: 0px!important;
+  }

@@ -89,6 +89,9 @@
   text-align: right;
   white-space: nowrap;
 }
+.files .error {
+  padding: 0 10px;
+}
 
 .ui-state-disabled .ui-state-disabled {
   opacity: 1;
