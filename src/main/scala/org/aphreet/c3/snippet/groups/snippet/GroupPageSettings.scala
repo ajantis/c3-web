@@ -158,8 +158,15 @@ class GroupPageSettings(data: GroupPageData) extends GroupPageHelpers {
     ".ListGroupUser" #> otherMembers.map { user: User =>
 
       def approveUser(): JsCmd = {
-        groupService.approveUsersToGroup(group, Iterable(user))
+        groupService.approveOrRejectUsersInGroup(group, Iterable(user), true)
         LiftMessages.ajaxNotice(user.niceName + " is approved to group " + group.name.is) &
+          JsCmds.Replace(user.id.is.toString, NodeSeq.Empty)
+      }
+
+      def rejectUser(): JsCmd = {
+        groupService.approveOrRejectUsersInGroup(group, Iterable(user), false)
+        groupService.removeUserFromGroup(group, user)
+        LiftMessages.ajaxError(user.niceName + " is rejected from group " + group.name.is) &
           JsCmds.Replace(user.id.is.toString, NodeSeq.Empty)
       }
 
@@ -168,7 +175,8 @@ class GroupPageSettings(data: GroupPageData) extends GroupPageHelpers {
         ".last_name *" #> user.lastName.is &
         ".email *" #> user.email.is &
         ".full_name *" #> user.shortName &
-        ".approve_member [onclick]" #> SHtml.ajaxInvoke(() => approveUser())
+        ".approve_member [onclick]" #> SHtml.ajaxInvoke(() => approveUser()) &
+        ".reject_member [onclick]" #> SHtml.ajaxInvoke(() => rejectUser())
     }
   }
 }

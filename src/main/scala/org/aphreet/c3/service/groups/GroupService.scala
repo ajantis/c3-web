@@ -39,7 +39,7 @@ trait GroupService {
 
   def addUsersToApproveListGroup(group: Group, members: Iterable[User]): Iterable[Box[User]]
 
-  def approveUsersToGroup(group: Group, members: Iterable[User]): Iterable[Box[User]]
+  def approveOrRejectUsersInGroup(group: Group, members: Iterable[User], approve: Boolean): Iterable[Box[User]]
 
   def createGroup(newGroup: Group, tagsAdd: String, description: String): Box[Group]
 
