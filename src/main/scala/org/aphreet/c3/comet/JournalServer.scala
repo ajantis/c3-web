@@ -1,16 +1,14 @@
 package org.aphreet.c3.comet
 
-
-
 import net.liftweb.http.ListenerManager
 import net.liftweb.actor.LiftActor
 import net.liftweb.common.Logger
 
-import org.aphreet.c3.service.events.EventType._
-import org.aphreet.c3.model.{Group, User, Message}
+import org.aphreet.c3.service.journal.{JournalEntity, Message, EventType, Event}
+import EventType._
+import org.aphreet.c3.model.{Group, User}
 import org.aphreet.c3.lib.DependencyFactory._
 import org.aphreet.c3.service.groups.messages.JournalStorageService
-import org.aphreet.c3.service.events.Event
 
 import java.util
 
@@ -67,7 +65,7 @@ object MessageServerFactory{
 }
 
 case class MessageServerMsg(user: User, group: Group, msg: String, tags: List[String])
-case class JournalServerUpdate(journal: List[Either[Event, Message]])
+case class JournalServerUpdate(journal: List[JournalEntity])
 
 case class EventServer(user: User, group: Group, event: EventType, path:String)
 

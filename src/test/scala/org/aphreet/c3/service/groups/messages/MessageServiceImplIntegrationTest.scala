@@ -1,7 +1,7 @@
 package org.aphreet.c3.service.groups.messages
 
 import impl.JournalStorageServiceImpl
-import org.aphreet.c3.model.{ Message, Group }
+import org.aphreet.c3.model.Group
 import junit.framework.{ Assert, TestCase }
 import net.liftweb.mapper._
 import net.liftweb.db.StandardDBVendor
@@ -11,6 +11,7 @@ import net.liftweb.common.Logger
 import org.junit
 import java.util
 import org.aphreet.c3.service.groups.impl.GroupServiceImpl
+import org.aphreet.c3.service.journal.Message
 
 /**
  * Copyright iFunSoftware 2011

@@ -1,7 +1,7 @@
 package org.aphreet.c3.service.groups.messages.impl
 
 import org.aphreet.c3.util.C3Loggable
-import org.aphreet.c3.model.{ Group, Message }
+import org.aphreet.c3.model.Group
 import org.aphreet.c3.lib.DependencyFactory._
 import JournalStorageServiceImpl._
 import org.aphreet.c3.lib.metadata.Metadata._
@@ -12,8 +12,7 @@ import com.ifunsoftware.c3.access.{DataStream, C3System}
 import com.ifunsoftware.c3.access.C3System._
 import net.liftweb.common.{Full, Box}
 import com.ifunsoftware.c3.access.fs.C3Directory
-import org.aphreet.c3.service.events.Event
-import org.aphreet.c3.service.events.EventType
+import org.aphreet.c3.service.journal.{JournalEntity, Message, EventType, Event}
 
 /**
  * Copyright iFunSoftware 2011
@@ -85,12 +84,12 @@ class JournalStorageServiceImpl extends JournalStorageService with C3Loggable {
   }
 
   @throws(classOf[MessageStorageException])
-  def findAll(group: Group): Traversable[Either[Event, Message]]= {
+  def findAll(group: Group): Traversable[JournalEntity]= {
     val msg =  findMsgAll(group)
     val events = findEventAll(group)
-    (msg.map(Right(_)) ++ events.map(Left(_))).toList.sortBy {
-      case Right(m) => m.creationDate
-      case Left(e) => e.creationDate
+    (msg ++ events).toList.sortBy {
+      case m:Message => m.creationDate
+      case e:Event => e.creationDate
     }
   }
 

@@ -1,15 +1,15 @@
-package org.aphreet.c3.service.events
+package org.aphreet.c3.service.journal
 
 import java.util
 import net.liftweb.common.Box
 import org.aphreet.c3.model.{Group, User}
-import org.aphreet.c3.service.events.EventType._
+import EventType._
 import net.liftweb.util.TimeHelpers
 
 /**
  * @author Koyushev Sergey (mailto: serjk91@gmail.com)
  */
-case class Event(groupId: String, authorId: String, uuid: String, creationDate: util.Date, eventType:EventType, path:String) {
+case class Event(groupId: String, authorId: String, uuid: String, creationDate: util.Date, eventType:EventType, path:String) extends JournalEntity{
   lazy val author: Box[User] = User.find(authorId)
   lazy val group: Box[Group] = Group.find(groupId)
 

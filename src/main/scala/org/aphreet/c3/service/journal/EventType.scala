@@ -1,4 +1,4 @@
-package org.aphreet.c3.service.events
+package org.aphreet.c3.service.journal
 
 /**
  * @author Koyushev Sergey (mailto: serjk91@gmail.com)

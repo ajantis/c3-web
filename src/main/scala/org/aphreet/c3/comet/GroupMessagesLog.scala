@@ -2,9 +2,8 @@ package org.aphreet.c3
 package comet
 
 import org.aphreet.c3.util.C3Exception
-import org.aphreet.c3.model.{ Group, User, Message }
+import org.aphreet.c3.model.{ Group, User }
 import org.aphreet.c3.util.helpers.DateTimeHelpers
-import org.aphreet.c3.service.events.Event
 
 import net.liftweb.util.Helpers
 import net.liftmodules.textile.TextileParser
@@ -18,6 +17,7 @@ import js.JsCmds._
 import scala.xml.{ Text, NodeSeq }
 import scala.language.postfixOps
 import java.util.Date
+import org.aphreet.c3.service.journal.{JournalEntity, Message, Event}
 
 /**
  * @author Dmitry Ivanov (mailto: id.ajantis@gmail.com)
@@ -30,7 +30,7 @@ trait GroupMessagesLog extends CometActor with CometListener {
   private val group: Box[Group] = S.attr("group_id").flatMap(Group.find)
   private val journalServer: Box[JournalServer] = group.map(MessageServerFactory(_))
 
-  private var entities: List[Either[Event, Message]] = Nil
+  private var entities: List[JournalEntity] = Nil
 
   /* need these vals to be set eagerly, within the scope
    * of Comet component constructor
@@ -49,8 +49,8 @@ trait GroupMessagesLog extends CometActor with CometListener {
   override def lowPriority = {
     case JournalServerUpdate(value) =>
       val update = (value filterNot (entities contains)).reverse.map {
-        case Left(e) => PrependHtml(ulId, line(e))
-        case Right(m) => PrependHtml(ulId, line(m))
+        case e:Event => PrependHtml(ulId, line(e))
+        case m:Message => PrependHtml(ulId, line(m))
       }
 
       partialUpdate(update)
@@ -91,8 +91,8 @@ trait GroupMessagesLog extends CometActor with CometListener {
 
   // display a list of messages
   private def displayList: NodeSeq = entities.flatMap{
-    case Left(e) => line(e)
-    case Right(m) => line(m)
+    case e:Event => line(e)
+    case m:Message => line(m)
   }
 
   object tags extends SessionVar[List[String]](Nil)
