@@ -8,11 +8,11 @@ import org.aphreet.c3.lib.metadata.Metadata._
 import net.liftweb.util.Helpers
 import Helpers._
 import org.aphreet.c3.service.groups.messages.{ MessageStorageException, JournalStorageService }
-import com.ifunsoftware.c3.access.{DataStream, C3System}
+import com.ifunsoftware.c3.access.{ DataStream, C3System }
 import com.ifunsoftware.c3.access.C3System._
-import net.liftweb.common.{Full, Box}
+import net.liftweb.common.{ Full, Box }
 import com.ifunsoftware.c3.access.fs.C3Directory
-import org.aphreet.c3.service.journal.{JournalEntity, Message, EventType, Event}
+import org.aphreet.c3.service.journal.{ JournalEntity, Message, EventType, Event }
 
 /**
  * Copyright iFunSoftware 2011
@@ -21,7 +21,7 @@ import org.aphreet.c3.service.journal.{JournalEntity, Message, EventType, Event}
 class JournalStorageServiceImpl extends JournalStorageService with C3Loggable {
 
   private val metaTags = Set(MSG_CREATOR_META, TAGS_META)
-  private val eventMeta = Set(EVENT_CREATOR_META,EVENT_DATE_META,EVENT_PATH_META,EVENT_TYPE_META)
+  private val eventMeta = Set(EVENT_CREATOR_META, EVENT_DATE_META, EVENT_PATH_META, EVENT_TYPE_META)
   private val MSG_FILE_PREFIX = "msg-"
   private val EVENT_FILE_PREFIX = "event-"
 
@@ -84,12 +84,12 @@ class JournalStorageServiceImpl extends JournalStorageService with C3Loggable {
   }
 
   @throws(classOf[MessageStorageException])
-  def findAll(group: Group): Traversable[JournalEntity]= {
-    val msg =  findMsgAll(group)
+  def findAll(group: Group): Traversable[JournalEntity] = {
+    val msg = findMsgAll(group)
     val events = findEventAll(group)
     (msg ++ events).toList.sortBy {
-      case m:Message => m.creationDate
-      case e:Event => e.creationDate
+      case m: Message => m.creationDate
+      case e: Event   => e.creationDate
     }
   }
 
@@ -133,7 +133,7 @@ class JournalStorageServiceImpl extends JournalStorageService with C3Loggable {
     !result.isEmpty
   }
 
-  private def getDirectory(path:String): Box[C3Directory] = {
+  private def getDirectory(path: String): Box[C3Directory] = {
     tryo {
       c3.getFile(path)
     }.filter(_.isDirectory).map(_.asDirectory)
@@ -152,9 +152,10 @@ class JournalStorageServiceImpl extends JournalStorageService with C3Loggable {
 
     directory match {
       case Full(d) => Full(d)
-      case _ => val path = "/" + group.id.is.toString + "/"
+      case _ =>
+        val path = "/" + group.id.is.toString + "/"
         val directoryGroup = c3.getFile(path)
-        directoryGroup.asDirectory.createDirectory(GROUP_EVENTS_ROOT,Map())
+        directoryGroup.asDirectory.createDirectory(GROUP_EVENTS_ROOT, Map())
         Thread.sleep(1000) //wait create directory on c3-storage
         getDirectory(pathEvent)
     }
@@ -164,19 +165,18 @@ class JournalStorageServiceImpl extends JournalStorageService with C3Loggable {
     tags.map(t => t.name -> t.value).toMap
   }
 
-  protected def buildEventMetadata(event:Event):Map[String, String] = {
+  protected def buildEventMetadata(event: Event): Map[String, String] = {
     Map(EVENT_CREATOR_META -> event.author.map(_.id.is.toString).openOr("N/A"),
       EVENT_DATE_META -> event.creationDate.toString,
       EVENT_TYPE_META -> event.eventType.toString,
-      EVENT_PATH_META -> event.path
-    )
+      EVENT_PATH_META -> event.path)
   }
 
   protected def messageFileName(msg: Message) = MSG_FILE_PREFIX + msg.uuid
 
   protected def messageUUID(fileName: String) = fileName.replace(MSG_FILE_PREFIX, "")
 
-  protected def eventFileName(event:Event) = EVENT_FILE_PREFIX + event.uuid
+  protected def eventFileName(event: Event) = EVENT_FILE_PREFIX + event.uuid
 
   protected def eventUUID(eventName: String) = eventName.replace(EVENT_FILE_PREFIX, "")
 

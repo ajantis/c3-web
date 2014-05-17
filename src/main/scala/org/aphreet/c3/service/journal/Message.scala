@@ -3,7 +3,7 @@ package org.aphreet.c3.service.journal
 import net.liftweb.util.TimeHelpers
 import net.liftweb.common.Box
 import java.util
-import org.aphreet.c3.model.{Group, User}
+import org.aphreet.c3.model.{ Group, User }
 
 /**
  * Copyright iFunSoftware 2011

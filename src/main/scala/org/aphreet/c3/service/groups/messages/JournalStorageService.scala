@@ -4,7 +4,7 @@ import org.aphreet.c3.model.{ User, Group }
 import java.util
 import org.aphreet.c3.util.C3Exception
 import net.liftweb.common.Box
-import org.aphreet.c3.service.journal.{JournalEntity, Message, Event}
+import org.aphreet.c3.service.journal.{ JournalEntity, Message, Event }
 
 /**
  * Copyright iFunSoftware 2011

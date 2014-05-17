@@ -17,7 +17,7 @@ import js.JsCmds._
 import scala.xml.{ Text, NodeSeq }
 import scala.language.postfixOps
 import java.util.Date
-import org.aphreet.c3.service.journal.{JournalEntity, Message, Event}
+import org.aphreet.c3.service.journal.{ JournalEntity, Message, Event }
 
 /**
  * @author Dmitry Ivanov (mailto: id.ajantis@gmail.com)
@@ -49,8 +49,8 @@ trait GroupMessagesLog extends CometActor with CometListener {
   override def lowPriority = {
     case JournalServerUpdate(value) =>
       val update = (value filterNot (entities contains)).reverse.map {
-        case e:Event => PrependHtml(ulId, line(e))
-        case m:Message => PrependHtml(ulId, line(m))
+        case e: Event   => PrependHtml(ulId, line(e))
+        case m: Message => PrependHtml(ulId, line(m))
       }
 
       partialUpdate(update)
@@ -80,8 +80,7 @@ trait GroupMessagesLog extends CometActor with CometListener {
     ("name=when *" #> formatMsgCreationDate(e.creationDate) &
       "name=who *" #> e.author.map(_.shortName) &
       "name=body *" #> toHtml(e.eventType.toString) &
-      ".msg_id [id]" #> ("msg-" + e.uuid.toString)
-      //      ".tags *" #> {
+      ".msg_id [id]" #> ("msg-" + e.uuid.toString) //      ".tags *" #> {
       //        ".tag *" #> c.tags.map { (tag: String) =>
       //          <span class="label label-info">{ tag }</span>
       //        }
@@ -90,9 +89,9 @@ trait GroupMessagesLog extends CometActor with CometListener {
   }
 
   // display a list of messages
-  private def displayList: NodeSeq = entities.flatMap{
-    case e:Event => line(e)
-    case m:Message => line(m)
+  private def displayList: NodeSeq = entities.flatMap {
+    case e: Event   => line(e)
+    case m: Message => line(m)
   }
 
   object tags extends SessionVar[List[String]](Nil)
@@ -109,30 +108,30 @@ trait GroupMessagesLog extends CometActor with CometListener {
     "name=user_name" #> User.currentUser.map(_.shortName) &
       ("#" + ulId + " *") #> displayList &
       ("#" + inputTextContainerId + " *") #> { (xml: NodeSeq) =>
-      {
-        var content = ""
+        {
+          var content = ""
 
-        def sendMessage(): JsCmd = {
-          journalServer.foreach(_ ! MessageServerMsg(User.currentUser.open_!, group.open_!, content, tags))
-          tags.set(Nil)
+          def sendMessage(): JsCmd = {
+            journalServer.foreach(_ ! MessageServerMsg(User.currentUser.open_!, group.open_!, content, tags))
+            tags.set(Nil)
 
-          SetValById("postit", "") &
-            JsCmds.Run("$('#" + inputTextContainerId + "').modal('hide');")
+            SetValById("postit", "") &
+              JsCmds.Run("$('#" + inputTextContainerId + "').modal('hide');")
+          }
+
+          SHtml.ajaxForm {
+            ".edit_tags_form_func *" #> {
+              Script(
+                Function("updateTagsCallback", List("tags"),
+                  SHtml.ajaxCall(
+                    JsVar("tags"),
+                    (d: String) => updateTags(d))._2.cmd))
+            } &
+              "#tags_input *" #> Text("") &
+              "#postit" #> SHtml.onSubmit((s: String) => content = s.trim) &
+              "type=submit" #> ((xml: NodeSeq) => xml ++ SHtml.hidden(sendMessage)) apply xml
+          }
         }
-
-        SHtml.ajaxForm {
-          ".edit_tags_form_func *" #> {
-            Script(
-              Function("updateTagsCallback", List("tags"),
-                SHtml.ajaxCall(
-                  JsVar("tags"),
-                  (d: String) => updateTags(d))._2.cmd))
-          } &
-            "#tags_input *" #> Text("") &
-            "#postit" #> SHtml.onSubmit((s: String) => content = s.trim) &
-            "type=submit" #> ((xml: NodeSeq) => xml ++ SHtml.hidden(sendMessage)) apply xml
-        }
-      }
       }
   }
 
