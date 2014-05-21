@@ -187,6 +187,13 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers
 
     "#edit_tags_form *" #> meta.get(TAGS_META).map(_.split(",").mkString(", ")).getOrElse("") &
       ".description_box *" #> meta.get(DESCRIPTION_META).getOrElse("") &
+      (if(meta.get(HASH).getOrElse("") == "") {
+        "#txtHash [value]" #> "" &
+          "#sharing [class+]" #> "disp_none"
+      } else
+        "#txtHash [value]" #> FileSharingHelper.fileShareFullUrl(node.asFile)
+        ) &
+      "#txtHash [value]" #> (if(meta.get(HASH).getOrElse("") == "") "" else FileSharingHelper.fileShareFullUrl(node.asFile)) &
       (if (hasWriteAccessResource(node) || hasSuperAccessResource(node)) {
         ".edit_tags_form_func *" #> {
           Script(
@@ -206,12 +213,17 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers
           ".delete_file_btn [onclick]" #> SHtml.ajaxInvoke(() => {
             c3.deleteFile(node.fullname);
             JsCmds.RedirectTo(parentNodeLink)
-          })
+          }) &
+          ".share_btn [onclick]" #> SHtml.ajaxInvoke(() => FileSharingHelper.shareFile(node)) &
+          ".remove_public_link [onclick]" #> SHtml.ajaxInvoke(() => FileSharingHelper.disableSharing(node))
       } else {
         "#edit_tags_form [data-disabled]" #> "true" &
           ".remove_resource" #> NodeSeq.Empty &
           ".description_box [data-disabled]" #> "true" &
-          "#meta" #> metadataView(node, metadataUser)
+          "#meta" #> metadataView(node, metadataUser) &
+          ".share_btn [disabled]" #> "true" &
+          ".remove_public_link [disabled]" #> "true" &
+          "#sharing *" #> NodeSeq.Empty
       }) &
       ".file_tags" #> meta.get(TAGS_META).map(_.split(TAGS_SEPARATOR).toList).getOrElse(Nil).map((tag: String) => {
         ".label *" #> tag

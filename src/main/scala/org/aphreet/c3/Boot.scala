@@ -24,7 +24,7 @@ import net.liftweb.sitemap.Loc.If
 
 import javax.mail.{ Authenticator, PasswordAuthentication }
 
-import util.helpers.C3Streamer
+import org.aphreet.c3.util.helpers.{C3SharingManager, C3Streamer}
 import util.{ DefaultAuthDataLoader, TextileRenderer }
 import model._
 
@@ -127,6 +127,8 @@ class Boot extends Bootable {
     LiftRules.dispatch.append {
       case Req("download" :: groupname :: filePath, extension, GetRequest) =>
         C3Streamer(groupname, filePath, extension)
+      case Req("sharing" :: groupname :: filePath, extension, GetRequest) =>
+        C3SharingManager.checkFile(groupname, filePath, extension)
     }
     /************************ FILE UPLOAD *******************************/
     // In cases where we have an AJAX request for IE with an uploaded file, we
