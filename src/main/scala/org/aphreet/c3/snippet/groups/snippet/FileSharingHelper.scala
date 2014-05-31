@@ -7,13 +7,11 @@ import com.ifunsoftware.c3.access.{C3System, MetadataUpdate}
 import org.aphreet.c3.lib.metadata.Metadata
 import Metadata._
 import net.liftweb.http.S
-import net.liftweb.util.Helpers
 import net.liftweb.util._
 
-import java.net.URLEncoder
 
 /**
- * Created by a-legotin on 4/26/2014.
+ * @author a-legotin
  */
 object FileSharingHelper {
 
@@ -40,11 +38,16 @@ object FileSharingHelper {
     }
   }
 
-  // Generate MD5 hash for link building
+  /**
+   * @author a-legotin
+   * @define Generate MD5 hash for link building
+   * @usecase md5Hash("Name")
+   * @param text wich need to generate md5 hash
+   * @return genereted md5hash
+   */
   def md5Hash(text: String) : String = java.security.MessageDigest.getInstance("MD5").digest(text.getBytes()).map(0xFF & _).map { "%02x".format(_) }.foldLeft(""){_ + _}
 
   def fileSharePath(file: C3File, hash: String): String = {
-
     var splittedFullPath = file.fullname.split("/")
     val name = Helpers.urlEncode(splittedFullPath.last)
     val path = splittedFullPath.dropRight(splittedFullPath.indexOf(splittedFullPath.last) - 2 ).mkString("/")
