@@ -47,7 +47,7 @@ import net.liftweb.http.js.JE.JsRaw
 import net.liftweb.common.Full
 import org.aphreet.c3.snippet.LiftMessages
 /**
- * Created by a-legotin on 4/26/2014.
+ * @author  a-legotin on 4/26/2014.
  */
 object C3SharingManager {
 

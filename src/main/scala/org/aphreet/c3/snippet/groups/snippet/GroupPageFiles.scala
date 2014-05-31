@@ -1,7 +1,7 @@
 package org.aphreet.c3.snippet.groups.snippet
 
 import org.aphreet.c3.loc.SuffixLoc
-import org.aphreet.c3.model.{ UserGroup, User, Group }
+import org.aphreet.c3.model.{User, Group}
 import net.liftweb.common._
 import net.liftweb.sitemap.Loc.{ Hidden, LinkText, Link }
 import tags.TagForms
@@ -20,14 +20,10 @@ import com.ifunsoftware.c3.access.{ StringMetadataValue, C3System, MetadataUpdat
 import com.ifunsoftware.c3.access.C3System._
 import net.liftweb.http.js.JsCmds.{ Function, Script }
 import org.aphreet.c3.util.helpers.{ GroupPageHelpers, ConvertHelpers, ByteCalculatorHelpers }
-import net.liftweb.common.Full
 import org.aphreet.c3.snippet.groups.GroupPageFilesData
 import net.liftweb.http.js.JE.{ JsVar, JsRaw }
-import org.aphreet.c3.snippet.LiftMessages
 import net.liftweb.http.js.jquery.JqJsCmds
 import org.aphreet.c3.acl.resources.C3AccessHelpers
-import org.aphreet.c3.acl.groups.UserStatusGroup
-import net.liftweb.mapper.By
 import net.liftweb.common.Full
 import org.aphreet.c3.acl.groups.{ UserStatusGroup, GroupsAccess }
 import org.aphreet.c3.snippet.LiftMessages
@@ -287,24 +283,33 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers
 
   protected def renderFileLoc(f: C3File): CssSel = {
     val owner = nodeOwner(f)
-    def doRenderFileLoc: CssSel = {
+    def doRenderFileLoc(hasAccess: Boolean): CssSel = {
       ".file-table" #> NodeSeq.Empty &
         ".fs_toolbar" #> NodeSeq.Empty &
         "#upload_form" #> NodeSeq.Empty &
         "#directory_tags" #> NodeSeq.Empty &
         ".name_file *" #> f.name &
-        ".download_btn [href]" #> fileDownloadUrl(f) &
-        ".view_btn [href]" #> fileViewUrl(f) &
+        (
+          if (hasAccess)
+            ".view_btn [href]" #> fileViewUrl(f) &
+              ".download_btn [href]" #> fileDownloadUrl(f)
+          else
+            ".view_btn [href]" #> "" &
+              ".download_btn [href]" #> "" &
+              "#action_btns_row [hidden]" #> "true" &
+              ".view_btn [disabled]" #> "true" &
+              ".download_btn [disabled]" #> "true"
+          ) &
         ".data_file *" #> internetDateFormatter.format(f.date) &
         ".owner_file *" #> owner.map(_.shortName).getOrElse("Unknown") &
         ".size_file *" #> ByteCalculatorHelpers.convert(f.versions.lastOption.map(_.length.toString).getOrElse("None")) &
         commonForms(f)
     }
     (if (hasSuperAccess || checkReadAccessResource(f)) {
-      doRenderFileLoc
+      doRenderFileLoc(true)
     } else {
-      ".child_td [onclick]" #> SHtml.ajaxInvoke(() => (LiftMessages.ajaxError(S.?("access.restricted"))))
-      doRenderFileLoc
+      ".child_td [onclick]" #> SHtml.ajaxInvoke(() => (LiftMessages.ajaxError(S.?("access.restricted")))) &
+        doRenderFileLoc(false)
 
     })
   }
