@@ -290,15 +290,8 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers
         "#directory_tags" #> NodeSeq.Empty &
         ".name_file *" #> f.name &
         (
-          if (hasAccess)
             ".view_btn [href]" #> fileViewUrl(f) &
               ".download_btn [href]" #> fileDownloadUrl(f)
-          else
-            ".view_btn [href]" #> "" &
-              ".download_btn [href]" #> "" &
-              "#action_btns_row [hidden]" #> "true" &
-              ".view_btn [disabled]" #> "true" &
-              ".download_btn [disabled]" #> "true"
           ) &
         ".data_file *" #> internetDateFormatter.format(f.date) &
         ".owner_file *" #> owner.map(_.shortName).getOrElse("Unknown") &
