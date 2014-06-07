@@ -106,6 +106,7 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers
         f =>
           val newPath = (f.fullname.split("/").toList.init ::: newName :: Nil).mkString("", "/", "")
           f.move(newPath)
+          journalServer.foreach(_ ! JournalServerEvent(User.currentUserUnsafe, group, EventType.UpdateResources,newPath))
       }
 
       val redirectPath: String = file.map {
@@ -432,6 +433,7 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers
           TAGS_META -> tags.trim,
           ACL_META -> currentDirectory.metadata.get(ACL_META).getOrElse(""))
         currentDirectory.createDirectory(name.trim, metadata)
+        journalServer.foreach(_ ! JournalServerEvent(User.currentUserUnsafe, group, EventType.CreateResources,currentDirectory.fullname +name.trim))
         S.redirectTo(currentPath) // redirect on the same page
       }
     }

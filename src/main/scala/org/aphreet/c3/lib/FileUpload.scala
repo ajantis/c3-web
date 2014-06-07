@@ -40,12 +40,14 @@ import com.ifunsoftware.c3.access.{C3AccessException, DataStream, C3System}
 import com.ifunsoftware.c3.access.C3System._
 import org.aphreet.c3.lib.metadata.Metadata._
 import org.aphreet.c3.util.C3Loggable
-import org.aphreet.c3.model.User
+import org.aphreet.c3.model.{Group, User}
 import net.liftweb.util.Helpers
 import Helpers._
 import net.liftweb.http.InMemoryResponse
 import net.liftweb.common.Full
 import net.liftweb.http.BadResponse
+import org.aphreet.c3.comet.{MessageServerFactory, JournalServer, JournalServerEvent}
+import org.aphreet.c3.service.journal.EventType
 
 // for ajax file upload
 object FileUpload extends RestHelper with C3Loggable{
@@ -68,16 +70,16 @@ object FileUpload extends RestHelper with C3Loggable{
 
           try{
             val ojv: List[JObject] = uploads.map { fph =>
-                val url = removeTrailingIndex(currentPath).mkString("/", "/", "/") + fph.fileName
-                val description = req.param(s"description_${fph.fileName}") match {case Full(temp) => temp; case _ => ""}
+              val url = removeTrailingIndex(currentPath).mkString("/", "/", "/") + fph.fileName
+              val description = req.param(s"description_${fph.fileName}") match {case Full(temp) => temp; case _ => ""}
 
-                val tags = req.param(s"tags_${fph.fileName}") match {case Full(temp) => temp; case _ => ""}
-                val fileMetadata: Map[String, String] =
-                  Map((OWNER_ID_META -> userGroupIds.userId), (GROUP_ID_META -> userGroupIds.groupId),(DESCRIPTION_META -> description),(TAGS_META -> tags))
-                //req param("metadata") map(s => Map((TAGS_META -> s))) openOr Map()
+              val tags = req.param(s"tags_${fph.fileName}") match {case Full(temp) => temp; case _ => ""}
+              val fileMetadata: Map[String, String] =
+                Map((OWNER_ID_META -> userGroupIds.userId), (GROUP_ID_META -> userGroupIds.groupId),(DESCRIPTION_META -> description),(TAGS_META -> tags))
+              //req param("metadata") map(s => Map((TAGS_META -> s))) openOr Map()
 
-                uploadToC3(fph, filePath, fileMetadata)
-                ("name" -> fph.fileName) ~
+              uploadToC3(fph, filePath, fileMetadata)
+              ("name" -> fph.fileName) ~
                 ("url" -> url) ~
                 ("sizef" -> fph.length) ~
                 ("delete_url" -> ("/delete/file" + url)) ~
@@ -144,6 +146,10 @@ object FileUpload extends RestHelper with C3Loggable{
     // add to file ACL_META from parent directory
     val newMD:Map[String,String] =  metadata + (ACL_META -> parentDirectory.metadata.get(ACL_META).getOrElse(""))
     parentDirectory.createFile(fph.fileName, newMD, DataStream(fph.file))
+
+    val group: Box[Group] = Group.find(filePath.head)
+    val journalServer: Box[JournalServer] = group.map(MessageServerFactory(_))
+    journalServer.foreach(_ ! JournalServerEvent(User.currentUserUnsafe, group.open_!, EventType.CreateResources, parentDirectory.fullname +"/"+fph.fileName))
     logger info String.format("File %s is uploaded to C3!", fph.name)
   }
 
@@ -166,8 +172,8 @@ object FileUpload extends RestHelper with C3Loggable{
   private def errorResponse(fphs: List[FileParamHolder], errorCode: Int, errorMsg: String): LiftResponse = {
     val ojv: List[JObject] = fphs.map { fph =>
       ("name" -> fph.fileName) ~
-      ("sizef" -> fph.length) ~
-      ("error" -> errorMsg)
+        ("sizef" -> fph.length) ~
+        ("error" -> errorMsg)
     }
 
     val jr = JsonResponse(ojv).toResponse.asInstanceOf[InMemoryResponse]

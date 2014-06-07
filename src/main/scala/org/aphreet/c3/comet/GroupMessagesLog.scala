@@ -77,9 +77,10 @@ trait GroupMessagesLog extends CometActor with CometListener {
 
   // display a line
   private def line(e: Event) = {
+    val resourceName = e.path.split("/").last
     ("name=when *" #> formatMsgCreationDate(e.creationDate) &
       "name=who *" #> e.author.map(_.shortName) &
-      "name=body *" #> toHtml(e.eventType.toString) &
+      "name=body *" #> toHtml("Event type: "+ e.eventType.toString +"\n Resource path: "+ e.path +"\n Resource name:"+ resourceName) &
       ".msg_id [id]" #> ("msg-" + e.uuid.toString) //      ".tags *" #> {
       //        ".tag *" #> c.tags.map { (tag: String) =>
       //          <span class="label label-info">{ tag }</span>
