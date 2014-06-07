@@ -69,7 +69,7 @@
                     <div class="lift:GroupPageMessages.putCometJournal">
                         <div id="messages_toolbar">
                             <a href="#input_container" id="show_input_msg" data-toggle="modal" class="btn btn-primary" rel="tooltip" title="Compose new message">
-                                <i class="icon-pencil icon-white"></i>
+                                <i class="icon-envelope icon-white"></i> New message
                             </a>
 
                             <div class="modal fade hide" id="input_container">
@@ -82,15 +82,23 @@
                                     <!--<input id="tags_input" placeholder="Enter tags"/>-->
                                     <div>
                                         <span class="hide edit_tags_form_func"></span>
-                                        Tags: <a href="#" id="tags_input" data-type="select2" data-pk="1" data-original-title="Enter tags">
+                                        <i class="icon-tags"></i> Tags
+                                        <a href="#" id="tags_input" data-type="select2" data-pk="1" data-original-title="Enter tags">
                                             html, javascript
                                         </a>
                                     </div>
 
                                 </div>
                                 <div class="modal-footer">
-                                    <a href="#" class="btn" data-dismiss="modal">Close</a>
-                                    <button class="btn btn-primary" type="submit" id="send_btn">Send</button>
+                                    <button type="button" data-dismiss="modal" class="btn btn-warning cancel">
+                                        <i class="icon-ban-circle icon-white"></i>
+                                        <span>Cancel</span>
+                                    </button>
+                                    <button type="submit" class="btn btn-success" id="send_btn">
+                                        <i class="icon-ok icon-white"></i>
+                                        <span>Send</span>
+                                    </button>
+
                                 </div>
                             </div>
                         </div>

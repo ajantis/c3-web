@@ -208,11 +208,16 @@
                 <p>Are you sure you want to delete this file?</p>
             </div>
             <div class ="modal-footer">
-                <button type="button" data-dismiss="modal" class="btn">Cancel</button>
-                <button type="button" class="delete_file_btn btn btn-danger">Delete</button>
+                <button type="button" data-dismiss="modal" class="btn btn-warning cancel">
+                    <i class="icon-ban-circle icon-white"></i>
+                    <span>Cancel</span>
+                </button>
+                <button type="button" class="delete_selected_btn btn btn-danger">
+                    <i class="icon-white icon-remove"></i>
+                    <span>Delete</span>
+                </button>
             </div>
         </div>
-
     </div>
 
     <div class="row-fluid" id="action_btns_row">
@@ -221,20 +226,23 @@
                 <i class="icon-white icon-lock"></i> Share
             </a>
             <a type="button" href="#" class="btn btn-primary view_btn" style="margin-right: 10px;">
-                <i class="icon-white icon-eye-open"></i> View
+                <i class="icon-white icon-eye-open"></i>
+                <span>View</span>
             </a>
             <a type="button" href="#" class="btn btn-primary download_btn" style="margin-right: 10px;">
-                <i class="icon-white icon-download-alt"></i> Download
+                <i class="icon-white icon-download-alt"></i>
+                <span>Download</span>
             </a>
             <a type="button" href="#delete_file_form" data-toggle="modal" title="Delete file" class="remove_resource btn btn-danger" style="margin-right: 10px;">
-                <i class="icon-white icon-remove"></i> Delete
+                <i class="icon-white icon-remove"></i>
+                 <span>Delete</span>
             </a>
         </div>
     </div>
     <div class="row-fluid" style="margin-top: 10px;" id="sharing">
         <div class="span10">
             <form class="form-inline">
-                <input type="text" id="txtHash" class="input-large" placeholder="Link" contenteditable="false"/>
+                <input type="text" id="txtHash" class="input-large tag-input" placeholder="Link" contenteditable="false"/>
                 <button type="button" class="remove_public_link btn btn-danger" style="margin-left: 10px;">Remove public
                     link
                 </button>
@@ -292,6 +300,10 @@
                     <!--<span class="fileinput-button">-->
                     <!--<input type="file" name="files" multiple="multiple">-->
                     <!--</span>-->
+                    <button type="reset" id="file_upload_close_btn" data-dismiss="modal" class="btn btn-primary cancel">
+                        <i class="glyphicon glyphicon-ban-circle"></i>
+                        <span>Cancel upload</span>
+                    </button>
                 </div>
 
                 <div style="clear:left;" class="fileupload-content">
@@ -302,45 +314,60 @@
                 </div>
             </form>
         </div>
-        <div class="modal-footer fileupload-buttonbar">
-            <button id="file_upload_close_btn" type="button" data-dismiss="modal" class="btn btn-primary cancel">
-                <span>Finish</span>
-            </button>
-        </div>
+        <!--<div class="modal-footer fileupload-buttonbar">-->
+            <!--<button id="file_upload_close_btn" type="button" data-dismiss="modal" class="btn btn-primary cancel">-->
+                <!--<span>Finish</span>-->
+            <!--</button>-->
+        <!--</div>-->
     </div>
 </div>
 
 <div class="modal hide fade" id="new-directory">
-    <div class="modal-header">
-        <a class="close" data-dismiss="modal">&times;</a>
-        <h3>New directory</h3>
-    </div>
-
-    <div class="modal-body">
-        <form id="new_directory_form" class="form-horizontal">
-            <fieldset>
-                <div class="control-group">
-                    <!-- Text input-->
-                    <label class="control-label" for="input01">Name</label>
-                    <div class="controls">
-                        <input type="text" name="name" id="input01" placeholder="name your directory..." class="input-xlarge">
-                        <p class="help-block"></p>
-                    </div>
-                </div>
-                <div class="control-group">
-                    <!-- Text input-->
-                    <label class="control-label" id="input02" for="input02">Tags</label>
-                    <div class="controls">
-                        <input type="text" name="tags" placeholder="docs, main, etc..." class="input-xlarge">
-                        <p class="help-block">tags must be comma-separated</p>
-                    </div>
-                </div>
-            </fieldset>
-        </form>
-    </div>
-    <div class="modal-footer">
-        <button type="button" data-dismiss="modal" class="btn">Cancel</button>
-        <button type="submit" class="btn btn-success" form="new_directory_form">Create</button>
+    <div class="modal-content">
+        <h4 class = "modal-header">New directory</h4>
+            <!--<a class="close" data-dismiss="modal">&times;</a>-->
+        <div class="modal-body">
+            <form id="new_directory_form" class="form-horizontal">
+                <fieldset>
+                    <table class="table table-striped table_ul">
+                        <colgroup>
+                            <col style="width: 125px">
+                            <col style="width: 300px">
+                            <col style="width: 10%">
+                        </colgroup>
+                        <tbody class="t_tbody">
+                        <tr >
+                            <td ><i class="icon-font"></i> Name</td>
+                            <td >
+                                <input class="input_box input-xlarge" type="text" name="name" required placeholder="name your directory...">
+                                <p class="help-block"></p>
+                            </td>
+                        </tr>
+                        <tr >
+                            <td ><i class="icon-info-sign"></i> Description</td>
+                            <td >
+                                <textarea class="description input_box" cols="500" rows="2" type="text" name="description" required placeholder="description of the directory..."></textarea>
+                            </td>
+                        </tr>
+                        <tr >
+                            <td class="tags"><i class="icon-tags"></i> Tags</td>
+                            <td><input class="input_box input-xlarge" type="text" name="tags" required placeholder="docs, main, etc..." ></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </fieldset>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button type="button" data-dismiss="modal" class="btn btn-warning cancel">
+                <i class="icon-ban-circle icon-white"></i>
+                <span>Cancel</span>
+            </button>
+            <button type="submit" class="btn btn-success" form="new_directory_form">
+                <i class="icon-white icon-upload"></i>
+                <span>Create</span>
+            </button>
+        </div>
     </div>
 </div>
 
@@ -350,8 +377,14 @@
         <p>Are you sure you want to delete selected files?</p>
     </div>
     <div class ="modal-footer">
-        <button type="button" data-dismiss="modal" class="btn">Cancel</button>
-        <button type="button" class="delete_selected_btn btn btn-danger">Delete</button>
+        <button type="button" data-dismiss="modal" class="btn btn-warning cancel">
+            <i class="icon-ban-circle icon-white"></i>
+            <span>Cancel</span>
+        </button>
+        <button type="button" class="delete_selected_btn btn btn-danger">
+            <i class="icon-white icon-remove"></i>
+            <span>Delete</span>
+        </button>
     </div>
 </div>
 
@@ -388,15 +421,15 @@
                 <tr >
                     <td ><i class="icon-info-sign"></i> Description</td>
                     <td colspan="2">
-                        <textarea class="description input_box" cols="500" rows="2" type="text" name="description_${name}" required placeholder="description of the file loaded in system..."></textarea>
+                        <textarea class="description input_box no_padding_right" cols="500" rows="2" type="text" name="description_${name}" required placeholder="description of the file loaded in system..."></textarea>
                     </td>
                 </tr>
                 <tr class="tag_start_stop">
                     <td class="tags"><i class="icon-tags"></i> Tags</td>
                     <td><input class="input_box" type="text" name="tags_${name}" required placeholder="docs, main, etc..." ></td>
-                    <td class="start_stop">
+                    <td class="start_stop ">
                         <div class="start">
-                            <button type="submit" style="display: none; min-width: 100px;" class="btn btn-primary start start_upload">
+                            <button type="submit" style="display: none; min-width: 100px;" class="btn btn-success start start_upload">
                                 <i class="icon-white icon-upload"></i>
                                 <span>Start</span>
                             </button>
@@ -451,10 +484,12 @@
                     <td colspan="2"></td>
                     {{/if}}
                     <td class="delete" style="min-width: 90px;">
-                        <button type="button" data-type="${delete_type}" data-url="${delete_url}" class="btn btn-danger delete floatRight">
-                            <i class="icon-trash icon-white"></i>
-                            <span>Delete</span>
-                        </button>
+                        <div>
+                            <button type="button" data-type="${delete_type}" data-url="${delete_url}" class="btn btn-danger delete floatRight">
+                                <i class="icon-trash icon-white"></i>
+                                <span>Delete</span>
+                            </button>
+                        </div>
                     </td>
                 </tr>
             </table>

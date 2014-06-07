@@ -5,39 +5,59 @@
     <div class="lift:bind-at?name=content">
         <div class="lift:GroupListPage.list">
             <a type="button" href="#add_group" class="btn btn_add_user" data-toggle="modal" title="Add User"><strong>Add Group</strong></a>
-            <div id="add_group" class="modal hide fade">
-                <h4 class = "modal-header">Add Group</h4>
-                <form id="add_group_form" class="add_group_form">
-                    <div class="control-group">
-                        <label class="control-label">Group Name</label>
-                        <div class="controls">
-                            <input type="text" name="name" placeholder="" class="input-xlarge"/>
-                        </div>
+            <div class="modal hide fade" id="add_group">
+                <div class="modal-content">
+                    <h4 class = "modal-header">Create Group</h4>
+                    <div class="modal-body">
+                        <form id="add_group_form">
+                            <fieldset>
+                                <table class="table table-striped table_ul">
+                                    <colgroup>
+                                        <col style="width: 125px">
+                                        <col style="width: 300px">
+                                        <col style="width: 10%">
+                                    </colgroup>
+                                    <tbody class="t_tbody">
+                                    <tr >
+                                        <td ><i class="icon-font"></i> Name</td>
+                                        <td >
+                                            <input class="input_box input-xlarge" type="text" name="name" required placeholder="name your group...">
+                                        </td>
+                                    </tr>
+                                    <tr >
+                                        <td ><i class="icon-globe"></i> Public</td>
+                                        <td >
+                                            <input name="public" type="checkbox" value="true"/>
+                                            <span class="description_group description_group_settings">By default group is private. By enabling this setting group become accessible by all users.</span>
+                                        </td>
+                                    </tr>
+                                    <tr >
+                                        <td ><i class="icon-info-sign"></i> Description</td>
+                                        <td >
+                                            <textarea class="description input_box" cols="500" rows="2" type="text" name="description" required placeholder="description of the group..."></textarea>
+                                        </td>
+                                    </tr>
+                                    <tr >
+                                        <td class="tags"><i class="icon-tags"></i> Tags</td>
+                                        <td><input class="input_box current_tags input-xlarge" type="text" name="tags_edit" required placeholder="docs, main, etc..." ></td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </fieldset>
+                        </form>
                     </div>
-                    <div class="control-group">
-                        <label class="checkbox">
-                            <input name="public" type="checkbox" value="true"/>
-                            Public group
-                        </label>
-                    </div>
-                    <div class="control-group">
-                        <label class="control-label">Tags</label>
-                        <div class="controls">
-                            <input type="text" name="tags_edit" placeholder="docs, main, etc..." class="current_tags input-xlarge">
-                        </div>
-                    </div>
-                    <div class="control-group">
-                        <label class="control-label">Description group</label>
-                        <div class="controls">
-                            <textarea name="description" placeholder="" class="input-xlarge"></textarea>
-                        </div>
-                    </div>
-                </form>
-                <div id="add_user" class="modal-footer">
-                    <button type="button" data-dismiss="modal" class="btn">Cancel</button>
-                    <button type="submit" class="btn_add_user btn btn-success" form="add_group_form">Add</button>
+                </div> <!-- modal-content-->
+                <div class="modal-footer">
+                    <button type="button" data-dismiss="modal" class="btn btn-warning cancel">
+                        <i class="icon-ban-circle icon-white"></i>
+                        <span>Cancel</span>
+                    </button>
+                    <button type="submit" class="btn btn-success" form="add_group_form">
+                        <i class="icon-white icon-upload"></i>
+                        <span>Create</span>
+                    </button>
                 </div>
-            </div>
+            </div> <!-- add_group-->
             <div class="container_groups">
                 <hr class="hr_groups_list"/>
                 <h4>
