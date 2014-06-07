@@ -7,8 +7,9 @@ $(document).ready(function(){
 
     $(".edit_cat").live("click",function(){
            var catName = $(this).parent().children("h4").text();
-           $( "input[name='category_new_name']" ).val(catName);
-        });
+           $("#old_name_category").val(catName);
+    });
+
     //for delete, current value tag
     $(".close_orient").live("click",function(){
         var tag = $(this).parent().children("span").text();

@@ -626,7 +626,7 @@ tr.metadata_form_header th{
                  font-family:Arial;
                  font-size:9pt!important;
                  min-height:75px!important;
-                 width:950px!important;
+                 width: auto;
 }
 
 

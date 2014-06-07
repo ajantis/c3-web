@@ -12,7 +12,6 @@ import org.aphreet.c3.snippet.groups.snippet.C3ResourceHelpers
  */
 
 //[TODO] need correct with opportunity approve user in group
-//[TODO] may be inheritance acl at directory
 trait C3AccessHelpers extends C3FileAccess with C3ResourceHelpers {
 
   //default value acl
