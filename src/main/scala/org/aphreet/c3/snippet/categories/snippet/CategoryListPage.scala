@@ -12,6 +12,7 @@ import org.aphreet.c3.util.helpers.AdminPageHelpers
 
 /**
  * @author Serjk (mailto: serjk91@gmail.com)
+ * @author Tkachev Alexey (mailto: imsiral1@mail.ru)
  */
 
 class CategoryListPage extends AdminPageHelpers {
@@ -50,15 +51,15 @@ class CategoryListPage extends AdminPageHelpers {
         ".tagAddButton [id]" #> cat.id.is
     }
     ".tags_cont" #> categories.map { cat: Category => categoryContents(cat) } &
-      "#new_tags" #> AddTag.addTags &
+      "#new_tags" #> AddTag.addTags andThen
       "#edit_category" #> editCategory
   }
 
   def adm = {
     User.currentUser match {
       case Full(user) => {
-        "#new_category" #> addCategory andThen
-          //"#edit_category" #> editCategory andThen
+        "#new_category" #> addCategory &
+          "#edit_category" #> editCategory andThen
           "* *" #> ((x: NodeSeq) => x)
       }
       case _ => {
@@ -83,43 +84,27 @@ class CategoryListPage extends AdminPageHelpers {
   }
   def editCategory = {
 
+    var categoryName = ""
     var categoryNewName = ""
 
     def process() = {
-      val category = Category.findAll(By(Category.name, categoryNewName))(0)
-      category.validate match {
-        case Nil => {
-          S.notice("Category already exists or name is not valid")
+      Category.find(By(Category.name, categoryName)) match {
+        case Full(c) => {
+          c.name(categoryNewName).validate match {
+            case Nil => {
+              c.save()
+            }
+            case xs =>
+              S.notice("Category already exists or name is not valid")
+          }
         }
-        case xs =>
-          category.name(categoryNewName).save()
+        case Empty => S.error("Category is not found!")
       }
     }
 
-    "name=category_new_name" #> SHtml.onSubmit(categoryNewName = _) &
+    "name=old_name" #> SHtml.onSubmit(categoryName = _) &
+      "name=category_new_name" #> SHtml.onSubmit(categoryNewName = _) &
       "type=submit" #> SHtml.onSubmitUnit(process)
-
-    //    var categoryId = ""
-    //    var categoryNewName = ""
-    //
-    //    def process() = {
-    //      Category.find(categoryId) match {
-    //        case Full(c) => {
-    //          c.validate match {
-    //            case Nil => {
-    //              S.notice("Category already exists or name is not valid")
-    //            }
-    //            case xs =>
-    //              c.name(categoryNewName).save()
-    //          }
-    //        }
-    //        case Empty => S.error("Category is not found!")
-    //      }
-    //    }
-    //
-    //    "name=category_id" #> SHtml.onSubmit(categoryId = _)&
-    //      "name=category_new_name" #> SHtml.onSubmit(categoryNewName =_)&
-    //      "type=submit" #> SHtml.onSubmitUnit(process)
   }
 }
 

@@ -17,6 +17,12 @@ case class AddedToGroupMsg(group: Group, override val recipientId: Long) extends
   message = TemplateManager.addedGroupTemplate(group.name, group.createLink),
   notifyType = NotificationType.AddedToGroup)
 
+case class RejectedFromGroupMsg(group: Group, override val recipientId: Long) extends NotifyMsg(
+  recipientId = recipientId,
+  title = TemplateManager.rejectedFromGroupTitle(group.name),
+  message = TemplateManager.rejectedFromGroupTemplate(group.name, group.createLink),
+  notifyType = NotificationType.RejectedFromGroup)
+
 case class ApproveGroupMsg(group: Group, override val recipientId: Long) extends NotifyMsg(
   recipientId = recipientId,
   title = TemplateManager.approveGroupTitle(group.name),

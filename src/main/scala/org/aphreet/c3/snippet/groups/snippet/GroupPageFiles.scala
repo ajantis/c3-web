@@ -1,7 +1,7 @@
 package org.aphreet.c3.snippet.groups.snippet
 
 import org.aphreet.c3.loc.SuffixLoc
-import org.aphreet.c3.model.{ UserGroup, User, Group }
+import org.aphreet.c3.model.{User, Group}
 import net.liftweb.common._
 import net.liftweb.sitemap.Loc.{ Hidden, LinkText, Link }
 import tags.TagForms
@@ -20,14 +20,10 @@ import com.ifunsoftware.c3.access.{ StringMetadataValue, C3System, MetadataUpdat
 import com.ifunsoftware.c3.access.C3System._
 import net.liftweb.http.js.JsCmds.{ Function, Script }
 import org.aphreet.c3.util.helpers.{ GroupPageHelpers, ConvertHelpers, ByteCalculatorHelpers }
-import net.liftweb.common.Full
 import org.aphreet.c3.snippet.groups.GroupPageFilesData
 import net.liftweb.http.js.JE.{ JsVar, JsRaw }
-import org.aphreet.c3.snippet.LiftMessages
 import net.liftweb.http.js.jquery.JqJsCmds
 import org.aphreet.c3.acl.resources.C3AccessHelpers
-import org.aphreet.c3.acl.groups.UserStatusGroup
-import net.liftweb.mapper.By
 import net.liftweb.common.Full
 import org.aphreet.c3.acl.groups.{ UserStatusGroup, GroupsAccess }
 import org.aphreet.c3.snippet.LiftMessages
@@ -187,6 +183,13 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers
 
     "#edit_tags_form *" #> meta.get(TAGS_META).map(_.split(",").mkString(", ")).getOrElse("") &
       ".description_box *" #> meta.get(DESCRIPTION_META).getOrElse("") &
+      (if(meta.get(HASH).getOrElse("") == "") {
+        "#txtHash [value]" #> "" &
+          "#sharing [class+]" #> "disp_none"
+      } else
+        "#txtHash [value]" #> FileSharingHelper.fileShareFullUrl(node.asFile)
+        ) &
+      "#txtHash [value]" #> (if(meta.get(HASH).getOrElse("") == "") "" else FileSharingHelper.fileShareFullUrl(node.asFile)) &
       (if (hasWriteAccessResource(node) || hasSuperAccessResource(node)) {
         ".edit_tags_form_func *" #> {
           Script(
@@ -206,12 +209,17 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers
           ".delete_file_btn [onclick]" #> SHtml.ajaxInvoke(() => {
             c3.deleteFile(node.fullname);
             JsCmds.RedirectTo(parentNodeLink)
-          })
+          }) &
+          ".share_btn [onclick]" #> SHtml.ajaxInvoke(() => FileSharingHelper.shareFile(node)) &
+          ".remove_public_link [onclick]" #> SHtml.ajaxInvoke(() => FileSharingHelper.disableSharing(node))
       } else {
         "#edit_tags_form [data-disabled]" #> "true" &
           ".remove_resource" #> NodeSeq.Empty &
           ".description_box [data-disabled]" #> "true" &
-          "#meta" #> metadataView(node, metadataUser)
+          "#meta" #> metadataView(node, metadataUser) &
+          ".share_btn [disabled]" #> "true" &
+          ".remove_public_link [disabled]" #> "true" &
+          "#sharing *" #> NodeSeq.Empty
       }) &
       ".file_tags" #> meta.get(TAGS_META).map(_.split(TAGS_SEPARATOR).toList).getOrElse(Nil).map((tag: String) => {
         ".label *" #> tag
@@ -275,24 +283,26 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers
 
   protected def renderFileLoc(f: C3File): CssSel = {
     val owner = nodeOwner(f)
-    def doRenderFileLoc: CssSel = {
+    def doRenderFileLoc(hasAccess: Boolean): CssSel = {
       ".file-table" #> NodeSeq.Empty &
         ".fs_toolbar" #> NodeSeq.Empty &
         "#upload_form" #> NodeSeq.Empty &
         "#directory_tags" #> NodeSeq.Empty &
         ".name_file *" #> f.name &
-        ".download_btn [href]" #> fileDownloadUrl(f) &
-        ".view_btn [href]" #> fileViewUrl(f) &
+        (
+            ".view_btn [href]" #> fileViewUrl(f) &
+              ".download_btn [href]" #> fileDownloadUrl(f)
+          ) &
         ".data_file *" #> internetDateFormatter.format(f.date) &
         ".owner_file *" #> owner.map(_.shortName).getOrElse("Unknown") &
         ".size_file *" #> ByteCalculatorHelpers.convert(f.versions.lastOption.map(_.length.toString).getOrElse("None")) &
         commonForms(f)
     }
     (if (hasSuperAccess || checkReadAccessResource(f)) {
-      doRenderFileLoc
+      doRenderFileLoc(true)
     } else {
-      ".child_td [onclick]" #> SHtml.ajaxInvoke(() => (LiftMessages.ajaxError(S.?("access.restricted"))))
-      doRenderFileLoc
+      ".child_td [onclick]" #> SHtml.ajaxInvoke(() => (LiftMessages.ajaxError(S.?("access.restricted")))) &
+        doRenderFileLoc(false)
 
     })
   }
@@ -416,7 +426,7 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers
         val metadata = Map(OWNER_ID_META -> User.currentUserUnsafe.id.is.toString,
           GROUP_ID_META -> data.group.id.is.toString,
           TAGS_META -> tags.trim,
-        ACL_META -> currentDirectory.metadata.get(ACL_META).getOrElse(""))
+          ACL_META -> currentDirectory.metadata.get(ACL_META).getOrElse(""))
         currentDirectory.createDirectory(name.trim, metadata)
         S.redirectTo(currentPath) // redirect on the same page
       }
@@ -477,7 +487,7 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers
             case UserStatusGroup.Admin | UserStatusGroup.Owner | UserStatusGroup.Member | UserStatusGroup.Other =>
               redirectToDirectory
             case UserStatusGroup.Request =>
-              if(haveReadRight)
+              if (haveReadRight)
                 redirectToDirectory
               else
                 accessRestricted

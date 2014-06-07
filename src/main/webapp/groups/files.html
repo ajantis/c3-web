@@ -215,8 +215,11 @@
 
     </div>
 
-    <div class="row-fluid">
+    <div class="row-fluid" id="action_btns_row">
         <div class="span6">
+            <a type="button" href="#" class="btn btn-primary share_btn" style="margin-right: 10px;">
+                <i class="icon-white icon-lock"></i> Share
+            </a>
             <a type="button" href="#" class="btn btn-primary view_btn" style="margin-right: 10px;">
                 <i class="icon-white icon-eye-open"></i> View
             </a>
@@ -226,6 +229,16 @@
             <a type="button" href="#delete_file_form" data-toggle="modal" title="Delete file" class="remove_resource btn btn-danger" style="margin-right: 10px;">
                 <i class="icon-white icon-remove"></i> Delete
             </a>
+        </div>
+    </div>
+    <div class="row-fluid" style="margin-top: 10px;" id="sharing">
+        <div class="span10">
+            <form class="form-inline">
+                <input type="text" id="txtHash" class="input-large" placeholder="Link" contenteditable="false"/>
+                <button type="button" class="remove_public_link btn btn-danger" style="margin-left: 10px;">Remove public
+                    link
+                </button>
+            </form>
         </div>
     </div>
 
@@ -523,7 +536,27 @@
         });
         // ]]>
     </script>
+    <script>
+                             $(document).ready(function() {
+                                  $( ".share_btn" ).click(function() {
+                                        $("#sharing").removeClass("disp_none");
+                                 });
 
+                                  $( ".remove_public_link" ).click(function() {
+                                        $("#sharing").addClass("disp_none");
+                                 });
+
+                                 $('#txtHash').focus(function(){
+                                        $(this).attr('data-default', $(this).width());
+                                        $(this).animate({ width: $(this).width() + 250 }, 'slow');
+                                        $(this).select();
+                                    }).blur(function(){
+                                        var w = $(this).attr('data-default');
+                                        $(this).animate({ width: w }, 'slow');
+                                    });
+                              });
+
+    </script>
 </tail>
 </div>
 </div>
