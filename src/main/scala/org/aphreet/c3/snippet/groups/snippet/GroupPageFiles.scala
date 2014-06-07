@@ -27,6 +27,8 @@ import org.aphreet.c3.acl.resources.C3AccessHelpers
 import net.liftweb.common.Full
 import org.aphreet.c3.acl.groups.{ UserStatusGroup, GroupsAccess }
 import org.aphreet.c3.snippet.LiftMessages
+import org.aphreet.c3.comet.{JournalServerEvent, MessageServerFactory, JournalServer}
+import org.aphreet.c3.service.journal.EventType
 
 /**
  * @author Dmitry Ivanov (mailto: id.ajantis@gmail.com)
@@ -80,6 +82,8 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers
   override lazy val activeLocId = "files"
   override lazy val group = data.group
   lazy val path = data.path
+
+  private val journalServer: Box[JournalServer] = Box(MessageServerFactory(group))
 
   //list keys for metadata
   object keys extends SessionVar[Set[String]](Set())
@@ -445,8 +449,10 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers
   def updateAclValue(): JsCmd = {
     val metadata = Map(ACL_META -> currentAclValue)
     group.getChildren(data.currentAddress).map(res => {
-      if (res.fullname.hashCode.toString == currentResourceName)
+      if (res.fullname.hashCode.toString == currentResourceName) {
         res.update(MetadataUpdate(metadata))
+        journalServer.foreach(_ ! JournalServerEvent(User.currentUserUnsafe, group, EventType.UpdateResources,res.fullname))
+      }
     })
     JsRaw("$('#" + aclFormId + "').modal('hide')").cmd &
       JsCmds.SetHtml(currentResourceName, Text(currentAclValue))

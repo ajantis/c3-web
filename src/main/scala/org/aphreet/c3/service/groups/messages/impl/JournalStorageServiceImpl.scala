@@ -90,7 +90,7 @@ class JournalStorageServiceImpl extends JournalStorageService with C3Loggable {
     (msg ++ events).toList.sortBy {
       case m: Message => m.creationDate
       case e: Event   => e.creationDate
-    }
+    }.reverse
   }
 
   @throws(classOf[MessageStorageException])
@@ -110,7 +110,7 @@ class JournalStorageServiceImpl extends JournalStorageService with C3Loggable {
 
     for {
       group ← event.group ?~ "Group event belongs to is not defined!"
-      root ← getGroupMessagesRoot(group)
+      root ← getGroupEventRoot(group)
     } yield {
       val metadataMap = buildEventMetadata(event)
       root.createFile(eventFileName(event), metadataMap, DataStream(""))
@@ -156,7 +156,6 @@ class JournalStorageServiceImpl extends JournalStorageService with C3Loggable {
         val path = "/" + group.id.is.toString + "/"
         val directoryGroup = c3.getFile(path)
         directoryGroup.asDirectory.createDirectory(GROUP_EVENTS_ROOT, Map())
-        Thread.sleep(1000) //wait create directory on c3-storage
         getDirectory(pathEvent)
     }
   }

@@ -9,5 +9,5 @@ object EventType extends Enumeration {
   val CreateResources = Value("create_resource")
   val UpdateResources = Value("update_resource")
   val MoveResources = Value("move_resource")
-  val ApproveUser = Value("approve_user")
+  val ApproveUserToGroup = Value("approve_user_to_group")
 }

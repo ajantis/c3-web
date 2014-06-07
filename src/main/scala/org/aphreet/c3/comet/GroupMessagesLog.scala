@@ -112,7 +112,7 @@ trait GroupMessagesLog extends CometActor with CometListener {
           var content = ""
 
           def sendMessage(): JsCmd = {
-            journalServer.foreach(_ ! MessageServerMsg(User.currentUser.open_!, group.open_!, content, tags))
+            journalServer.foreach(_ ! JournalServerMsg(User.currentUser.open_!, group.open_!, content, tags))
             tags.set(Nil)
 
             SetValById("postit", "") &

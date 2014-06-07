@@ -44,9 +44,9 @@ object C3Streamer {
 
         try {
 
-          val correctPath:List[String] = path.last match{
+          val correctPath: List[String] = path.last match {
             case "index" => path.take(path.length - 1)
-            case _ => path
+            case _       => path
           }
 
           val file = c3.getFile(C3Path(groupId, correctPath, extension))
@@ -65,7 +65,7 @@ object C3Streamer {
           Full(StreamingResponse(stream, () => stream.close(), length, List("Content-Type" -> contentType), Nil, 200))
         } catch {
           case e: Exception =>
-//            e.printStackTrace()
+            //            e.printStackTrace()
             S.notice("No file found!")
             S.redirectTo("/groups/" + groupId + "/files/" + path.init.mkString("/"))
         }
