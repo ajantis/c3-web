@@ -121,6 +121,7 @@ class GroupServiceImpl extends GroupService with C3Loggable {
         val dir = node.asDirectory
         dir.createDirectory("files", metadataGroup)
         dir.createDirectory("messages", metadataGroup)
+        dir.createDirectory("events", metadataGroup)
       case None => throw new C3Exception("Failed to create directory for group " + groupId)
     }
   }

@@ -1,7 +1,7 @@
 package org.aphreet.c3.service.groups.messages
 
-import impl.MessageStorageServiceImpl
-import org.aphreet.c3.model.{ Message, Group }
+import impl.JournalStorageServiceImpl
+import org.aphreet.c3.model.Group
 import junit.framework.{ Assert, TestCase }
 import net.liftweb.mapper._
 import net.liftweb.db.StandardDBVendor
@@ -11,6 +11,7 @@ import net.liftweb.common.Logger
 import org.junit
 import java.util
 import org.aphreet.c3.service.groups.impl.GroupServiceImpl
+import org.aphreet.c3.service.journal.Message
 
 /**
  * Copyright iFunSoftware 2011
@@ -21,7 +22,7 @@ class MessageServiceImplIntegrationTest extends TestCase {
 
   private final val logger = Logger(classOf[MessageServiceImplIntegrationTest])
 
-  private val service = new MessageStorageServiceImpl
+  private val service = new JournalStorageServiceImpl
   private val groupService = new GroupServiceImpl
 
   private var group: Group = null
@@ -58,7 +59,7 @@ class MessageServiceImplIntegrationTest extends TestCase {
 
     logger.debug("Messages are saved. Retrieving back from storage...")
 
-    val result = service.findAll(group).toList.reverse
+    val result = service.findMsgAll(group).toList.reverse
 
     logger.debug("Retrieved messages: " + result)
 
@@ -77,7 +78,7 @@ class MessageServiceImplIntegrationTest extends TestCase {
     service.save(Message(group.id.is.toString, "1", "If u don't like C3 get lost", util.UUID.randomUUID().toString, List()))
     service.save(Message(group.id.is.toString, "1", "This is another testing message!", util.UUID.randomUUID().toString, List()))
 
-    val messages = service.findAll(group)
+    val messages = service.findMsgAll(group)
 
     logger.debug("Retrieved messages: " + messages)
 
@@ -85,7 +86,7 @@ class MessageServiceImplIntegrationTest extends TestCase {
 
     messages.foreach(service.delete(_))
 
-    val restMessages = service.findAll(group)
+    val restMessages = service.findMsgAll(group)
 
     println(restMessages)
     Assert.assertTrue(restMessages.isEmpty)

@@ -1,15 +1,16 @@
-package org.aphreet.c3.model
+package org.aphreet.c3.service.journal
 
 import net.liftweb.util.TimeHelpers
 import net.liftweb.common.Box
 import java.util
+import org.aphreet.c3.model.{ Group, User }
 
 /**
  * Copyright iFunSoftware 2011
  * @author Dmitry Ivanov
  */
 
-case class Message(groupId: String, authorId: String, creationDate: util.Date, content: String, uuid: String, tags: List[String]) {
+case class Message(groupId: String, authorId: String, creationDate: util.Date, content: String, uuid: String, tags: List[String]) extends JournalEntity {
   lazy val author: Box[User] = User.find(authorId)
   lazy val group: Box[Group] = Group.find(groupId)
 

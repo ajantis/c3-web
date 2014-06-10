@@ -22,6 +22,8 @@ import org.aphreet.c3.lib.metadata.Metadata._
 import net.liftweb.http.js.JE.JsVar
 import net.liftweb.mapper.By
 import org.aphreet.c3.util.helpers.GroupPageHelpers
+import org.aphreet.c3.comet.{JournalServerEvent, MessageServerFactory, JournalServer}
+import org.aphreet.c3.service.journal.EventType
 
 /**
  * @author Koyushev Sergey (mailto: serjk91@gmail.com)
@@ -48,6 +50,8 @@ class GroupPageSettings(data: GroupPageData) extends GroupPageHelpers {
   override lazy val group = data.group
   override lazy val activeLocId = "settings"
   val members = UserGroup.findAll(By(UserGroup.group, group))
+
+  private val journalServer: Box[JournalServer] = Box(MessageServerFactory(group))
 
   val approvedMembers = members.filter(_.isApproved)
     .map(_.user.obj.openOrThrowException("Error open user")).filter(_.id.is != group.owner.is)
@@ -159,6 +163,7 @@ class GroupPageSettings(data: GroupPageData) extends GroupPageHelpers {
 
       def approveUser(): JsCmd = {
         groupService.approveOrRejectUsersInGroup(group, Iterable(user), true)
+        journalServer.foreach(_ ! JournalServerEvent(User.currentUserUnsafe, group, EventType.ApproveUserToGroup, user.email))
         LiftMessages.ajaxNotice(user.niceName + " is approved to group " + group.name.is) &
           JsCmds.Replace(user.id.is.toString, NodeSeq.Empty)
       }

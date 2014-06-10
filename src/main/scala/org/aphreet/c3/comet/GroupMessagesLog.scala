@@ -2,7 +2,7 @@ package org.aphreet.c3
 package comet
 
 import org.aphreet.c3.util.C3Exception
-import org.aphreet.c3.model.{ Group, User, Message }
+import org.aphreet.c3.model.{ Group, User }
 import org.aphreet.c3.util.helpers.DateTimeHelpers
 
 import net.liftweb.util.Helpers
@@ -17,6 +17,7 @@ import js.JsCmds._
 import scala.xml.{ Text, NodeSeq }
 import scala.language.postfixOps
 import java.util.Date
+import org.aphreet.c3.service.journal.{ JournalEntity, Message, Event }
 
 /**
  * @author Dmitry Ivanov (mailto: id.ajantis@gmail.com)
@@ -27,9 +28,9 @@ trait GroupMessagesLog extends CometActor with CometListener {
   private val logger: Logger = Logger(classOf[GroupMessagesLog])
 
   private val group: Box[Group] = S.attr("group_id").flatMap(Group.find)
-  private val messageServer: Box[MessageServer] = group.map(MessageServerFactory(_))
+  private val journalServer: Box[JournalServer] = group.map(MessageServerFactory(_))
 
-  private var messages: List[Message] = Nil
+  private var entities: List[JournalEntity] = Nil
 
   /* need these vals to be set eagerly, within the scope
    * of Comet component constructor
@@ -46,12 +47,14 @@ trait GroupMessagesLog extends CometActor with CometListener {
   // by diffing the lists and then sending a partial update
   // to the browser
   override def lowPriority = {
-    case MessageServerUpdate(value) =>
-      val update = (value filterNot (messages contains)).reverse.
-        map(b => PrependHtml(ulId, line(b)))
+    case JournalServerUpdate(value) =>
+      val update = (value filterNot (entities contains)).reverse.map {
+        case e: Event   => PrependHtml(ulId, line(e))
+        case m: Message => PrependHtml(ulId, line(m))
+      }
 
       partialUpdate(update)
-      messages = value
+      entities = value
 
     case _ => logger.error("Not sure how we got here.")
   }
@@ -72,8 +75,25 @@ trait GroupMessagesLog extends CometActor with CometListener {
       })(li)
   }
 
+  // display a line
+  private def line(e: Event) = {
+    val resourceName = e.path.split("/").last
+    ("name=when *" #> formatMsgCreationDate(e.creationDate) &
+      "name=who *" #> e.author.map(_.shortName) &
+      "name=body *" #> toHtml("Event type: "+ e.eventType.toString +"\n Resource path: "+ e.path +"\n Resource name:"+ resourceName) &
+      ".msg_id [id]" #> ("msg-" + e.uuid.toString) //      ".tags *" #> {
+      //        ".tag *" #> c.tags.map { (tag: String) =>
+      //          <span class="label label-info">{ tag }</span>
+      //        }
+      //      }
+      )(li)
+  }
+
   // display a list of messages
-  private def displayList: NodeSeq = messages.flatMap(line)
+  private def displayList: NodeSeq = entities.flatMap {
+    case e: Event   => line(e)
+    case m: Message => line(m)
+  }
 
   object tags extends SessionVar[List[String]](Nil)
 
@@ -93,7 +113,7 @@ trait GroupMessagesLog extends CometActor with CometListener {
           var content = ""
 
           def sendMessage(): JsCmd = {
-            messageServer.foreach(_ ! MessageServerMsg(User.currentUser.open_!, group.open_!, content, tags))
+            journalServer.foreach(_ ! JournalServerMsg(User.currentUser.open_!, group.open_!, content, tags))
             tags.set(Nil)
 
             SetValById("postit", "") &
@@ -123,9 +143,9 @@ trait GroupMessagesLog extends CometActor with CometListener {
 
   // register as a listener
   override def registerWith = {
-    if (messageServer.isEmpty)
+    if (journalServer.isEmpty)
       throw new C3Exception("Cannot instantiate group message log outside group context!")
-    else messageServer.open_!
+    else journalServer.open_!
   }
 
   /**
