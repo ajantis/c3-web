@@ -48,9 +48,18 @@ import net.liftweb.common.Full
 import org.aphreet.c3.snippet.LiftMessages
 /**
  * @author  a-legotin on 4/26/2014.
+ * @define file check if public access is provided to allow viewing file.
+ * @example  C3SharingManager.checkFile(groupname, filePath, extension)
  */
 object C3SharingManager {
 
+  /**
+   * @define get file from storage and forward him to checkAccess methods
+   * @param groupId C3 group id
+   * @param path path to c3 file
+   * @param extension file extension
+   * @return S.redirectTo
+   */
   def checkFile(groupId: String, path: List[String], extension: String) = {
     val correctPath:List[String] = path.last match{
       case "index" => path.take(path.length - 1)
@@ -59,13 +68,18 @@ object C3SharingManager {
     val c3 = inject[C3System].open_!
     val file = tryo{c3.getFile(C3Path(groupId, correctPath, extension))}
     file match {
-      case Full(f:C3FileSystemNode) => checkAccess(f.asFile)
+      case Full(f:C3FileSystemNode) => checkAccessUsingHash(f.asFile)
       case _ => {S.notice("Failed")
         S.redirectTo("/")}
     }
   }
 
-  def checkAccess(file: C3File): Nothing = {
+  /**
+   * @define check access to file using MD5 hash and redirect if access granted
+   * @param file C3 file
+   * @return nothing
+   */
+  def checkAccessUsingHash(file: C3File): Nothing = {
     val metadata = file.metadata
     val id = S.param("id").openOr("")
     if (metadata.get(HASH).getOrElse("") == id && id.length != 0)
