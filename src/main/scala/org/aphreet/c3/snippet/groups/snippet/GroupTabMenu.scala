@@ -3,7 +3,7 @@ package org.aphreet.c3.snippet.groups.snippet
 import net.liftweb.util.BindHelpers._
 import net.liftweb.http.{ RequestVar, S }
 import net.liftweb.common.{ Failure, Full }
-import net.liftweb.util.{ PassThru, CssSel }
+import net.liftweb.util.CssSel
 import xml.NodeSeq
 import org.aphreet.c3.model.{ User, Group }
 
@@ -18,8 +18,7 @@ class GroupTabMenu {
   object tabs extends RequestVar[GroupTabsFunc](defaultTabs)
 
   private def defaultTabs(groupId: String): List[(String, GroupTab)] =
-    List("files" -> FilesTab(groupId),
-      "about" -> AboutTab(groupId))
+    List("files" -> FilesTab(groupId))
   def render: CssSel = {
     val activeTab = S.attr("active")
     val groupId = S.attr("group_id")
@@ -39,11 +38,10 @@ class GroupTabMenu {
       "li" #> tabs.get(id).map {
         case (key, tab) =>
           val iconClass = tab.name match {
-            case "About"    => "icon-star"
             case "Files"    => "icon-file"
             case "Messages" => "icon-comment"
             case "Settings" => "icon-wrench"
-            case _          => "icon-heart"
+            case _ => "icon-star"
           }
           val activeClass = if (key == active) "active" else ""
           "span *" #> tab.name &
@@ -72,7 +70,8 @@ class GroupTabMenu {
 
 // consider to move tab definitions to specific Group Locs -- as paths depend on locs
 sealed abstract class GroupTab(val name: String, val path: String)
-case class AboutTab(groupId: String) extends GroupTab("About", "/groups/" + groupId)
 case class FilesTab(groupId: String) extends GroupTab("Files", "/groups/" + groupId + "/files/")
-case class MessagesTab(groupId: String) extends GroupTab("Journal", "/groups/" + groupId + "/messages")
+
+case class MessagesTab(groupId: String) extends GroupTab("Log", "/groups/" + groupId + "/messages")
+
 case class SettingsTab(groupId: String) extends GroupTab("Settings", "/groups/" + groupId + "/settings")

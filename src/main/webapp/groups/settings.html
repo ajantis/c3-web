@@ -1,6 +1,6 @@
 <div class="lift:surround?with=default;at=content">
     <div class="lift:bind-at?name=left-panel">
-        <div><img src="http://lorempixel.com/200/200/"/></div>
+        <div><img src="/images/group_default_200x200.png"/></div>
         <div class="row-fluid lift:GroupPage.info">
             <hr class="hr_group"/>
             <div id="legend">
@@ -11,13 +11,15 @@
             <div class="accordion" id="accordion2">
                 <div class="accordion-group">
                     <div class="accordion-heading">
-                        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseOne">
+                        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2"
+                           href="#collapseOne">
                             Info
                         </a>
                     </div>
-                    <div id="collapseOne" class="accordion-body collapse in">
+                    <div id="collapseOne" class="accordion-body collapse">
                         <div class="accordion-inner">
                             <p class="GroupDescription description_box">Group description</p>
+
                             <div class="lift:GroupPageSettings.owner">
                                 <span class="lead">Owner: <a class="GroupOwner">User Name</a></span>
                             </div>
@@ -32,7 +34,7 @@
         <div class="tabbable"> <!-- Only required for left/right tabs -->
             <div class="row-fluid">
                 <div class="lift:GroupPageSettings.publicSettings container_groups">
-                    <h2 class="name_group_settings">Name</h2>
+                    <h2 class="name_group_settings">Settings</h2>
                     <span class="lead description">Description</span>
                     <!--<p class="description_group description_group_settings">What is this group about?</p>-->
                     <span class="hide  description_submit_func"></span>
@@ -42,19 +44,22 @@
                         Engineering Science is a comprehensive textbook suitable for all <br/>
                         vocational and pre-degree courses.
                     </a>
+
                     <div class="lift:GroupPageSettings.owner">
                         <span class="lead">Owner <a class="GroupOwner">User Name</a></span>
+
                         <p class="description_group description_group_settings">Owner can edit group settings</p>
                     </div>
                     <hr class="hr_group"/>
                     <form class="public_group_from">
                         <span class="lead">Public</span>
-                        <input class="checkbox_public"  type="checkbox">
+                        <input class="checkbox_public" type="checkbox">
                     </form>
-                    <p class="description_group description_group_settings">By default group is private. By enabling this setting group become accessible by all users.</p>
+                    <p class="description_group description_group_settings">Make group public</p>
                     <hr class="hr_group"/>
                     <span class="lead">Group Members</span>
-                    <p class="description_group description_group_settings">Group members can create new content within group</p>
+
+                    <p class="description_group description_group_settings">Group members can upload content</p>
 
                     <div>
                         <table class="table-striped table-condensed lift:GroupPageSettings.listUser">
@@ -67,34 +72,43 @@
                             </tr>
                             </thead>
                             <tbody>
-                            <tr class="ListGroupUser" >
+                            <tr class="ListGroupUser">
                                 <td class="first_name">First</td>
                                 <td class="last_name">Last</td>
                                 <td class="email">mail</td>
-                                <td class="deluser"><button type="submit" class="delete_member close">&times;</button></td>
+                                <td class="deluser">
+                                    <button type="submit" class="delete_member close">&times;</button>
+                                </td>
                             </tr>
                             </tbody>
                         </table>
                     </div>
                     <hr class="hr_group"/>
                     <span class="lead">Add new user</span>
+
                     <div>
-                        <a type="button" href="#add_user_div" class="btn btn_add_user" data-toggle="modal" title="Add User"><strong>Add User</strong></a>
+                        <a type="button" href="#add_user_div" class="btn btn_add_user" data-toggle="modal"
+                           title="Add User"><strong>Add User</strong></a>
+
                         <div id="add_user_div" class="modal hide fade">
-                            <h4 class = "modal-header">Add User</h4>
+                            <h4 class="modal-header">Add User</h4>
+
                             <form id="add_user_form" class="lift:GroupPageSettings.addUser" form="post">
                                 <p>Select user <input class="list_users"/></p>
                             </form>
                             <div id="add_user" class="modal-footer">
                                 <button type="button" data-dismiss="modal" class="btn">Cancel</button>
-                                <button type="submit" class="btn_add_user btn btn-success" form="add_user_form">Add</button>
+                                <button type="submit" class="btn_add_user btn btn-success" form="add_user_form">Add
+                                </button>
                             </div>
                         </div>
                     </div>
 
                     <hr class="hr_group"/>
-                    <span class="lead">Accept list</span>
-                    <p class="description_group description_group_settings">Group members can be approve to group</p>
+                    <span class="lead">Wait list</span>
+
+                    <p class="description_group description_group_settings">Users waiting for approval to group</p>
+
                     <div>
                         <table class="table-striped table-condensed lift:GroupPageSettings.listUserApprove">
                             <thead>
@@ -106,12 +120,16 @@
                             </tr>
                             </thead>
                             <tbody>
-                            <tr class="ListGroupUser" >
+                            <tr class="ListGroupUser">
                                 <td class="first_name">First</td>
                                 <td class="last_name">Last</td>
                                 <td class="email">mail</td>
-                                <td class="approve"><button type="submit" class="btn btn-success approve_member">approve</button></td>
-                                <td class="reject"><button type="submit" class="btn btn-danger reject_member">reject</button></td>
+                                <td class="approve">
+                                    <button type="submit" class="btn btn-success approve_member">approve</button>
+                                </td>
+                                <td class="reject">
+                                    <button type="submit" class="btn btn-danger reject_member">reject</button>
+                                </td>
                             </tr>
                             </tbody>
                         </table>
@@ -132,6 +150,7 @@
                             });
 
                         // ]]>
+
                     </script>
                 </tail>
             </div>

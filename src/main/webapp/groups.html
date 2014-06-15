@@ -4,10 +4,13 @@
     </div>
     <div class="lift:bind-at?name=content">
         <div class="lift:GroupListPage.list">
-            <a type="button" href="#add_group" class="btn btn_add_user" data-toggle="modal" title="Add User"><strong>Add Group</strong></a>
+            <a type="button" href="#add_group" class="btn btn_add_user" data-toggle="modal" title="Add User"><strong>New
+                Group</strong></a>
+
             <div class="modal hide fade" id="add_group">
                 <div class="modal-content">
-                    <h4 class = "modal-header">Create Group</h4>
+                    <h4 class="modal-header">Send group for approval</h4>
+
                     <div class="modal-body">
                         <form id="add_group_form">
                             <fieldset>
@@ -19,22 +22,26 @@
                                     </colgroup>
                                     <tbody class="t_tbody">
                                     <tr >
-                                        <td ><i class="icon-font"></i> Name</td>
+                                        <td><i class="icon-font"></i> Name <span style="color: red;">*</span></td>
                                         <td >
-                                            <input class="input_box input-xlarge" type="text" name="name" required placeholder="name your group...">
+                                            <input class="input_box input-xlarge" type="text" name="name" required
+                                                   placeholder="Group name">
                                         </td>
                                     </tr>
                                     <tr >
                                         <td ><i class="icon-globe"></i> Public</td>
                                         <td >
                                             <input name="public" type="checkbox" value="true"/>
-                                            <span class="description_group description_group_settings">By default group is private. By enabling this setting group become accessible by all users.</span>
+                                            <span class="description_group description_group_settings">Make group public</span>
                                         </td>
                                     </tr>
                                     <tr >
-                                        <td ><i class="icon-info-sign"></i> Description</td>
+                                        <td><i class="icon-info-sign"></i> Description <span
+                                                style="color: red;">*</span></td>
                                         <td >
-                                            <textarea class="description input_box" cols="500" rows="2" type="text" name="description" required placeholder="description of the group..."></textarea>
+                                            <textarea class="description input_box" cols="500" rows="2" type="text"
+                                                      name="description" required
+                                                      placeholder="Group description"></textarea>
                                         </td>
                                     </tr>
                                     <tr >
@@ -54,7 +61,7 @@
                     </button>
                     <button type="submit" class="btn btn-success" form="add_group_form">
                         <i class="icon-white icon-upload"></i>
-                        <span>Create</span>
+                        <span>Send</span>
                     </button>
                 </div>
             </div> <!-- add_group-->
@@ -82,12 +89,16 @@
                     <span class="toggle_switch inf_right icon-chevron-up" onclick="HideGroupDetails(this);"></span>
                     <span class="icon-cog cog inf_right"></span>
                     <span class="icon-plus plus inf_right"></span>
-                    <span class="bange event inf_right" style="font-size:14px;">8</span>
+                    <!-- Notification count will be here! <span class="bange event inf_right" style="font-size:14px;">8</span>-->
                 </h4>
                 <div class="desc_panel">
                     <p class="description_group">Description....</p>
-                    <div class="info_group ">
+
+                    <div class="info_group">
                         <p class="owner_group pull-right">Owner....</p>
+                        <i class="icon-user pull-right"
+                           style="margin-right: 3px; margin-left: 3px; margin-top: 3px;"></i>
+
                         <p class="pull-right ">
                             <img class="inf_left" src="/images/tag.png"/>
                             <span class="tags_group label label-info inf_left">table</span>
