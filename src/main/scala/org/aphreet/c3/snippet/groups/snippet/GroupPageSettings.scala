@@ -1,22 +1,21 @@
 package org.aphreet.c3.snippet.groups.snippet
 
-import org.aphreet.c3.snippet.groups.{ GroupPageData, AbstractGroupPageLoc }
+import org.aphreet.c3.snippet.groups.{GroupPageData, AbstractGroupPageLoc}
 import org.aphreet.c3.loc.SuffixLoc
-import org.aphreet.c3.model.{ UserGroup, User, Group }
-import net.liftweb.common.{ Full, Box }
+import org.aphreet.c3.model.{UserGroup, User, Group}
+import net.liftweb.common.Box
 import net.liftweb.sitemap.Loc.Link
 import org.aphreet.c3.lib.DependencyFactory._
-import com.ifunsoftware.c3.access.{ StringMetadataValue, MetadataUpdate, C3System }
+import com.ifunsoftware.c3.access.{StringMetadataValue, MetadataUpdate, C3System}
 import org.aphreet.c3.service.groups.GroupService
 import net.liftweb.util.BindHelpers._
 import xml.NodeSeq
 import net.liftweb.http.SHtml
-import net.liftweb.http.js.{ JsCmds, JsCmd }
+import net.liftweb.http.js.{JsCmds, JsCmd}
 import net.liftweb.http.S
 import net.liftmodules.widgets.autocomplete.AutoComplete
-import net.liftweb.http.js.JsCmds.{ Function, Script, _Noop }
+import net.liftweb.http.js.JsCmds.{Function, Script}
 import org.aphreet.c3.snippet.LiftMessages
-import net.liftweb.http.js.JE.JsVar
 import com.ifunsoftware.c3.access.fs.C3FileSystemNode
 import org.aphreet.c3.lib.metadata.Metadata._
 import net.liftweb.http.js.JE.JsVar
@@ -33,7 +32,9 @@ object GroupPageSettings extends AbstractGroupPageLoc[GroupPageData] with Suffix
   override val name = "Settings"
   override val pathPrefix = "groups" :: Nil
   override val pathSuffix = "settings" :: Nil
+
   override def getItem(id: String) = Group.find(id)
+
   override def wrapItem(groupBox: Box[Group]) = groupBox.map(new GroupPageData(_))
 
   override def link = {
@@ -43,6 +44,7 @@ object GroupPageSettings extends AbstractGroupPageLoc[GroupPageData] with Suffix
   }
 
 }
+
 class GroupPageSettings(data: GroupPageData) extends GroupPageHelpers {
   lazy val c3 = inject[C3System].open_!
   lazy val groupService = inject[GroupService].open_!
@@ -83,7 +85,7 @@ class GroupPageSettings(data: GroupPageData) extends GroupPageHelpers {
         val ownerGroup = group.owner.obj.openOrThrowException("Group haven't owner")
         user match {
           case usr if usr == currentUser => LiftMessages.ajaxError(S.?("remove.themselves"))
-          case usr if usr == ownerGroup  => LiftMessages.ajaxError(S.?("remove.owner"))
+          case usr if usr == ownerGroup => LiftMessages.ajaxError(S.?("remove.owner"))
           case _ => if (groupService.removeUserFromGroup(group, user)) {
             JsCmds.Replace(user.id.is.toString, NodeSeq.Empty)
           } else JsCmds.Alert("User is not removed! Please check logs for details")
@@ -106,6 +108,7 @@ class GroupPageSettings(data: GroupPageData) extends GroupPageHelpers {
         ".short_name *" #> user.shortName
     })
   }
+
   //[TODO] need make immutable
   def addUser() = {
     var users = User.findAll().filter(_.id.is != User.currentUserUnsafe.id.is)
@@ -129,7 +132,7 @@ class GroupPageSettings(data: GroupPageData) extends GroupPageHelpers {
     if (!added.isEmpty)
       S.notice(userEmails + " is added to group " + group.name.is)
     if (!notAdded.isEmpty)
-      // normally shouldn't happen
+    // normally shouldn't happen
       S.error(userEmails + " is not added to group: " + group.name.is)
   }
 
@@ -147,7 +150,6 @@ class GroupPageSettings(data: GroupPageData) extends GroupPageHelpers {
     }
 
     ".checkbox_public" #> SHtml.ajaxCheckbox(group.isOpen.is, saveCheckbox) &
-      ".name_group_settings *" #> group.name.is &
       ".description_box *" #> group.getDescription &
       ".description_submit_func *" #> {
         Script(
@@ -159,29 +161,30 @@ class GroupPageSettings(data: GroupPageData) extends GroupPageHelpers {
   }
 
   def listUserApprove = {
-    ".ListGroupUser" #> otherMembers.map { user: User =>
+    ".ListGroupUser" #> otherMembers.map {
+      user: User =>
 
-      def approveUser(): JsCmd = {
-        groupService.approveOrRejectUsersInGroup(group, Iterable(user), true)
-        journalServer.foreach(_ ! JournalServerEvent(User.currentUserUnsafe, group, EventType.ApproveUserToGroup, user.email))
-        LiftMessages.ajaxNotice(user.niceName + " is approved to group " + group.name.is) &
-          JsCmds.Replace(user.id.is.toString, NodeSeq.Empty)
-      }
+        def approveUser(): JsCmd = {
+          groupService.approveOrRejectUsersInGroup(group, Iterable(user), true)
+          journalServer.foreach(_ ! JournalServerEvent(User.currentUserUnsafe, group, EventType.ApproveUserToGroup, user.email))
+          LiftMessages.ajaxNotice(user.niceName + " is approved to group " + group.name.is) &
+            JsCmds.Replace(user.id.is.toString, NodeSeq.Empty)
+        }
 
-      def rejectUser(): JsCmd = {
-        groupService.approveOrRejectUsersInGroup(group, Iterable(user), false)
-        groupService.removeUserFromGroup(group, user)
-        LiftMessages.ajaxError(user.niceName + " is rejected from group " + group.name.is) &
-          JsCmds.Replace(user.id.is.toString, NodeSeq.Empty)
-      }
+        def rejectUser(): JsCmd = {
+          groupService.approveOrRejectUsersInGroup(group, Iterable(user), false)
+          groupService.removeUserFromGroup(group, user)
+          LiftMessages.ajaxError(user.niceName + " is rejected from group " + group.name.is) &
+            JsCmds.Replace(user.id.is.toString, NodeSeq.Empty)
+        }
 
-      ".ListGroupUser [id]" #> user.id.is &
-        ".first_name *" #> user.firstName.is &
-        ".last_name *" #> user.lastName.is &
-        ".email *" #> user.email.is &
-        ".full_name *" #> user.shortName &
-        ".approve_member [onclick]" #> SHtml.ajaxInvoke(() => approveUser()) &
-        ".reject_member [onclick]" #> SHtml.ajaxInvoke(() => rejectUser())
+        ".ListGroupUser [id]" #> user.id.is &
+          ".first_name *" #> user.firstName.is &
+          ".last_name *" #> user.lastName.is &
+          ".email *" #> user.email.is &
+          ".full_name *" #> user.shortName &
+          ".approve_member [onclick]" #> SHtml.ajaxInvoke(() => approveUser()) &
+          ".reject_member [onclick]" #> SHtml.ajaxInvoke(() => rejectUser())
     }
   }
 }
