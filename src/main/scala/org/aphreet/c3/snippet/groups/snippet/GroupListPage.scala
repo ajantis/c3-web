@@ -1,10 +1,10 @@
 package org.aphreet.c3.snippet.groups.snippet
 
 import com.ifunsoftware.c3.access.C3System
-import net.liftweb.common.{Failure, Full, Empty, Logger}
-import xml.{Text, NodeSeq}
+import net.liftweb.common.{Empty, Logger}
+import xml.NodeSeq
 import org.aphreet.c3.model._
-import net.liftweb.http.{RequestVar, S, SHtml}
+import net.liftweb.http.{S, SHtml}
 import net.liftweb.http.js.{JsCmds, JsCmd}
 import org.aphreet.c3.service.groups.GroupService
 import net.liftweb.util.Helpers._
@@ -45,7 +45,8 @@ class GroupListPage extends GroupsAccess{
         ".btn_add_user" #> NodeSeq.Empty &
           "#add_group" #> NodeSeq.Empty
     })&
-    ".container_groups" #> groupList.toSet.filter(_.isApproved).map{ group:Group =>
+      ".container_groups" #> groupList.toList.filter(_.isApproved).map {
+        group: Group =>
 
       val groupIcon = if(group.isOpen.is) openGroupIcon else lockGroupIcon
 
@@ -59,7 +60,7 @@ class GroupListPage extends GroupsAccess{
           "a *" #> group.name.is &
           "a [href]" #> groupLink &
           ".description_group *"#> group.getDescription &
-          ".owner_group  *" #> group.owner.name
+          ".owner_group  *" #> group.owner.obj.map(_.shortName).openOr("N/A")
       }
 
       def adminGroup():CssSel = {
