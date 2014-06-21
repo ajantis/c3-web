@@ -1,10 +1,10 @@
-c3_host=http://node1.c3.ifunsoftware.com
+c3_host=http://node0.c3.ifunsoftware.com
 #c3_domain_name=anonymous
 #c3_domain_secret=
 
 #c3_host=http://node0.c3.ifunsoftware.com
-c3_domain_name=48a18fd1-3cbb-42dd-aa2a-dd262f3557af
-c3_domain_secret=1a6ea15141ef1d949ef91ff5977069dd
+c3_domain_name=576caf7e-380c-48ea-a005-9dd392bbe426
+c3_domain_secret=947e83d99dc01eb0b86acbd994e249b7
 
 #c3_host=http://node0.c3.ifunsoftware.com
 #c3_domain_name=dev-ajantis
