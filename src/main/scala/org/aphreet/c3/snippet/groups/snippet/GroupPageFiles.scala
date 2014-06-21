@@ -89,7 +89,7 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers
   object keys extends SessionVar[Set[String]](Set())
 
   val pathLocs = buildPathLocs
-  val groupFilesLink = group.createLink + "/files/"
+  val groupFilesLink = group.createLink
   val file = group.getFile(data.currentAddress)
   val currentResource = file.openOrThrowException("Directory or file is not exist.")
 
@@ -233,7 +233,7 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers
 
   protected def renderDirectoryLoc(d: C3Directory): CssSel = {
     object selectedResourcePaths extends RequestVar[Set[String]](Set())
-    val currentPathLink = data.group.createLink + "/files" + data.currentAddress
+    val currentPathLink = data.group.createLink + data.currentAddress
     def writeTools(): CssSel = {
       "#file_upload_form [action]" #> ("/upload/file/groups/" + group.id.is + "/files" + data.currentAddress) &
         "#file_upload_close_btn [onclick]" #> SHtml.ajaxInvoke(() => JsCmds.Reload) &
@@ -298,6 +298,7 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers
             ".view_btn [href]" #> fileViewUrl(f) &
               ".download_btn [href]" #> fileDownloadUrl(f)
           ) &
+
         ".data_file *" #> internetDateFormatter.format(f.date) &
         ".owner_file *" #> owner.map(_.shortName).getOrElse("Unknown") &
         ".size_file *" #> ByteCalculatorHelpers.convert(f.versions.lastOption.map(_.length.toString).getOrElse("None")) &
@@ -433,7 +434,7 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers
           TAGS_META -> tags.trim,
           ACL_META -> currentDirectory.metadata.get(ACL_META).getOrElse(""))
         currentDirectory.createDirectory(name.trim, metadata)
-        journalServer.foreach(_ ! JournalServerEvent(User.currentUserUnsafe, group, EventType.CreateResources,currentDirectory.fullname +name.trim))
+        journalServer.foreach(_ ! JournalServerEvent(User.currentUserUnsafe, group, EventType.CreateResources, currentDirectory.fullname + name.trim))
         S.redirectTo(currentPath) // redirect on the same page
       }
     }
