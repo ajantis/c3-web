@@ -45,7 +45,7 @@ class GroupListPage extends GroupsAccess{
         ".btn_add_user" #> NodeSeq.Empty &
           "#add_group" #> NodeSeq.Empty
     })&
-      ".container_groups" #> groupList.toList.filter(_.isApproved).map {
+      ".container_groups" #> groupList.distinct.sortBy(_.name.is).filter(_.isApproved).map {
         group: Group =>
 
       val groupIcon = if(group.isOpen.is) openGroupIcon else lockGroupIcon
