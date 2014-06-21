@@ -76,12 +76,10 @@ class Search extends PaginatorSnippet[SearchResultEntry] with C3Loggable {
     firstP.set(pageNum)
     queryString.set(q.value)
     results.set(search(createC3SearchQuery(queryString)))
-    val resultsHtml: NodeSeq = {
-      if (results.isEmpty)
-        (".query *" #> queryString.get).apply(noResultsHtml)
-      else
-        page.flatMap(entry => toCss(entry).apply(entryHtml))
-    }
+    val resultsHtml: NodeSeq = if (results.isEmpty)
+      (".query *" #> queryString.get).apply(noResultsHtml)
+    else
+      page.flatMap(entry => toCss(entry).apply(entryHtml))
 
     JsCmds.SetHtml("results", resultsHtml) &
       JsCmds.SetHtml(paginationBarId, renderPagination(paginationHtml))
@@ -129,14 +127,14 @@ class Search extends PaginatorSnippet[SearchResultEntry] with C3Loggable {
 
     ".category *" #> Category.findAll().map {
       category =>
-        {
-          val tags = category.tags.toList
-          "ul [id]" #> ("category_" + category.id.is + "_tags") &
-            ".name *" #> category.name.is &
-            ".tag" #> tags.map { tag =>
-              tagToCss(tag)
-            }
-        }
+      {
+        val tags = category.tags.toList
+        "ul [id]" #> ("category_" + category.id.is + "_tags") &
+          ".name *" #> category.name.is &
+          ".tag" #> tags.map { tag =>
+            tagToCss(tag)
+          }
+      }
     } &
       ".search_form *" #> { (xml: NodeSeq) =>
         SHtml.ajaxForm(
@@ -158,7 +156,7 @@ class Search extends PaginatorSnippet[SearchResultEntry] with C3Loggable {
         if (results.isEmpty && !queryString.isEmpty) {
           ".entry *" #> ((xml: NodeSeq) => { entryHtml = xml; NodeSeq.Empty }) &
             ".no_results" #> { (xml: NodeSeq) =>
-              { noResultsHtml = xml; (".query *" #> queryString.get).apply(xml) }
+            { noResultsHtml = xml; (".query *" #> queryString.get).apply(xml) }
             } &
             ".index" #> ((xml: NodeSeq) => { welcomeHtml = xml; NodeSeq.Empty })
         } else if (results.isEmpty && queryString.isEmpty) {
