@@ -35,7 +35,7 @@ class JournalServer(val group: Group) extends LiftActor with ListenerManager {
       logger.error(s"Unknown message received from comet actor: $msg")
   }
 
-  def createUpdate = JournalServerUpdate(journalService.findAll(group).take(20).toList)
+  def createUpdate = JournalServerUpdate(journalService.findAll(group).toList)
 
 }
 

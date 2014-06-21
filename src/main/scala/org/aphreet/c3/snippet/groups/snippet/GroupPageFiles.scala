@@ -93,11 +93,9 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers
   val file = group.getFile(data.currentAddress)
   val currentResource = file.openOrThrowException("Directory or file is not exist.")
 
-  def parentNodeLink: String = {
-    (pathLocs.reverse match {
-      case Nil => groupFilesLink
-      case xs  => xs.tail.headOption.map((l: Loc[_]) => l.createDefaultLink.get.text).getOrElse(groupFilesLink)
-    })
+  def parentNodeLink: String = pathLocs.reverse match {
+    case Nil => groupFilesLink
+    case xs => xs.tail.headOption.fold(groupFilesLink)((l: Loc[_]) => l.createDefaultLink.get.text)
   }
 
   def render = {
@@ -120,22 +118,20 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers
     ".base_files_path *" #> (
       ".link [href]" #> groupFilesLink &
       ".link *" #> group.name.is) &
-      ".bcrumb *" #> (pathLocs.map {
+      ".bcrumb *" #> pathLocs.map {
         (loc: Loc[_]) =>
           (if (isLocCurrent(pathLocs, loc) && (hasSuperAccessResource(currentResource) || hasWriteAccessResource(currentResource))) {
             ".link" #>
               <span class="hide name_submit_func">
-                {
-                  Script(
-                    Function("renameNodeCallback", List("name"),
-                      SHtml.ajaxCall(
-                        JsVar("name"),
-                        (name: String) => renameCurrentNode(name))._2.cmd))
-                }
+                {Script(
+                Function("renameNodeCallback", List("name"),
+                  SHtml.ajaxCall(
+                    JsVar("name"),
+                    (name: String) => renameCurrentNode(name))._2.cmd))}
               </span>
-              <a href="#" id="node_name" data-type="text" data-pk="2" data-placeholder="Name..." data-original-title="Rename" class="editable editable-click">
-                { loc.title }
-              </a>
+                <a href="#" id="node_name" data-type="text" data-pk="2" data-placeholder="Name..." data-original-title="Rename" class="editable editable-click">
+                  {loc.title}
+                </a>
           } else {
             ".link [href]" #> loc.createDefaultLink &
               ".link *" #> loc.title
@@ -143,9 +139,9 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers
             ".divider" #> (
               data.isDirectoryLoc match {
                 case false if loc == pathLocs.last => (_: NodeSeq) => NodeSeq.Empty // if it is a file then we want to skip last "/" divider
-                case _                             => PassThru
+                case _ => PassThru
               })
-      }) &
+      } &
       ".current_path *" #> Text(data.currentAddress) &
       ".edit_access *" #> acl() &
       ".submit_acl [onclick]" #> SHtml.ajaxInvoke(() => updateAclValue()) &
@@ -241,7 +237,7 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers
     }
     def superAccessTools(): CssSel = {
       ".delete_selected_btn [onclick]" #> SHtml.ajaxInvoke(() => {
-        selectedResourcePaths.foreach(c3.deleteFile);
+        selectedResourcePaths.foreach(c3.deleteFile)
         JsCmds.RedirectTo(currentPathLink)
       })
     }
@@ -300,16 +296,12 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers
           ) &
         ".data_file *" #> internetDateFormatter.format(f.date) &
         ".owner_file *" #> owner.map(_.shortName).getOrElse("Unknown") &
-        ".size_file *" #> ByteCalculatorHelpers.convert(f.versions.lastOption.map(_.length.toString).getOrElse("None")) &
+        ".size_file *" #> ByteCalculatorHelpers.convert(f.versions.lastOption.fold("None")(_.length.toString)) &
         commonForms(f)
     }
-    (if (hasSuperAccess || checkReadAccessResource(f)) {
-      doRenderFileLoc(true)
-    } else {
-      ".child_td [onclick]" #> SHtml.ajaxInvoke(() => (LiftMessages.ajaxError(S.?("access.restricted")))) &
-        doRenderFileLoc(false)
-
-    })
+    if (hasSuperAccess || checkReadAccessResource(f)) doRenderFileLoc(true)
+    else ".child_td [onclick]" #> SHtml.ajaxInvoke(() => (LiftMessages.ajaxError(S.?("access.restricted")))) &
+      doRenderFileLoc(false)
   }
 
   def removeMeta(f: C3FileSystemNode, key: String, value: String): JsCmd = {
@@ -343,7 +335,6 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers
           ".metadata_key [value]" #> S.?(k) &
           ".metadata_value" #> SHtml.ajaxText(v, editMeta(f, k, _)) &
           ".remove_metadata [onClick]" #> SHtml.ajaxInvoke(() => removeMeta(f, k, v))
-
       }
     } &
       ".add_metadata" #> addMetadata(f)
@@ -401,7 +392,6 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers
           </tr>)
       } else
         JsCmds.Noop
-
     }
 
     ".add_metadata" #> {
@@ -477,7 +467,7 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers
     }
     def accessRestricted: CssSel = {
       ".link [href]" #> "#" &
-        ".child_td [onclick]" #> SHtml.ajaxInvoke(() => (LiftMessages.ajaxError(S.?("access.restricted"))))
+        ".child_td [onclick]" #> SHtml.ajaxInvoke(() => LiftMessages.ajaxError(S.?("access.restricted")))
     }
     (if (hasSuperAccessResource(directory)) {
       ".rules *" #> metaACL &
@@ -489,8 +479,8 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers
       val haveReadRight = checkReadAccessResource(directory)
       (if (haveReadRight) {
 
-        val groupAccess = new GroupsAccess {};
-        (User.currentUser match {
+        val groupAccess = new GroupsAccess {}
+        User.currentUser match {
           case Full(u) => groupAccess.checkAccess(u, group) match {
             case UserStatusGroup.Admin | UserStatusGroup.Owner | UserStatusGroup.Member | UserStatusGroup.Other =>
               redirectToDirectory
@@ -502,7 +492,7 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers
           }
           case Empty =>
             redirectToDirectory
-        })
+        }
       } else {
         accessRestricted
       }) &
