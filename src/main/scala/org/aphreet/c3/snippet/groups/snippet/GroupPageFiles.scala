@@ -266,7 +266,7 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers
         "#file_upload_form" #> NodeSeq.Empty
     }) &
       tagsForm(d) &
-      ".child *" #> group.getChildren(data.currentAddress).map {
+      ".child *" #> group.getChildren(data.currentAddress).sortBy(!_.isDirectory).map {
         resource =>
           {
             (resource.isDirectory match {
