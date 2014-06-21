@@ -71,20 +71,32 @@
 
                     <div class="lift:GroupPageMessages.putCometJournal">
                         <div id="messages_toolbar">
-                            <a href="#input_container" id="show_input_msg" data-toggle="modal" class="btn btn-primary"
-                               rel="tooltip" title="Compose new message">
-                                <i class="icon-envelope icon-white"></i> New message
-                            </a>
+                            <!--<a href="#input_container" id="show_input_msg" data-toggle="modal" class="btn btn-primary"-->
+                               <!--rel="tooltip" title="Compose new message">-->
+                                <!--<i class="icon-envelope icon-white"></i> New message-->
+                            <!--</a>-->
 
-                            <div class="modal fade hide" id="input_container">
-                                <div class="modal-header">
-                                    <a class="close" data-dismiss="modal">&times;</a>
+                            <div class="offset1" id="input_container">
+                                <!--<div class="modal-header">-->
+                                    <!--<a class="close" data-dismiss="modal">&times;</a>-->
 
-                                    <h3>New message</h3>
-                                </div>
-                                <div class="modal-body">
-                                    <textarea class="field" style="width: 97%; resize: none;" rows="6" id="postit"
-                                              placeholder="Enter message text"></textarea>
+                                    <!--<h3>New message</h3>-->
+                                <!--</div>-->
+                                <div class="">
+                                    <textarea class="field" style="width: 96%; resize: none;" rows="6" id="postit"
+                                              placeholder="New message text"></textarea>
+                                    <div class="">
+                                        <!--<button type="button" data-dismiss="modal" class="btn btn-warning cancel pull-right">-->
+                                            <!--<i class="icon-ban-circle icon-white"></i>-->
+                                            <!--<span>Cancel</span>-->
+                                        <!--</button>-->
+                                        <button type="submit" class="btn btn-success pull-right" id="send_btn">
+                                            <i class="icon-ok icon-white"></i>
+                                            <span>Send</span>
+                                        </button>
+                                    </div>
+
+
                                     <!--<input id="tags_input" placeholder="Enter tags"/>-->
                                     <div>
                                         <span class="hide edit_tags_form_func"></span>
@@ -96,29 +108,23 @@
                                     </div>
 
                                 </div>
-                                <div class="modal-footer">
-                                    <button type="button" data-dismiss="modal" class="btn btn-warning cancel">
-                                        <i class="icon-ban-circle icon-white"></i>
-                                        <span>Cancel</span>
-                                    </button>
-                                    <button type="submit" class="btn btn-success" id="send_btn">
-                                        <i class="icon-ok icon-white"></i>
-                                        <span>Send</span>
-                                    </button>
 
-                                </div>
                             </div>
                         </div>
-
-                        <div id="main_ul_id">
-                            <div id="main_li_id">
-                                <h5 class="msg_id"><b><span name="who">Dmitry Ivanov</span> <span name="when">2012-08-02 20:47:04</span>:</b>
-                                </h5>
-
-                                <p>
-                                    <span name="body">My Message</span>
-                                </p>
-
+                        <div id="main_ul_id" class="chat">
+                            <div id="main_li_id" class="chat-body clearfix">
+                                <div class="msg_id primary-font header">
+                                    <small class="text-muted pull-left">
+                                        <i class="event_type"></i>
+                                        <span name="when">12 mins ago</span>
+                                    </small>
+                                </div>
+                                <div class="offset1">
+                                    <strong class="primary-font" name="who">Dmitry Ivanov</strong>
+                                    <p>
+                                        <span name="body">My Message</span>
+                                    </p>
+                                </div>
                                 <div>
                                     <div class="tags pull-right">
                                         <span class="tag" style="margin: 3px;">

@@ -24,7 +24,7 @@ import net.liftweb.sitemap.Loc.If
 
 import javax.mail.{ Authenticator, PasswordAuthentication }
 
-import org.aphreet.c3.util.helpers.{C3SharingManager, C3Streamer}
+import org.aphreet.c3.util.helpers.{ C3SharingManager, C3Streamer }
 import util.{ DefaultAuthDataLoader, TextileRenderer }
 import model._
 
@@ -92,7 +92,7 @@ class Boot extends Bootable {
       Menu("Groups") / "groups" >> LocGroup("mainmenu") submenus {
         GroupsSection.menus: _*
       },
-      Menu("users", "Users") / "users" >> loggedIn >> LocGroup("mainmenu") submenus {
+      Menu("users", "Users") / "users" >> loggedIn submenus {
         UsersSection.menus: _*
       },
       Menu("admin", "Admin") / "admin" >> LocGroup("admin_menus") >> isSuperAdmin submenus {
@@ -108,9 +108,11 @@ class Boot extends Bootable {
       },
       Menu("Experiments") / "experiments" >> LocGroup("mainmenu"),
 
-      Menu(Loc("virtualization", ExtLink(plabAddress), "Virtualization", LocGroup("mainmenu"))),
+//      Menu(Loc("virtualization", ExtLink(plabAddress), "Virtualization", LocGroup("mainmenu"))),
 
       Menu("R service") / "r_suite" >> LocGroup("mainmenu"),
+
+      Menu("Knowledge base") / "k_base" >> LocGroup("mainmenu"),
 
       LogLevel.menu, // default log level menu is located at /loglevel/change
 
