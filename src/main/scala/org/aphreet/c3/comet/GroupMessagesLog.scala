@@ -84,19 +84,19 @@ trait GroupMessagesLog extends CometActor with CometListener {
       case EventType.ApproveUserToGroup =>
         val user = User.findByEmail(e.path).openOrThrowException("User not found")
         val msgBody = "Approved user <a href=\""+user.createLink.toString()+"\">"+user.shortName+"</a>"
-        val icon = "icon-star-empty"
+        val icon = "icon-check"
         (msgBody,icon)
       case EventType.CreateResources =>
         val msgBody = "Created resource <a href=\""+fullPath+"\">"+resourceName+"</a>"
-        val icon = "icon-star-empty"
+        val icon = "icon-download-alt"
         (msgBody,icon)
       case EventType.UpdateResources =>
         val msgBody = "Updated resource <a href=\""+fullPath+"\">"+resourceName+"</a>"
-        val icon = "icon-star-empty"
+        val icon = "icon-refresh"
         (msgBody,icon)
       case EventType.MoveResources =>
         val msgBody = "Moved resource <a href=\""+fullPath+"\">"+resourceName+"</a> to "+e.path
-        val icon = "icon-star-empty"
+        val icon = "icon-random"
         (msgBody,icon)
     }
 

@@ -1,7 +1,7 @@
 /* Body and structure
 -------------------------------------------------- */
 html,body{
-   /* height: 99%    */
+    height: 95%
 }
 
 body {
@@ -49,8 +49,9 @@ body > .navbar .brand:hover {
 /* Main class container
 -------------------------------------------------- */
 .main{
-    min-height: 70%;
+    min-height: 100%;
     margin-top: 50px;
+    position: relative;
 }
 
 /* Header
@@ -74,13 +75,15 @@ body > .navbar .brand:hover {
 -------------------------------------------------- */
 
 .footer {
-  min-height: 5%;
-  padding: 10px 0;
-  margin-top: 30px;
+/*  min-height: 5%;
+  padding: 10px 0;*/
+  margin-top: -55px;
   border-top: 1px solid #e5e5e5;
   background-color: #f5f5f5;
   font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
   font-size: 14px;
+  position: relative;
+  height: 60px;
 }
 .footer p {
   margin-bottom: 0;
