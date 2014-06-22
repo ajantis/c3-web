@@ -267,10 +267,10 @@
     <h4 class="modal-header">Edit Access</h4>
 
     <div class="edit_access">
-        <table class="table-striped table-condensed">
+        <table class="table">
             <thead>
             <tr>
-                <th></th>
+                <th>#</th>
                 <th>Read</th>
                 <th>Write</th>
             </tr>
@@ -440,25 +440,24 @@
                 <tr >
                     <td ><i class="icon-info-sign"></i> Description<i style="color: red">*</i></td>
                     <td colspan="2">
-                        <textarea class="description input_box no_padding_right" cols="500" rows="2" type="text" name="description_${name}" required placeholder="description of the file loaded in system..."></textarea>
+                        <textarea class="description input_box no_padding_right" required cols="500" rows="2" type="text" name="description_${name}" placeholder="Description"></textarea>
                     </td>
                 </tr>
                 <tr class="tag_start_stop">
                     <td class="tags"><i class="icon-tags"></i> Tags</td>
-                    <td><input class="input_box" type="text" name="tags_${name}" required placeholder="docs, main, etc..." ></td>
-                    <td class="start_stop ">
-                        <div class="start">
-                            <button type="submit" style="min-width: 100px; display: none" class="btn btn-success start start_upload">
-                                <i class="icon-white icon-upload"></i>
-                                <span>Start</span>
-                            </button>
-                        </div>
-                        <div class="cancel">
+                    <td class="start_stop"><input class="input_box_tags" type="text" name="tags_${name}" placeholder="docs, main, etc..." >
+                    <span class="cancel">
                             <button type="reset" style="min-width: 100px;" class="btn btn-warning cancel">
                                 <i class="icon-ban-circle icon-white"></i>
                                 <span>Cancel</span>
                             </button>
-                        </div>
+                        </span>
+                        <span class="start">
+                            <button type="submit" style="min-width: 100px;display:none;"  class="btn  btn-success start start_upload">
+                                <i class="icon-white icon-upload"></i>
+                                <span>Start</span>
+                            </button>
+                        </span>
                     </td>
                 </tr>
                 </tbody>
@@ -522,14 +521,12 @@
         })
         $(".description").live("keyup", function(){
         var parent = $(this).parent().parent().parent();
-
         var start_button = parent.children(".tag_start_stop").children(".start_stop").children(".start").children();
-       start_button.hide();
-
         var description_text = $(this).val();
         if(description_text.length > 0){
             start_button.show();
         }
+        else {start_button.hide();}
         })
         $('#file_upload').fileupload( {
         form: "file_upload",
