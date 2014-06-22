@@ -39,7 +39,7 @@
 <div class="lift:TableSorters.defaultTableSorter"></div>
 
 <div class="row-fluid">
-<div>
+<div class="tab-content">
 <div id="files" class="lift:GroupPageFiles tag-pane">
 <div>
     <ul class="breadcrumbs breadcrumb" style="background-color: white; font-size: 20px;">
@@ -147,7 +147,7 @@
                     <td><span class="size_file">196,8 Мб</span></td>
                 </tr>
                 <tr>
-                    <td><i class="icon-info-sign"></i> Description</td>
+                    <td><i class="icon-info-sign"></i> Description*</td>
                     <td>
                         <span class="hide description_submit_func"></span>
                         <a href="#" id="description" data-type="text" data-pk="1"
@@ -230,7 +230,7 @@
     </div>
 
     <div class="row-fluid" id="action_btns_row">
-        <div>
+        <div class="span6">
             <a type="button" href="#" class="btn btn-primary share_btn" style="margin-right: 10px;">
                 <i class="icon-white icon-lock"></i> Share
             </a>
@@ -267,10 +267,10 @@
     <h4 class="modal-header">Edit Access</h4>
 
     <div class="edit_access">
-        <table class="table-striped table-condensed">
+        <table class="table">
             <thead>
             <tr>
-                <th></th>
+                <th>#</th>
                 <th>Read</th>
                 <th>Write</th>
             </tr>
@@ -315,7 +315,7 @@
                     <!--</span>-->
                     <button type="reset" id="file_upload_close_btn" data-dismiss="modal" class="btn btn-primary cancel">
                         <i class="glyphicon glyphicon-ban-circle"></i>
-                        <span>Cancel upload</span>
+                        <span>Finish upload</span>
                     </button>
                 </div>
 
@@ -350,7 +350,7 @@
                         </colgroup>
                         <tbody class="t_tbody">
                         <tr>
-                            <td><i class="icon-font"></i> Name</td>
+                            <td><i class="icon-info-sign"></i>  Name</td>
                             <td>
                                 <input class="input_box input-xlarge" type="text" name="name" required
                                        placeholder="name your directory...">
@@ -359,7 +359,7 @@
                             </td>
                         </tr>
                         <tr>
-                            <td><i class="icon-info-sign"></i> Description</td>
+                            <td><i class="icon-info-sign"> </i> Description</td>
                             <td>
                                 <textarea class="description input_box" cols="500" rows="2" type="text"
                                           name="description" required
@@ -419,7 +419,7 @@
                 </colgroup>
                 <tbody class="t_tbody">
                 <tr>
-                    <td class="preview" rowspan="2"></td>
+                    <td class="namelabel"><i class="icon-font icon-black"> </i> <span> Name</span></td>
                     <td class="name">${name}</td>
                     <td class="size">${sizef}</td>
                 </tr>
@@ -438,27 +438,26 @@
                     {{/if}}
                 </tr>
                 <tr >
-                    <td ><i class="icon-info-sign"></i> Description</td>
+                    <td ><i class="icon-info-sign"></i> Description<i style="color: red">*</i></td>
                     <td colspan="2">
-                        <textarea class="description input_box no_padding_right" cols="500" rows="2" type="text" name="description_${name}" required placeholder="description of the file loaded in system..."></textarea>
+                        <textarea class="description input_box no_padding_right" required cols="500" rows="2" type="text" name="description_${name}" placeholder="Description"></textarea>
                     </td>
                 </tr>
                 <tr class="tag_start_stop">
                     <td class="tags"><i class="icon-tags"></i> Tags</td>
-                    <td><input class="input_box" type="text" name="tags_${name}" required placeholder="docs, main, etc..." ></td>
-                    <td class="start_stop ">
-                        <div class="start">
-                            <button type="submit" style="display: none; min-width: 100px;" class="btn btn-success start start_upload">
-                                <i class="icon-white icon-upload"></i>
-                                <span>Start</span>
-                            </button>
-                        </div>
-                        <div class="cancel">
+                    <td class="start_stop"><input class="input_box_tags" type="text" name="tags_${name}" placeholder="docs, main, etc..." >
+                    <span class="cancel">
                             <button type="reset" style="min-width: 100px;" class="btn btn-warning cancel">
                                 <i class="icon-ban-circle icon-white"></i>
                                 <span>Cancel</span>
                             </button>
-                        </div>
+                        </span>
+                        <span class="start">
+                            <button type="submit" style="min-width: 100px;display:none;"  class="btn  btn-success start start_upload">
+                                <i class="icon-white icon-upload"></i>
+                                <span>Start</span>
+                            </button>
+                        </span>
                     </td>
                 </tr>
                 </tbody>
@@ -492,13 +491,10 @@
                         {{/if}}
                     </td>
                     {{else}}
-                    <td class="preview">
-                        {{if thumbnail_url}}
-                        <a href="${url}" target="_blank"><img src="${thumbnail_url}"></a>
-                        {{/if}}
+                    <td class="namelabel">
                     </td>
                     <td class="name">
-                        <a href="${url}"{{if thumbnail_url}} target="_blank"{{/if}}>${name}</a>
+                        <a href="${url}">${name}</a>
                     </td>
                     <td class="size">${sizef}</td>
                     <td colspan="2"></td>
@@ -525,14 +521,12 @@
         })
         $(".description").live("keyup", function(){
         var parent = $(this).parent().parent().parent();
-
         var start_button = parent.children(".tag_start_stop").children(".start_stop").children(".start").children();
-        start_button.hide();
-
         var description_text = $(this).val();
         if(description_text.length > 0){
-        start_button.show();
+            start_button.show();
         }
+        else {start_button.hide();}
         })
         $('#file_upload').fileupload( {
         form: "file_upload",

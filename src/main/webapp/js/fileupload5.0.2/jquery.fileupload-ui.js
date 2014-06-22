@@ -569,8 +569,8 @@
                 .each(function () {
                     var fileInput = $(this),
                         button = fileInput.parent();
-                    fileInput.detach().prop('disabled', false);
-                    button.button('enable').append(fileInput);
+                    //fileInput.detach().prop('disabled', false);
+                    //button.button('enable').append(fileInput);
                 });
         },
 
@@ -579,8 +579,8 @@
                 .each(function () {
                     var fileInput = $(this),
                         button = fileInput.parent();
-                    fileInput.detach().prop('disabled', true);
-                    button.button('disable').append(fileInput);
+                    //fileInput.detach().prop('disabled', true);
+                    //button.button('disable').append(fileInput);
                 });
         },
 

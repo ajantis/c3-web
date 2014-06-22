@@ -104,8 +104,13 @@
     width: 99%;
     margin-bottom: 0px;
 }
+
+.input_box_tags{
+    width: 75%;
+    margin-bottom: 0px !important;
+}
 .files .name {
-  padding: 0 10px;
+
 }
 
 .files .name a{
