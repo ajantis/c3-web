@@ -14,10 +14,10 @@ import js.jquery.JqJsCmds.PrependHtml
 import js.JE.JsVar
 import js.JsCmds._
 
-import scala.xml.{ Text, NodeSeq }
+import scala.xml.{Unparsed, Text, NodeSeq}
 import scala.language.postfixOps
 import java.util.Date
-import org.aphreet.c3.service.journal.{ JournalEntity, Message, Event }
+import org.aphreet.c3.service.journal.{ JournalEntity, Message, Event,EventType }
 
 /**
  * @author Dmitry Ivanov (mailto: id.ajantis@gmail.com)
@@ -68,6 +68,7 @@ trait GroupMessagesLog extends CometActor with CometListener {
       "name=who *" #> c.author.map(_.shortName) &
       "name=body *" #> toHtml(c.content) &
       ".msg_id [id]" #> ("msg-" + c.uuid.toString) &
+      "i [class]" #> "icon-envelope" &
       ".tags *" #> {
         ".tag *" #> c.tags.map { (tag: String) =>
           <span class="label label-info">{ tag }</span>
@@ -78,9 +79,32 @@ trait GroupMessagesLog extends CometActor with CometListener {
   // display a line
   private def line(e: Event) = {
     val resourceName = e.path.split("/").last
+    val fullPath = "/groups"+ e.path
+    val tuple = e.eventType match {
+      case EventType.ApproveUserToGroup =>
+        val user = User.findByEmail(e.path).openOrThrowException("User not found")
+        val msgBody = "Approved user <a href=\""+user.createLink.toString()+"\">"+user.shortName+"</a>"
+        val icon = "icon-check"
+        (msgBody,icon)
+      case EventType.CreateResources =>
+        val msgBody = "Created resource <a href=\""+fullPath+"\">"+resourceName+"</a>"
+        val icon = "icon-download-alt"
+        (msgBody,icon)
+      case EventType.UpdateResources =>
+        val msgBody = "Updated resource <a href=\""+fullPath+"\">"+resourceName+"</a>"
+        val icon = "icon-refresh"
+        (msgBody,icon)
+      case EventType.MoveResources =>
+        val msgBody = "Moved resource <a href=\""+fullPath+"\">"+resourceName+"</a> to "+e.path
+        val icon = "icon-random"
+        (msgBody,icon)
+    }
+
+
     ("name=when *" #> formatMsgCreationDate(e.creationDate) &
       "name=who *" #> e.author.map(_.shortName) &
-      "name=body *" #> toHtml("Event type: "+ e.eventType.toString +"\n Resource path: "+ e.path +"\n Resource name:"+ resourceName) &
+      "name=body *" #> Unparsed(tuple._1) &
+      "i [class]" #> Unparsed(tuple._2) &
       ".msg_id [id]" #> ("msg-" + e.uuid.toString) //      ".tags *" #> {
       //        ".tag *" #> c.tags.map { (tag: String) =>
       //          <span class="label label-info">{ tag }</span>
