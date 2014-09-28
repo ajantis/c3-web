@@ -1,20 +1,25 @@
 package org.aphreet.c3.webdav
 
-import net.sf.webdav.{ StoredObject, ITransaction, IWebdavStore }
-import java.io.{ File, InputStream }
+import net.sf.webdav.{StoredObject, ITransaction, IWebdavStore}
+import java.io.{File, InputStream}
 import java.security.Principal
 import org.slf4j.LoggerFactory
 import org.aphreet.c3.apiaccess.C3
 import com.ifunsoftware.c3.access.fs.C3FileSystemNode
-import java.nio.file.{ StandardCopyOption, Files }
-import com.ifunsoftware.c3.access.{ C3AccessException, DataStream }
+import java.nio.file.{StandardCopyOption, Files}
+import com.ifunsoftware.c3.access.{MetadataValue, C3AccessException, DataStream}
 import javax.servlet.http.HttpServletRequest
 import org.aphreet.c3.model.User
 import net.liftweb.mapper.By
 import org.apache.commons.codec.binary.Base64
-import net.liftweb.common.Full
-import net.sf.webdav.exceptions.{ AccessDeniedException, UnauthenticatedException }
+import net.liftweb.common.{Failure, Box, Empty}
+import net.sf.webdav.exceptions.{AccessDeniedException, UnauthenticatedException}
+import org.aphreet.c3.lib.metadata.Metadata
 import scala.language.implicitConversions
+import net.liftweb.util.Helpers._
+import net.liftweb.common.Full
+import scala.Some
+import com.ifunsoftware.c3.access.StringMetadataValue
 
 class C3FileSystemStore(val root: File) extends IWebdavStore {
 
@@ -42,7 +47,6 @@ class C3FileSystemStore(val root: File) extends IWebdavStore {
         }
         case _ => throw new AccessDeniedException()
       }
-
     } else {
       throw new UnauthenticatedException()
     }
@@ -80,13 +84,16 @@ class C3FileSystemStore(val root: File) extends IWebdavStore {
     log.debug("createFolder() " + uri)
 
     val splitUri = uri.split("/")
-
     val parent = splitUri.dropRight(1).mkString("/")
     val child = splitUri.last
 
     log.debug("Going to create directory \"" + child + "\" in the dir " + parent)
 
-    getFSNode(tx, parent).asDirectory.createDirectory(child, Map())
+    val defaultMeta = getDefaultMetadata(tx, uri)
+
+    getFSNode(tx, parent) match {
+      case Full(file) => file.asDirectory.createDirectory(child, defaultMeta)
+    }
   }
 
   def createResource(tx: ITransaction, uri: String) {
@@ -94,8 +101,8 @@ class C3FileSystemStore(val root: File) extends IWebdavStore {
     tx.createdFiles.add(uri)
   }
 
-  def getResourceContent(tx: ITransaction, uri: String) = {
-    getFSNode(tx, uri).asFile.versions.last.getDataStream
+  def getResourceContent(tx: ITransaction, uri: String) = getFSNode(tx, uri) match {
+    case Full(file) => file.asFile.versions.last.getDataStream
   }
 
   def setResourceContent(tx: ITransaction, uri: String, content: InputStream, contentType: String, characterEncoding: String) = {
@@ -113,11 +120,15 @@ class C3FileSystemStore(val root: File) extends IWebdavStore {
         val parent = splitUri.dropRight(1).mkString("/")
         val child = splitUri.last
 
-        getFSNode(tx, parent).asDirectory.createFile(child, Map(), DataStream(tmpFile.toFile))
-
+        val defaultMeta = getDefaultMetadata(tx, uri)
+        getFSNode(tx, parent) match {
+          case Full(file) => file.asDirectory.createFile(child, defaultMeta, DataStream(tmpFile.toFile))
+        }
         tx.createdFiles.remove(uri)
       } else {
-        getFSNode(tx, uri).update(DataStream(tmpFile.toFile))
+        getFSNode(tx, uri) match {
+          case Full(file) => file.update(DataStream(tmpFile.toFile))
+        }
       }
 
       tmpFile.toFile.length()
@@ -129,27 +140,31 @@ class C3FileSystemStore(val root: File) extends IWebdavStore {
   def getChildrenNames(tx: ITransaction, uri: String): Array[String] = {
     log.debug("getChildrenNames() {}", uri)
 
-    val file = getFSNode(tx, uri)
+    getFSNode(tx, uri) match {
+      case Full(file) => {
+        if (file.isDirectory) {
+          val dir = file.asDirectory
 
-    if (file.isDirectory) {
-      val dir = file.asDirectory
+          val groupFilter = if (uri == "/") {
+            (name: String) => tx.getPrincipal.groups.contains(name)
+          } else {
+            (name: String) => true
+          }
 
-      val groupFilter = if (uri == "/") {
-        (name: String) => tx.getPrincipal.groups.contains(name)
-      } else {
-        (name: String) => true
+          dir.children().map(node =>
+            cacheNode(tx, node.fullname, node).name).filter(groupFilter).toArray
+        } else {
+          Array()
+        }
       }
-
-      dir.children().map(node =>
-        cacheNode(tx, node.fullname, node).name).filter(groupFilter).toArray
-    } else {
-      Array()
     }
   }
 
   def getResourceLength(tx: ITransaction, uri: String) = {
     log.info("getResourceLength() " + uri)
-    getFSNode(tx, uri).versions.last.length
+    getFSNode(tx, uri) match {
+      case Full(file) => file.versions.last.length
+    }
   }
 
   def removeObject(tx: ITransaction, uri: String) {
@@ -158,34 +173,40 @@ class C3FileSystemStore(val root: File) extends IWebdavStore {
     c3System.deleteFile(translateUri(uri, tx))
   }
 
-  def getStoredObject(tx: ITransaction, uri: String) = {
+  def getStoredObject(tx: ITransaction, uri: String):StoredObject = {
     log.debug("getStoredObject() {}", uri)
 
-    try {
-      val file = getFSNode(tx, uri)
+    getFSNode(tx, uri) match {
+      case Full(file) => {
+        val storedObject = new StoredObject
+        storedObject.setFolder(file.isDirectory)
+        storedObject.setMimeType(file.metadata.getOrElse("content.type", "application/octet-stream"))
+        storedObject.setResourceLength(file.versions.last.length)
+        storedObject.setCreationDate(file.date)
+        storedObject.setLastModified(file.versions.last.date)
 
-      val storedObject = new StoredObject
-      storedObject.setFolder(file.isDirectory)
-      storedObject.setMimeType(file.metadata.getOrElse("content.type", "application/octet-stream"))
-      storedObject.setResourceLength(file.versions.last.length)
-      storedObject.setCreationDate(file.date)
-      storedObject.setLastModified(file.versions.last.date)
-
-      storedObject
-    } catch {
-      case e: C3AccessException          => null
-      case e: GroupAccessDeniedException => null
+        storedObject
+      }
+      case Empty => new StoredObject
+      case Failure(_,e:C3AccessException,_) => throw new AccessDeniedException()
+      case Failure(_,e:GroupAccessDeniedException,_) => throw new AccessDeniedException()
+      case Failure(_,_,_)=> null
     }
   }
 
-  private def getFSNode(tx: ITransaction, uri: String): C3FileSystemNode = {
+  private def getFSNode(tx: ITransaction, uri: String): Box[C3FileSystemNode] = {
 
     val translatedUri = translateUri(uri.replaceAll("/+", "/"), tx)
 
     tx.cachedFiles.get(translatedUri) match {
-      case Some(node) => node
+      case Some(node) => Full(node)
       case None => {
-        cacheNode(tx, uri, c3System.getFile(translatedUri))
+        tryo(c3System.getFile(translatedUri)) match {
+          case Full(node) => Full(cacheNode(tx, uri, node))
+          case any =>
+            if(tx.createdFiles.contains(uri)) Empty
+            else any
+        }
       }
     }
   }
@@ -203,7 +224,6 @@ class C3FileSystemStore(val root: File) extends IWebdavStore {
     if (log.isDebugEnabled) {
       log.debug("URI " + uri + " translated to " + translatedUri)
     }
-
     translatedUri
   }
 
@@ -228,7 +248,7 @@ class C3FileSystemStore(val root: File) extends IWebdavStore {
     tx.asInstanceOf[C3Transaction]
   }
 
-  implicit def principalToC3Princioal(principal: Principal): C3Principal = {
+  implicit def principalToC3Principal(principal: Principal): C3Principal = {
     principal.asInstanceOf[C3Principal]
   }
 
@@ -236,7 +256,16 @@ class C3FileSystemStore(val root: File) extends IWebdavStore {
 
   def moveResource(tx: ITransaction, source: String, destination: String) {
     log.debug("Called move from " + source + " to " + destination)
-    getFSNode(tx, source).move(translateUri(destination, tx))
+    getFSNode(tx, source) match {
+      case Full(file) => file.move(translateUri(destination, tx))
+    }
+  }
+
+  def getDefaultMetadata(tx: ITransaction, uri: String):Map[String, MetadataValue] = {
+    val splitUri = uri.split("/", 3).filter(!_.isEmpty)
+
+    Map(Metadata.GROUP_ID_META -> StringMetadataValue(splitUri(0)),
+      Metadata.OWNER_ID_META -> StringMetadataValue(tx.getPrincipal.getUser.id.toString))
   }
 
   class GroupAccessDeniedException extends Exception

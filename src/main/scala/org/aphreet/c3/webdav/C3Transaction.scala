@@ -23,6 +23,8 @@ class C3Principal(val user: User) extends Principal {
 
   def getName = user.email
 
+  def getUser = user
+
   val groups: Set[String] = if (user != null) {
     user.groups.map((g: Group) => g.id.toString()).toSet
   } else {
