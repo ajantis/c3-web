@@ -13,7 +13,7 @@ import org.aphreet.c3.model.User
 import net.liftweb.mapper.By
 import org.apache.commons.codec.binary.Base64
 import net.liftweb.common.{Failure, Box, Empty}
-import net.sf.webdav.exceptions.{AccessDeniedException, UnauthenticatedException}
+import net.sf.webdav.exceptions.{ObjectNotFoundException, AccessDeniedException, UnauthenticatedException}
 import org.aphreet.c3.lib.metadata.Metadata
 import scala.language.implicitConversions
 import net.liftweb.util.Helpers._
@@ -40,11 +40,10 @@ class C3FileSystemStore(val root: File) extends IWebdavStore {
       val password = credentials(1)
 
       User.find(By(User.email, mail)) match {
-        case Full(user) => {
+        case Full(user) =>
           if (user.password.match_?(password)) {
             new C3Principal(user)
           } else throw new AccessDeniedException()
-        }
         case _ => throw new AccessDeniedException()
       }
     } else {
@@ -93,6 +92,7 @@ class C3FileSystemStore(val root: File) extends IWebdavStore {
 
     getFSNode(tx, parent) match {
       case Full(file) => file.asDirectory.createDirectory(child, defaultMeta)
+      case _ => throw new ObjectNotFoundException()
     }
   }
 
@@ -103,6 +103,7 @@ class C3FileSystemStore(val root: File) extends IWebdavStore {
 
   def getResourceContent(tx: ITransaction, uri: String) = getFSNode(tx, uri) match {
     case Full(file) => file.asFile.versions.last.getDataStream
+    case _ => throw new ObjectNotFoundException()
   }
 
   def setResourceContent(tx: ITransaction, uri: String, content: InputStream, contentType: String, characterEncoding: String) = {
@@ -123,11 +124,13 @@ class C3FileSystemStore(val root: File) extends IWebdavStore {
         val defaultMeta = getDefaultMetadata(tx, uri)
         getFSNode(tx, parent) match {
           case Full(file) => file.asDirectory.createFile(child, defaultMeta, DataStream(tmpFile.toFile))
+          case _ => throw new ObjectNotFoundException()
         }
         tx.createdFiles.remove(uri)
       } else {
         getFSNode(tx, uri) match {
           case Full(file) => file.update(DataStream(tmpFile.toFile))
+          case _ => throw new ObjectNotFoundException()
         }
       }
 
@@ -141,7 +144,7 @@ class C3FileSystemStore(val root: File) extends IWebdavStore {
     log.debug("getChildrenNames() {}", uri)
 
     getFSNode(tx, uri) match {
-      case Full(file) => {
+      case Full(file) =>
         if (file.isDirectory) {
           val dir = file.asDirectory
 
@@ -156,7 +159,7 @@ class C3FileSystemStore(val root: File) extends IWebdavStore {
         } else {
           Array()
         }
-      }
+      case _ => throw new ObjectNotFoundException()
     }
   }
 
@@ -164,6 +167,7 @@ class C3FileSystemStore(val root: File) extends IWebdavStore {
     log.info("getResourceLength() " + uri)
     getFSNode(tx, uri) match {
       case Full(file) => file.versions.last.length
+      case _ => throw new ObjectNotFoundException()
     }
   }
 
@@ -177,7 +181,7 @@ class C3FileSystemStore(val root: File) extends IWebdavStore {
     log.debug("getStoredObject() {}", uri)
 
     getFSNode(tx, uri) match {
-      case Full(file) => {
+      case Full(file) =>
         val storedObject = new StoredObject
         storedObject.setFolder(file.isDirectory)
         storedObject.setMimeType(file.metadata.getOrElse("content.type", "application/octet-stream"))
@@ -186,7 +190,6 @@ class C3FileSystemStore(val root: File) extends IWebdavStore {
         storedObject.setLastModified(file.versions.last.date)
 
         storedObject
-      }
       case Empty => new StoredObject
       case Failure(_,e:C3AccessException,_) => throw new AccessDeniedException()
       case Failure(_,e:GroupAccessDeniedException,_) => throw new AccessDeniedException()
@@ -200,14 +203,13 @@ class C3FileSystemStore(val root: File) extends IWebdavStore {
 
     tx.cachedFiles.get(translatedUri) match {
       case Some(node) => Full(node)
-      case None => {
+      case None =>
         tryo(c3System.getFile(translatedUri)) match {
           case Full(node) => Full(cacheNode(tx, uri, node))
           case any =>
             if(tx.createdFiles.contains(uri)) Empty
             else any
         }
-      }
     }
   }
 
@@ -258,6 +260,7 @@ class C3FileSystemStore(val root: File) extends IWebdavStore {
     log.debug("Called move from " + source + " to " + destination)
     getFSNode(tx, source) match {
       case Full(file) => file.move(translateUri(destination, tx))
+      case _ => throw new ObjectNotFoundException()
     }
   }
 
@@ -265,7 +268,7 @@ class C3FileSystemStore(val root: File) extends IWebdavStore {
     val splitUri = uri.split("/", 3).filter(!_.isEmpty)
 
     Map(Metadata.GROUP_ID_META -> StringMetadataValue(splitUri(0)),
-      Metadata.OWNER_ID_META -> StringMetadataValue(tx.getPrincipal.getUser.id.toString))
+      Metadata.OWNER_ID_META -> StringMetadataValue(tx.getPrincipal.getUser.id.toString()))
   }
 
   class GroupAccessDeniedException extends Exception
