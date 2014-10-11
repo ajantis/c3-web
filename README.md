@@ -15,3 +15,13 @@ mvn clean jetty:run
 ```
  
 This will start web application in embedded Jetty server listening on port 8080
+### Environment
+```
+1. Install maven 2.2.1
+2. Istall git
+3. Install IntelliJ IDEA
+4. Install scala plugin in IDEA
+5. Clone this repo and open
+6. Make
+7. Enjoy
+```
