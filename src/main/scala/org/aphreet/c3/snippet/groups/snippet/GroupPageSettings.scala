@@ -167,8 +167,8 @@ class GroupPageSettings(data: GroupPageData) extends GroupPageHelpers {
         def approveUser(): JsCmd = {
           groupService.approveOrRejectUsersInGroup(group, Iterable(user), true)
           journalServer.foreach(_ ! JournalServerEvent(User.currentUserUnsafe, group, EventType.ApproveUserToGroup, user.email))
-          LiftMessages.ajaxNotice(user.niceName + " is approved to group " + group.name.is) &
-            JsCmds.Replace(user.id.is.toString, NodeSeq.Empty)
+            JsCmds.Replace(user.id.is.toString, NodeSeq.Empty) &
+          JsCmds.Reload
         }
 
         def rejectUser(): JsCmd = {
