@@ -286,6 +286,7 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers
   protected def renderFileLoc(f: C3File): CssSel = {
     val owner = nodeOwner(f)
     def doRenderFileLoc(hasAccess: Boolean): CssSel = {
+      if(!hasAccess)  S.redirectTo("/401.html")
       ".file-table" #> NodeSeq.Empty &
         ".fs_toolbar" #> NodeSeq.Empty &
         "#upload_form" #> NodeSeq.Empty &

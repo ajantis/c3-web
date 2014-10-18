@@ -83,6 +83,8 @@ class Boot extends Bootable {
     // Build SiteMap
     def sitemap() = SiteMap(
 
+      Menu(Loc("Unauthorized", List("401"), "Unauthorized")),
+
       Menu("index") / "index",
 
       Menu("About") / "about" >> LocGroup("footerMenu"),
