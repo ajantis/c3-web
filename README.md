@@ -1,8 +1,10 @@
 c3-web
 ======
-Web client for C3 system: https://github.com/ifunsoftware/c3-next
+[Web client for C3 system](https://github.com/ifunsoftware/c3-next)
 
-Alpha-link: http://vlab.cs.ifmo.ru/
+[Alpha-link](http://vlab.cs.ifmo.ru/)
+
+[Wiki](https://github.com/C3Junior/c3-web/wiki)
 
 Prerequisites:
 * Maven 2 or 3 installed 
