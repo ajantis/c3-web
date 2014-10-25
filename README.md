@@ -1,5 +1,7 @@
 c3-web
 ======
+[![Build Status](https://travis-ci.org/C3Junior/c3-web.svg?branch=master)](https://travis-ci.org/C3Junior/c3-web)
+
 [Web client for C3 system](https://github.com/ifunsoftware/c3-next)
 
 [Alpha-link](http://vlab.cs.ifmo.ru/)
