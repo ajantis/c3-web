@@ -1,6 +1,6 @@
 c3-web
 ======
-[![Build Status](https://api.travis-ci.org/ifunsoftware/c3-web.svg?branch=master)](https://travis-ci.org/C3Junior/c3-web)
+[![Build Status](https://api.travis-ci.org/ifunsoftware/c3-web.svg?branch=master)](https://api.travis-ci.org/ifunsoftware/c3-web.svg?branch=master)
 
 [C3 Storage](https://github.com/ifunsoftware/c3-next)
 
