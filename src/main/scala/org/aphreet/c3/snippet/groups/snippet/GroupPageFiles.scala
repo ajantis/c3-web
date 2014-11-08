@@ -487,7 +487,7 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers
       ".link [href]" #> (directory.name + "/") &
         ".child_td [onclick]" #> SHtml.ajaxInvoke(() => JsCmds.RedirectTo(directory.name + "/"))
     }
-    data.currentAddress
+
     def accessRestricted: CssSel = {
       ".link [href]" #> "#" &
         ".child_td [onclick]" #> SHtml.ajaxInvoke(() => LiftMessages.ajaxError(S.?("access.restricted")))
@@ -498,6 +498,7 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers
         ".rules [ondrag]" #> SHtml.ajaxInvoke(() => SaveDraggableFileName(directory.name)) &
         ".rules [ondrop]" #> SHtml.ajaxInvoke(() => MoveSelectedFile(draggableFileName, data.currentAddress + directory.name, false)) &
         ".rules [onclick]" #> SHtml.ajaxInvoke(() => currentResource(directory.fullname.hashCode.toString, metaACL)) &
+        ".child_td [onclick]" #> SHtml.ajaxInvoke(() => JsCmds.RedirectTo(directory.name + "/")) &
         ".link [href]" #> (directory.name + "/")
     } else {
       val haveReadRight = checkReadAccessResource(directory)
@@ -509,9 +510,9 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers
             case UserStatusGroup.Admin | UserStatusGroup.Owner | UserStatusGroup.Member | UserStatusGroup.Other =>
               redirectToDirectory
             case UserStatusGroup.Request =>
-              if (haveReadRight) {
+              if (haveReadRight)
                 redirectToDirectory
-              } else
+              else
                 accessRestricted
           }
           case Empty =>
