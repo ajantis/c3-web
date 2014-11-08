@@ -35,7 +35,8 @@
 <!-- select2 -->
 <link href="/assets/select2/select2.css" rel="stylesheet">
 <script src="/assets/select2/select2.js"></script>
-
+<!--drag and drop -->
+<script src="/js/draganddrop.js"></script>
 <div class="lift:TableSorters.defaultTableSorter"></div>
 
 <div class="row-fluid">
@@ -86,6 +87,7 @@
                 </td>
                 <td>
                     <span class="hide edit_tags_form_func"></span>
+                    <span class="hide edit_tags_form_func"></span>
                     <a href="#" id="edit_tags_form" data-type="select2" data-pk="1" data-original-title="Enter tags">
                         html, javascript
                     </a>
@@ -107,18 +109,27 @@
         </tr>
         </thead>
         <tbody>
-        <tr class="child">
-            <td><input class="select_resource" name="check_file" type="checkbox"/></td>
-            <td class="child_td"><img class="icon"/></td>
-            <td class="child_td file-table-name"><a class="link" href="#"><span class="name"></span></a>
+        <tr class="parentfolder drop">
+            <td></td>
+            <td class="parentfolder_td"><img class="icon_parent" src="/images/folder_classic.png"/></td>
+            <td class="parentfolder_td file-table-parent-name"><a class="parent_link" href="#">..<span class="parent_name"></span></a>
                 <span class="description_box last_changed short_description"></span></td>
-            <td class="child_td file-table-owner"><a class="owner" href="#">Aphreet</a></td>
-            <td class="child_td file-table-date"><span class="created_date"></span></td>
+            <td class="parentfolder_td file-table-owner"></a></td>
+            <td class="parentfolder_td file-table-date"></span></td>
             <td class="file-table-rules acl_cont">
-                <a href="#acl" class="acl_button" data-toggle="modal">
-                    <span class="rules">rw--</span></a>
             </td>
-
+        </tr>
+        <tr class="child" id="123" onclick="" ondrop="" ondrag="">
+                <td><input class="select_resource" name="check_file" type="checkbox"/></td>
+                <td class="child_td"><img class="icon"/></td>
+                <td class="child_td file-table-name"><a class="link" href="#"><span class="name"></span></a>
+                    <span class="description_box last_changed short_description"></span></td>
+                <td class="child_td file-table-owner"><a class="owner" href="#">Aphreet</a></td>
+                <td class="child_td file-table-date"><span class="created_date"></span></td>
+                <td class="file-table-rules acl_cont">
+                    <a href="#acl" class="acl_button" data-toggle="modal">
+                        <span class="rules">rw--</span></a>
+                </td>
         </tr>
         </tbody>
     </table>

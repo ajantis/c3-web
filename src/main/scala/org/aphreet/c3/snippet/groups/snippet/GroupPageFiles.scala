@@ -242,7 +242,7 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers
         JsCmds.RedirectTo(currentPathLink)
       })
     }
-
+    val previousFolderPath = currentPathLink.substring(0, currentPathLink.dropRight(1).lastIndexOf("/"))
     (if (hasSuperAccess) {
       if (hasWriteAccess(group)) {
         superAccessTools()
@@ -263,6 +263,9 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers
         "#file_upload_form" #> NodeSeq.Empty
     }) &
       tagsForm(d) &
+      ".parent_link [href]" #> (previousFolderPath + "/") &
+      ".parentfolder_td [onclick]" #> SHtml.ajaxInvoke(() => JsCmds.RedirectTo(previousFolderPath + "/")) &
+      ".parentfolder [ondrop]" #> SHtml.ajaxInvoke(() => MoveSelectedFile(draggableFileName, previousFolderPath + "/", true)) &
       ".child *" #> group.getChildren(data.currentAddress).sortBy(!_.isDirectory).map {
         resource =>
           {
@@ -286,7 +289,7 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers
   protected def renderFileLoc(f: C3File): CssSel = {
     val owner = nodeOwner(f)
     def doRenderFileLoc(hasAccess: Boolean): CssSel = {
-      if(!hasAccess)  S.redirectTo("/401.html")
+      if (!hasAccess) S.redirectTo("/401.html")
       ".file-table" #> NodeSeq.Empty &
         ".fs_toolbar" #> NodeSeq.Empty &
         "#upload_form" #> NodeSeq.Empty &
@@ -458,6 +461,24 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers
     JsCmds.Noop
   }
 
+  var draggableFileName = "";
+
+  def MoveSelectedFile(fileName: String, targetFileFolder: String, moveBack: Boolean) = {
+    if (fileName != "") {
+      val movableFile = group.getFile(data.currentAddress + fileName)
+      movableFile.foreach {
+        f =>
+          var newPath = (f.fullname.split("/").toList.init ::: targetFileFolder + "/" + fileName :: Nil).mkString("", "/", "")
+          if (moveBack) newPath = targetFileFolder.substring(targetFileFolder.drop(1).indexOf('/') + 1, targetFileFolder.length) + "/" + fileName
+          f.move(newPath)
+      }
+    }
+  }
+
+  def SaveDraggableFileName(fileName: String) = {
+    draggableFileName = fileName
+  }
+
   def toCss(directory: C3Directory) = {
 
     val owner = nodeOwner(directory)
@@ -466,6 +487,7 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers
       ".link [href]" #> (directory.name + "/") &
         ".child_td [onclick]" #> SHtml.ajaxInvoke(() => JsCmds.RedirectTo(directory.name + "/"))
     }
+    data.currentAddress
     def accessRestricted: CssSel = {
       ".link [href]" #> "#" &
         ".child_td [onclick]" #> SHtml.ajaxInvoke(() => LiftMessages.ajaxError(S.?("access.restricted")))
@@ -473,9 +495,10 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers
     (if (hasSuperAccessResource(directory)) {
       ".rules *" #> metaACL &
         ".rules [id]" #> directory.fullname.hashCode &
+        ".rules [ondrag]" #> SHtml.ajaxInvoke(() => SaveDraggableFileName(directory.name)) &
+        ".rules [ondrop]" #> SHtml.ajaxInvoke(() => MoveSelectedFile(draggableFileName, data.currentAddress + directory.name, false)) &
         ".rules [onclick]" #> SHtml.ajaxInvoke(() => currentResource(directory.fullname.hashCode.toString, metaACL)) &
-        ".link [href]" #> (directory.name + "/") &
-        ".child_td [onclick]" #> SHtml.ajaxInvoke(() => JsCmds.RedirectTo(directory.name + "/"))
+        ".link [href]" #> (directory.name + "/")
     } else {
       val haveReadRight = checkReadAccessResource(directory)
       (if (haveReadRight) {
@@ -486,9 +509,9 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers
             case UserStatusGroup.Admin | UserStatusGroup.Owner | UserStatusGroup.Member | UserStatusGroup.Other =>
               redirectToDirectory
             case UserStatusGroup.Request =>
-              if (haveReadRight)
+              if (haveReadRight) {
                 redirectToDirectory
-              else
+              } else
                 accessRestricted
           }
           case Empty =>
@@ -516,6 +539,7 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers
       ".rules *" #> metaACL &
         ".rules [id]" #> file.fullname.hashCode &
         ".rules [onclick]" #> SHtml.ajaxInvoke(() => currentResource(file.fullname.hashCode.toString, metaACL)) &
+        ".rules [ondrag]" #> SHtml.ajaxInvoke(() => SaveDraggableFileName(file.name)) &
         ".link [href]" #> file.name &
         ".child_td [onclick]" #> SHtml.ajaxInvoke(() => JsCmds.RedirectTo(file.name))
     } else {
