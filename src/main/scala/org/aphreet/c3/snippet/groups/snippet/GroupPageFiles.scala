@@ -242,7 +242,13 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers
         JsCmds.RedirectTo(currentPathLink)
       })
     }
-    val previousFolderPath = currentPathLink.substring(0, currentPathLink.dropRight(1).lastIndexOf("/"))
+    val parentFolderPath = currentPathLink.substring(0, currentPathLink.dropRight(1).lastIndexOf("/"))
+    var parentResourcePath = "";
+    if (data.currentAddress != "/") {
+      parentResourcePath = data.currentAddress.substring(0, data.currentAddress.dropRight(1).lastIndexOf("/")) + "/"
+    }
+    val parentResource = group.getFile(parentResourcePath).openOr(null)
+
     (if (hasSuperAccess) {
       if (hasWriteAccess(group)) {
         superAccessTools()
@@ -263,9 +269,13 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers
         "#file_upload_form" #> NodeSeq.Empty
     }) &
       tagsForm(d) &
-      ".parent_link [href]" #> (previousFolderPath + "/") &
-      ".parentfolder_td [onclick]" #> SHtml.ajaxInvoke(() => JsCmds.RedirectTo(previousFolderPath + "/")) &
-      ".parentfolder [ondrop]" #> SHtml.ajaxInvoke(() => MoveSelectedFile(draggableFileName, previousFolderPath + "/", true)) &
+      ".parent_link [href]" #> (parentFolderPath + "/") &
+      ".parentfolder_td [onclick]" #> SHtml.ajaxInvoke(() => JsCmds.RedirectTo(parentFolderPath + "/")) &
+      (if ((parentResource != null && hasWriteAccessResource(parentResource)) || (parentResourcePath == "/" && hasWriteAccess(group))) {
+        ".parentfolder [ondrop]" #> SHtml.ajaxInvoke(() => FileTransferHelper.moveSelectedFile(group, data.currentAddress, parentFolderPath + "/", true))
+      } else {
+        ".parentfolder [ondrop]" #> ""
+      }) &
       ".child *" #> group.getChildren(data.currentAddress).sortBy(!_.isDirectory).map {
         resource =>
           {
@@ -461,24 +471,6 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers
     JsCmds.Noop
   }
 
-  var draggableFileName = "";
-
-  def MoveSelectedFile(fileName: String, targetFileFolder: String, moveBack: Boolean) = {
-    if (fileName != "") {
-      val movableFile = group.getFile(data.currentAddress + fileName)
-      movableFile.foreach {
-        f =>
-          var newPath = (f.fullname.split("/").toList.init ::: targetFileFolder + "/" + fileName :: Nil).mkString("", "/", "")
-          if (moveBack) newPath = targetFileFolder.substring(targetFileFolder.drop(1).indexOf('/') + 1, targetFileFolder.length) + "/" + fileName
-          f.move(newPath)
-      }
-    }
-  }
-
-  def SaveDraggableFileName(fileName: String) = {
-    draggableFileName = fileName
-  }
-
   def toCss(directory: C3Directory) = {
 
     val owner = nodeOwner(directory)
@@ -488,6 +480,11 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers
         ".child_td [onclick]" #> SHtml.ajaxInvoke(() => JsCmds.RedirectTo(directory.name + "/"))
     }
 
+    def transferDirectory: CssSel = {
+      ".acl_cont [ondrag]" #> SHtml.ajaxInvoke(() => FileTransferHelper.saveDraggableResourceName(directory.name)) &
+        ".acl_cont [ondrop]" #> SHtml.ajaxInvoke(() => FileTransferHelper.moveSelectedFile(group, data.currentAddress, data.currentAddress + directory.name, false))
+    }
+
     def accessRestricted: CssSel = {
       ".link [href]" #> "#" &
         ".child_td [onclick]" #> SHtml.ajaxInvoke(() => LiftMessages.ajaxError(S.?("access.restricted")))
@@ -495,13 +492,13 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers
     (if (hasSuperAccessResource(directory)) {
       ".rules *" #> metaACL &
         ".rules [id]" #> directory.fullname.hashCode &
-        ".rules [ondrag]" #> SHtml.ajaxInvoke(() => SaveDraggableFileName(directory.name)) &
-        ".rules [ondrop]" #> SHtml.ajaxInvoke(() => MoveSelectedFile(draggableFileName, data.currentAddress + directory.name, false)) &
         ".rules [onclick]" #> SHtml.ajaxInvoke(() => currentResource(directory.fullname.hashCode.toString, metaACL)) &
+        transferDirectory &
         ".child_td [onclick]" #> SHtml.ajaxInvoke(() => JsCmds.RedirectTo(directory.name + "/")) &
         ".link [href]" #> (directory.name + "/")
     } else {
       val haveReadRight = checkReadAccessResource(directory)
+      val haveWriteRight = hasWriteAccessResource(directory)
       (if (haveReadRight) {
 
         val groupAccess = new GroupsAccess {}
@@ -521,6 +518,12 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers
       } else {
         accessRestricted
       }) &
+        (if (haveWriteRight) {
+          transferDirectory
+        } else {
+          ".acl_cont [ondrag]" #> ""
+          ".acl_cont [ondrop]" #> ""
+        }) &
         ".acl_cont *" #> metaACL
     }) &
       ".owner *" #> owner.map(_.shortName).getOrElse("Unknown") &
@@ -533,6 +536,12 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers
   }
 
   def toCss(file: C3File) = {
+
+    def transferFile: CssSel = {
+      ".acl_cont [ondrag]" #> SHtml.ajaxInvoke(() => FileTransferHelper.saveDraggableResourceName(file.name))
+      ".acl_cont [ondrop]" #> ""
+    }
+
     val owner = nodeOwner(file)
     val metaACL = acl(file.metadata.get(ACL_META).getOrElse(""))
 
@@ -540,7 +549,7 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers
       ".rules *" #> metaACL &
         ".rules [id]" #> file.fullname.hashCode &
         ".rules [onclick]" #> SHtml.ajaxInvoke(() => currentResource(file.fullname.hashCode.toString, metaACL)) &
-        ".rules [ondrag]" #> SHtml.ajaxInvoke(() => SaveDraggableFileName(file.name)) &
+        transferFile &
         ".link [href]" #> file.name &
         ".child_td [onclick]" #> SHtml.ajaxInvoke(() => JsCmds.RedirectTo(file.name))
     } else {
@@ -551,6 +560,12 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers
         ".link [href]" #> "#" &
           ".child_td [onclick]" #> SHtml.ajaxInvoke(() => LiftMessages.ajaxError(S.?("access.restricted")))
       }) &
+        (if (hasWriteAccessResource(file)) {
+          transferFile
+        } else {
+          ".acl_cont [ondrag]" #> ""
+          ".acl_cont [ondrop]" #> ""
+        }) &
         ".acl_cont *" #> metaACL
     }) &
       ".owner *" #> owner.map(_.shortName).getOrElse("Unknown") &
