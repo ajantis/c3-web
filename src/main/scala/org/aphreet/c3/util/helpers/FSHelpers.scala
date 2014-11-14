@@ -1,4 +1,4 @@
-package org.aphreet.c3.snippet.groups.snippet
+package org.aphreet.c3.util.helpers
 
 import scala.annotation.tailrec
 

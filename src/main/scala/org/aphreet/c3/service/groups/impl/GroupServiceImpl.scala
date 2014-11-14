@@ -14,7 +14,7 @@ import org.aphreet.c3.lib.DependencyFactory._
 import org.aphreet.c3.util.{ C3Loggable, C3Exception }
 import org.aphreet.c3.model.{ UserGroup, Group, User }
 import org.aphreet.c3.service.groups.GroupService
-import org.aphreet.c3.service.notifications.{RejectedFromGroupMsg, AddedToGroupMsg}
+import org.aphreet.c3.service.notifications.{ RejectedFromGroupMsg, AddedToGroupMsg }
 import org.aphreet.c3.service.notifications.NotificationManagerProtocol.CreateNotification
 import org.aphreet.c3.lib.NotificationManagerRef
 
@@ -96,7 +96,7 @@ class GroupServiceImpl extends GroupService with C3Loggable {
       if (!userGroups.isEmpty) {
         userGroups.map { userGroup: UserGroup =>
           userGroup.isApproved(approve).save()
-          if(approve)
+          if (approve)
             notificationManager ! CreateNotification(AddedToGroupMsg(group = group, recipientId = member.id.is))
           else
             notificationManager ! CreateNotification(RejectedFromGroupMsg(group = group, recipientId = member.id.is))

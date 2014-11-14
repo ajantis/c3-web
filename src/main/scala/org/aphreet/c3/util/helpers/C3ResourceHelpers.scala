@@ -1,11 +1,10 @@
-package org.aphreet.c3.snippet.groups.snippet
+package org.aphreet.c3.util.helpers
 
-import org.aphreet.c3.model.{ User, Group }
-import com.ifunsoftware.c3.access.fs.{ C3FileSystemNode, C3File }
-import net.liftweb.common.{ Empty, Box }
-import org.aphreet.c3.lib.metadata.Metadata._
-import scala.Some
+import com.ifunsoftware.c3.access.fs.{ C3File, C3FileSystemNode }
+import net.liftweb.common.{ Box, Empty }
 import net.liftweb.mapper.By
+import org.aphreet.c3.lib.metadata.Metadata._
+import org.aphreet.c3.model.{ Group, User }
 
 /**
  * Copyright iFunSoftware 2011

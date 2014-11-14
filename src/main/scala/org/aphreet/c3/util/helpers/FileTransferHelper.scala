@@ -1,5 +1,6 @@
-package org.aphreet.c3.snippet.groups.snippet
-import org.aphreet.c3.model.{ User, Group }
+package org.aphreet.c3.util.helpers
+
+import org.aphreet.c3.model.Group
 
 /**
  * @author nicl.nno
@@ -9,7 +10,7 @@ import org.aphreet.c3.model.{ User, Group }
 object FileTransferHelper {
   var draggableResourceName = "";
 
-  def moveSelectedFile(group: Group, currentAddress: String, targetFileFolder: String, moveBack: Boolean) = {
+  def moveSelectedResource(group: Group, currentAddress: String, targetFileFolder: String, moveBack: Boolean) = {
     if (draggableResourceName != "") {
       val movableFile = group.getFile(currentAddress + draggableResourceName)
       movableFile.foreach {

@@ -5,7 +5,7 @@ import org.aphreet.c3.lib.metadata.Metadata._
 import org.aphreet.c3.model.User
 import net.liftweb.common.Full
 import org.aphreet.c3.model.Group
-import org.aphreet.c3.snippet.groups.snippet.C3ResourceHelpers
+import org.aphreet.c3.util.helpers.C3ResourceHelpers
 
 /**
  * @author Koyushev Sergey (mailto: serjk91@gmail.com)

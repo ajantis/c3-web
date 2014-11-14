@@ -19,7 +19,7 @@ import org.aphreet.c3.lib.DependencyFactory
 import com.ifunsoftware.c3.access.{ StringMetadataValue, C3System, MetadataUpdate, MetadataRemove }
 import com.ifunsoftware.c3.access.C3System._
 import net.liftweb.http.js.JsCmds.{ Function, Script }
-import org.aphreet.c3.util.helpers.{ GroupPageHelpers, ConvertHelpers, ByteCalculatorHelpers }
+import org.aphreet.c3.util.helpers._
 import org.aphreet.c3.snippet.groups.GroupPageFilesData
 import net.liftweb.http.js.JE.{ JsVar, JsRaw }
 import net.liftweb.http.js.jquery.JqJsCmds
@@ -71,8 +71,7 @@ object GroupPageFiles extends AbstractGroupPageLoc[GroupPageFilesData] with Suff
   }
 }
 
-class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers
-    with GroupPageHelpers with FSHelpers with TagForms with C3AccessHelpers {
+class GroupPageFiles(data: GroupPageFilesData) extends GroupPageHelpers with FSHelpers with TagForms with C3AccessHelpers {
 
   import DependencyFactory._
 
@@ -272,7 +271,7 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers
       ".parent_link [href]" #> (parentFolderPath + "/") &
       ".parentfolder_td [onclick]" #> SHtml.ajaxInvoke(() => JsCmds.RedirectTo(parentFolderPath + "/")) &
       (if ((parentResource != null && hasWriteAccessResource(parentResource)) || (parentResourcePath == "/" && hasWriteAccess(group))) {
-        ".parentfolder [ondrop]" #> SHtml.ajaxInvoke(() => FileTransferHelper.moveSelectedFile(group, data.currentAddress, parentFolderPath + "/", true))
+        ".parentfolder [ondrop]" #> SHtml.ajaxInvoke(() => FileTransferHelper.moveSelectedResource(group, data.currentAddress, parentFolderPath + "/", true))
       } else {
         ".parentfolder [ondrop]" #> ""
       }) &
@@ -482,7 +481,7 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers
 
     def transferDirectory: CssSel = {
       ".acl_cont [ondrag]" #> SHtml.ajaxInvoke(() => FileTransferHelper.saveDraggableResourceName(directory.name)) &
-        ".acl_cont [ondrop]" #> SHtml.ajaxInvoke(() => FileTransferHelper.moveSelectedFile(group, data.currentAddress, data.currentAddress + directory.name, false))
+        ".acl_cont [ondrop]" #> SHtml.ajaxInvoke(() => FileTransferHelper.moveSelectedResource(group, data.currentAddress, directory.name, false))
     }
 
     def accessRestricted: CssSel = {

@@ -1,13 +1,14 @@
-package org.aphreet.c3.snippet.groups.snippet
+package org.aphreet.c3.util.helpers
 
-import net.liftweb.http.js.{JsCmds, JsCmd}
 import java.util.Calendar
+
 import com.ifunsoftware.c3.access.fs.{C3File, C3FileSystemNode}
 import com.ifunsoftware.c3.access.{C3System, MetadataUpdate}
-import org.aphreet.c3.lib.metadata.Metadata
-import Metadata._
 import net.liftweb.http.S
+import net.liftweb.http.js.{JsCmd, JsCmds}
 import net.liftweb.util._
+import org.aphreet.c3.lib.metadata.Metadata
+import org.aphreet.c3.lib.metadata.Metadata._
 
 
 /**
