@@ -1,9 +1,8 @@
 package org.aphreet.c3.util.helpers
 
-import org.aphreet.c3.model.Group
 import net.liftweb.util.BindHelpers._
 
-trait AdminPageHelpers {
+trait AdminPageHelper {
   val activeLocId: String
 
   def embedTabMenu = {

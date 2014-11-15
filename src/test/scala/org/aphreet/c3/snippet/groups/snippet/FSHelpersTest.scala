@@ -1,5 +1,6 @@
 package org.aphreet.c3.snippet.groups.snippet
 
+import org.aphreet.c3.util.helpers.FSHelper
 import org.specs.Specification
 
 /**
@@ -8,9 +9,9 @@ import org.specs.Specification
  */
 object FSHelpersTest extends Specification {
 
-  val helpers = new FSHelpers {}
+  val helpers = new FSHelper {}
 
-  import helpers._
+  import org.aphreet.c3.snippet.groups.snippet.FSHelpersTest.helpers._
 
   "'FSHelpers.transformToPathLists' should build a proper List of paths list of string" in {
     val result = transformToPathLists(List("directory1", "directory2", "directory3", "directory4"))

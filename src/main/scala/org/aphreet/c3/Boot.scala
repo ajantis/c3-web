@@ -22,7 +22,7 @@ import org.aphreet.c3.snippet.groups.GroupsSection
 import org.aphreet.c3.snippet.logging.LogLevel
 import org.aphreet.c3.snippet.notifications.NotificationsSection
 import org.aphreet.c3.snippet.users.UsersSection
-import org.aphreet.c3.util.helpers.{C3SharingManager, C3Streamer}
+import org.aphreet.c3.util.helpers.{C3SharingHelper, C3Streamer}
 import org.aphreet.c3.util.{DefaultAuthDataLoader, TextileRenderer}
 
 /**
@@ -122,7 +122,7 @@ class Boot extends Bootable {
       case Req("download" :: groupname :: filePath, extension, GetRequest) =>
         C3Streamer(groupname, filePath, extension)
       case Req("sharing" :: groupname :: filePath, extension, GetRequest) =>
-        C3SharingManager.checkFile(groupname, filePath, extension)
+        C3SharingHelper.checkFile(groupname, filePath, extension)
     }
     /************************ FILE UPLOAD *******************************/
     // In cases where we have an AJAX request for IE with an uploaded file, we

@@ -1,5 +1,6 @@
-package org.aphreet.c3.snippet.groups.snippet
-import org.aphreet.c3.model.{ User, Group }
+package org.aphreet.c3.util.helpers
+
+import org.aphreet.c3.model.Group
 
 /**
  * @author nicl.nno

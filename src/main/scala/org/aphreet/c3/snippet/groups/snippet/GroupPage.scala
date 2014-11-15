@@ -1,15 +1,15 @@
 package org.aphreet.c3.snippet.groups.snippet
 
-import org.aphreet.c3.model.Group
-import net.liftweb.sitemap.Loc.{ LinkText, Link }
-import net.liftweb.common.Box
-import org.aphreet.c3.snippet.groups.{ AbstractGroupPageLoc, GroupPageData }
+import com.ifunsoftware.c3.access.C3System
+import net.liftweb.common.{Box, Full}
+import net.liftweb.sitemap.Loc.{Link, LinkText}
 import net.liftweb.util.BindHelpers._
 import org.aphreet.c3.lib.DependencyFactory._
-import com.ifunsoftware.c3.access.C3System
-import xml.Text
-import net.liftweb.common.Full
-import org.aphreet.c3.util.helpers.GroupPageHelpers
+import org.aphreet.c3.model.Group
+import org.aphreet.c3.snippet.groups.{AbstractGroupPageLoc, GroupPageData}
+import org.aphreet.c3.util.helpers.GroupPageHelper
+
+import scala.xml.Text
 
 /**
  * Copyright iFunSoftware 2011
@@ -17,12 +17,14 @@ import org.aphreet.c3.util.helpers.GroupPageHelpers
  */
 object GroupPage extends AbstractGroupPageLoc[GroupPageData] {
 
+  override lazy val pathList = pathPrefix ++ List("index")
   override val name = "Group"
+  override val pathPrefix = "groups" :: Nil
+
   override def title = Text(currentValue.map(_.group.name.is).openOr("Group"))
+
   override def text = new LinkText[GroupPageData](text = v => Text(v.group.name.is))
 
-  override val pathPrefix = "groups" :: Nil
-  override lazy val pathList = pathPrefix ++ List("index")
   override def link = new Link[GroupPageData](pathList) {
     override def pathList(value: GroupPageData): List[String] = pathPrefix ::: value.group.id.is.toString :: Nil
   }
@@ -33,7 +35,7 @@ object GroupPage extends AbstractGroupPageLoc[GroupPageData] {
   }
 }
 
-class GroupPage(data: GroupPageData) extends GroupPageHelpers {
+class GroupPage(data: GroupPageData) extends GroupPageHelper {
   override lazy val group = data.group
   override lazy val activeLocId = "about"
   lazy val c3 = inject[C3System].open_!

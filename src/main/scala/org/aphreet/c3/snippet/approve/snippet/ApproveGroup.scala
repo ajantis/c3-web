@@ -1,26 +1,26 @@
 package org.aphreet.c3.snippet.approve.snippet
 
+import net.liftweb.common.{Failure, Full}
+import net.liftweb.http.SHtml
+import net.liftweb.http.js.{JsCmd, JsCmds}
 import net.liftweb.util.Helpers._
-import org.aphreet.c3.model.{User, Group}
-import net.liftweb.mapper.{NotBy, By}
-import net.liftweb.http.{S, SHtml}
-import net.liftweb.http.js.{JsCmds, JsCmd}
-import net.liftweb.common.{Failure, Empty, Full}
-import scala.xml.NodeSeq
-import org.aphreet.c3.snippet.LiftMessages
-import org.aphreet.c3.lib.{NotificationManagerRef, DependencyFactory}
-import org.aphreet.c3.service.groups.GroupService
 import org.aphreet.c3.lib.DependencyFactory._
+import org.aphreet.c3.lib.{DependencyFactory, NotificationManagerRef}
+import org.aphreet.c3.model.{Group, User}
+import org.aphreet.c3.service.groups.GroupService
+import org.aphreet.c3.service.notifications.ApproveGroupMsg
 import org.aphreet.c3.service.notifications.NotificationManagerProtocol.CreateNotification
-import org.aphreet.c3.service.notifications.{ApproveGroupMsg, AddedToGroupMsg}
-import org.aphreet.c3.util.helpers.AdminPageHelpers
+import org.aphreet.c3.snippet.LiftMessages
+import org.aphreet.c3.util.helpers.AdminPageHelper
+
+import scala.xml.NodeSeq
 
 //import com.ifunsoftware.c3.access.C3NotFoundException
 
 /**
  * @author Koyushev Sergey (mailto: serjk91@gmail.com)
  */
-class ApproveGroup extends AdminPageHelpers{
+class ApproveGroup extends AdminPageHelper {
 
   override lazy val activeLocId = "groupApprove"
 

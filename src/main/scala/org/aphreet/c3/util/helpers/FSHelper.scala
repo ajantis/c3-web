@@ -1,4 +1,4 @@
-package org.aphreet.c3.snippet.groups.snippet
+package org.aphreet.c3.util.helpers
 
 import scala.annotation.tailrec
 
@@ -6,11 +6,7 @@ import scala.annotation.tailrec
  * Copyright iFunSoftware 2011
  * @author Dmitry Ivanov
  */
-trait FSHelpers {
-
-  case class FSLoc(path: List[String]) {
-    def title: String = path.lastOption.getOrElse("N/A")
-  }
+trait FSHelper {
 
   def transformToPathLists(fullPath: List[String]): List[List[String]] = {
     @tailrec
@@ -24,5 +20,9 @@ trait FSHelpers {
 
     if (fullPath.isEmpty) Nil
     else transform(List(fullPath), fullPath.reverse)
+  }
+
+  case class FSLoc(path: List[String]) {
+    def title: String = path.lastOption.getOrElse("N/A")
   }
 }

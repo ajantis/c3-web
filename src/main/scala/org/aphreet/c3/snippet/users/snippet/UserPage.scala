@@ -1,13 +1,14 @@
 package org.aphreet.c3.snippet.users.snippet
 
-import org.aphreet.c3.model.User
-import org.aphreet.c3.loc.ItemRewriteLoc
-import xml.Text
-import net.liftweb.sitemap.Loc.{ Link, LinkText }
-import net.liftweb.common.{ Logger, Full, Box }
-import net.liftweb.util._
+import net.liftweb.common.{Box, Full, Logger}
+import net.liftweb.sitemap.Loc.{Link, LinkText}
 import net.liftweb.util.Helpers._
+import org.aphreet.c3.loc.ItemRewriteLoc
+import org.aphreet.c3.model.User
 import org.aphreet.c3.snippet.users.UserPageData
+import org.aphreet.c3.util.helpers.UserHelper
+
+import scala.xml.Text
 
 /**
  * @author Dmitry Ivanov (mailto: id.ajantis@gmail.com)
@@ -15,12 +16,14 @@ import org.aphreet.c3.snippet.users.UserPageData
  */
 object UserPage extends ItemRewriteLoc[User, UserPageData] {
 
+  override lazy val pathList = pathPrefix ++ List("index")
   override val name = "User"
+  override val pathPrefix = "users" :: Nil
+
   override def title = Text(currentValue.map(_.user.shortName).openOr("User"))
+
   override def text = new LinkText[UserPageData](text = v => Text(v.user.shortName))
 
-  override val pathPrefix = "users" :: Nil
-  override lazy val pathList = pathPrefix ++ List("index")
   override def link = new Link[UserPageData](pathList) {
     override def pathList(value: UserPageData): List[String] = pathPrefix ::: value.user.id.is.toString :: Nil
   }
@@ -33,7 +36,7 @@ object UserPage extends ItemRewriteLoc[User, UserPageData] {
   def isAccessiblePage(page: UserPageData): Boolean = true
 }
 
-class UserPage(data: UserPageData) extends UserHelpers {
+class UserPage(data: UserPageData) extends UserHelper {
   private val logger = Logger(classOf[UserPage])
 
   def view = {
