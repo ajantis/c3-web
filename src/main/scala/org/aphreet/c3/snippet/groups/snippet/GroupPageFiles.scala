@@ -1,32 +1,32 @@
 package org.aphreet.c3.snippet.groups.snippet
 
 import com.ifunsoftware.c3.access.C3System._
-import com.ifunsoftware.c3.access.fs.{C3Directory, C3File, C3FileSystemNode}
-import com.ifunsoftware.c3.access.{C3System, MetadataRemove, MetadataUpdate, StringMetadataValue}
-import net.liftweb.common.{Full, _}
-import net.liftweb.http.js.JE.{JsRaw, JsVar}
-import net.liftweb.http.js.JsCmds.{Function, Script}
+import com.ifunsoftware.c3.access.fs.{ C3Directory, C3File, C3FileSystemNode }
+import com.ifunsoftware.c3.access.{ C3System, MetadataRemove, MetadataUpdate, StringMetadataValue }
+import net.liftweb.common.{ Full, _ }
+import net.liftweb.http.js.JE.{ JsRaw, JsVar }
+import net.liftweb.http.js.JsCmds.{ Function, Script }
 import net.liftweb.http.js.jquery.JqJsCmds
-import net.liftweb.http.js.{JsCmd, JsCmds}
-import net.liftweb.http.{RequestVar, S, SHtml, SessionVar}
-import net.liftweb.sitemap.Loc.{Hidden, Link, LinkText}
-import net.liftweb.sitemap.{Loc, Menu, SiteMap}
+import net.liftweb.http.js.{ JsCmd, JsCmds }
+import net.liftweb.http.{ RequestVar, S, SHtml, SessionVar }
+import net.liftweb.sitemap.Loc.{ Hidden, Link, LinkText }
+import net.liftweb.sitemap.{ Loc, Menu, SiteMap }
 import net.liftweb.util.Helpers._
-import net.liftweb.util.{CssSel, PassThru}
-import org.aphreet.c3.acl.groups.{GroupsAccess, UserStatusGroup}
-import org.aphreet.c3.comet.{JournalServer, JournalServerEvent, MessageServerFactory}
+import net.liftweb.util.{ CssSel, PassThru }
+import org.aphreet.c3.acl.groups.{ GroupsAccess, UserStatusGroup }
+import org.aphreet.c3.comet.{ JournalServer, JournalServerEvent, MessageServerFactory }
 import org.aphreet.c3.lib.DependencyFactory
 import org.aphreet.c3.lib.metadata.Metadata
 import org.aphreet.c3.lib.metadata.Metadata._
 import org.aphreet.c3.loc.SuffixLoc
-import org.aphreet.c3.model.{Group, User}
+import org.aphreet.c3.model.{ Group, User }
 import org.aphreet.c3.service.journal.EventType
 import org.aphreet.c3.snippet.LiftMessages
-import org.aphreet.c3.snippet.groups.{AbstractGroupPageLoc, GroupPageFilesData}
+import org.aphreet.c3.snippet.groups.{ AbstractGroupPageLoc, GroupPageFilesData }
 import org.aphreet.c3.snippet.groups.snippet.tags.TagForms
 import org.aphreet.c3.util.helpers._
 
-import scala.xml.{NodeSeq, Text}
+import scala.xml.{ NodeSeq, Text }
 
 /**
  * @author Dmitry Ivanov (mailto: id.ajantis@gmail.com)
@@ -70,7 +70,7 @@ object GroupPageFiles extends AbstractGroupPageLoc[GroupPageFilesData] with Suff
 }
 
 class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers
-with GroupPageHelper with FSHelper with TagForms with C3AccessHelpers {
+    with GroupPageHelper with FSHelper with TagForms with C3AccessHelpers {
 
   import org.aphreet.c3.lib.DependencyFactory._
 
@@ -219,7 +219,7 @@ with GroupPageHelper with FSHelper with TagForms with C3AccessHelpers {
 
     def transferDirectory: CssSel = {
       ".acl_cont [ondrag]" #> SHtml.ajaxInvoke(() => FileTransferHelper.saveDraggableResourceName(directory.name)) &
-        ".acl_cont [ondrop]" #> SHtml.ajaxInvoke(() => FileTransferHelper.moveSelectedFile(group, data.currentAddress, data.currentAddress + directory.name, false))
+        ".acl_cont [ondrop]" #> SHtml.ajaxInvoke(() => FileTransferHelper.moveSelectedResource(group, data.currentAddress, directory.name, false))
     }
 
     def accessRestricted: CssSel = {
@@ -535,24 +535,25 @@ with GroupPageHelper with FSHelper with TagForms with C3AccessHelpers {
       ".parent_link [href]" #> (parentFolderPath + "/") &
       ".parentfolder_td [onclick]" #> SHtml.ajaxInvoke(() => JsCmds.RedirectTo(parentFolderPath + "/")) &
       (if ((parentResource != null && hasWriteAccessResource(parentResource)) || (parentResourcePath == "/" && hasWriteAccess(group))) {
-        ".parentfolder [ondrop]" #> SHtml.ajaxInvoke(() => FileTransferHelper.moveSelectedFile(group, data.currentAddress, parentFolderPath + "/", true))
+        ".parentfolder [ondrop]" #> SHtml.ajaxInvoke(() => FileTransferHelper.moveSelectedResource(group, data.currentAddress, parentFolderPath + "/", true))
       } else {
         ".parentfolder [ondrop]" #> ""
       }) &
       ".child *" #> group.getChildren(data.currentAddress).sortBy(!_.isDirectory).map {
-        resource => {
-          (resource.isDirectory match {
-            case true => toCss(resource.asDirectory)
-            case _ => toCss(resource.asFile)
-          }) &
-            ".select_resource" #> SHtml.ajaxCheckbox(value = false, (value: Boolean) => {
-              if (value)
-                selectedResourcePaths.set(selectedResourcePaths.get + resource.fullname)
-              else
-                selectedResourcePaths.set(selectedResourcePaths.get - resource.fullname)
-              JsCmds.Noop
-            })
-        }
+        resource =>
+          {
+            (resource.isDirectory match {
+              case true => toCss(resource.asDirectory)
+              case _    => toCss(resource.asFile)
+            }) &
+              ".select_resource" #> SHtml.ajaxCheckbox(value = false, (value: Boolean) => {
+                if (value)
+                  selectedResourcePaths.set(selectedResourcePaths.get + resource.fullname)
+                else
+                  selectedResourcePaths.set(selectedResourcePaths.get - resource.fullname)
+                JsCmds.Noop
+              })
+          }
       } &
       ".file-view" #> NodeSeq.Empty &
       commonForms(d)
@@ -569,11 +570,11 @@ with GroupPageHelper with FSHelper with TagForms with C3AccessHelpers {
         ".name_file *" #> f.name &
         (
           ".view_btn [href]" #> fileViewUrl(f) &
-            ".download_btn [href]" #> fileDownloadUrl(f)) &
-        ".data_file *" #> internetDateFormatter.format(f.date) &
-        ".owner_file *" #> owner.map(_.shortName).getOrElse("Unknown") &
-        ".size_file *" #> ByteCalculatorHelper.convert(f.versions.lastOption.fold("None")(_.length.toString)) &
-        commonForms(f)
+          ".download_btn [href]" #> fileDownloadUrl(f)) &
+          ".data_file *" #> internetDateFormatter.format(f.date) &
+          ".owner_file *" #> owner.map(_.shortName).getOrElse("Unknown") &
+          ".size_file *" #> ByteCalculatorHelper.convert(f.versions.lastOption.fold("None")(_.length.toString)) &
+          commonForms(f)
     }
     if (hasSuperAccess || checkReadAccessResource(f)) doRenderFileLoc(true)
     else ".child_td [onclick]" #> SHtml.ajaxInvoke(() => (LiftMessages.ajaxError(S.?("access.restricted")))) &
@@ -618,15 +619,15 @@ with GroupPageHelper with FSHelper with TagForms with C3AccessHelpers {
         f.update(MetadataUpdate(metadata))
         val idMetadataContainer = "metadata_container"
         JqJsCmds.AppendHtml(idMetadataContainer,
-          <tr class="metadata_form" id={key + value}>
+          <tr class="metadata_form" id={ key + value }>
             <td>
-              <input class="metadata_key" value={key} readonly="readonly"/>
+              <input class="metadata_key" value={ key } readonly="readonly"/>
             </td>
             <td>
-              <input type="text" class="metadata_value" value={value}/>
+              <input type="text" class="metadata_value" value={ value }/>
             </td>
             <td>
-              <button class="close remove_metadata" onclick={SHtml.ajaxInvoke(() => removeMeta(f, key, value))._2.toJsCmd}>
+              <button class="close remove_metadata" onclick={ SHtml.ajaxInvoke(() => removeMeta(f, key, value))._2.toJsCmd }>
                 &times;
               </button>
             </td>

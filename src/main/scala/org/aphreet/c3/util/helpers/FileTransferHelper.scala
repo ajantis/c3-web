@@ -10,7 +10,7 @@ import org.aphreet.c3.model.Group
 object FileTransferHelper {
   var draggableResourceName = "";
 
-  def moveSelectedFile(group: Group, currentAddress: String, targetFileFolder: String, moveBack: Boolean) = {
+  def moveSelectedResource(group: Group, currentAddress: String, targetFileFolder: String, moveBack: Boolean) = {
     if (draggableResourceName != "") {
       val movableFile = group.getFile(currentAddress + draggableResourceName)
       movableFile.foreach {
