@@ -1,39 +1,29 @@
 package org.aphreet.c3
 
-import net.liftweb.util._
-import net.liftweb.http.provider._
-import net.liftweb.sitemap._
-import net.liftweb.sitemap.Loc._
-import net.liftweb.mapper._
-import net.liftweb.http._
-import net.liftweb.http.js.jquery.JQueryArtifacts
-import net.liftmodules.widgets.logchanger._
-import net.liftmodules.widgets.uploadprogress._
-import net.liftmodules.widgets.tablesorter.TableSorter
+import javax.mail.{Authenticator, PasswordAuthentication}
+
 import net.liftmodules.widgets.autocomplete.AutoComplete
+import net.liftmodules.widgets.logchanger._
 import net.liftmodules.widgets.menu.MenuWidget
-import net.liftweb.util.Props
-import net.liftweb.http.Html5Properties
-import net.liftweb.http.InMemoryResponse
+import net.liftmodules.widgets.tablesorter.TableSorter
+import net.liftmodules.widgets.uploadprogress._
 import net.liftweb.common.Full
-import net.liftweb.http.ParsePath
-import net.liftweb.http.NotFoundAsTemplate
-import net.liftweb.sitemap.Loc.LocGroup
-import net.liftweb.http.ServiceUnavailableResponse
-import net.liftweb.sitemap.Loc.If
-
-import javax.mail.{ Authenticator, PasswordAuthentication }
-
-import org.aphreet.c3.util.helpers.{ C3SharingManager, C3Streamer }
-import util.{ DefaultAuthDataLoader, TextileRenderer }
-import model._
-
-import snippet.approve.ApproveSection
-import snippet.categories.CategoriesSection
-import snippet.groups.GroupsSection
-import snippet.logging.LogLevel
-import snippet.notifications.NotificationsSection
-import snippet.users.UsersSection
+import net.liftweb.http.js.jquery.JQueryArtifacts
+import net.liftweb.http.provider._
+import net.liftweb.http.{Html5Properties, InMemoryResponse, NotFoundAsTemplate, ParsePath, ServiceUnavailableResponse, _}
+import net.liftweb.mapper._
+import net.liftweb.sitemap.Loc.{If, LocGroup, _}
+import net.liftweb.sitemap._
+import net.liftweb.util.{Props, _}
+import org.aphreet.c3.model._
+import org.aphreet.c3.snippet.approve.ApproveSection
+import org.aphreet.c3.snippet.categories.CategoriesSection
+import org.aphreet.c3.snippet.groups.GroupsSection
+import org.aphreet.c3.snippet.logging.LogLevel
+import org.aphreet.c3.snippet.notifications.NotificationsSection
+import org.aphreet.c3.snippet.users.UsersSection
+import org.aphreet.c3.util.helpers.{C3SharingManager, C3Streamer}
+import org.aphreet.c3.util.{DefaultAuthDataLoader, TextileRenderer}
 
 /**
  * A class that's instantiated early and run.  It allows the application
@@ -43,7 +33,7 @@ class Boot extends Bootable {
   private val sections: List[Section] =
     List(BaseSection, UsersSection, GroupsSection, CategoriesSection, NotificationsSection, ApproveSection)
 
-  import Boot._
+  import org.aphreet.c3.Boot._
 
   def boot() {
     if (!DB.jndiJdbcConnAvailable_?) {
@@ -244,6 +234,8 @@ class Boot extends Bootable {
     System.setProperty("mail.smtp.host", host)
     // Enable authentication
     System.setProperty("mail.smtp.auth", "true")
+    // Set port
+    System.setProperty("mail.smtp.port", "587")
 
     // Provide a means for authentication. Pass it a Box, which can either be Full or Empty
     Mailer.authenticator = Full(new Authenticator {
@@ -253,19 +245,16 @@ class Boot extends Bootable {
 }
 
 object Boot {
-  private val defaultMailHost = "smtp.gmail.com"
-  private val defaultMailUser = "c3-project@ifunsoftware.com"
-  private val defaultMailPassword = "myverysecretpassword"
-  private val defaultPlabUrl = "https://194.85.162.171/"
-
   val plabAddress = Props.get("plab.address", defaultPlabUrl)
-
   val mailHost = Props.get("mail.host", defaultMailHost)
   val mailUser = Props.get("mail.user").openOr(defaultMailUser)
   val mailPass = Props.get("mail.password").openOr(defaultMailPassword)
-
   val dbDriver = Props.get("db.driver", "org.h2.Driver")
   val dbUrl = Props.get("db.url", "jdbc:h2:lift_proto.db;AUTO_SERVER=TRUE")
   val dbUserOpt = Props.get("db.user")
   val dbPassOpt = Props.get("db.password")
+  private val defaultMailHost = "smtp.gmail.com"
+  private val defaultMailUser = "noreply.c3@gmail.com"
+  private val defaultMailPassword = "qwertyc3"
+  private val defaultPlabUrl = "https://194.85.162.171/"
 }
