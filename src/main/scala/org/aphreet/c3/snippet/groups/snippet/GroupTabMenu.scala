@@ -41,7 +41,7 @@ class GroupTabMenu {
             case "Files"    => "icon-file"
             case "Messages" => "icon-comment"
             case "Settings" => "icon-wrench"
-            case _ => "icon-star"
+            case _          => "icon-star"
           }
           val activeClass = if (key == active) "active" else ""
           "span *" #> tab.name &

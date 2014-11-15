@@ -53,16 +53,18 @@ object C3SharingHelper {
    * @return S.redirectTo
    */
   def checkFile(groupId: String, path: List[String], extension: String) = {
-    val correctPath:List[String] = path.last match{
+    val correctPath: List[String] = path.last match {
       case "index" => path.take(path.length - 1)
-      case _ => path
+      case _       => path
     }
     val c3 = inject[C3System].open_!
-    val file = tryo{c3.getFile(C3Path(groupId, correctPath, extension))}
+    val file = tryo { c3.getFile(C3Path(groupId, correctPath, extension)) }
     file match {
-      case Full(f:C3FileSystemNode) => checkAccessUsingHash(f.asFile)
-      case _ => {S.notice("Failed")
-        S.redirectTo("/")}
+      case Full(f: C3FileSystemNode) => checkAccessUsingHash(f.asFile)
+      case _ => {
+        S.notice("Failed")
+        S.redirectTo("/")
+      }
     }
   }
 

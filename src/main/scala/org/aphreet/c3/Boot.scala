@@ -100,7 +100,7 @@ class Boot extends Bootable {
       },
       Menu("Experiments") / "experiments" >> LocGroup("mainmenu"),
 
-//      Menu(Loc("virtualization", ExtLink(plabAddress), "Virtualization", LocGroup("mainmenu"))),
+      //      Menu(Loc("virtualization", ExtLink(plabAddress), "Virtualization", LocGroup("mainmenu"))),
 
       Menu("R service") / "r_suite" >> LocGroup("mainmenu"),
 
