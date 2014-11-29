@@ -1,19 +1,20 @@
 package org.aphreet.c3.snippet.users.snippet
 
-import net.liftweb.util.BindHelpers._
-import org.aphreet.c3.model.{ UserGroup, Group, User }
 import net.liftweb.http.SHtml
-import xml.NodeSeq
-import net.liftweb.http.js.{ JsCmds, JsCmd }
+import net.liftweb.http.js.{JsCmd, JsCmds}
 import net.liftweb.mapper.By
-import org.aphreet.c3.util.helpers.AdminPageHelpers
+import net.liftweb.util.BindHelpers._
+import org.aphreet.c3.model.User
+import org.aphreet.c3.util.helpers.{AdminPageHelper, UserHelper}
+
+import scala.xml.NodeSeq
 
 /**
  * Copyright iFunSoftware 2011
  * @author Dmitry Ivanov
  */
 
-class UserListPage extends UserHelpers with AdminPageHelpers {
+class UserListPage extends UserHelper with AdminPageHelper {
 
   override lazy val activeLocId = "users"
 

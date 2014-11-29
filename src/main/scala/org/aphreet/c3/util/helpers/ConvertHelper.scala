@@ -7,7 +7,7 @@ package org.aphreet.c3.util.helpers
  * Time: 1:19 PM
  * To change this template use File | Settings | File Templates.
  */
-object ConvertHelpers {
+object ConvertHelper {
 
   def ShortString(text: String, size: Int = 80) =
     {

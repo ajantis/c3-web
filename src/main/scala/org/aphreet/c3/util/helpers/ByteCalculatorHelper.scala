@@ -1,12 +1,12 @@
 package org.aphreet.c3.util.helpers
 
+import net.liftweb.common.Box
 import net.liftweb.util.Helpers._
-import net.liftweb.common.{ Box, Full, Empty }
 
 /**
  * @author Serjk (mailto: serjk91@gmail.com)
  */
-object ByteCalculatorHelpers {
+object ByteCalculatorHelper {
   def convert(value: String): Box[String] = {
     tryo {
       val v = value.toLong

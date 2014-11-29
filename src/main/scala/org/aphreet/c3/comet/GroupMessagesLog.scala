@@ -1,23 +1,23 @@
 package org.aphreet.c3
 package comet
 
-import org.aphreet.c3.util.C3Exception
-import org.aphreet.c3.model.{ Group, User }
-import org.aphreet.c3.util.helpers.DateTimeHelpers
+import java.util.Date
 
-import net.liftweb.util.Helpers
 import net.liftmodules.textile.TextileParser
 import net.liftweb.common._
 import net.liftweb.http._
-import js.{ JsCmds, JsCmd }
-import js.jquery.JqJsCmds.PrependHtml
-import js.JE.JsVar
-import js.JsCmds._
+import net.liftweb.http.js.JE.JsVar
+import net.liftweb.http.js.JsCmds._
+import net.liftweb.http.js.jquery.JqJsCmds.PrependHtml
+import net.liftweb.http.js.{JsCmd, JsCmds}
+import net.liftweb.util.Helpers
+import org.aphreet.c3.model.{Group, User}
+import org.aphreet.c3.service.journal.{Event, EventType, JournalEntity, Message}
+import org.aphreet.c3.util.C3Exception
+import org.aphreet.c3.util.helpers.DateTimeHelper
 
-import scala.xml.{Unparsed, Text, NodeSeq}
 import scala.language.postfixOps
-import java.util.Date
-import org.aphreet.c3.service.journal.{ JournalEntity, Message, Event,EventType }
+import scala.xml.{NodeSeq, Text, Unparsed}
 
 /**
  * @author Dmitry Ivanov (mailto: id.ajantis@gmail.com)
@@ -25,23 +25,22 @@ import org.aphreet.c3.service.journal.{ JournalEntity, Message, Event,EventType 
  */
 trait GroupMessagesLog extends CometActor with CometListener {
 
+  // fixedRender is always appended to render(..)
+  override lazy val fixedRender: Box[NodeSeq] = Empty
+  private lazy val li = liId.
+    flatMap {
+    Helpers.findId(defaultHtml, _)
+  } openOr NodeSeq.Empty
   private val logger: Logger = Logger(classOf[GroupMessagesLog])
-
   private val group: Box[Group] = S.attr("group_id").flatMap(Group.find)
   private val journalServer: Box[JournalServer] = group.map(MessageServerFactory(_))
-
-  private var entities: List[JournalEntity] = Nil
-
   /* need these vals to be set eagerly, within the scope
    * of Comet component constructor
    */
   private val ulId = S.attr("ul_id") openOr "some_ul_id"
   private val liId = S.attr("li_id")
-
   private val inputTextContainerId = S.attr("input_container_id") openOr "input_container"
-
-  private lazy val li = liId.
-    flatMap { Helpers.findId(defaultHtml, _) } openOr NodeSeq.Empty
+  private var entities: List[JournalEntity] = Nil
 
   // handle an update to the message logs
   // by diffing the lists and then sending a partial update
@@ -59,8 +58,43 @@ trait GroupMessagesLog extends CometActor with CometListener {
     case _ => logger.error("Not sure how we got here.")
   }
 
-  // fixedRender is always appended to render(..)
-  override lazy val fixedRender: Box[NodeSeq] = Empty
+  // render the whole list of messages
+  override def render = {
+
+    "name=user_name" #> User.currentUser.map(_.shortName) &
+      ("#" + ulId + " *") #> displayList &
+      ("#" + inputTextContainerId + " *") #> { (xml: NodeSeq) => {
+        var content = ""
+
+        def sendMessage(): JsCmd = {
+          journalServer.foreach(_ ! JournalServerMsg(User.currentUser.open_!, group.open_!, content, tags))
+          tags.set(Nil)
+
+          SetValById("postit", "") &
+            JsCmds.Run("$('#" + inputTextContainerId + "').modal('hide');")
+        }
+
+        SHtml.ajaxForm {
+          ".edit_tags_form_func *" #> {
+            Script(
+              Function("updateTagsCallback", List("tags"),
+                SHtml.ajaxCall(
+                  JsVar("tags"),
+                  (d: String) => updateTags(d))._2.cmd))
+          } &
+            "#tags_input *" #> Text("") &
+            "#postit" #> SHtml.onSubmit((s: String) => content = s.trim) &
+            "type=submit" #> ((xml: NodeSeq) => xml ++ SHtml.hidden(sendMessage)) apply xml
+        }
+      }
+      }
+  }
+
+  // display a list of messages
+  private def displayList: NodeSeq = entities.flatMap {
+    case e: Event => line(e)
+    case m: Message => line(m)
+  }
 
   // display a line
   private def line(c: Message) = {
@@ -75,6 +109,17 @@ trait GroupMessagesLog extends CometActor with CometListener {
         }
       })(li)
   }
+
+  /**
+   * Convert an incoming string into XHTML using Textile Markup
+   *
+   * @param msg the incoming string
+   *
+   * @return textile markup for the incoming string
+   */
+  def toHtml(msg: String): NodeSeq = TextileParser.paraFixer(TextileParser.toHtml(msg, Empty))
+
+  private def formatMsgCreationDate(date: Date): String = DateTimeHelper.todayTimeOrPastDate(date)
 
   // display a line
   private def line(e: Event) = {
@@ -113,51 +158,10 @@ trait GroupMessagesLog extends CometActor with CometListener {
       )(li)
   }
 
-  // display a list of messages
-  private def displayList: NodeSeq = entities.flatMap {
-    case e: Event   => line(e)
-    case m: Message => line(m)
-  }
-
-  object tags extends SessionVar[List[String]](Nil)
-
   protected def updateTags(tagsInput: String): JsCmd = {
     val tagList = if (tagsInput.isEmpty) Nil else tagsInput.split(',').map(_.trim).toList
     tags.set(tagList)
     JsCmds.Noop // bootstrap-editable will update text value on page by itself
-  }
-
-  // render the whole list of messages
-  override def render = {
-
-    "name=user_name" #> User.currentUser.map(_.shortName) &
-      ("#" + ulId + " *") #> displayList &
-      ("#" + inputTextContainerId + " *") #> { (xml: NodeSeq) =>
-        {
-          var content = ""
-
-          def sendMessage(): JsCmd = {
-            journalServer.foreach(_ ! JournalServerMsg(User.currentUser.open_!, group.open_!, content, tags))
-            tags.set(Nil)
-
-            SetValById("postit", "") &
-              JsCmds.Run("$('#" + inputTextContainerId + "').modal('hide');")
-          }
-
-          SHtml.ajaxForm {
-            ".edit_tags_form_func *" #> {
-              Script(
-                Function("updateTagsCallback", List("tags"),
-                  SHtml.ajaxCall(
-                    JsVar("tags"),
-                    (d: String) => updateTags(d))._2.cmd))
-            } &
-              "#tags_input *" #> Text("") &
-              "#postit" #> SHtml.onSubmit((s: String) => content = s.trim) &
-              "type=submit" #> ((xml: NodeSeq) => xml ++ SHtml.hidden(sendMessage)) apply xml
-          }
-        }
-      }
   }
 
   // setup the component
@@ -172,16 +176,7 @@ trait GroupMessagesLog extends CometActor with CometListener {
     else journalServer.open_!
   }
 
-  /**
-   * Convert an incoming string into XHTML using Textile Markup
-   *
-   * @param msg the incoming string
-   *
-   * @return textile markup for the incoming string
-   */
-  def toHtml(msg: String): NodeSeq = TextileParser.paraFixer(TextileParser.toHtml(msg, Empty))
-
-  private def formatMsgCreationDate(date: Date): String = DateTimeHelpers.todayTimeOrPastDate(date)
+  object tags extends SessionVar[List[String]](Nil)
 
 }
 

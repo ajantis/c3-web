@@ -1,8 +1,8 @@
 package org.aphreet.c3.service.acl
 
-import junit.framework.TestCase
 import junit.framework.Assert._
-import org.aphreet.c3.snippet.groups.snippet.FileSharingHelper
+import junit.framework.TestCase
+import org.aphreet.c3.util.helpers.FileSharingHelper
 
 /**
  * Created by a-legotin on 6/4/2014.

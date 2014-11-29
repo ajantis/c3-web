@@ -1,21 +1,21 @@
 package org.aphreet.c3.snippet.categories.snippet
 
-import net.liftweb.util.Helpers._
-import org.aphreet.c3.model.{ User, Tag, Category }
-import xml.NodeSeq
-import net.liftweb.http.js.{ JsCmd, JsCmds }
-import net.liftweb.http.js.JsCmds.{ OnLoad, Script }
-import net.liftweb.http.{ SHtml, S }
-import net.liftweb.common.{ Empty, Full }
+import net.liftweb.common.{Empty, Full}
+import net.liftweb.http.js.{JsCmd, JsCmds}
+import net.liftweb.http.{S, SHtml}
 import net.liftweb.mapper.By
-import org.aphreet.c3.util.helpers.AdminPageHelpers
+import net.liftweb.util.Helpers._
+import org.aphreet.c3.model.{Category, Tag, User}
+import org.aphreet.c3.util.helpers.AdminPageHelper
+
+import scala.xml.NodeSeq
 
 /**
  * @author Serjk (mailto: serjk91@gmail.com)
  * @author Tkachev Alexey (mailto: imsiral1@mail.ru)
  */
 
-class CategoryListPage extends AdminPageHelpers {
+class CategoryListPage extends AdminPageHelper {
 
   override lazy val activeLocId = "categories"
 

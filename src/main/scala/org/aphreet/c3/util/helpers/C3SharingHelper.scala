@@ -29,29 +29,21 @@
  */
 package org.aphreet.c3.util.helpers
 
-import org.aphreet.c3.lib.DependencyFactory._
-import org.aphreet.c3.model.C3Path
-import net.liftweb.common._
-import net.liftweb.sitemap.Loc.Link
-import xml.NodeSeq
-import net.liftweb.util.Helpers._
-import net.liftweb.http.S
-import com.ifunsoftware.c3.access.fs.{ C3FileSystemNode, C3File }
-import org.aphreet.c3.lib.metadata.Metadata
-import Metadata._
-import net.liftweb.util.PassThru
-import net.liftweb.sitemap.Menu
-import net.liftweb.http.js.JsCmd
-import com.ifunsoftware.c3.access.{ StringMetadataValue, C3System }
-import net.liftweb.http.js.JE.JsRaw
+import com.ifunsoftware.c3.access.C3System
+import com.ifunsoftware.c3.access.fs.{C3File, C3FileSystemNode}
 import net.liftweb.common.Full
-import org.aphreet.c3.snippet.LiftMessages
+import net.liftweb.http.S
+import net.liftweb.util.Helpers._
+import org.aphreet.c3.lib.DependencyFactory._
+import org.aphreet.c3.lib.metadata.Metadata
+import org.aphreet.c3.lib.metadata.Metadata._
+import org.aphreet.c3.model.C3Path
 /**
  * @author  a-legotin on 4/26/2014.
  * @define file check if public access is provided to allow viewing file.
  * @example  C3SharingManager.checkFile(groupname, filePath, extension)
  */
-object C3SharingManager {
+object C3SharingHelper {
 
   /**
    * @define get file from storage and forward him to checkAccess methods
@@ -61,16 +53,18 @@ object C3SharingManager {
    * @return S.redirectTo
    */
   def checkFile(groupId: String, path: List[String], extension: String) = {
-    val correctPath:List[String] = path.last match{
+    val correctPath: List[String] = path.last match {
       case "index" => path.take(path.length - 1)
-      case _ => path
+      case _       => path
     }
     val c3 = inject[C3System].open_!
-    val file = tryo{c3.getFile(C3Path(groupId, correctPath, extension))}
+    val file = tryo { c3.getFile(C3Path(groupId, correctPath, extension)) }
     file match {
-      case Full(f:C3FileSystemNode) => checkAccessUsingHash(f.asFile)
-      case _ => {S.notice("Failed")
-        S.redirectTo("/")}
+      case Full(f: C3FileSystemNode) => checkAccessUsingHash(f.asFile)
+      case _ => {
+        S.notice("Failed")
+        S.redirectTo("/")
+      }
     }
   }
 
