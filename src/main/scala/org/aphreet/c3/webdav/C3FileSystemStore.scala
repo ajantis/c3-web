@@ -32,8 +32,8 @@ class C3FileSystemStore(val root: File) extends IWebdavStore {
 
   val c3System = C3()
 
-  //cash journal servers
-  var cashMapJournalServers = Map[String, Box[JournalServer]]()
+  //cache journal servers
+  var cacheMapJournalServers = Map[String, JournalServer]()
 
   def createPrincipal(request: HttpServletRequest): Principal = {
 
@@ -288,17 +288,21 @@ class C3FileSystemStore(val root: File) extends IWebdavStore {
 
   def trackEvent(tx: ITransaction, event: EventType, path: String) {
     val group = getGroupFromURI(path)
-    val journalServer: Box[JournalServer] = getJournalServer(group)
-    journalServer.foreach(_ ! JournalServerEvent(tx.getPrincipal.getUser, group, event, path))
+    val journalServer: JournalServer = getJournalServer(group)
+    journalServer ! JournalServerEvent(tx.getPrincipal.getUser, group, event, path)
   }
 
-  def getJournalServer(group: Group): Box[JournalServer] = {
-    val cashedJournalServer = cashMapJournalServers.get(group.name.toString())
-    cashedJournalServer match {
+  def getJournalServer(group: Group): JournalServer = {
+    val cachedJournalServer = cacheMapJournalServers.get(group.name.toString())
+    cachedJournalServer match {
       case Some(journalServer) => journalServer
       case None =>
-        val journalServer: Box[JournalServer] = Box(MessageServerFactory(group))
-        cashMapJournalServers += (group.name.toString() -> journalServer)
+        val journalServerBox: Box[JournalServer] = Box(MessageServerFactory(group))
+        val journalServer = journalServerBox match {
+          case Full(_) => _
+          case _ => JournalServerUnavailableException  
+        }
+        cacheMapJournalServers += (group.name.toString() -> journalServer)
         journalServer
     }
   }
@@ -312,4 +316,5 @@ class C3FileSystemStore(val root: File) extends IWebdavStore {
   }
 
   class GroupAccessDeniedException extends Exception
+  class JournalServerUnavailableException extends RuntimeException
 }
