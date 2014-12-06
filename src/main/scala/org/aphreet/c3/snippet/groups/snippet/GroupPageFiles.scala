@@ -275,8 +275,8 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers
   def toCss(file: C3File) = {
 
     def transferFile: CssSel = {
-      ".acl_cont [ondrag]" #> SHtml.ajaxInvoke(() => FileTransferHelper.saveDraggableResourceName(file.name))
-      ".acl_cont [ondrop]" #> ""
+      ".acl_cont [ondrag]" #> SHtml.ajaxInvoke(() => FileTransferHelper.saveDraggableResourceName(file.name)) &
+        ".acl_cont [ondrop]" #> ""
     }
 
     val owner = nodeOwner(file)
