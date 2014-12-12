@@ -13,7 +13,7 @@ import org.aphreet.c3.model.User
 import net.liftweb.mapper.By
 import org.apache.commons.codec.binary.Base64
 import net.liftweb.common._
-import net.sf.webdav.exceptions.{ ObjectNotFoundException, AccessDeniedException, UnauthenticatedException }
+import net.sf.webdav.exceptions.{ WebdavException, ObjectNotFoundException, AccessDeniedException, UnauthenticatedException }
 import org.aphreet.c3.lib.metadata.Metadata
 import scala.language.implicitConversions
 import net.liftweb.util.Helpers._
@@ -299,8 +299,8 @@ class C3FileSystemStore(val root: File) extends IWebdavStore {
       case None =>
         val journalServerBox: Box[JournalServer] = Box(MessageServerFactory(group))
         val journalServer = journalServerBox match {
-          case Full(_) => _
-          case _ => JournalServerUnavailableException  
+          case Full(js) => js
+          case _        => throw new JournalServerUnavailableException()
         }
         cacheMapJournalServers += (group.name.toString() -> journalServer)
         journalServer
@@ -316,5 +316,5 @@ class C3FileSystemStore(val root: File) extends IWebdavStore {
   }
 
   class GroupAccessDeniedException extends Exception
-  class JournalServerUnavailableException extends RuntimeException
+  class JournalServerUnavailableException extends WebdavException
 }
