@@ -122,11 +122,41 @@ class GroupListPage extends GroupsAccess{
     def saveMe(){
       newGroup.validate match {
         case Nil =>
+
           newGroup = newGroup.owner(User.currentUserUnsafe)
+
           if (public != "false") newGroup.isOpen(true)
           if(newGroup.save) S.notice(S.?("approve.list.group") + newGroup.name)
-          else S.warning(newGroup.name + " isn't added")
+          else S.warning(newGroup.name + " isn't 7added")
 
+          //correct ID if group already exists
+          var groupExists = true
+          while (groupExists)
+          {
+            //check group existence in C3
+            newGroup.getGroupC3 match {
+              case Full(groupFileNode) =>
+                groupExists = true;
+
+                val savedGroup = newGroup;
+
+                //delete group with existing id
+                newGroup.delete_!
+
+                // try again (id will incremented automaticly)
+                newGroup = Group.create
+                newGroup.description(savedGroup.description)
+                newGroup.tags(savedGroup.description)
+                newGroup.name(savedGroup.name)
+                newGroup = newGroup.owner(User.currentUserUnsafe)
+
+                if (public != "false") newGroup.isOpen(true)
+                newGroup.isApproved(false)
+                newGroup.save
+              case _                   =>
+                groupExists = false;
+            }
+          }
         case xs =>
           xs.foreach(f => S.error(f.msg))
       }
