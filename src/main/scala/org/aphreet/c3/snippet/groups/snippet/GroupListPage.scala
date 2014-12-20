@@ -127,7 +127,7 @@ class GroupListPage extends GroupsAccess{
 
           if (public != "false") newGroup.isOpen(true)
           if(newGroup.save) S.notice(S.?("approve.list.group") + newGroup.name)
-          else S.warning(newGroup.name + " isn't 7added")
+          else S.warning(newGroup.name + " isn't added")
 
           //correct ID if group already exists
           var groupExists = true
