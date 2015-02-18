@@ -4,106 +4,66 @@
     </div>
     <div class="lift:bind-at?name=content">
         <div class="lift:GroupListPage.list">
-            <a type="button" href="#add_group" class="btn btn_add_user" data-toggle="modal" title="Add User"><strong>New
-                Group</strong></a>
-
-            <div class="modal hide fade" id="add_group">
-                <div class="modal-content">
-                    <h4 class="modal-header">Send group for approval</h4>
-
-                    <div class="modal-body">
-                        <form id="add_group_form">
-                            <fieldset>
-                                <table class="table table-striped table_ul">
-                                    <colgroup>
-                                        <col style="width: 125px">
-                                        <col style="width: 300px">
-                                        <col style="width: 10%">
-                                    </colgroup>
-                                    <tbody class="t_tbody">
-                                    <tr >
-                                        <td><i class="icon-font"></i> Name <span style="color: red;">*</span></td>
-                                        <td >
-                                            <input class="input_box input-xlarge" type="text" name="name" required
-                                                   placeholder="Group name">
-                                        </td>
-                                    </tr>
-                                    <tr >
-                                        <td ><i class="icon-globe"></i> Public</td>
-                                        <td >
-                                            <input name="public" type="checkbox" value="true"/>
-                                            <span class="description_group description_group_settings">Make group public</span>
-                                        </td>
-                                    </tr>
-                                    <tr >
-                                        <td><i class="icon-info-sign"></i> Description <span
-                                                style="color: red;">*</span></td>
-                                        <td >
-                                            <textarea class="description input_box" cols="500" rows="2" type="text"
-                                                      name="description" required
-                                                      placeholder="Group description"></textarea>
-                                        </td>
-                                    </tr>
-                                    <tr >
-                                        <td class="tags"><i class="icon-tags"></i> Tags</td>
-                                        <td><input class="input_box current_tags input-xlarge" type="text" name="tags_edit" required placeholder="docs, main, etc..." ></td>
-                                    </tr>
-                                    </tbody>
-                                </table>
-                            </fieldset>
-                        </form>
-                    </div>
-                </div> <!-- modal-content-->
-                <div class="modal-footer">
-                    <button type="button" data-dismiss="modal" class="btn btn-warning cancel">
-                        <i class="icon-ban-circle icon-white"></i>
-                        <span>Cancel</span>
-                    </button>
-                    <button type="submit" class="btn btn-success" form="add_group_form">
-                        <i class="icon-white icon-upload"></i>
-                        <span>Send</span>
-                    </button>
+            <div id="custom-search-input" class="row search_form">
+                <div  class="input-group">
+                    <input type="text" class="input-sm search-query form-control empty search_query" placeholder="Enter a search query..." />
+                    <span class="input-group-btn material-input">
+                        <button class="btn btn-default btn-sm" type="submit">
+                            <span class=" glyphicon glyphicon-search"></span>
+                        </button>
+                    </span>
                 </div>
-            </div> <!-- add_group-->
-            <div class="container_groups">
-                <hr class="hr_groups_list"/>
-                <h4>
-                    <script type="text/javascript">
-                        function HideGroupDetails(that)
-                        {
-                            var panel = $(that).parent().parent().children('.desc_panel');
-                            var btn = $(that);
+            </div>
+            <div class="row">
+                <ul id="tabs" class="nav nav-tabs" data-tabs="tabs">
+                    <li class="active"><a href="#myGroup" data-toggle="tab">My Group</a></li>
+                    <li><a href="#orange" data-toggle="tab">Orange</a></li>
+                    <li><a href="#yellow" data-toggle="tab">Yellow</a></li>
+                </ul>
+                <div id="my-tab-content" class="tab-content">
+                    <div class="tab-pane active" id="myGroup">
+                        <div class="container_groups">
+                            <hr class="hr_groups_list"/>
+                            <h4>
+                                <img class="inf_left_groups" src="/images/glyphicons_203_lock.png"/>
+                                <a href="#" class="name_group"></a>
+                                <span class="toggle_switch inf_right icon-chevron-down" onclick="HideGroupDetails(this);"></span>
+                                <span class="icon-cog cog inf_right"></span>
+                                <span class="icon-plus plus inf_right"></span>
+                                <!-- Notification count will be here! <span class="bange event inf_right" style="font-size:14px;">8</span>-->
+                            </h4>
+                            <div class="desc_panel">
+                                <p class="description_group">Description....</p>
 
-                            if ((panel).css('height')=='25px')
-                            {
-                                (panel).css('height','auto')
-                                btn.attr("class", "toggle_switch inf_right icon-chevron-up");
-                            } else {
-                                (panel).css('height','25px')
-                                btn.attr("class", "toggle_switch inf_right icon-chevron-down");
-                            }
-                        }
-                    </script>
-                    <img class="inf_left_groups" src="/images/glyphicons_203_lock.png"/>
-                    <a href="#" class="name_group"></a>
-                    <span class="toggle_switch inf_right icon-chevron-down" onclick="HideGroupDetails(this);"></span>
-                    <span class="icon-cog cog inf_right"></span>
-                    <span class="icon-plus plus inf_right"></span>
-                    <!-- Notification count will be here! <span class="bange event inf_right" style="font-size:14px;">8</span>-->
-                </h4>
-                <div class="desc_panel">
-                    <p class="description_group">Description....</p>
+                                <div class="info_group">
+                                    <p class="owner_group pull-right">Owner....</p>
+                                    <i class="icon-user pull-right"
+                                       style="margin-right: 3px; margin-left: 3px; margin-top: 3px;"></i>
 
-                    <div class="info_group">
-                        <p class="owner_group pull-right">Owner....</p>
-                        <i class="icon-user pull-right"
-                           style="margin-right: 3px; margin-left: 3px; margin-top: 3px;"></i>
-
-                        <p class="pull-right ">
-                            <img class="inf_left" src="/images/tag.png"/>
-                            <span class="tags_group label label-info inf_left">table</span>
-                        </p>
+                                    <ul class="list-inline inf_left">
+                                        <img class="inf_left" src="/images/tag.png"/>
+                                        <li class="tags_group">
+                                            <a class="label btn-info ">Case classes</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
                     </div>
+                    <div class="tab-pane" id="orange">
+                        <h1>Orange</h1>
+                        <p>orange orange orange orange orange</p>
+                    </div>
+                    <div class="tab-pane" id="yellow">
+                        <h1>Yellow</h1>
+                        <p>yellow yellow yellow yellow yellow</p>
+                    </div>
+                </div>
+
+                <div class="pull-right">
+                    <a type="button" href="#add_group" class="btn btn_add_user" data-toggle="collapse" title="New Group"><strong>New Group</strong></a>
+                    <i class="glyphicon glyphicon-align-justify"></i>
+                    <i class="glyphicon glyphicon-th-large"></i>
                 </div>
             </div>
         </div>

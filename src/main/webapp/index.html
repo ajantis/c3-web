@@ -1,31 +1,38 @@
 <div class="lift:surround?with=default">
-
     <div class="lift:Search">
-
         <div class="lift:bind-at?name=left-panel">
-            <ul class="root nav nav-list affix-top">
-                <li class="branch category"><a href="#" class="name">Scala</a>
-                    <ul>
-                        <li class="tag"><a class="label btn-info name">Case classes</a></li>
-                    </ul>
-                </li>
-            </ul>
+            <div class="panel panel-default category">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        <a class="collapsed name" data-toggle="collapse"  data-parent="#left-panel"></a>
+                    </h4>
+                </div>
+                <ul id="collapseThree" class="panel-collapse panel-body collapse list-inline">
+                    <li class="tag">
+                        <a class="label btn-info name">Case classes</a>
+                    </li>
+                </ul>
+            </div>
         </div>
-        <div class="lift:bind-at?name=content" style="margin:10px;">
-            <div class="span7">
-                <div class="search_form form-search">
-                    <div class="input-append">
-                        <input class="span7 search_query" value=""  type="text" placeholder="Enter a search query..."/>
-                        <button class="btn search_btn btn-primary" type="submit"><i class="icon-search icon-white"></i> Go</button>
+        <div class="lift:bind-at?name=content">
+            <div class="row search_form">
+                <div id="custom-search-input">
+                    <div class="input-group">
+                        <input type="text" class="input-sm search-query form-control empty search_query" placeholder="Enter a search query..." />
+                        <span class="input-group-btn material-input">
+                            <button class="btn btn-default btn-sm" type="submit">
+                                <span class=" glyphicon glyphicon-search"></span>
+                            </button>
+                        </span>
                     </div>
                 </div>
             </div>
-            <div id="results" class="span8 search_results">
+            <div class="row" id="results">
                 <div class="entry">
                     <div class="row">
-                        <div class="span8">
+                        <div class="col-lg-10">
                             <div class="row">
-                                <div class="span8">
+                                <div class="col-lg-10">
                                     <h4>
                                         <a href="#" class="result_header">Some interesting file</a>
                                     </h4>
@@ -35,12 +42,12 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="span8">
+                                <div class="col-lg-10">
                                     <p class="result_content">Java IDL adds CORBA ...</p>
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="span8">
+                                <div class="col-lg-10">
                                     <div class="container_inf">
                                         <i class="icon-user"></i> <a class="owner" href="#">John</a>
                                         | <i class="icon-calendar"></i> <span class="result_date">Sept 16th, 2012</span>
@@ -51,7 +58,7 @@
                             </div>
                         </div>
                     </div>
-                    <div id="pagination" class="span8 pagination">
+                    <div id="pagination" class="col-lg-10 pagination">
                         <ul>
                             <nav:first></nav:first>
                             <nav:prev></nav:prev>
@@ -72,12 +79,13 @@
                     </ul>
                 </div>
                 <div class="index">
-                    <div class="well">
-                        <a class="span2" href="http://csnews.ifmo.ru/" ><img src="/images/vt_logo.png" style="padding-bottom: 50px"/></a>
+                    <div class="row ">
+                        <a class="col-md-2" href="http://cs.ifmo.ru/" ><img src="/images/vt_logo.png" style="padding-bottom: 50px"/></a>
                         <h1>Виртуальная лаборатория кафедры ВТ</h1>
                     </div>
+
                     <div class="row">
-                        <div class="span4">
+                        <div class="col-lg-6">
                             <h2>Групповая работа</h2>
                             <p>Создание рабочих групп<br/>
                                 Файловые каталоги<br/>
@@ -85,7 +93,7 @@
                                 Поиск<br/>
                             </p>
                         </div>
-                        <div class="span4">
+                        <div class="col-lg-6">
                             <h2>Эксперимент</h2>
                             <p>
                                 Рабочая группа эксперимента<br/>
@@ -96,54 +104,22 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="span4">
+                        <div class="col-lg-6">
                             <h2>Коллекции ресурсов</h2>
                             <p>
                                 Knowledge base
                             </p>
                         </div>
-                        <div class="span4">
+                        <div class="col-lg-6">
                             <h2>Внешние инструменты</h2>
                             <p>
                                 R-платформа
                             </p>
                         </div>
                     </div>
-
-
-                    <!--<p>-->
-                        <!--<i class="icon-info"></i>-->
-                        <!--<center><h5>Коллекции ресурсов</h5></center>-->
-                        <!--Knowledge base-->
-                    <!--</p>-->
-                    <!--<p>-->
-                        <!--<i class="icon-gears"></i>-->
-                    <!--<center><h5>Эксперимент</h5></center>-->
-                    <!--<ul>-->
-                        <!--<li>Рабочая группа эксперимента</li>-->
-                        <!--<li>Настройка среды эксперимента  </li>-->
-                        <!--<li>Управление экспериментом   </li>-->
-                        <!--<li>Планирование многофакторного эксперимента </li>-->
-                    <!--</ul>-->
-                    <!--</p>-->
-                    <!--<p>-->
-                        <!--<i class="icon-dashboard"></i>-->
-                    <!--<center><h5>Внешние инструменты</h5></center>-->
-                    <!--R-платформа-->
-                    <!--</p>-->
-
-                    <!--<p>-->
-                    <!--<b>vLab CSE</b> is a virtual laboratory of CSE department of NRU ITMO. Here you can participate in groups or create you own groups, share you files and documents, and search for knowledge.-->
-
-                    <!--<a class="btn btn-primary btn-large" href="/about.html">-->
-                            <!--Learn more-->
-                        <!--</a>-->
-                    <!--</p>-->
                 </div>
             </div>
         </div>
     </div>
 </div>
-
-
 

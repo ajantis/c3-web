@@ -14,10 +14,10 @@ import js.jquery.JqJsCmds.PrependHtml
 import js.JE.JsVar
 import js.JsCmds._
 
-import scala.xml.{Unparsed, Text, NodeSeq}
+import scala.xml.{ Unparsed, Text, NodeSeq }
 import scala.language.postfixOps
 import java.util.Date
-import org.aphreet.c3.service.journal.{ JournalEntity, Message, Event,EventType }
+import org.aphreet.c3.service.journal.{ JournalEntity, Message, Event, EventType }
 
 /**
  * @author Dmitry Ivanov (mailto: id.ajantis@gmail.com)
@@ -79,27 +79,26 @@ trait GroupMessagesLog extends CometActor with CometListener {
   // display a line
   private def line(e: Event) = {
     val resourceName = e.path.split("/").last
-    val fullPath = "/groups"+ e.path
+    val fullPath = "/groups" + e.path
     val tuple = e.eventType match {
       case EventType.ApproveUserToGroup =>
         val user = User.findByEmail(e.path).openOrThrowException("User not found")
-        val msgBody = "Approved user <a href=\""+user.createLink.toString()+"\">"+user.shortName+"</a>"
+        val msgBody = "Approved user <a href=\"" + user.createLink.toString() + "\">" + user.shortName + "</a>"
         val icon = "icon-check"
-        (msgBody,icon)
+        (msgBody, icon)
       case EventType.CreateResources =>
-        val msgBody = "Created resource <a href=\""+fullPath+"\">"+resourceName+"</a>"
+        val msgBody = "Created resource <a href=\"" + fullPath + "\">" + resourceName + "</a>"
         val icon = "icon-download-alt"
-        (msgBody,icon)
+        (msgBody, icon)
       case EventType.UpdateResources =>
-        val msgBody = "Updated resource <a href=\""+fullPath+"\">"+resourceName+"</a>"
+        val msgBody = "Updated resource <a href=\"" + fullPath + "\">" + resourceName + "</a>"
         val icon = "icon-refresh"
-        (msgBody,icon)
+        (msgBody, icon)
       case EventType.MoveResources =>
-        val msgBody = "Moved resource <a href=\""+fullPath+"\">"+resourceName+"</a> to "+e.path
+        val msgBody = "Moved resource <a href=\"" + fullPath + "\">" + resourceName + "</a> to " + e.path
         val icon = "icon-random"
-        (msgBody,icon)
+        (msgBody, icon)
     }
-
 
     ("name=when *" #> formatMsgCreationDate(e.creationDate) &
       "name=who *" #> e.author.map(_.shortName) &

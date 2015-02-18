@@ -8,6 +8,7 @@ import net.liftweb.http.S
  * Copyright iFunSoftware 2011
  * @author Dmitry Ivanov
  */
+//todo need refactoring
 object TextileRenderer extends RestHelper {
   serve {
     case "markitup" :: "textile" :: "render" :: _ Post _ =>

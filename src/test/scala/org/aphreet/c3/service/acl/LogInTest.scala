@@ -1,6 +1,6 @@
 package org.aphreet.c3.service.acl
 
-import org.scalatest.{FunSuite, BeforeAndAfterAll}
+import org.scalatest.{ FunSuite, BeforeAndAfterAll }
 import org.mortbay.jetty.Server
 import org.junit.Assert
 import org.openqa.selenium.By

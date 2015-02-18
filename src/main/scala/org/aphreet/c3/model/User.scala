@@ -68,7 +68,7 @@ object User extends User with MetaMegaProtoUser[User] {
   }
 
   override def lostPasswordXhtml = {
-    (<div class="forgot_password_form form-holder login-form well well_login">
+    (<div class="forgot_password_form form-holder login-form well well_login" id="asdasdas1">
        <form action={ S.uri } method="POST" class="form">
          <fieldset>
            <legend>{ S.?("lost_password.legend") }</legend>

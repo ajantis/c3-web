@@ -44,8 +44,8 @@ class MainSnippet {
   def currentUser = {
     User.currentUser match {
       case Full(user) => {
-        ".username" #> user.shortName &
-          ".user ^*" #> PassThru &
+        ".user *" #> PassThru &
+          ".user .username" #> user.shortName &
           ".not_logged_in" #> NodeSeq.Empty &
           (if (user.superUser.is)
             ".admin_section" #> PassThru
@@ -54,7 +54,7 @@ class MainSnippet {
       }
       case _ =>
         ".user" #> NodeSeq.Empty &
-          ".not_logged_in ^*" #> PassThru
+          ".not_logged_in" #> PassThru
     }
   }
 

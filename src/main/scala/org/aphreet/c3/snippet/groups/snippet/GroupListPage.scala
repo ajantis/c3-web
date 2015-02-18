@@ -54,7 +54,7 @@ class GroupListPage extends GroupsAccess{
         val groupLink = s"/groups/${group.id}/files/"
         val groupTags = group.getTags
         ".tags_group" #> groupTags.map((tag: String) => {
-          ".tags_group *" #> tag
+          ".label *" #> tag
         }) &
           ".inf_left_groups [src]"#> ("/images/"+picName)&
           "a *" #> group.name.is &
@@ -62,7 +62,6 @@ class GroupListPage extends GroupsAccess{
           ".description_group *"#> group.getDescription &
           ".owner_group  *" #> group.owner.obj.map(_.shortName).openOr("N/A")
       }
-
       def adminGroup():CssSel = {
         val settingsLink = s"/groups/${group.id}/settings"
         userGroup()&
