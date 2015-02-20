@@ -1,20 +1,23 @@
 <div class="lift:surround?with=default">
     <div class="lift:Search">
         <div class="lift:bind-at?name=left-panel">
-            <div class="panel panel-default category">
-                <div class="panel-heading">
-                    <h4 class="panel-title">
-                        <a class="collapsed name" data-toggle="collapse"  data-parent="#left-panel"></a>
-                    </h4>
+            <div class="panel-group col-sm-3 col-md-2" >
+                <div class="panel panel-default category">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">
+                            <a class="collapsed name" data-toggle="collapse"  data-parent="#left-panel"></a>
+                        </h4>
+                    </div>
+                    <ul id="collapseThree" class="panel-collapse panel-body collapse list-inline">
+                        <li class="tag">
+                            <a class="label btn-info name">Case classes</a>
+                        </li>
+                    </ul>
                 </div>
-                <ul id="collapseThree" class="panel-collapse panel-body collapse list-inline">
-                    <li class="tag">
-                        <a class="label btn-info name">Case classes</a>
-                    </li>
-                </ul>
             </div>
         </div>
         <div class="lift:bind-at?name=content">
+            <div class="col-sm-9 col-md-10">
             <div class="row search_form">
                 <div id="custom-search-input">
                     <div class="input-group">
@@ -118,6 +121,7 @@
                         </div>
                     </div>
                 </div>
+            </div>
             </div>
         </div>
     </div>
