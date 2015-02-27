@@ -39,7 +39,7 @@ object GroupPageFiles extends AbstractGroupPageLoc[GroupPageFilesData] with Suff
   override val pathPrefix = "groups" :: Nil
   override val pathSuffix = "files" :: Nil
 
-  override def getItem(id: String) = Group.find(id)
+  override def getItem(id: String) = Group.findById(id)
 
   override def isAccessiblePage(page: GroupPageFilesData): Boolean = {
     if (!page.isDirectoryLoc) {
@@ -54,7 +54,7 @@ object GroupPageFiles extends AbstractGroupPageLoc[GroupPageFilesData] with Suff
 
   override def link = {
     new Link[GroupPageFilesData](pathPrefix ++ pathSuffix) {
-      override def pathList(value: GroupPageFilesData): List[String] = pathPrefix ::: value.group.id.is.toString :: Nil ::: pathSuffix ::: value.path
+      override def pathList(value: GroupPageFilesData): List[String] = pathPrefix ::: value.group.getId :: Nil ::: pathSuffix ::: value.path
     }
   }
 
@@ -413,7 +413,7 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers
 
           override def name: String = thisPath.lastOption.getOrElse("N/A")
 
-          override def link: Loc.Link[List[String]] = new Link[List[String]](List("groups", data.group.id.is.toString, "files") ::: thisPath)
+          override def link: Loc.Link[List[String]] = new Link[List[String]](List("groups", data.group.getId, "files") ::: thisPath)
 
           override def text: Loc.LinkText[List[String]] = new LinkText[List[String]](v => Text(v.lastOption.getOrElse("N/A")))
 
@@ -495,7 +495,7 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers
     object selectedResourcePaths extends RequestVar[Set[String]](Set())
     val currentPathLink = data.group.createLink + data.currentAddress
     def writeTools(): CssSel = {
-      "#file_upload_form [action]" #> ("/upload/file/groups/" + group.id.is + "/files" + data.currentAddress) &
+      "#file_upload_form [action]" #> ("/upload/file/groups/" + group.getId + "/files" + data.currentAddress) &
         "#file_upload_close_btn [onclick]" #> SHtml.ajaxInvoke(() => JsCmds.Reload) &
         "#new-directory" #> newDirectoryForm(d, currentPath = currentPathLink)
     }
@@ -661,7 +661,7 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers
         S.error("Directory name cannot be empty")
       } else {
         val metadata = Map(OWNER_ID_META -> User.currentUserUnsafe.id.is.toString,
-          GROUP_ID_META -> data.group.id.is.toString,
+          GROUP_ID_META -> data.group.getId,
           TAGS_META -> tags.trim,
           ACL_META -> currentDirectory.metadata.get(ACL_META).getOrElse(""))
         currentDirectory.createDirectory(name.trim, metadata)

@@ -32,7 +32,7 @@ class GroupServiceImpl extends GroupService with C3Loggable {
     val group = newGroup.saveMe()
 
     try {
-      createGroupMapping(group.id.is.toString, metadata, group.owner)
+      createGroupMapping(group.getId, metadata, group.owner)
       group.owner.foreach(owner => UserGroup.join(owner, group))
       addUsersToGroup(group, members)
       Full(group)
@@ -50,7 +50,7 @@ class GroupServiceImpl extends GroupService with C3Loggable {
 
   override def removeGroup(group: Group): Boolean = {
     try {
-      removeGroupMapping(group.id.is.toString)
+      removeGroupMapping(group.getId)
     } catch {
       case e: Exception =>
         logger.error("Error while removing group mapping from C3: " + e.getMessage, e)
