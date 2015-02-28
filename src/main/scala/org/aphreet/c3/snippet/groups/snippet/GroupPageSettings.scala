@@ -1,28 +1,28 @@
 package org.aphreet.c3.snippet.groups.snippet
 
-import org.aphreet.c3.snippet.groups.{ GroupPageData, AbstractGroupPageLoc }
-import org.aphreet.c3.loc.SuffixLoc
-import org.aphreet.c3.model.{ UserGroup, User, Group }
-import net.liftweb.common.Box
-import net.liftweb.sitemap.Loc.Link
-import org.aphreet.c3.lib.DependencyFactory._
-import com.ifunsoftware.c3.access.{ StringMetadataValue, MetadataUpdate, C3System }
-import org.aphreet.c3.service.groups.GroupService
-import net.liftweb.util.BindHelpers._
-import xml.NodeSeq
-import net.liftweb.http.SHtml
-import net.liftweb.http.js.{ JsCmds, JsCmd }
-import net.liftweb.http.S
-import net.liftmodules.widgets.autocomplete.AutoComplete
-import net.liftweb.http.js.JsCmds.{ Function, Script }
-import org.aphreet.c3.snippet.LiftMessages
 import com.ifunsoftware.c3.access.fs.C3FileSystemNode
-import org.aphreet.c3.lib.metadata.Metadata._
+import com.ifunsoftware.c3.access.{ C3System, MetadataUpdate, StringMetadataValue }
+import net.liftmodules.widgets.autocomplete.AutoComplete
+import net.liftweb.common.Box
+import net.liftweb.http.{ S, SHtml }
 import net.liftweb.http.js.JE.JsVar
+import net.liftweb.http.js.JsCmds.{ Function, Script }
+import net.liftweb.http.js.{ JsCmd, JsCmds }
 import net.liftweb.mapper.By
-import org.aphreet.c3.util.helpers.GroupPageHelpers
-import org.aphreet.c3.comet.{ JournalServerEvent, MessageServerFactory, JournalServer }
+import net.liftweb.sitemap.Loc.Link
+import net.liftweb.util.BindHelpers._
+import org.aphreet.c3.comet.{ JournalServer, JournalServerEvent, MessageServerFactory }
+import org.aphreet.c3.lib.DependencyFactory._
+import org.aphreet.c3.lib.metadata.Metadata._
+import org.aphreet.c3.loc.SuffixLoc
+import org.aphreet.c3.model.{ Group, User, UserGroup }
+import org.aphreet.c3.service.groups.GroupService
 import org.aphreet.c3.service.journal.EventType
+import org.aphreet.c3.snippet.LiftMessages
+import org.aphreet.c3.snippet.groups.{ AbstractGroupPageLoc, GroupPageData }
+import org.aphreet.c3.util.helpers.GroupPageHelper
+
+import scala.xml.NodeSeq
 
 /**
  * @author Koyushev Sergey (mailto: serjk91@gmail.com)
@@ -33,33 +33,30 @@ object GroupPageSettings extends AbstractGroupPageLoc[GroupPageData] with Suffix
   override val pathPrefix = "groups" :: Nil
   override val pathSuffix = "settings" :: Nil
 
-  override def getItem(id: String) = Group.find(id)
+  override def getItem(id: String) = Group.findById(id)
 
   override def wrapItem(groupBox: Box[Group]) = groupBox.map(new GroupPageData(_))
 
   override def link = {
     new Link[GroupPageData](pathPrefix ++ pathSuffix) {
-      override def pathList(value: GroupPageData): List[String] = pathPrefix ::: value.group.id.is.toString :: Nil ::: pathSuffix
+      override def pathList(value: GroupPageData): List[String] = pathPrefix ::: value.group.getId :: Nil ::: pathSuffix
     }
   }
 
 }
 
-class GroupPageSettings(data: GroupPageData) extends GroupPageHelpers {
+class GroupPageSettings(data: GroupPageData) extends GroupPageHelper {
   lazy val c3 = inject[C3System].open_!
   lazy val groupService = inject[GroupService].open_!
 
   override lazy val group = data.group
   override lazy val activeLocId = "settings"
   val members = UserGroup.findAll(By(UserGroup.group, group))
-
-  private val journalServer: Box[JournalServer] = Box(MessageServerFactory(group))
-
   val approvedMembers = members.filter(_.isApproved)
     .map(_.user.obj.openOrThrowException("Error open user")).filter(_.id.is != group.owner.is)
-
   val otherMembers = members.filter(_.isApproved != true)
     .map(_.user.obj.openOrThrowException("Error open user")).filter(_.id.is != group.owner.is)
+  private val journalServer: Box[JournalServer] = Box(MessageServerFactory(group))
 
   def owner = {
     ".GroupOwner *" #> group.owner.obj.map(_.shortName).openOr("N/A") &
@@ -167,8 +164,8 @@ class GroupPageSettings(data: GroupPageData) extends GroupPageHelpers {
         def approveUser(): JsCmd = {
           groupService.approveOrRejectUsersInGroup(group, Iterable(user), true)
           journalServer.foreach(_ ! JournalServerEvent(User.currentUserUnsafe, group, EventType.ApproveUserToGroup, user.email))
-          LiftMessages.ajaxNotice(user.niceName + " is approved to group " + group.name.is) &
-            JsCmds.Replace(user.id.is.toString, NodeSeq.Empty)
+          JsCmds.Replace(user.id.is.toString, NodeSeq.Empty) &
+            JsCmds.Reload
         }
 
         def rejectUser(): JsCmd = {

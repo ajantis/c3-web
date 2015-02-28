@@ -206,7 +206,7 @@ class CreateDirectoryDialog extends AbstractFormDialog with C3ResourceMetadataFo
         case Full((name, userId)) => {
           try {
             val metadata = Map((OWNER_ID_META -> User.currentUser.map(_.id.is.toString).open_!))
-            /*(GROUP_ID_META -> group.id.is.toString)*/ // TODO set group id if we want to use this form
+            /*(GROUP_ID_META -> group.getId)*/ // TODO set group id if we want to use this form
 
             C3().getFile(theCurrentPath.get.open_!).asDirectory.createDirectory(name, metadata)
             S.notice("Directory " + name + " created")

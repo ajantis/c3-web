@@ -27,13 +27,13 @@ class MetadataServiceWorker(c3system: C3System, notificationManager: ActorRef) e
           case Some(tags) => {
             logger.debug("Got tags for resource " + res.address + ": " + tags)
             val ownerIdBox = Box(res.metadata.get(OWNER_ID_META).flatMap(asLong(_)))
-            val groupIdBox = Box(res.metadata.get(GROUP_ID_META).flatMap(asLong(_)))
-
+            var groupId = (res.metadata.get(GROUP_ID_META)).toString
+            if (groupId == null) groupId = "No group id in metadata provided";
             (for {
               ownerId ← ownerIdBox ?~ "No owner id in metadata provided"
-              groupId ← groupIdBox ?~ "No group id in metadata provided"
               owner ← User.find(By(User.id, ownerId)) ?~ ("User with id " + ownerId + " is not found!")
-              group ← Group.find(By(Group.id, groupId)) ?~ ("Group with id " + groupId + " is not found!")
+              group ← Group.findById(groupId) ?~ ("Group with id " + groupId + " is not found!")
+
             } yield (owner, group)) match {
               case Full((owner: User, group: Group)) => {
                 // TODO we do 2 requests to C3... make it in 1

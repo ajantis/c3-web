@@ -1,13 +1,13 @@
-package org.aphreet.c3.snippet.groups.snippet
+package org.aphreet.c3.util.helpers
 
-import net.liftweb.http.js.{JsCmds, JsCmd}
 import java.util.Calendar
+
 import com.ifunsoftware.c3.access.fs.{C3File, C3FileSystemNode}
 import com.ifunsoftware.c3.access.{C3System, MetadataUpdate}
-import org.aphreet.c3.lib.metadata.Metadata
-import Metadata._
 import net.liftweb.http.S
+import net.liftweb.http.js.{JsCmd, JsCmds}
 import net.liftweb.util._
+import org.aphreet.c3.lib.metadata.Metadata._
 
 
 /**
@@ -36,27 +36,26 @@ object FileSharingHelper {
   }
 
   /**
-   * @define disable sharing for file, delete access link
-   * @param node C3FileSystemNode (C3 file or directory)
-   * @return JavaScript
-   */
-  def disableSharing(node: C3FileSystemNode): JsCmd = {
-    try {
-      node.update(MetadataUpdate((Map(HASH -> C3System.stringToMetadataValue("")))))
-      JsCmds.SetValById("txtHash","")
-
-    } catch {
-      case e: Exception => JsCmds.Alert("Failed removing shared link")
-    }
-  }
-
-  /**
    * @define Generate MD5 hash for link building
    * @example md5Hash("Name")
    * @param text wich need to generate md5 hash
    * @return genereted md5hash
    */
   def md5Hash(text: String) : String = java.security.MessageDigest.getInstance("MD5").digest(text.getBytes()).map(0xFF & _).map { "%02x".format(_) }.foldLeft(""){_ + _}
+
+  /**
+   * @define Provide shared absolute path to C3 file
+   * @param file C3File
+   * @return shared absolute path
+   */
+  def fileShareFullUrl(file: C3File): String = {
+    val scheme = S.request.map(_.request.scheme).openOr("")
+    val server = S.request.map(_.request.serverName).openOr("")
+    val port = S.request.map(_.request.serverPort).openOr("")
+    val host = s"$scheme://$server:$port"
+    val sharingUrl = fileSharePath(file, file.metadata.get(HASH).getOrElse(""))
+    s"$host$sharingUrl"
+  }
 
   /**
    * @define Provide shared relative path to C3 file
@@ -70,17 +69,19 @@ object FileSharingHelper {
     val path = splittedFullPath.dropRight(splittedFullPath.indexOf(splittedFullPath.last) - 2 ).mkString("/")
     s"/sharing$path/$name?id=$hash"
   }
+
   /**
-   * @define Provide shared absolute path to C3 file
-   * @param file C3File
-   * @return shared absolute path
+   * @define disable sharing for file, delete access link
+   * @param node C3FileSystemNode (C3 file or directory)
+   * @return JavaScript
    */
-  def fileShareFullUrl(file: C3File): String = {
-    val scheme = S.request.map(_.request.scheme).openOr("")
-    val server = S.request.map(_.request.serverName).openOr("")
-    val port = S.request.map(_.request.serverPort).openOr("")
-    val host = s"$scheme://$server:$port"
-    val sharingUrl = fileSharePath(file, file.metadata.get(HASH).getOrElse(""))
-    s"$host$sharingUrl"
+  def disableSharing(node: C3FileSystemNode): JsCmd = {
+    try {
+      node.update(MetadataUpdate((Map(HASH -> C3System.stringToMetadataValue("")))))
+      JsCmds.SetValById("txtHash", "")
+
+    } catch {
+      case e: Exception => JsCmds.Alert("Failed removing shared link")
+    }
   }
 }

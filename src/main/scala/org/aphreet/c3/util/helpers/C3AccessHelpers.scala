@@ -1,11 +1,10 @@
-package org.aphreet.c3.acl.resources
+package org.aphreet.c3.util.helpers
 
 import com.ifunsoftware.c3.access.fs.C3FileSystemNode
-import org.aphreet.c3.lib.metadata.Metadata._
-import org.aphreet.c3.model.User
 import net.liftweb.common.Full
-import org.aphreet.c3.model.Group
-import org.aphreet.c3.snippet.groups.snippet.C3ResourceHelpers
+import org.aphreet.c3.acl.resources.C3FileAccess
+import org.aphreet.c3.lib.metadata.Metadata._
+import org.aphreet.c3.model.{Group, User}
 
 /**
  * @author Koyushev Sergey (mailto: serjk91@gmail.com)
@@ -14,21 +13,10 @@ import org.aphreet.c3.snippet.groups.snippet.C3ResourceHelpers
 //[TODO] need correct with opportunity approve user in group
 trait C3AccessHelpers extends C3FileAccess with C3ResourceHelpers {
 
-  //default value acl
-  def acl(acl: String) = {
-    if (acl == "")
-      if (group.isOpen.is)
-        "r-r-"
-      else
-        "r---"
-    else
-      acl
-  }
-
   def hasWriteAccess(group: Group) = {
     User.currentUser match {
       case Full(user) => !user.groups.filter(_ == group).isEmpty
-      case _          => false
+      case _ => false
     }
   }
 
@@ -39,26 +27,6 @@ trait C3AccessHelpers extends C3FileAccess with C3ResourceHelpers {
     }
   }
 
-  def isGroupRead(resource: C3FileSystemNode) = {
-    val metaACL = acl(resource.metadata.get(ACL_META).getOrElse(""))
-    metaACL.charAt(0) == 'r'
-  }
-
-  def isGroupWrite(resource: C3FileSystemNode) = {
-    val metaACL = acl(resource.metadata.get(ACL_META).getOrElse(""))
-    metaACL.charAt(1) == 'w'
-  }
-
-  def isOtherUserRead(resource: C3FileSystemNode) = {
-    val metaACL = acl(resource.metadata.get(ACL_META).getOrElse(""))
-    metaACL.charAt(2) == 'r'
-  }
-
-  def isOtherUserWrite(resource: C3FileSystemNode) = {
-    val metaACL = acl(resource.metadata.get(ACL_META).getOrElse(""))
-    metaACL.charAt(3) == 'w'
-  }
-
   def checkReadAccessResource(resource: C3FileSystemNode) = {
     if (User.containsCurrent(group.users.toList))
       isGroupRead(resource)
@@ -66,11 +34,42 @@ trait C3AccessHelpers extends C3FileAccess with C3ResourceHelpers {
       isOtherUserRead(resource)
   }
 
+  def isGroupRead(resource: C3FileSystemNode) = {
+    val metaACL = acl(resource.metadata.get(ACL_META).getOrElse(""))
+    metaACL.charAt(0) == 'r'
+  }
+
+  def isOtherUserRead(resource: C3FileSystemNode) = {
+    val metaACL = acl(resource.metadata.get(ACL_META).getOrElse(""))
+    metaACL.charAt(2) == 'r'
+  }
+
   def hasWriteAccessResource(resource: C3FileSystemNode) = {
     if (User.containsCurrent(group.users.toList))
       isGroupWrite(resource)
     else
       isOtherUserWrite(resource)
+  }
+
+  def isGroupWrite(resource: C3FileSystemNode) = {
+    val metaACL = acl(resource.metadata.get(ACL_META).getOrElse(""))
+    metaACL.charAt(1) == 'w'
+  }
+
+  def isOtherUserWrite(resource: C3FileSystemNode) = {
+    val metaACL = acl(resource.metadata.get(ACL_META).getOrElse(""))
+    metaACL.charAt(3) == 'w'
+  }
+
+  //default value acl
+  def acl(acl: String) = {
+    if (acl == "")
+      if (group.isOpen.is)
+        "r-r-"
+      else
+        "r---"
+    else
+      acl
   }
 
   def hasSuperAccessResource(resource: C3FileSystemNode) = {

@@ -1,15 +1,16 @@
 package org.aphreet.c3.util.helpers
 
-import org.specs._
-import net.liftweb.util.TimeHelpers
-import DateTimeHelpers._
 import java.text.SimpleDateFormat
+
+import net.liftweb.util.TimeHelpers
+import org.aphreet.c3.util.helpers.DateTimeHelper._
+import org.specs._
 
 /**
  * @author Dmitry Ivanov (mailto: id.ajantis@gmail.com)
  *         iFunSoftware
  */
-object DateTimeHelpersTest extends Specification {
+object DateTimeHelperTest extends Specification {
 
   "'DateTimeHelpers.todayTimeOrPastDate' should format a date for current day with pattern like '22:04'" in {
     val currentDayDate = TimeHelpers.dayNow

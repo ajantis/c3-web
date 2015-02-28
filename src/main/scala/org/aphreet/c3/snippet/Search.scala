@@ -130,7 +130,6 @@ class Search extends PaginatorSnippet[SearchResultEntry] with C3Loggable {
         {
           val tags = category.tags.toList
           "ul [id]" #> ("category_" + category.id.is + "_tags") &
-            ".collapsed [data-target]" #> ("#category_" + category.id.is + "_tags") &
             ".name *" #> category.name.is &
             ".tag" #> tags.map { tag =>
               tagToCss(tag)
