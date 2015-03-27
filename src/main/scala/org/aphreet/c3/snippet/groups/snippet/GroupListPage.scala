@@ -34,21 +34,36 @@ class GroupListPage extends GroupsAccess{
 
   lazy val openGroupIcon = "glyphicons_043_group.png"
 
+  val AllParameter: String = "all"
+  val MyOwnGroupsParameter: String = "myOwnGroups"
+  val MyGroupsParameter: String = "myGroups"
+  val activeClass = "active"
+
   def list = {
 
-    val groupList =  User.currentUser match {
-      case Full(u) =>   if(u.superUser.is) Group.findAll().toList
-      else u.groups.toList ::: Group.findAll(By(Group.isOpen,true))
-
-      case Empty => Group.findAll(By(Group.isOpen,true))
+    val tab = S.param("tab") openOr MyOwnGroupsParameter
+    val groupList = User.currentUser match {
+      case Full(u) =>
+        tab match {
+          case MyOwnGroupsParameter => Group.findAll(By(Group.owner, u))
+          case MyGroupsParameter => u.groups.toList
+          case _ => if (u.superUser.is) Group.findAll().toList
+                    else u.groups.toList ::: Group.findAll(By(Group.isOpen, true))
+        }
+      case Empty => Group.findAll(By(Group.isOpen, true))
     }
 
-    (User.currentUser match {
-      case Full(u)=> "#add_group" #> addGroup()
-      case Empty =>
-        ".btn_add_user" #> NodeSeq.Empty &
-          "#add_group" #> NodeSeq.Empty
-    })&
+      "#header *" #> (tab match {
+        case MyGroupsParameter => "My Groups"
+        case MyOwnGroupsParameter => "My Own Groups"
+        case _ => "All Groups"
+      }) &
+      (User.currentUser match {
+        case Full(u)=> "#add_group" #> addGroup()
+        case Empty =>
+          ".btn_add_user" #> NodeSeq.Empty &
+            "#add_group" #> NodeSeq.Empty
+      }) &
       ".container_groups" #> groupList.distinct.sortBy(_.name.is).filter(_.isApproved).map {
         group: Group =>
 
@@ -116,6 +131,22 @@ class GroupListPage extends GroupsAccess{
             ".plus [onclick]" #> SHtml.ajaxInvoke(()=>  LiftMessages.ajaxNotice(S.?("response.login")))
       })&
         infoGroup(groupIcon)
+    }
+  }
+
+  def newGroup = User.currentUser match {
+    case Full(u) => "#add_group" #> addGroup()
+    case Empty =>
+      ".btn_add_user" #> NodeSeq.Empty &
+        "#add_group" #> NodeSeq.Empty
+  }
+
+  def tabs = {
+    val tab = S.param("tab") openOr MyGroupsParameter
+    tab match {
+      case MyGroupsParameter => "#myGroups [class+]" #> activeClass
+      case MyOwnGroupsParameter => "#myOwnGroups [class+]" #> activeClass
+      case _ => "#all [class+]" #> activeClass
     }
   }
 
