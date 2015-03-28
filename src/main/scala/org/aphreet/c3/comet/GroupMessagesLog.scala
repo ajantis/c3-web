@@ -103,7 +103,7 @@ trait GroupMessagesLog extends CometActor with CometListener {
       "name=who *" #> c.author.map(_.shortName) &
       "name=body *" #> toHtml(c.content) &
       ".msg_id [id]" #> ("msg-" + c.uuid.toString) &
-      "i [class]" #> "icon-envelope" &
+      "i [class]" #> "glyphicon glyphicon-envelope" &
       ".tags *" #> {
         ".tag *" #> c.tags.map { (tag: String) =>
           <span class="label label-info">{ tag }</span>
@@ -130,19 +130,19 @@ trait GroupMessagesLog extends CometActor with CometListener {
       case EventType.ApproveUserToGroup =>
         val user = User.findByEmail(e.path).openOrThrowException("User not found")
         val msgBody = "Approved user <a href=\"" + user.createLink.toString() + "\">" + user.shortName + "</a>"
-        val icon = "icon-check"
+        val icon = "glyphicon glyphicon-check"
         (msgBody, icon)
       case EventType.CreateResources =>
         val msgBody = "Created resource <a href=\"" + fullPath + "\">" + resourceName + "</a>"
-        val icon = "icon-download-alt"
+        val icon = "glyphicon glyphicon-download-alt"
         (msgBody, icon)
       case EventType.UpdateResources =>
         val msgBody = "Updated resource <a href=\"" + fullPath + "\">" + resourceName + "</a>"
-        val icon = "icon-refresh"
+        val icon = "glyphicon glyphicon-refresh"
         (msgBody, icon)
       case EventType.MoveResources =>
         val msgBody = "Moved resource <a href=\"" + fullPath + "\">" + resourceName + "</a> to " + e.path
-        val icon = "icon-random"
+        val icon = "glyphicon glyphicon-random"
         (msgBody, icon)
     }
 
@@ -150,6 +150,7 @@ trait GroupMessagesLog extends CometActor with CometListener {
       "name=who *" #> e.author.map(_.shortName) &
       "name=body *" #> Unparsed(tuple._1) &
       "i [class]" #> Unparsed(tuple._2) &
+      // ".comment_item [id]" #> ("comment_" + e.uuid.toString) &
       ".msg_id [id]" #> ("msg-" + e.uuid.toString) //      ".tags *" #> {
       //        ".tag *" #> c.tags.map { (tag: String) =>
       //          <span class="label label-info">{ tag }</span>
