@@ -1,12 +1,12 @@
 package org.aphreet.c3.snippet.groups.snippet
 
 import com.ifunsoftware.c3.access.C3System
-import net.liftweb.common.{Box, Full}
-import net.liftweb.sitemap.Loc.{Link, LinkText}
+import net.liftweb.common.{ Box, Full }
+import net.liftweb.sitemap.Loc.{ Link, LinkText }
 import net.liftweb.util.BindHelpers._
 import org.aphreet.c3.lib.DependencyFactory._
 import org.aphreet.c3.model.Group
-import org.aphreet.c3.snippet.groups.{AbstractGroupPageLoc, GroupPageData}
+import org.aphreet.c3.snippet.groups.{ AbstractGroupPageLoc, GroupPageData }
 import org.aphreet.c3.util.helpers.GroupPageHelper
 
 import scala.xml.Text
@@ -26,12 +26,12 @@ object GroupPage extends AbstractGroupPageLoc[GroupPageData] {
   override def text = new LinkText[GroupPageData](text = v => Text(v.group.name.is))
 
   override def link = new Link[GroupPageData](pathList) {
-    override def pathList(value: GroupPageData): List[String] = pathPrefix ::: value.group.id.is.toString :: Nil
+    override def pathList(value: GroupPageData): List[String] = pathPrefix ::: value.group.getId :: Nil
   }
-  override def getItem(id: String) = Group.find(id)
+  override def getItem(id: String) = Group.findById(id)
   override def wrapItem(groupBox: Box[Group]) = groupBox.map(new GroupPageData(_))
   override def canonicalUrl(data: GroupPageData) = {
-    Full((pathPrefix ::: List(data.group.id.is.toString)).mkString("/", "/", ""))
+    Full((pathPrefix ::: List(data.group.getId)).mkString("/", "/", ""))
   }
 }
 

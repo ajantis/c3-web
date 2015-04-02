@@ -9,15 +9,15 @@ import net.liftweb.http._
 import net.liftweb.http.js.JE.JsVar
 import net.liftweb.http.js.JsCmds._
 import net.liftweb.http.js.jquery.JqJsCmds.PrependHtml
-import net.liftweb.http.js.{JsCmd, JsCmds}
+import net.liftweb.http.js.{ JsCmd, JsCmds }
 import net.liftweb.util.Helpers
-import org.aphreet.c3.model.{Group, User}
-import org.aphreet.c3.service.journal.{Event, EventType, JournalEntity, Message}
+import org.aphreet.c3.model.{ Group, User }
+import org.aphreet.c3.service.journal.{ Event, EventType, JournalEntity, Message }
 import org.aphreet.c3.util.C3Exception
 import org.aphreet.c3.util.helpers.DateTimeHelper
 
 import scala.language.postfixOps
-import scala.xml.{NodeSeq, Text, Unparsed}
+import scala.xml.{ NodeSeq, Text, Unparsed }
 
 /**
  * @author Dmitry Ivanov (mailto: id.ajantis@gmail.com)
@@ -29,10 +29,10 @@ trait GroupMessagesLog extends CometActor with CometListener {
   override lazy val fixedRender: Box[NodeSeq] = Empty
   private lazy val li = liId.
     flatMap {
-    Helpers.findId(defaultHtml, _)
-  } openOr NodeSeq.Empty
+      Helpers.findId(defaultHtml, _)
+    } openOr NodeSeq.Empty
   private val logger: Logger = Logger(classOf[GroupMessagesLog])
-  private val group: Box[Group] = S.attr("group_id").flatMap(Group.find)
+  private val group: Box[Group] = S.attr("group_id").flatMap(Group.findById)
   private val journalServer: Box[JournalServer] = group.map(MessageServerFactory(_))
   /* need these vals to be set eagerly, within the scope
    * of Comet component constructor
@@ -63,36 +63,37 @@ trait GroupMessagesLog extends CometActor with CometListener {
 
     "name=user_name" #> User.currentUser.map(_.shortName) &
       ("#" + ulId + " *") #> displayList &
-      ("#" + inputTextContainerId + " *") #> { (xml: NodeSeq) => {
-        var content = ""
+      ("#" + inputTextContainerId + " *") #> { (xml: NodeSeq) =>
+        {
+          var content = ""
 
-        def sendMessage(): JsCmd = {
-          journalServer.foreach(_ ! JournalServerMsg(User.currentUser.open_!, group.open_!, content, tags))
-          tags.set(Nil)
+          def sendMessage(): JsCmd = {
+            journalServer.foreach(_ ! JournalServerMsg(User.currentUser.open_!, group.open_!, content, tags))
+            tags.set(Nil)
 
-          SetValById("postit", "") &
-            JsCmds.Run("$('#" + inputTextContainerId + "').modal('hide');")
+            SetValById("postit", "") &
+              JsCmds.Run("$('#" + inputTextContainerId + "').modal('hide');")
+          }
+
+          SHtml.ajaxForm {
+            ".edit_tags_form_func *" #> {
+              Script(
+                Function("updateTagsCallback", List("tags"),
+                  SHtml.ajaxCall(
+                    JsVar("tags"),
+                    (d: String) => updateTags(d))._2.cmd))
+            } &
+              "#tags_input *" #> Text("") &
+              "#postit" #> SHtml.onSubmit((s: String) => content = s.trim) &
+              "type=submit" #> ((xml: NodeSeq) => xml ++ SHtml.hidden(sendMessage)) apply xml
+          }
         }
-
-        SHtml.ajaxForm {
-          ".edit_tags_form_func *" #> {
-            Script(
-              Function("updateTagsCallback", List("tags"),
-                SHtml.ajaxCall(
-                  JsVar("tags"),
-                  (d: String) => updateTags(d))._2.cmd))
-          } &
-            "#tags_input *" #> Text("") &
-            "#postit" #> SHtml.onSubmit((s: String) => content = s.trim) &
-            "type=submit" #> ((xml: NodeSeq) => xml ++ SHtml.hidden(sendMessage)) apply xml
-        }
-      }
       }
   }
 
   // display a list of messages
   private def displayList: NodeSeq = entities.flatMap {
-    case e: Event => line(e)
+    case e: Event   => line(e)
     case m: Message => line(m)
   }
 
@@ -124,27 +125,26 @@ trait GroupMessagesLog extends CometActor with CometListener {
   // display a line
   private def line(e: Event) = {
     val resourceName = e.path.split("/").last
-    val fullPath = "/groups"+ e.path
+    val fullPath = "/groups" + e.path
     val tuple = e.eventType match {
       case EventType.ApproveUserToGroup =>
         val user = User.findByEmail(e.path).openOrThrowException("User not found")
-        val msgBody = "Approved user <a href=\""+user.createLink.toString()+"\">"+user.shortName+"</a>"
+        val msgBody = "Approved user <a href=\"" + user.createLink.toString() + "\">" + user.shortName + "</a>"
         val icon = "icon-check"
-        (msgBody,icon)
+        (msgBody, icon)
       case EventType.CreateResources =>
-        val msgBody = "Created resource <a href=\""+fullPath+"\">"+resourceName+"</a>"
+        val msgBody = "Created resource <a href=\"" + fullPath + "\">" + resourceName + "</a>"
         val icon = "icon-download-alt"
-        (msgBody,icon)
+        (msgBody, icon)
       case EventType.UpdateResources =>
-        val msgBody = "Updated resource <a href=\""+fullPath+"\">"+resourceName+"</a>"
+        val msgBody = "Updated resource <a href=\"" + fullPath + "\">" + resourceName + "</a>"
         val icon = "icon-refresh"
-        (msgBody,icon)
+        (msgBody, icon)
       case EventType.MoveResources =>
-        val msgBody = "Moved resource <a href=\""+fullPath+"\">"+resourceName+"</a> to "+e.path
+        val msgBody = "Moved resource <a href=\"" + fullPath + "\">" + resourceName + "</a> to " + e.path
         val icon = "icon-random"
-        (msgBody,icon)
+        (msgBody, icon)
     }
-
 
     ("name=when *" #> formatMsgCreationDate(e.creationDate) &
       "name=who *" #> e.author.map(_.shortName) &

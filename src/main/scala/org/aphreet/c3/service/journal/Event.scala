@@ -11,7 +11,7 @@ import net.liftweb.util.TimeHelpers
  */
 case class Event(groupId: String, authorId: String, uuid: String, creationDate: util.Date, eventType: EventType, path: String) extends JournalEntity {
   lazy val author: Box[User] = User.find(authorId)
-  lazy val group: Box[Group] = Group.find(groupId)
+  lazy val group: Box[Group] = Group.findById(groupId)
 
   override def toString = {
     val builder = new StringBuilder("Event{")

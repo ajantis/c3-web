@@ -22,7 +22,7 @@ class GroupTabMenu {
   def render: CssSel = {
     val activeTab = S.attr("active")
     val groupId = S.attr("group_id")
-    val group = groupId.flatMap(id => Group.find(id))
+    val group = groupId.flatMap(id => Group.findById(id))
 
     (User.currentUser, group) match {
       case (Full(user), Full(g)) => {

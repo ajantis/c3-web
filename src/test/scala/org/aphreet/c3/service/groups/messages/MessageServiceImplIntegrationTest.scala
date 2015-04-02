@@ -47,9 +47,9 @@ class MessageServiceImplIntegrationTest extends TestCase {
 
   def testMessageCreation() {
 
-    val msg1 = Message(group.id.is.toString, "1", "This is test message!", util.UUID.randomUUID().toString, Nil)
-    val msg2 = Message(group.id.is.toString, "1", "If u don't like C3 get lost", util.UUID.randomUUID().toString, Nil)
-    val msg3 = Message(group.id.is.toString, "1", "This is another testing message!", util.UUID.randomUUID().toString, Nil)
+    val msg1 = Message(group.getId, "1", "This is test message!", util.UUID.randomUUID().toString, Nil)
+    val msg2 = Message(group.getId, "1", "If u don't like C3 get lost", util.UUID.randomUUID().toString, Nil)
+    val msg3 = Message(group.getId, "1", "This is another testing message!", util.UUID.randomUUID().toString, Nil)
 
     logger.debug("Saving messages of group " + msg1.group)
 
@@ -74,9 +74,9 @@ class MessageServiceImplIntegrationTest extends TestCase {
 
   def testMessageDeletion() {
     // Storing some messages to delete them further
-    service.save(Message(group.id.is.toString, "1", "This is test message!", util.UUID.randomUUID().toString, List()))
-    service.save(Message(group.id.is.toString, "1", "If u don't like C3 get lost", util.UUID.randomUUID().toString, List()))
-    service.save(Message(group.id.is.toString, "1", "This is another testing message!", util.UUID.randomUUID().toString, List()))
+    service.save(Message(group.getId, "1", "This is test message!", util.UUID.randomUUID().toString, List()))
+    service.save(Message(group.getId, "1", "If u don't like C3 get lost", util.UUID.randomUUID().toString, List()))
+    service.save(Message(group.getId, "1", "This is another testing message!", util.UUID.randomUUID().toString, List()))
 
     val messages = service.findMsgAll(group)
 
