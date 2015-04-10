@@ -29,3 +29,13 @@ function HideGroupDetails2(that)
         btn.attr("class", "toggle_switch inf_right icon-chevron-down");
     }
 }
+
+function switchRowsViewOn() {
+    $('.container_groups').removeClass('shadow-z-2');
+    $('.container_groups').removeClass('group-tile');
+}
+
+function switchTileViewOn() {
+    $('.container_groups').addClass('shadow-z-2');
+    $('.container_groups').addClass('group-tile');
+}

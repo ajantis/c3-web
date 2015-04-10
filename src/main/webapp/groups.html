@@ -4,7 +4,7 @@
     <div class="lift:bind-at?name=content">
         <div>
             <div id="custom-search-input" class="row search_form">
-                <div  class="input-group">
+                <div class="input-group">
                     <input type="text" class="input-sm search-query form-control empty search_query" placeholder="Enter a search query..." />
                     <span class="input-group-btn material-input">
                         <button class="btn btn-default btn-sm" type="submit">
@@ -20,8 +20,10 @@
                     <li id="all"><a href="/groups?tab=all">All Groups</a></li>
                     <li class="pull-right lift:GroupListPage.newGroup">
                         <a type="button" href="#add_group" class="btn btn_add_user" title="New Group"><strong>New Group</strong></a>
-                        <i class="glyphicon glyphicon-align-justify"></i>
-                        <i class="glyphicon glyphicon-th-large"></i>
+                    </li>
+                    <li class="pull-right">
+                        <a onclick="switchRowsViewOn()" class="btn" style="float: left"><i class="glyphicon glyphicon-align-justify"></i></a>
+                        <a onclick="switchTileViewOn()" class="btn" style="float: left"><i class="glyphicon glyphicon-th-large"></i></a>
                     </li>
                 </ul>
 

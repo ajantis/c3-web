@@ -543,3 +543,14 @@
 .comments_list .comment_item_plain .comment_item .info{
 	overflow:hidden
 }
+
+.group-tile {
+    width: 30%;
+    list-style: none;
+    float: left;
+    margin: 5px
+}
+
+.group-tile > hr {
+    margin: 0;
+}
