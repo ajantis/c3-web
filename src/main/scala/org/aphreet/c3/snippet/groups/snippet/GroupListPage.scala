@@ -38,7 +38,23 @@ class GroupListPage extends GroupsAccess{
   val MyOwnGroupsParameter: String = "myOwnGroups"
   val MyGroupsParameter: String = "myGroups"
   val activeClass = "active"
+  def userListGroup = {
+    val groupList = User.currentUser match {
+      case Full(u) => u.groups.toList
+    }
+    ".container_groupList" #> groupList.distinct.sortBy(_.name.is).filter(_.isApproved).map {
+      group: Group =>
+        def infoGroup():CssSel = {
 
+          val groupLink = s"/groups/${group.getId}/files/"
+            ".name_group *" #> group.name.is &
+            "a [href]" #> groupLink &
+            ".event *" #> "3"
+        }
+
+        infoGroup()
+    }
+  }
   def list = {
 
     val tab = S.param("tab") openOr MyOwnGroupsParameter

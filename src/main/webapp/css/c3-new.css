@@ -543,7 +543,19 @@
 .comments_list .comment_item_plain .comment_item .info{
 	overflow:hidden
 }
-
+.logo-vert {
+    width: 360px;
+    margin: -52px 0px -52px -40px;
+    transition: width 0.3s ease 0s;
+}
+.vlab-head {
+    background: none repeat scroll 0% 0% #1946BA;
+    transition: height 0.3s ease 0s;
+    padding: 15px;
+}
+img.circle {
+    border-radius: 100%;
+}
 .group-tile {
     width: 30%;
     list-style: none;

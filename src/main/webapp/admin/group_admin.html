@@ -1,15 +1,11 @@
 <div class="lift:surround?with=default" xmlns="http://www.w3.org/1999/html">
 
     <div class="lift:bind-at?name=left-panel">
-        <div>
-            <h4>Administration</h4>
+        <div class="col-sm-3 col-md-2 sidebar">
+            <h4>Administration panel</h4>
+            <div class="lift:UserListPage.embedTabMenu"></div>
         </div>
-
-        <div class="lift:ApproveGroup.embedTabMenu">
-        </div>
-
     </div>
-
     <div class="lift:bind-at?name=content">
         <div class="lift:ApproveGroup">
             <h3 class="nav-header groupsHeader">Approve groups</h3>
