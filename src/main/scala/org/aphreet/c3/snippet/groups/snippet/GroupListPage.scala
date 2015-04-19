@@ -65,19 +65,21 @@ class GroupListPage extends GroupsAccess {
           case MyOwnGroupsParameter => Group.findAll(By(Group.owner, u))
           case MyGroupsParameter => u.groups.toList
           case _ => if (u.superUser.is) Group.findAll().toList
-                    else u.groups.toList ::: Group.findAll(By(Group.isOpen, true))
+          else u.groups.toList ::: Group.findAll(By(Group.isOpen, true))
         }
       case Empty => Group.findAll(By(Group.isOpen, true))
     }
 
     pageHeader(User.currentUser, tab) &
-    (User.currentUser match {
-      case Full(u) => "#add_group" #> addGroup()
-      case Empty =>
-        ".btn_add_user" #> NodeSeq.Empty &
-          "#add_group" #> NodeSeq.Empty
-    }) &
-      ".container_groups" #> groupList.distinct.sortBy(_.name.is).filter(_.isApproved).map {
+      (User.currentUser match {
+        case Full(u) => "#add_group" #> addGroup()
+        case Empty =>
+          ".btn_add_user" #> NodeSeq.Empty &
+            "#add_group" #> NodeSeq.Empty
+      }) &
+      (if (groupList.isEmpty) "invalid-empty-tag" #> NodeSeq.Empty
+      else "#no-groups-warning" #> NodeSeq.Empty) &
+      ".container_groups" #> groupList.distinct.filter(_.isApproved).sortBy(_.name.is).map {
         group: Group =>
 
           val groupIcon = if (group.isOpen.is) openGroupIcon else lockGroupIcon
