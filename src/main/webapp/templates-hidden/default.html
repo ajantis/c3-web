@@ -16,7 +16,9 @@
     <link href="/scripts/bootstrap/css/bootstrap.min.css" rel="stylesheet"/>
     <!--material style-->
     <link href="/scripts/material/css/ripples.min.css" rel="stylesheet">
-    <link href="/scripts/material/css/material-wfont.min.css" rel="stylesheet">
+    <!--<link href="/scripts/material/css/roboto.min.css" rel="stylesheet">-->
+    <!--<link href="/scripts/material/css/material-wfont.min.css" rel="stylesheet">-->
+    <link href="/scripts/material/css/material-fullpalette.min.css" rel="stylesheet">
     <!--end material-->
 
     <link href="/scripts/js/jquery-ui-1.11.2/jquery-ui.css" rel="stylesheet"/>
@@ -26,21 +28,21 @@
     <script src="/scripts/js/jquery-1.11.1.min.js" type="text/javascript"></script>
 
 
-    <script src="/scripts/js/jquery-ui-1.11.2/jquery-ui.js" type="text/javascript"></script>
+    <script src="/scripts/jquery-ui-1.11.2/jquery-ui.js" type="text/javascript"></script>
     <!--<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.11/themes/base/jquery-ui.css" id="theme"/>-->
     <!--<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.11/jquery-ui.min.js"></script>-->
 
 
     <script src="/scripts/bootstrap/js/bootstrap.min.js"></script>
     <!--material style-->
-    <!--<script src="/material/js/ripples.min.js"></script>-->
-    <!--<script src="/material/js/material.min.js"></script>-->
+    <script src="/scripts/material/js/ripples.min.js"></script>
+    <script src="/scripts/material/js/material.min.js"></script>
     <!--end material-->
 
     <link href="/css/fileupload5.0.2/jquery.fileupload-ui.css" type="text/css" rel="stylesheet"/>
     <script src="http://ajax.aspnetcdn.com/ajax/jquery.templates/beta1/jquery.tmpl.min.js"></script>
-    <script src="/scripts/js/fileupload5.0.2/jquery.fileupload.js" type="text/javascript"></script>
-    <script src="/scripts/js/fileupload5.0.2/jquery.fileupload-ui.js" type="text/javascript"></script>
+    <script src="/scripts/fileupload5.0.2/jquery.fileupload.js" type="text/javascript"></script>
+    <script src="/scripts/fileupload5.0.2/jquery.fileupload-ui.js" type="text/javascript"></script>
     <!--<script id="json" src="/classpath/json.js" type="text/javascript"></script>-->
     <!-- select2 -->
     <script src="/scripts/select2/select2.js"></script>
@@ -63,7 +65,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="/">vLab CSE</a>
+            <a class="" href="/"><img class="logo-hor" src="/images/logo-ru-hor-invert.svg" alt="Санкт-Петербургский национальный исследовательский университет информационных технологий, механики и оптики"></a>
         </div>
         <div class="navbar-collapse collapse navbar-inverse-collapse">
             <!--<ul class="nav navbar-nav">-->
@@ -113,7 +115,7 @@
                     </ul>
                 </li>
                 <li class="dropdown not_logged_in">
-                    <a href="/user_mgt/login" class="dropdown-toggle" data-toggle="dropdown">Sign in <b class="caret"></b></a>
+                    <a href="/user_mgt/login" class="dropdown-toggle" data-toggle="dropdown">Войти <b class="caret"></b></a>
                     <ul class="dropdown-menu" style="padding: 15px;min-width: 250px;">
                         <li>
                             <div class="row">
@@ -121,20 +123,20 @@
                                     <form class="form" role="form" method="POST" action="/user_mgt/login" accept-charset="UTF-8" id="login-nav">
                                         <fieldset>
                                             <div class="form-group">
-                                                <label class="sr-only" for="username">Email address</label>
+                                                <label class="sr-only" for="username">Email адрес</label>
                                                 <input name="username" type="email" class="form-control username" id="username" placeholder="Email address" required>
                                             </div>
                                             <div class="form-group">
-                                                <label class="sr-only" for="password">Password</label>
+                                                <label class="sr-only" for="password">Пароль</label>
                                                 <input name="password" type="password" class="password form-control" id="password" placeholder="Password" required>
                                             </div>
                                             <div class="checkbox">
                                                 <label>
-                                                    <input type="checkbox"> Remember me
+                                                    <input type="checkbox"> Напомнить пароль
                                                 </label>
                                             </div>
                                             <div class="form-group">
-                                                <button type="submit" class="btn btn-success btn-block">Sign in</button>
+                                                <button type="submit" class="btn btn-success btn-block">Войти</button>
                                             </div>
                                         </fieldset>
                                     </form>
@@ -144,21 +146,47 @@
                         <li class="divider"></li>
                         <li>
                             <a href="/user_mgt/lost_password" class="btn btn-primary btn-block">Forgot password</a>
-                            <a href="/user_mgt/lost_password" class="btn btn-primary btn-block">New User</a>
+                            <!--<a href="/user_mgt/lost_password" class="btn btn-primary btn-block">New User</a>-->
                         </li>
                     </ul>
                 </li>
-                <li class="add_group">
-                    <a href="/addgroup"><i class="mdi-social-group-add"></i>New group</a>
-                </li>
-                <li class="not_logged_in">
-                    <a href="/user_mgt/login" target="_blank" rel="tooltip" data-original-title="Login"><span class="username">Login</span></a>
+                <li class="dropdown add_group">
+                    <a href="/addgroup">Создать группу</a>
                 </li>
             </ul>
         </div>
     </div>
 </div>
 <div class="container">
+    <div class="lift:LiftMessages row">
+        <div class="lift_messages_container span4 offset4">
+            <div id="s_errors" class="errors">
+                <div class="alert alert-dismissable alert-danger">
+                    <button type="button" class="close" data-dismiss="alert">×</button>
+                    <p class="message">Here go all errors</p>
+                </div>
+            </div>
+            <div id="s_warnings" class="warnings">
+                <div class="alert alert-dismissable alert-warning">
+                    <button type="button" class="close" data-dismiss="alert">×</button>
+                    <p class="message">Here go all warnings</p>
+                </div>
+            </div>
+            <div id="s_notices" class="notices">
+                <div class="alert alert-dismissable alert-info">
+                    <button type="button" class="close" data-dismiss="alert">×</button>
+                    <p class="message">Here go all notices</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="categories_s" class="row">
+        <div class="span10 offset1" id="categories_search">
+        </div>
+    </div>
+
+
     <div class="row" >
         <div id="left-panel">
             <div class="panel-group" >

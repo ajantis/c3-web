@@ -84,6 +84,7 @@ class Boot extends Bootable {
       Menu("Groups") / "groups" >> LocGroup("mainmenu") submenus {
         GroupsSection.menus: _*
       },
+      Menu("AddGroup") / "addgroup",
       Menu("users", "Users") / "users" >> loggedIn submenus {
         UsersSection.menus: _*
       },

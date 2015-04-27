@@ -1,7 +1,12 @@
 .c3-nav>ul{
 	padding-left:0;
 	margin-bottom:0;
-	list-style:none
+	list-style:none;
+
+    color: #FFF;
+    white-space: nowrap;
+    font-size: 20px;
+    font-weight: bold;
 }
 .c3-nav>ul>li{
 	position:relative;
@@ -12,7 +17,6 @@
 	position:relative;
 	display:block;
 	padding:19.5px 15px;
-
 }
 
 .c3-nav>ul>li>a:hover,.c3-nav>ul>li>a:focus{
@@ -58,10 +62,13 @@
     position:relative;
     display:block;
 }
-.active{
-    color: red;
-}
 
+.logo-hor
+{
+    height: 60px;
+    margin-left: -15px;
+    margin-right: -15px;
+}
 
 .comments_list{
 	position:relative;
@@ -547,11 +554,6 @@
     width: 360px;
     margin: -52px 0px -52px -40px;
     transition: width 0.3s ease 0s;
-}
-.vlab-head {
-    background: none repeat scroll 0% 0% #1946BA;
-    transition: height 0.3s ease 0s;
-    padding: 15px;
 }
 img.circle {
     border-radius: 100%;

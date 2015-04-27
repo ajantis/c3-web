@@ -298,7 +298,16 @@ object User extends User with MetaMegaProtoUser[User] {
         Change password
       </lift:Menu.item>.toList
   }: NodeSeq
-  override def signup = {
+
+  def actionsAfterSuccessSignup(user: TheUserType, func: () => Nothing): Unit =
+    {
+      actionsAfterSignup(user, () => {
+        S.notice(S.?("signup.user"))
+        func()
+      })
+
+    }
+  override def signup() = {
     val theUser: TheUserType = mutateUserOnSignup(createNewUserInstance())
 
     def testSignup() {

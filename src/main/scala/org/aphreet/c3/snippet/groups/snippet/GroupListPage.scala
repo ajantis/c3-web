@@ -3,6 +3,7 @@ package org.aphreet.c3.snippet.groups.snippet
 import com.ifunsoftware.c3.access.C3System
 import net.liftweb.common.{Box, Empty, Logger, Full}
 import org.aphreet.c3.lib.DependencyFactory._
+import org.aphreet.c3.model.User._
 import xml.NodeSeq
 import org.aphreet.c3.model._
 import net.liftweb.http.{S, SHtml}
@@ -161,7 +162,78 @@ class GroupListPage extends GroupsAccess {
         case Empty => "All Groups"
       })
   }
+  def newGroupAndUser() : CssSel={
+    ///todo need refactoring
+    val newUser = User.create
+    var newGroup = Group.create
+    var repeatePassword = ""
+    var public = ""
+    def saveMe(): Unit = {
+      User.currentUser match {
+        case Full(u) => { //User is logIn need create group only
+          newGroup.validate match {
+            case Nil =>
+              val groupUID = GetGroupUID(newGroup.name)
+              newGroup.uid(groupUID)
+              newGroup = newGroup.owner(User.currentUser)
 
+              if (public != "false") newGroup.isOpen(true)
+              if (newGroup.save) S.notice(S.?("approve.list.group") + newGroup.name)
+              else S.warning(newGroup.name + " isn't added")
+
+            case xs =>
+              xs.foreach(f => S.error(f.msg))
+          }
+        }
+        case Empty => { //User is new.
+          newUser.validate match {
+            case Nil => {
+              User.actionsAfterSuccessSignup(newUser, () => {
+                S.notice("User is create")
+                newGroup.validate match {
+                  case Nil =>
+                    val groupUID = GetGroupUID(newGroup.name)
+                    newGroup.uid(groupUID)
+                    newGroup = newGroup.owner(newUser)
+
+                    if (public != "false") newGroup.isOpen(true)
+                    if (newGroup.save) S.notice(S.?("approve.list.group") + newGroup.name)
+                    else S.warning(newGroup.name + " isn't added")
+                  case xs =>
+                    xs.foreach(f => S.error(f.msg))
+                }
+                S.redirectTo(homePage)
+              })
+            }
+            case xs => {
+              S.notice("Error in create user")
+              xs.foreach(f => S.error(f.msg))}
+          }
+        }
+      }
+    }
+    (User.currentUser match {
+      case Full(u) => {
+        ".add_user" #> NodeSeq.Empty &
+          "name=firstName" #> SHtml.onSubmit(u.firstName(_)) &
+          "name=lastName" #> SHtml.onSubmit(u.lastName(_)) &
+          "name=email" #> SHtml.onSubmit(u.email(_)) &
+          "name=password" #> SHtml.onSubmit(u.password(_)) &
+          "name=repeatePassword" #> SHtml.onSubmit(u.password(_))
+      }
+      case Empty =>
+          "name=firstName" #> SHtml.onSubmit(newUser.firstName(_)) &
+          "name=lastName" #> SHtml.onSubmit(newUser.lastName(_)) &
+          "name=email" #> SHtml.onSubmit(newUser.email(_)) &
+          "name=password" #> SHtml.onSubmit(newUser.password(_)) &
+          "name=repeatePassword" #> SHtml.onSubmit(repeatePassword = _)
+    })&
+      "name=groupName" #> SHtml.onSubmit(newGroup.name(_)) &
+      "name=description" #> SHtml.onSubmit(newGroup.description(_)) &
+      "name=public" #> SHtml.onSubmit(public = _) &
+      "name=tags_edit" #> SHtml.onSubmit(newGroup.tags(_)) &
+      "type=submit" #> SHtml.onSubmitUnit(saveMe)
+  }
   def newGroup = User.currentUser match {
     case Full(u) => "#add_group" #> addGroup()
     case Empty =>
