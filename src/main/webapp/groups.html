@@ -2,31 +2,26 @@
     <div class="lift:bind-at?name=left-panel">
     </div>
     <div class="lift:bind-at?name=content">
-        <div>
-            <div id="custom-search-input" class="row search_form">
-                <div class="input-group">
-                    <input type="text" class="input-sm search-query form-control empty search_query" placeholder="Enter a search query..." />
-                    <span class="input-group-btn material-input">
-                        <button class="btn btn-default btn-sm" type="submit">
-                            <span class=" glyphicon glyphicon-search"></span>
-                        </button>
-                    </span>
-                </div>
-            </div>
+        <div class="lift:GroupListPage.tabs">
             <div class="row">
-                <ul id="tabs" class="nav nav-tabs lift:GroupListPage.tabs" data-tabs="tabs">
-                    <li id="myGroups"><a href="/groups?tab=myGroups">My Groups</a></li>
-                    <li id="myOwnGroups"><a href="/groups?tab=myOwnGroups">My Own Groups</a></li>
-                    <li id="all"><a href="/groups?tab=all">All Groups</a></li>
-                    <li class="pull-right lift:GroupListPage.newGroup">
-                        <a type="button" href="#add_group" class="btn btn_add_user" title="New Group"><strong>New Group</strong></a>
+                <ul id="tabs" class="nav nav-pills navbar-left" data-tabs="tabs">
+                    <li id="myGroups"><a href="/groups?tab=myGroups">Мои группы</a></li>
+                    <li id="myOwnGroups"><a href="/groups?tab=myOwnGroups">Управление</a></li>
+                    <li id="all"><a href="/groups?tab=all">Все группы</a></li>
+                </ul>
+                <form class="nav navbar-left input-group col-lg-6">
+                    <input class="form-control" placeholder="Enter a search query..." type="text">
+                </form>
+                <ul class="nav nav-pills navbar-right">
+                    <li>
+                        <a onclick="switchRowsViewOn()" title="List view" class="btn btn-sm"><i class="glyphicon glyphicon-align-justify"></i></a>
                     </li>
-                    <li class="pull-right">
-                        <a onclick="switchRowsViewOn()" class="btn" style="float: left"><i class="glyphicon glyphicon-align-justify"></i></a>
-                        <a onclick="switchTileViewOn()" class="btn" style="float: left"><i class="glyphicon glyphicon-th-large"></i></a>
+                    <li>
+                        <a onclick="switchTileViewOn()" title="Grid view" class="btn btn-sm"><i class="glyphicon glyphicon-th-large"></i></a>
                     </li>
                 </ul>
-
+            </div>
+            <div class="row">
                 <div id="my-tab-content" class="tab-content">
                     <div class="tab-pane active">
                         <div data-lift="embed?what=/groups/list"></div>

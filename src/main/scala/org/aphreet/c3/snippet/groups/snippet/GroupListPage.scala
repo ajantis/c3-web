@@ -234,12 +234,12 @@ class GroupListPage extends GroupsAccess {
       "name=tags_edit" #> SHtml.onSubmit(newGroup.tags(_)) &
       "type=submit" #> SHtml.onSubmitUnit(saveMe)
   }
-  def newGroup = User.currentUser match {
-    case Full(u) => "#add_group" #> addGroup()
-    case Empty =>
-      ".btn_add_user" #> NodeSeq.Empty &
-        "#add_group" #> NodeSeq.Empty
-  }
+//  def newGroup = User.currentUser match {
+//    case Full(u) => "#add_group" #> addGroup()
+//    case Empty =>
+//      ".btn_add_user" #> NodeSeq.Empty &
+//        "#add_group" #> NodeSeq.Empty
+//  }
 
   def tabs = {
     val tab = S.param("tab") openOr MyGroupsParameter

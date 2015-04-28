@@ -35,20 +35,22 @@ class GroupTabMenu {
 
     }
     def tabMenu(id: String, active: String) = {
+
       "li" #> tabs.get(id).map {
         case (key, tab) =>
-          val iconClass = tab.name match {
-            case "Files"    => "icon-file"
-            case "Messages" => "icon-comment"
-            case "Settings" => "icon-wrench"
-            case _          => "icon-star"
+          val iconClass = tab.style match {
+            case "Files"    => "glyphicon glyphicon-file"
+            case "Messages" => "glyphicon glyphicon-comment"
+            case "Settings" => "glyphicon glyphicon-cog"
+            case _          => "glyphicon glyphicon-star"
           }
           val activeClass = if (key == active) "active" else ""
           "span *" #> tab.name &
+            "a [title]" #> tab.name &
             "a [href]" #> tab.path &
             ".iconClass [class+]" #> iconClass &
-            ".btn-small [class+]" #> activeClass
-
+            "li [class+]" #> activeClass &
+            "li [id]" #> tab.style
       }
     }
 
@@ -69,9 +71,9 @@ class GroupTabMenu {
 }
 
 // consider to move tab definitions to specific Group Locs -- as paths depend on locs
-sealed abstract class GroupTab(val name: String, val path: String)
-case class FilesTab(groupId: String) extends GroupTab("Files", "/groups/" + groupId + "/files/")
+sealed abstract class GroupTab(val name: String, val style: String, val path: String)
+case class FilesTab(groupId: String) extends GroupTab(S.?("group.fileMenu"), "Files", "/groups/" + groupId + "/files/")
 
-case class MessagesTab(groupId: String) extends GroupTab("Log", "/groups/" + groupId + "/messages")
+case class MessagesTab(groupId: String) extends GroupTab(S.?("group.workPlaceMenu"), "Messages", "/groups/" + groupId + "/messages")
 
-case class SettingsTab(groupId: String) extends GroupTab("Settings", "/groups/" + groupId + "/settings")
+case class SettingsTab(groupId: String) extends GroupTab(S.?("group.settingsMenu"), "Settings", "/groups/" + groupId + "/settings")
