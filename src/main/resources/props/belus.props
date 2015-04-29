@@ -1,0 +1,6 @@
+c3_host=http://node0.c3.ifunsoftware.com
+c3_domain_name=9dce1ce7-3d4a-44fa-a782-fdca47c7efdf
+c3_domain_secret=fea322db150027aa4dc6df6e50280004
+
+default_admin_email=admin@admin.com
+default_admin_password=admin
