@@ -14,6 +14,7 @@ import net.liftweb.http.js.{JsCmd, JsCmds}
 import net.liftweb.util.Helpers
 import org.aphreet.c3.model.{Group, User}
 import org.aphreet.c3.service.journal._
+import org.aphreet.c3.snippet.LiftMessages
 import org.aphreet.c3.util.C3Exception
 import org.aphreet.c3.util.helpers.DateTimeHelper
 
@@ -76,7 +77,8 @@ trait GroupMessagesLog extends CometActor with CometListener {
       partialUpdate(update)
       entities = value
 
-      if (currentShowingMsg.isEmpty) {
+      if (currentShowingMsg.isEmpty && !entities.isEmpty) {
+
         currentShowingMsg = getEntitryId(entities.head)
       }
 
@@ -128,11 +130,15 @@ trait GroupMessagesLog extends CometActor with CometListener {
         var content = ""
 
         def sendComment(): JsCmd = {
+          if(!currentShowingMsg.isEmpty){
           journalServer.foreach(_ ! JournalServerComment(User.currentUser.open_!, group.open_!, content, commentTags, currentShowingMsg))
           commentTags.set(Nil)
 
           SetValById("comment_postit", "") &
             JsCmds.Run("$('#" + inputCommentContainerid + "').modal('hide');")
+          } else {
+            LiftMessages.ajaxWarning("You can`t comment empty message or event.");
+          }
         }
 
         SHtml.ajaxForm {

@@ -19,14 +19,12 @@ object GroupPageMessages extends AbstractGroupPageLoc[GroupPageData] with Suffix
   override val name = "Messages"
   override val pathPrefix = "groups" :: Nil
   override val pathSuffix = "messages" :: Nil
-
-  override def getItem(id: String) = Group.find(id)
-
+  override def getItem(id: String) = Group.findById(id)
   override def wrapItem(groupBox: Box[Group]) = groupBox.map(new GroupPageData(_))
 
   override def link = {
     new Link[GroupPageData](pathPrefix ++ pathSuffix) {
-      override def pathList(value: GroupPageData): List[String] = pathPrefix ::: value.group.id.is.toString :: Nil ::: pathSuffix
+      override def pathList(value: GroupPageData): List[String] = pathPrefix ::: value.group.getId :: Nil ::: pathSuffix
     }
   }
 }
@@ -48,9 +46,9 @@ class GroupPageMessages(data: GroupPageData) extends GroupPageHelper {
   def putCometJournal(xml: NodeSeq): NodeSeq = putCometMessender("GroupJournal")(xml)
 
   private def putCometMessender(cometActorName: String)(xml: NodeSeq): NodeSeq = {
-    val actorName = "group-" + group.id.is + "-messages-log-comet-actor"
+    val actorName = "group-" + group.getId + "-messages-log-comet-actor"
 
-    <div class={"lift:comet?type=" + cometActorName + ";name=" + actorName + ";group_id=" + group.id.is +
+    <div class={"lift:comet?type=" + cometActorName + ";name=" + actorName + ";group_id=" + group.getId +
       ";ul_id=main_ul_id;li_id=main_li_id;input_container_id=input_container;ul_info=ul_info;li_info=li_info;" +
       "comment_input_id=comment_input_container"}>
       {xml}
