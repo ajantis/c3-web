@@ -176,20 +176,20 @@ class JournalStorageServiceImpl extends JournalStorageService with C3Loggable {
   }
 
   protected def getGroupMessagesRoot(group: Group): Box[C3Directory] = {
-    val path = "/" + group.id.is.toString + "/" + GROUP_MESSAGES_ROOT + "/"
+    val path = "/" + group.getId + "/" + GROUP_MESSAGES_ROOT + "/"
     getDirectory(path)
   }
 
   protected def getGroupEventRoot(group: Group): Box[C3Directory] = {
 
-    val pathEvent = "/" + group.id.is.toString + "/" + GROUP_EVENTS_ROOT + "/"
+    val pathEvent = "/" + group.getId+ "/" + GROUP_EVENTS_ROOT + "/"
 
     val directory = getDirectory(pathEvent)
 
     directory match {
       case Full(d) => Full(d)
       case _ =>
-        val path = "/" + group.id.is.toString + "/"
+        val path = "/" + group.getId + "/"
         val directoryGroup = c3.getFile(path)
         directoryGroup.asDirectory.createDirectory(GROUP_EVENTS_ROOT, Map())
         getDirectory(pathEvent)
@@ -197,14 +197,14 @@ class JournalStorageServiceImpl extends JournalStorageService with C3Loggable {
   }
 
   protected def getGroupMsgCommentsRoot(group: Group, parentId: String): Box[C3Directory] = {
-    val path = "/" + group.id.is.toString + "/" + GROUP_MESSAGES_ROOT + "/" + CMN_DIR_PREFIX + parentId + "/"
+    val path = "/" + group.getId + "/" + GROUP_MESSAGES_ROOT + "/" + CMN_DIR_PREFIX + parentId + "/"
 
     val directory = getDirectory(path)
 
     directory match {
       case Full(d) => Full(d)
       case _ =>
-        val pathParent = "/" + group.id.is.toString + "/" + GROUP_MESSAGES_ROOT + "/"
+        val pathParent = "/" + group.getId + "/" + GROUP_MESSAGES_ROOT + "/"
         val directoryGroup = c3.getFile(pathParent)
         directoryGroup.asDirectory.createDirectory(CMN_DIR_PREFIX + parentId, Map())
         getDirectory(path)
