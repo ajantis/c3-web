@@ -1,12 +1,12 @@
 package org.aphreet.c3.snippet.groups.snippet
 
 import com.ifunsoftware.c3.access.C3System
-import net.liftweb.common.{Box, Full}
-import net.liftweb.sitemap.Loc.{Link, LinkText}
+import net.liftweb.common.{ Box, Full }
+import net.liftweb.sitemap.Loc.{ Link, LinkText }
 import net.liftweb.util.BindHelpers._
 import org.aphreet.c3.lib.DependencyFactory._
 import org.aphreet.c3.model.Group
-import org.aphreet.c3.snippet.groups.{AbstractGroupPageLoc, GroupPageData}
+import org.aphreet.c3.snippet.groups.{ AbstractGroupPageLoc, GroupPageData }
 import org.aphreet.c3.util.helpers.GroupPageHelper
 
 import scala.xml.Text

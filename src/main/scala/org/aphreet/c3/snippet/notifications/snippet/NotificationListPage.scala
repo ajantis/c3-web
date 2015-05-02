@@ -6,14 +6,14 @@ import net.liftweb.util.BindHelpers._
 import net.liftweb.util.PassThru
 import org.aphreet.c3.lib.DependencyFactory._
 import org.aphreet.c3.lib.NotificationManagerRef
-import org.aphreet.c3.model.{Notification, User}
+import org.aphreet.c3.model.{ Notification, User }
 import org.aphreet.c3.service.notifications.NotificationManagerProtocol.GetUserNotifications
-import org.aphreet.c3.util.helpers.{AkkaAwareSnippet, DateTimeHelper}
+import org.aphreet.c3.util.helpers.{ AkkaAwareSnippet, DateTimeHelper }
 
 import scala.concurrent.duration._
-import scala.concurrent.{Await, Future, duration}
+import scala.concurrent.{ Await, Future, duration }
 import scala.language.postfixOps
-import scala.xml.{NodeSeq, Text}
+import scala.xml.{ NodeSeq, Text }
 
 /**
  * Copyright iFunSoftware 2013

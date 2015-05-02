@@ -4,7 +4,7 @@ import com.ifunsoftware.c3.access.fs.C3FileSystemNode
 import net.liftweb.common.Full
 import org.aphreet.c3.acl.resources.C3FileAccess
 import org.aphreet.c3.lib.metadata.Metadata._
-import org.aphreet.c3.model.{Group, User}
+import org.aphreet.c3.model.{ Group, User }
 
 /**
  * @author Koyushev Sergey (mailto: serjk91@gmail.com)
@@ -16,7 +16,7 @@ trait C3AccessHelpers extends C3FileAccess with C3ResourceHelpers {
   def hasWriteAccess(group: Group) = {
     User.currentUser match {
       case Full(user) => !user.groups.filter(_ == group).isEmpty
-      case _ => false
+      case _          => false
     }
   }
 

@@ -1,11 +1,11 @@
 package org.aphreet.c3.snippet.categories.snippet
 
-import net.liftweb.common.{Empty, Full}
-import net.liftweb.http.js.{JsCmd, JsCmds}
-import net.liftweb.http.{S, SHtml}
+import net.liftweb.common.{ Empty, Full }
+import net.liftweb.http.js.{ JsCmd, JsCmds }
+import net.liftweb.http.{ S, SHtml }
 import net.liftweb.mapper.By
 import net.liftweb.util.Helpers._
-import org.aphreet.c3.model.{Category, Tag, User}
+import org.aphreet.c3.model.{ Category, Tag, User }
 import org.aphreet.c3.util.helpers.AdminPageHelper
 
 import scala.xml.NodeSeq

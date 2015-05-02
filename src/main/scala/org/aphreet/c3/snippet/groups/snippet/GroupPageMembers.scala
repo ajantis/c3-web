@@ -7,7 +7,7 @@ import org.aphreet.c3.lib.DependencyFactory._
 import org.aphreet.c3.loc.SuffixLoc
 import org.aphreet.c3.model.Group
 import org.aphreet.c3.service.groups.GroupService
-import org.aphreet.c3.snippet.groups.{AbstractGroupPageLoc, GroupPageData}
+import org.aphreet.c3.snippet.groups.{ AbstractGroupPageLoc, GroupPageData }
 import org.aphreet.c3.util.helpers.GroupPageHelper
 
 /**

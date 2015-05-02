@@ -1,11 +1,11 @@
 package org.aphreet.c3.snippet.users.snippet
 
 import net.liftweb.http.SHtml
-import net.liftweb.http.js.{JsCmd, JsCmds}
+import net.liftweb.http.js.{ JsCmd, JsCmds }
 import net.liftweb.mapper.By
 import net.liftweb.util.BindHelpers._
 import org.aphreet.c3.model.User
-import org.aphreet.c3.util.helpers.{AdminPageHelper, UserHelper}
+import org.aphreet.c3.util.helpers.{ AdminPageHelper, UserHelper }
 
 import scala.xml.NodeSeq
 

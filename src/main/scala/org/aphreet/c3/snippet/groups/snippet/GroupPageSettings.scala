@@ -1,25 +1,25 @@
 package org.aphreet.c3.snippet.groups.snippet
 
 import com.ifunsoftware.c3.access.fs.C3FileSystemNode
-import com.ifunsoftware.c3.access.{C3System, MetadataUpdate, StringMetadataValue}
+import com.ifunsoftware.c3.access.{ C3System, MetadataUpdate, StringMetadataValue }
 import net.liftmodules.widgets.autocomplete.AutoComplete
 import net.liftweb.common.Box
-import net.liftweb.http.{S, SHtml}
+import net.liftweb.http.{ S, SHtml }
 import net.liftweb.http.js.JE.JsVar
-import net.liftweb.http.js.JsCmds.{Function, Script}
-import net.liftweb.http.js.{JsCmd, JsCmds}
+import net.liftweb.http.js.JsCmds.{ Function, Script }
+import net.liftweb.http.js.{ JsCmd, JsCmds }
 import net.liftweb.mapper.By
 import net.liftweb.sitemap.Loc.Link
 import net.liftweb.util.BindHelpers._
-import org.aphreet.c3.comet.{JournalServer, JournalServerEvent, MessageServerFactory}
+import org.aphreet.c3.comet.{ JournalServer, JournalServerEvent, MessageServerFactory }
 import org.aphreet.c3.lib.DependencyFactory._
 import org.aphreet.c3.lib.metadata.Metadata._
 import org.aphreet.c3.loc.SuffixLoc
-import org.aphreet.c3.model.{Group, User, UserGroup}
+import org.aphreet.c3.model.{ Group, User, UserGroup }
 import org.aphreet.c3.service.groups.GroupService
 import org.aphreet.c3.service.journal.EventType
 import org.aphreet.c3.snippet.LiftMessages
-import org.aphreet.c3.snippet.groups.{AbstractGroupPageLoc, GroupPageData}
+import org.aphreet.c3.snippet.groups.{ AbstractGroupPageLoc, GroupPageData }
 import org.aphreet.c3.util.helpers.GroupPageHelper
 
 import scala.xml.NodeSeq
@@ -82,7 +82,7 @@ class GroupPageSettings(data: GroupPageData) extends GroupPageHelper {
         val ownerGroup = group.owner.obj.openOrThrowException("Group haven't owner")
         user match {
           case usr if usr == currentUser => LiftMessages.ajaxError(S.?("remove.themselves"))
-          case usr if usr == ownerGroup => LiftMessages.ajaxError(S.?("remove.owner"))
+          case usr if usr == ownerGroup  => LiftMessages.ajaxError(S.?("remove.owner"))
           case _ => if (groupService.removeUserFromGroup(group, user)) {
             JsCmds.Replace(user.id.is.toString, NodeSeq.Empty)
           } else JsCmds.Alert("User is not removed! Please check logs for details")
@@ -129,7 +129,7 @@ class GroupPageSettings(data: GroupPageData) extends GroupPageHelper {
     if (!added.isEmpty)
       S.notice(userEmails + " is added to group " + group.name.is)
     if (!notAdded.isEmpty)
-    // normally shouldn't happen
+      // normally shouldn't happen
       S.error(userEmails + " is not added to group: " + group.name.is)
   }
 
@@ -164,8 +164,8 @@ class GroupPageSettings(data: GroupPageData) extends GroupPageHelper {
         def approveUser(): JsCmd = {
           groupService.approveOrRejectUsersInGroup(group, Iterable(user), true)
           journalServer.foreach(_ ! JournalServerEvent(User.currentUserUnsafe, group, EventType.ApproveUserToGroup, user.email))
-            JsCmds.Replace(user.id.is.toString, NodeSeq.Empty) &
-          JsCmds.Reload
+          JsCmds.Replace(user.id.is.toString, NodeSeq.Empty) &
+            JsCmds.Reload
         }
 
         def rejectUser(): JsCmd = {

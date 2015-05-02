@@ -15,7 +15,7 @@
     </head>
     <tail>
         <script type="text/javascript">
-            $(document).ready(function($){
+            $(document).ready(function ($) {
                 $.fn.editable.defaults.mode = "inline";
 //                $('#postit').markItUp(mySettings);
                 $('#tags_input').editable({
@@ -24,11 +24,22 @@
                         tags: [],
                         tokenSeparators: [","]
                     },
-                    url: function(params) {
+                    url: function (params) {
                         updateTagsCallback(params.value);
                     }
                 });
-            } );
+
+                $('#comment_tags_input').editable({
+                    inputclass: 'input-large',
+                    select2: {
+                        tags: [],
+                        tokenSeparators: [","]
+                    },
+                    url: function (params) {
+                        updateCommentTagsCallback(params.value);
+                    }
+                });
+            });
 
         </script>
     </tail>
@@ -66,29 +77,29 @@
     </div>
     <div id="group-tab-wrapper">
         <div class="tabbable"> <!-- Only required for left/right tabs -->
-            <div class="span8">
-                <div id="tab-content" class="tab-content">
-
-                    <div class="lift:GroupPageMessages.putCometJournal">
+            <div class="span10">
+                <div class="lift:GroupPageMessages.putCometJournal">
+                    <div class="span4">
                         <div id="messages_toolbar">
                             <!--<a href="#input_container" id="show_input_msg" data-toggle="modal" class="btn btn-primary"-->
-                               <!--rel="tooltip" title="Compose new message">-->
-                                <!--<i class="icon-envelope icon-white"></i> New message-->
+                            <!--rel="tooltip" title="Compose new message">-->
+                            <!--<i class="icon-envelope icon-white"></i> New message-->
                             <!--</a>-->
 
                             <div class="offset1" id="input_container">
                                 <!--<div class="modal-header">-->
-                                    <!--<a class="close" data-dismiss="modal">&times;</a>-->
+                                <!--<a class="close" data-dismiss="modal">&times;</a>-->
 
-                                    <!--<h3>New message</h3>-->
+                                <!--<h3>New message</h3>-->
                                 <!--</div>-->
                                 <div class="">
                                     <textarea class="field" style="width: 96%; resize: none;" rows="2" id="postit"
                                               placeholder="New message text"></textarea>
+
                                     <div class="">
                                         <!--<button type="button" data-dismiss="modal" class="btn btn-warning cancel pull-right">-->
-                                            <!--<i class="icon-ban-circle icon-white"></i>-->
-                                            <!--<span>Cancel</span>-->
+                                        <!--<i class="icon-ban-circle icon-white"></i>-->
+                                        <!--<span>Cancel</span>-->
                                         <!--</button>-->
                                         <button type="submit" class="btn btn-success pull-right" id="send_btn">
                                             <i class="icon-ok icon-white"></i>
@@ -121,6 +132,59 @@
                                 </div>
                                 <div class="offset1">
                                     <strong class="primary-font" name="who">Dmitry Ivanov</strong>
+
+                                    <p>
+                                        <span name="body">My Message</span>
+                                    </p>
+                                </div>
+                                <div>
+                                    <div class="tags pull-right">
+                                        <span class="tag" style="margin: 3px;">
+                                            <!--<span class="label label-info">{tag}</span>-->
+                                        </span>
+                                    </div>
+                                    <button class="show-more pull-right" >show all</button>
+                                </div>
+                                <hr/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="span4">
+                        <div id="comment_toolbar">
+                            <div class="offset1" id="comment_input_container">
+                                <div class="">
+                                    <textarea class="field" style="width: 96%; resize: none;" rows="2" id="comment_postit"
+                                              placeholder="New message text"></textarea>
+                                    <div class="">
+                                        <button type="submit" class="btn btn-success pull-right" id="comment_send_btn">
+                                            <i class="icon-ok icon-white"></i>
+                                            <span>Send</span>
+                                        </button>
+                                    </div>
+                                    <div>
+                                        <span class="hide edit_tags_form_func"></span>
+                                        <i class="icon-tags"></i> Tags
+                                        <a href="#" id="comment_tags_input" data-type="select2" data-pk="1"
+                                           data-original-title="Enter tags">
+                                            html, javascript
+                                        </a>
+                                    </div>
+
+                                </div>
+
+                            </div>
+                        </div>
+                        <div id="ul_info" class="chat">
+                            <div id="li_info" class="chat-body clearfix">
+                                <div class="msg_id primary-font header">
+                                    <small class="text-muted pull-left">
+                                        <i class="event_type"></i>
+                                        <span name="when">12 mins ago</span>
+                                    </small>
+                                </div>
+                                <div class="offset1">
+                                    <strong class="primary-font" name="who">Dmitry Ivanov</strong>
+
                                     <p>
                                         <span name="body">My Message</span>
                                     </p>
@@ -135,6 +199,7 @@
                                 <hr/>
                             </div>
                         </div>
+
                     </div>
                 </div>
             </div>
