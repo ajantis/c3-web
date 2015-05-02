@@ -46,6 +46,14 @@ class UserListPage extends UserHelper with AdminPageHelper {
                 JsCmds.Replace(user.id.is.toString, NodeSeq.Empty)
               } else JsCmds.Alert("User is not removed! You don't have administrator rights! Please check logs for details")
             }
+
+            def resetPassword(): JsCmd = {
+              val defaultPassword = "qwerty"
+              user.password.set(defaultPassword)
+              user.save
+              JsCmds.Alert("Passwords is changed to 'qwerty'")
+            }
+
             ".user [id]" #> user.id.is &
               ".user *" #>
               ((n: NodeSeq) => SHtml.ajaxForm(
@@ -55,9 +63,11 @@ class UserListPage extends UserHelper with AdminPageHelper {
                   (if (user.id != current.id) {
                     ".deluser *" #> SHtml.memoize(f => f ++ SHtml.hidden(deleteUser _)) &
                       ".admin_checkbox " #> SHtml.ajaxCheckbox(user.superUser.is, setSuperAdmin(_))
+                    ".resetpwd *" #> SHtml.memoize(f => f ++ SHtml.hidden(resetPassword _))
                   } else {
                     ".admin_checkbox" #> NodeSeq.Empty &
-                      ".deluser *" #> NodeSeq.Empty
+                      ".deluser *" #> NodeSeq.Empty &
+                      ".resetpwd *" #> NodeSeq.Empty
 
                   })).apply(n)))
 
@@ -66,6 +76,7 @@ class UserListPage extends UserHelper with AdminPageHelper {
               ".is_admin" #> (if (user.superUser.is) "Yes" else "No") &
               ".enabled *" #> NodeSeq.Empty &
               ".deluser *" #> NodeSeq.Empty &
+              ".resetpwd *" #> NodeSeq.Empty &
               ".admin_checkbox" #> NodeSeq.Empty
           }
         }

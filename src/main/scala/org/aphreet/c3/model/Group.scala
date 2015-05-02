@@ -54,6 +54,7 @@ class Group extends LongKeyedMapper[Group] with IdPK with ManyToMany {
   thisgroup =>
 
   def getSingleton = Group
+
   private val c3 = inject[C3System].open_!
 
   object owner extends MappedLongForeignKey(this, User) {
@@ -73,8 +74,10 @@ class Group extends LongKeyedMapper[Group] with IdPK with ManyToMany {
     private def nonEmpty(s: String) =
       if (s.isEmpty) List(FieldError(this, "Groups's name cannot be empty"))
       else Nil
-
   }
+
+  object uid extends MappedString(this, 64)
+
   object description extends MappedText(this)
 
   object tags extends MappedText(this)
@@ -86,6 +89,9 @@ class Group extends LongKeyedMapper[Group] with IdPK with ManyToMany {
   object isApproved extends MappedBoolean(this) {
     override def defaultValue = false
   }
+
+  //return human-readable UID for new groups and classic-style ID for old groups
+  def getId = { if (uid.is != null && uid.is != "") uid.is else id.is.toString }
 
   def getChildren: List[C3FileSystemNode] = getChildren("")
 
@@ -123,11 +129,11 @@ class Group extends LongKeyedMapper[Group] with IdPK with ManyToMany {
     super.delete_!
   }
 
-  def baseFilePath = "/" + this.id.is + "/files"
+  def baseFilePath = "/" + this.getId + "/files"
 
-  def baseGroupDirectory = "/" + this.id.is
+  def baseGroupDirectory = "/" + this.getId
 
-  def createLink: String = "/groups/" + id.is + "/files"
+  def createLink: String = "/groups/" + this.getId + "/files"
 }
 
 object Group extends Group with LongKeyedMetaMapper[Group] {
@@ -138,6 +144,13 @@ object Group extends Group with LongKeyedMetaMapper[Group] {
 
   def findByName(name: String) = find(By(Group.name, name))
 
+  def findById(id: String) = {
+    val group = find(By(Group.uid, id))
+    if (!group.isEmpty)
+      group
+    else
+      try { find(By(Group.id, id.toLong)) }
+      catch { case e: Exception => null } //if conversion to long failed (if it's really not old-style id)
+  }
   def findOpenGroups = findAll(By(Group.isOpen, true))
-
 }

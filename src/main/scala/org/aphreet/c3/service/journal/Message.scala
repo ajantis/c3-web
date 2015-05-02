@@ -13,7 +13,7 @@ import org.aphreet.c3.model.{ Group, User }
 case class Message(groupId: String, authorId: String, creationDate: util.Date, content: String, uuid: String,
                    tags: List[String], parent: Option[String] = None) extends JournalEntity {
   lazy val author: Box[User] = User.find(authorId)
-  lazy val group: Box[Group] = Group.find(groupId)
+  lazy val group: Box[Group] = Group.findById(groupId)
 
   override def toString = {
     val builder = new StringBuilder("Message{")

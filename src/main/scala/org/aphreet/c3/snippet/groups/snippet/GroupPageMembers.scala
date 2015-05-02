@@ -17,12 +17,12 @@ object GroupPageMembers extends AbstractGroupPageLoc[GroupPageData] with SuffixL
   override val name = "Members"
   override val pathPrefix = "groups" :: Nil
   override val pathSuffix = "members" :: Nil
-  override def getItem(id: String) = Group.find(id)
+  override def getItem(id: String) = Group.findById(id)
   override def wrapItem(groupBox: Box[Group]) = groupBox.map(new GroupPageData(_))
 
   override def link = {
     new Link[GroupPageData](pathPrefix ++ pathSuffix) {
-      override def pathList(value: GroupPageData): List[String] = pathPrefix ::: value.group.id.is.toString :: Nil ::: pathSuffix
+      override def pathList(value: GroupPageData): List[String] = pathPrefix ::: value.group.getId :: Nil ::: pathSuffix
     }
   }
 }

@@ -26,12 +26,12 @@ object GroupPage extends AbstractGroupPageLoc[GroupPageData] {
   override def text = new LinkText[GroupPageData](text = v => Text(v.group.name.is))
 
   override def link = new Link[GroupPageData](pathList) {
-    override def pathList(value: GroupPageData): List[String] = pathPrefix ::: value.group.id.is.toString :: Nil
+    override def pathList(value: GroupPageData): List[String] = pathPrefix ::: value.group.getId :: Nil
   }
-  override def getItem(id: String) = Group.find(id)
+  override def getItem(id: String) = Group.findById(id)
   override def wrapItem(groupBox: Box[Group]) = groupBox.map(new GroupPageData(_))
   override def canonicalUrl(data: GroupPageData) = {
-    Full((pathPrefix ::: List(data.group.id.is.toString)).mkString("/", "/", ""))
+    Full((pathPrefix ::: List(data.group.getId)).mkString("/", "/", ""))
   }
 }
 

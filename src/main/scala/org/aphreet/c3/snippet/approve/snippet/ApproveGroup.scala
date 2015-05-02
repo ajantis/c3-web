@@ -1,5 +1,6 @@
 package org.aphreet.c3.snippet.approve.snippet
 
+import com.ifunsoftware.c3.access.C3System
 import net.liftweb.common.{Failure, Full}
 import net.liftweb.http.SHtml
 import net.liftweb.http.js.{JsCmd, JsCmds}
@@ -37,12 +38,12 @@ class ApproveGroup extends AdminPageHelper {
         val owner = User.find(group.owner).openOrThrowException(s"No owner for ${group.name}")
 
         def approveGroup(): JsCmd = {
+
           group.getGroupC3 match {
             case Full(groupFileNode) =>
               // we don't need to create a C3 mapping for this group, it already exists
               processGroupApproval(group, owner) &
                 LiftMessages.ajaxNotice(s"Group ${group.name} is approved")
-
             case _                   =>
               // we need to create a C3 mapping first and then create a group
               createAndApprove(group, owner)
@@ -53,7 +54,7 @@ class ApproveGroup extends AdminPageHelper {
         val groupTagsList = if(groupTags != null && !groupTags.isEmpty )
                               groupTags.split(",").toList else Nil
           ".tags_group"              #> groupTagsList.map { ".tags_group *" #> _ } &
-          ".list_group_approve [id]" #> group.id &
+          ".list_group_approve [id]" #> group.getId &
           ".group_name *"            #> group.name &
           ".group_description *"     #> group.description &
           ".group_owner *"           #> owner.niceName&
@@ -65,10 +66,11 @@ class ApproveGroup extends AdminPageHelper {
   private def processGroupApproval(group: Group, owner: User): JsCmd = {
     group.isApproved(true).save
     notificationManager ! CreateNotification(ApproveGroupMsg(group, owner.id.is))
-    JsCmds.Replace(group.id.is.toString, NodeSeq.Empty)
+    JsCmds.Replace(group.getId, NodeSeq.Empty)
   }
 
   private def createAndApprove(group: Group, owner: User): JsCmd = {
+
     groupService.createGroup(group, group.tags, group.description) match {
       case Full(g) =>
         processGroupApproval(group, owner) & LiftMessages.ajaxNotice(s"Group ${g.name} is created and approved")

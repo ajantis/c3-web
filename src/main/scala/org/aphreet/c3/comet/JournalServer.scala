@@ -25,6 +25,8 @@ class JournalServer(val group: Group) extends LiftActor with ListenerManager {
     case JournalServerMsg(user, messageGroup, content, tags) if content.length > 0 =>
       val msg = Message(group.id.is.toString, user.id.is.toString, content, util.UUID.randomUUID().toString, tags)
       logger.debug(s"Received a message: $msg . Saving...")
+      val msg = Message(group.getId, user.id.is.toString, content, util.UUID.randomUUID().toString, tags)
+      logger.debug("Received a message: " + msg + ". Saving...")
       journalService.save(msg)
       updateListeners()
 
@@ -35,7 +37,7 @@ class JournalServer(val group: Group) extends LiftActor with ListenerManager {
       updateListeners()
 
     case JournalServerEvent(user, groupEvent, eventType, path) =>
-      val event = Event(group.id.is.toString, user.id.is.toString, util.UUID.randomUUID().toString, eventType, path)
+      val event = Event(group.getId, user.id.is.toString, util.UUID.randomUUID().toString, eventType, path)
       journalService.save(event)
       updateListeners()
 

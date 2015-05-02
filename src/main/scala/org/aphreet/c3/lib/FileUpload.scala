@@ -147,7 +147,7 @@ object FileUpload extends RestHelper with C3Loggable{
     val newMD:Map[String,String] =  metadata + (ACL_META -> parentDirectory.metadata.get(ACL_META).getOrElse(""))
     parentDirectory.createFile(fph.fileName, newMD, DataStream(fph.file))
 
-    val group: Box[Group] = Group.find(filePath.head)
+    val group: Box[Group] = Group.findById(filePath.head)
     val journalServer: Box[JournalServer] = group.map(MessageServerFactory(_))
     journalServer.foreach(_ ! JournalServerEvent(User.currentUserUnsafe, group.open_!, EventType.CreateResources, parentDirectory.fullname +"/"+fph.fileName))
     logger info String.format("File %s is uploaded to C3!", fph.name)
