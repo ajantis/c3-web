@@ -1,141 +1,209 @@
-<div class="lift:surround?with=default">
+<div class="lift:surround?with=default;at=content">
     <head>
+        <link rel="stylesheet" type="text/css" href="/js/markitup/skins/markitup/style.css"/>
+        <link rel="stylesheet" type="text/css" href="/js/markitup/sets/default/style.css"/>
+        <script type="text/javascript" src="/js/markitup/jquery.markitup.js"></script>
+        <script type="text/javascript" src="/js/markitup/sets/default/set.js"></script>
+
+        <!-- select2 -->
+        <link href="/assets/select2/select2.css" rel="stylesheet">
+        <script src="/assets/select2/select2.js"></script>
+
         <!-- x-editable (bootstrap) -->
-        <link href="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/css/bootstrap-editable.css" rel="stylesheet"/>
-        <script src="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/js/bootstrap-editable.min.js"></script>
+        <link href="/bootstrap-editable/css/bootstrap-editable.css" rel="stylesheet">
+        <script src="/bootstrap-editable/js/bootstrap-editable.js"></script>
     </head>
     <tail>
         <script type="text/javascript">
-            $(document).ready(function($){
+            $(document).ready(function ($) {
                 $.fn.editable.defaults.mode = "inline";
+//                $('#postit').markItUp(mySettings);
                 $('#tags_input').editable({
                     inputclass: 'input-large',
                     select2: {
                         tags: [],
                         tokenSeparators: [","]
                     },
-                    url: function(params) {
+                    url: function (params) {
                         updateTagsCallback(params.value);
                     }
                 });
-            } );
+
+                $('#comment_tags_input').editable({
+                    inputclass: 'input-large',
+                    select2: {
+                        tags: [],
+                        tokenSeparators: [","]
+                    },
+                    url: function (params) {
+                        updateCommentTagsCallback(params.value);
+                    }
+                });
+            });
 
         </script>
     </tail>
 
     <div class="lift:bind-at?name=left-panel">
-        <div class="col-sm-4 col-md-4">
-            <h2>WF</h2>
-        </div>
-    </div>
-    <div class="lift:bind-at?name=content">
-        <div class="col-sm-8 col-md-8 lift:GroupPage.info">
-            <div class="row" id="legend_row">
-                <div class="accordion accordion-group" id="accordion2">
-                    <!--<div class="lift:GroupPageMessages.embedTabMenu">-->
-                    <!--</div>-->
-                    <h2 class="GroupName">Group name</h2>
+        <div><img src="/images/group_default_200x200.png"/></div>
+        <div class="row-fluid lift:GroupPage.info">
+            <hr class="hr_group"/>
+            <div id="legend">
+                <h2 class="GroupName">Group name</h2>
+            </div>
+            <div class="lift:GroupPageMessages.embedTabMenu">
+            </div>
+            <div class="accordion" id="accordion2">
+                <div class="accordion-group">
                     <div class="accordion-heading">
-                        <a class="accordion-toggle pull-right" data-toggle="collapse" data-parent="#accordion2"
+                        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2"
                            href="#collapseOne">
-                           Info
+                            Info
                         </a>
                     </div>
                     <div id="collapseOne" class="accordion-body collapse">
                         <div class="accordion-inner">
                             <p class="GroupDescription description_box">Group description</p>
+
                             <div class="lift:GroupPageSettings.owner">
                                 <span class="lead">Owner: <a class="GroupOwner">User Name</a></span>
                             </div>
                         </div>
                     </div>
+
                 </div>
             </div>
-            <div class="row search_form" id="search_row">
-                <div  class="input-group">
-                    <input type="text" class="input-sm search-query form-control empty search_query" placeholder="Enter a search query..." />
-                    <span>Message / Event</span>
-                    <span class="input-group-btn material-input">
-                        <button class="btn btn-default btn-sm" type="submit">
-                            <span class=" glyphicon glyphicon-search"></span>
-                        </button>
-                    </span>
-                </div>
-            </div>
-            <div id="group-tab-wrapper" class="row">
-                <div class="tabbable"> <!-- Only required for left/right tabs -->
-                    <div class="span8">
-                        <div id="tab-content" class="tab-content">
-                            <div class="lift:GroupPageMessages.putCometJournal">
-                                <div id="messages_toolbar" class="text-center">
-                                    <a href="#input_container" id="show_input_msg" data-toggle="collapse" class="btn btn-primary"
-                                       rel="tooltip" title="Compose new message">
-                                        <i class="icon-envelope icon-white"></i> New message
-                                    </a>
-                                    <div class="collapse" id="input_container">
-                                        <div class="">
-                                            <textarea class="field" style="width: 96%; resize: none;" rows="2" id="postit"
-                                                      placeholder="New message text"></textarea>
-                                            <div class="">
-                                                <!--<button type="button" data-dismiss="modal" class="btn btn-warning cancel pull-right">-->
-                                                    <!--<i class="icon-ban-circle icon-white"></i>-->
-                                                    <!--<span>Cancel</span>-->
-                                                <!--</button>-->
-                                                <button type="submit" class="btn btn-success pull-right" id="send_btn">
-                                                    <i class="glyphicon glyphicon-ok icon-white"></i>
-                                                    <span>Send</span>
-                                                </button>
-                                            </div>
-                                            <!--<input id="tags_input" placeholder="Enter tags"/>-->
-                                            <div>
-                                                <span class="hide edit_tags_form_func"></span>
-                                                <i class="glyphicon glyphicon-tag"></i> Tags
-                                                <a href="#" id="tags_input" data-type="select2" data-pk="1"
-                                                   data-original-title="Enter tags">
-                                                    html, javascript
-                                                </a>
-                                            </div>
-                                        </div>
+        </div>
+    </div>
+    <div id="group-tab-wrapper">
+        <div class="tabbable"> <!-- Only required for left/right tabs -->
+            <div class="span10">
+                <div class="lift:GroupPageMessages.putCometJournal">
+                    <div class="span4">
+                        <div id="messages_toolbar">
+                            <!--<a href="#input_container" id="show_input_msg" data-toggle="modal" class="btn btn-primary"-->
+                            <!--rel="tooltip" title="Compose new message">-->
+                            <!--<i class="icon-envelope icon-white"></i> New message-->
+                            <!--</a>-->
+
+                            <div class="offset1" id="input_container">
+                                <!--<div class="modal-header">-->
+                                <!--<a class="close" data-dismiss="modal">&times;</a>-->
+
+                                <!--<h3>New message</h3>-->
+                                <!--</div>-->
+                                <div class="">
+                                    <textarea class="field" style="width: 96%; resize: vertical;" rows="2" id="postit"
+                                              placeholder="New message text"></textarea>
+
+                                    <div class="">
+                                        <!--<button type="button" data-dismiss="modal" class="btn btn-warning cancel pull-right">-->
+                                        <!--<i class="icon-ban-circle icon-white"></i>-->
+                                        <!--<span>Cancel</span>-->
+                                        <!--</button>-->
+                                        <button type="submit" class="btn btn-success pull-right" id="send_btn">
+                                            <i class="icon-ok icon-white"></i>
+                                            <span>Send</span>
+                                        </button>
                                     </div>
+
+
+                                    <!--<input id="tags_input" placeholder="Enter tags"/>-->
+                                    <div>
+                                        <span class="hide edit_tags_form_func"></span>
+                                        <i class="icon-tags"></i> Tags
+                                        <a href="#" id="tags_input" data-type="select2" data-pk="1"
+                                           data-original-title="Enter tags">
+                                            html, javascript
+                                        </a>
+                                    </div>
+
                                 </div>
 
-                                <div id="main_ul_id" class="comments_list">
-                                    <div id="main_li_id" class="comment_item clearfix">
-                                        <span class="parent_id" data-parent_id="3698076"></span>
-                                        <div class="comment_body">
-                                            <div class="msg_id info">
-                                                <!--<a class="primary-font username" name="who" href="#">Dmitry Ivanov</a>-->
-                                                <a href="#" class="username">
-                                                    <i class="event_type"></i>
-                                                    <span name="who">John Smith</span>
-                                                </a>
-                                                <a href="#id" class="link_to_comment username">#</a>
-
-                                                <time class="text-muted voting" name="when">12 mins ago</time>
-                                            </div>
-                                            <div class="message html_format">
-                                                <span name="body">My Message</span>
-                                            </div>
-                                            <div class="tags pull-right">
-                                                <span class="tag" style="margin: 3px;">
-                                                    <!--<span class="label label-info">{tag}</span>-->
-                                                </span>
-                                            </div>
-
-                                        </div>
-                                        <div class="reply_comments"></div>
-                                        <div class="reply">
-                                                <span class="comments-buttons pull-right">
-                                                    <a href="#" onclick="jcomments.showReply(865); return false;">Ответить</a>
-                                                </span>
-                                        </div>
-                                    </div>
-                                </div>
                             </div>
                         </div>
+                        <div id="main_ul_id" class="chat">
+                            <div id="main_li_id" class="chat-body clearfix">
+                                <div class="msg_id primary-font header">
+                                    <small class="text-muted pull-left">
+                                        <i class="event_type"></i>
+                                        <span name="when">12 mins ago</span>
+                                    </small>
+                                </div>
+                                <div class="offset1">
+                                    <strong class="primary-font" name="who">Dmitry Ivanov</strong>
+
+                                    <p>
+                                        <span name="body">My Message</span>
+                                    </p>
+                                </div>
+                                <div>
+                                    <div class="tags pull-right">
+                                        <span class="tag" style="margin: 3px;">
+                                            <!--<span class="label label-info">{tag}</span>-->
+                                        </span>
+                                    </div>
+                                    <button class="show-more pull-right" >show all</button>
+                                </div>
+                                <hr/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="span4">
+                        <div id="comment_toolbar">
+                            <div class="offset1" id="comment_input_container">
+                                <div class="">
+                                    <textarea class="field" style="width: 96%; resize: none;" rows="2" id="comment_postit"
+                                              placeholder="New message text"></textarea>
+                                    <div class="">
+                                        <button type="submit" class="btn btn-success pull-right" id="comment_send_btn">
+                                            <i class="icon-ok icon-white"></i>
+                                            <span>Send</span>
+                                        </button>
+                                    </div>
+                                    <div>
+                                        <span class="hide edit_tags_form_func"></span>
+                                        <i class="icon-tags"></i> Tags
+                                        <a href="#" id="comment_tags_input" data-type="select2" data-pk="1"
+                                           data-original-title="Enter tags">
+                                            html, javascript
+                                        </a>
+                                    </div>
+
+                                </div>
+
+                            </div>
+                        </div>
+                        <div id="ul_info" class="chat">
+                            <div id="li_info" class="chat-body clearfix">
+                                <div class="msg_id primary-font header">
+                                    <small class="text-muted pull-left">
+                                        <i class="event_type"></i>
+                                        <span name="when">12 mins ago</span>
+                                    </small>
+                                </div>
+                                <div class="offset1">
+                                    <strong class="primary-font" name="who">Dmitry Ivanov</strong>
+
+                                    <p>
+                                        <span name="body">My Message</span>
+                                    </p>
+                                </div>
+                                <div>
+                                    <div class="tags pull-right">
+                                        <span class="tag" style="margin: 3px;">
+                                            <!--<span class="label label-info">{tag}</span>-->
+                                        </span>
+                                    </div>
+                                </div>
+                                <hr/>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
 </div>

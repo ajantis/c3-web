@@ -1,7 +1,7 @@
 package org.aphreet.c3.snippet.users.snippet
 
-import net.liftweb.common.{Box, Full, Logger}
-import net.liftweb.sitemap.Loc.{Link, LinkText}
+import net.liftweb.common.{ Box, Full, Logger }
+import net.liftweb.sitemap.Loc.{ Link, LinkText }
 import net.liftweb.util.Helpers._
 import org.aphreet.c3.loc.ItemRewriteLoc
 import org.aphreet.c3.model.User

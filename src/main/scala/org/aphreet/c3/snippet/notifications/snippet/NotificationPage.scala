@@ -1,7 +1,7 @@
 package org.aphreet.c3.snippet.notifications.snippet
 
-import net.liftweb.common.{Box, Full}
-import net.liftweb.sitemap.Loc.{Link, LinkText}
+import net.liftweb.common.{ Box, Full }
+import net.liftweb.sitemap.Loc.{ Link, LinkText }
 import net.liftweb.util.BindHelpers._
 import org.aphreet.c3.lib.NotificationManagerRef
 import org.aphreet.c3.loc.ItemRewriteLoc

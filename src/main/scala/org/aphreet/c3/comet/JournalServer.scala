@@ -27,11 +27,19 @@ class JournalServer(val group: Group) extends LiftActor with ListenerManager {
       logger.debug("Received a message: " + msg + ". Saving...")
       journalService.save(msg)
       updateListeners()
+
+    case JournalServerComment(user, messageGroup, content, tags, parentId) if content.length > 0 =>
+      val msg = Message(group.getId, user.id.is.toString, content, util.UUID.randomUUID().toString, tags, Some(parentId))
+      logger.debug(s"Received a comment: $msg. Saving...")
+      journalService.saveComment(msg)
+      updateListeners()
+
     case JournalServerEvent(user, groupEvent, eventType, path) =>
       val event = Event(group.getId, user.id.is.toString, util.UUID.randomUUID().toString, eventType, path)
       journalService.save(event)
       updateListeners()
-    case msg @ _ =>
+
+    case msg@_ =>
       logger.error(s"Unknown message received from comet actor: $msg")
   }
 
@@ -39,7 +47,7 @@ class JournalServer(val group: Group) extends LiftActor with ListenerManager {
 
 }
 
-object MessageServerFactory{
+object MessageServerFactory {
 
   private val logger = Logger("MessageServerFactory")
 
@@ -57,7 +65,7 @@ object MessageServerFactory{
     logger.info("Creating new journal server for group " + group.name.is)
     val journalServer = new JournalServer(group)
     val newMap = messageServers + (group.name.is -> journalServer)
-    messageServers.synchronized{
+    messageServers.synchronized {
       messageServers = newMap
     }
     journalServer
@@ -65,7 +73,10 @@ object MessageServerFactory{
 }
 
 case class JournalServerMsg(user: User, group: Group, msg: String, tags: List[String])
+
+case class JournalServerComment(user: User, group: Group, msg: String, tags: List[String], parentId: String)
+
 case class JournalServerUpdate(journal: List[JournalEntity])
 
-case class JournalServerEvent(user: User, group: Group, event: EventType, path:String)
+case class JournalServerEvent(user: User, group: Group, event: EventType, path: String)
 

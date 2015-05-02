@@ -30,7 +30,7 @@
 package org.aphreet.c3.util.helpers
 
 import com.ifunsoftware.c3.access.C3System
-import com.ifunsoftware.c3.access.fs.{C3File, C3FileSystemNode}
+import com.ifunsoftware.c3.access.fs.{ C3File, C3FileSystemNode }
 import net.liftweb.common.Full
 import net.liftweb.http.S
 import net.liftweb.util.Helpers._
