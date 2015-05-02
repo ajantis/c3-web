@@ -23,15 +23,13 @@ class JournalServer(val group: Group) extends LiftActor with ListenerManager {
 
   override def lowPriority = {
     case JournalServerMsg(user, messageGroup, content, tags) if content.length > 0 =>
-      val msg = Message(group.id.is.toString, user.id.is.toString, content, util.UUID.randomUUID().toString, tags)
-      logger.debug(s"Received a message: $msg . Saving...")
       val msg = Message(group.getId, user.id.is.toString, content, util.UUID.randomUUID().toString, tags)
       logger.debug("Received a message: " + msg + ". Saving...")
       journalService.save(msg)
       updateListeners()
 
     case JournalServerComment(user, messageGroup, content, tags, parentId) if content.length > 0 =>
-      val msg = Message(group.id.is.toString, user.id.is.toString, content, util.UUID.randomUUID().toString, tags, Some(parentId))
+      val msg = Message(group.getId, user.id.is.toString, content, util.UUID.randomUUID().toString, tags, Some(parentId))
       logger.debug(s"Received a comment: $msg. Saving...")
       journalService.saveComment(msg)
       updateListeners()

@@ -40,7 +40,7 @@ trait GroupMessagesLog extends CometActor with CometListener {
   } openOr NodeSeq.Empty
 
   private val logger: Logger = Logger(classOf[GroupMessagesLog])
-  private val group: Box[Group] = S.attr("group_id").flatMap(Group.find)
+  private val group: Box[Group] = S.attr("group_id").flatMap(Group.findById)
   private val journalServer: Box[JournalServer] = group.map(MessageServerFactory(_))
   /* need these vals to be set eagerly, within the scope
    * of Comet component constructor
