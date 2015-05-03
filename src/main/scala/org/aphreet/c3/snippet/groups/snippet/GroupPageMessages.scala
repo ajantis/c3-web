@@ -1,11 +1,11 @@
 package org.aphreet.c3.snippet.groups.snippet
 
-import net.liftweb.common.{Box, Logger}
+import net.liftweb.common.{ Box, Logger }
 import net.liftweb.sitemap.Loc.Link
 import net.liftweb.util.Helpers._
 import org.aphreet.c3.loc.SuffixLoc
 import org.aphreet.c3.model.Group
-import org.aphreet.c3.snippet.groups.{AbstractGroupPageLoc, GroupPageData}
+import org.aphreet.c3.snippet.groups.{ AbstractGroupPageLoc, GroupPageData }
 import org.aphreet.c3.util.helpers.GroupPageHelper
 
 import scala.xml.NodeSeq
@@ -48,10 +48,12 @@ class GroupPageMessages(data: GroupPageData) extends GroupPageHelper {
   private def putCometMessender(cometActorName: String)(xml: NodeSeq): NodeSeq = {
     val actorName = "group-" + group.getId + "-messages-log-comet-actor"
 
-    <div class={"lift:comet?type=" + cometActorName + ";name=" + actorName + ";group_id=" + group.getId +
-      ";ul_id=main_ul_id;li_id=main_li_id;input_container_id=input_container;ul_info=ul_info;li_info=li_info;" +
-      "comment_input_id=comment_input_container"}>
-      {xml}
+    <div class={
+      "lift:comet?type=" + cometActorName + ";name=" + actorName + ";group_id=" + group.getId +
+        ";ul_id=main_ul_id;li_id=main_li_id;input_container_id=input_container;ul_info=ul_info;li_info=li_info;" +
+        "comment_input_id=comment_input_container"
+    }>
+      { xml }
     </div>
   }
 }

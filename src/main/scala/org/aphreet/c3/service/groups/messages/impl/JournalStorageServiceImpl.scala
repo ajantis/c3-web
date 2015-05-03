@@ -182,7 +182,7 @@ class JournalStorageServiceImpl extends JournalStorageService with C3Loggable {
 
   protected def getGroupEventRoot(group: Group): Box[C3Directory] = {
 
-    val pathEvent = "/" + group.getId+ "/" + GROUP_EVENTS_ROOT + "/"
+    val pathEvent = "/" + group.getId + "/" + GROUP_EVENTS_ROOT + "/"
 
     val directory = getDirectory(pathEvent)
 

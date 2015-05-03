@@ -20,6 +20,7 @@ import org.aphreet.c3.lib.metadata.Metadata
 import org.aphreet.c3.lib.metadata.Metadata._
 import org.aphreet.c3.loc.SuffixLoc
 import org.aphreet.c3.model.{ Group, User }
+import org.aphreet.c3.service.groups.GroupService
 import org.aphreet.c3.service.journal.EventType
 import org.aphreet.c3.snippet.LiftMessages
 import org.aphreet.c3.snippet.groups.{ AbstractGroupPageLoc, GroupPageFilesData }
