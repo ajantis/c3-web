@@ -493,7 +493,8 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers
 
   protected def renderDirectoryLoc(d: C3Directory): CssSel = {
     object selectedResourcePaths extends RequestVar[Set[String]](Set())
-    val currentPathLink = data.group.createLink + data.currentAddress
+    val currentAddress = data.currentAddress
+    val currentPathLink = data.group.createLink + currentAddress
     def writeTools(): CssSel = {
       "#file_upload_form [action]" #> ("/upload/file/groups/" + group.getId + "/files" + data.currentAddress) &
         "#file_upload_close_btn [onclick]" #> SHtml.ajaxInvoke(() => JsCmds.Reload) &
@@ -506,10 +507,12 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers
       })
     }
     val parentFolderPath = currentPathLink.substring(0, currentPathLink.dropRight(1).lastIndexOf("/"))
-    var parentResourcePath = "";
-    if (data.currentAddress != "/") {
-      parentResourcePath = data.currentAddress.substring(0, data.currentAddress.dropRight(1).lastIndexOf("/")) + "/"
-    }
+
+    val parentResourcePath =
+      if (currentAddress != "/")
+        currentAddress.substring(0, currentAddress.dropRight(1).lastIndexOf("/")) + "/"
+      else
+        ""
     val parentResource = group.getFile(parentResourcePath).openOr(null)
 
     (if (hasSuperAccess) {
@@ -539,6 +542,8 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers
       } else {
         ".parentfolder [ondrop]" #> ""
       }) &
+      (if (parentResourcePath.isEmpty) ".parentfolder *" #> NodeSeq.Empty
+      else "invalid-empty-tag" #> NodeSeq.Empty) &
       ".child *" #> group.getChildren(data.currentAddress).sortBy(!_.isDirectory).map {
         resource =>
           {

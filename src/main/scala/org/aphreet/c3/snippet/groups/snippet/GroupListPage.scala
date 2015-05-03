@@ -59,7 +59,7 @@ class GroupListPage extends GroupsAccess {
 
   def list = {
 
-    val tab = S.param("tab") openOr MyOwnGroupsParameter
+    val tab = getTabParameter()
     val groupList = User.currentUser match {
       case Full(u) =>
         tab match {
@@ -162,11 +162,14 @@ class GroupListPage extends GroupsAccess {
         case Empty => "All Groups"
       })
   }
+
+  private def getTabParameter():String = S.param("tab") openOr MyGroupsParameter
+
   def newGroupAndUser() : CssSel={
     ///todo need refactoring
     val newUser = User.create
     var newGroup = Group.create
-    var repeatePassword = ""
+    var repeatPassword = ""
     var public = ""
     def saveMe(): Unit = {
       User.currentUser match {
@@ -226,7 +229,7 @@ class GroupListPage extends GroupsAccess {
           "name=lastName" #> SHtml.onSubmit(newUser.lastName(_)) &
           "name=email" #> SHtml.onSubmit(newUser.email(_)) &
           "name=password" #> SHtml.onSubmit(newUser.password(_)) &
-          "name=repeatePassword" #> SHtml.onSubmit(repeatePassword = _)
+          "name=repeatePassword" #> SHtml.onSubmit(repeatPassword = _)
     })&
       "name=groupName" #> SHtml.onSubmit(newGroup.name(_)) &
       "name=description" #> SHtml.onSubmit(newGroup.description(_)) &
@@ -242,7 +245,7 @@ class GroupListPage extends GroupsAccess {
 //  }
 
   def tabs = {
-    val tab = S.param("tab") openOr MyGroupsParameter
+    val tab = getTabParameter()
     User.currentUser match {
       case Full(u) => "#add_group" #> addGroup() &
         (tab match {
