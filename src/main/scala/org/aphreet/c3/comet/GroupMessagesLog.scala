@@ -67,7 +67,7 @@ trait GroupMessagesLog extends CometActor with CometListener {
   override def lowPriority = {
     case JournalServerUpdate(value) =>
 
-      val diffUpdate  = (value filterNot (entities contains))
+      val diffUpdate = (value filterNot (entities contains))
 
       val update = diffUpdate.take(20).reverseMap {
         case e: Event => PrependHtml(ulId, line(e, liChat))
@@ -77,20 +77,23 @@ trait GroupMessagesLog extends CometActor with CometListener {
       partialUpdate(update)
       entities = value
 
-      if (currentShowingMsg.isEmpty && !entities.isEmpty) {
+      if (!currentShowingMsg.isEmpty && !entities.isEmpty) {
 
         currentShowingMsg = getEntitryId(entities.head)
+
+        val diffInfo: List[JournalEntity] = value.filterNot(infoEntities contains).filter {
+          case e: Event => (e.uuid == currentShowingMsg)
+          case m: Message => (m.uuid == currentShowingMsg || m.parent.getOrElse("none") == currentShowingMsg)
+        }
+        val infoUpdate = createUpdatePostInfo(diffInfo)
+
+        partialUpdate(infoUpdate)
+
+        infoEntities :::= diffInfo
+      } else {
+        partialUpdate(createNewMsg)
       }
 
-      val diffInfo: List[JournalEntity] = value.filterNot(infoEntities contains).filter {
-        case e: Event => (e.uuid == currentShowingMsg)
-        case m: Message => (m.uuid == currentShowingMsg || m.parent.getOrElse("none") == currentShowingMsg)
-      }
-
-      val infoUpdate = createUpdatePostInfo(diffInfo)
-
-      partialUpdate(infoUpdate)
-      infoEntities :::= diffInfo
 
     case _ => logger.error("Not sure how we got here.")
   }
@@ -101,44 +104,22 @@ trait GroupMessagesLog extends CometActor with CometListener {
     "name=user_name" #> User.currentUser.map(_.shortName) &
       ("#" + ulId + " *") #> displayList &
       (s"#$ulInfoId *") #> displayListInfo &
-      ("#" + inputTextContainerId + " *") #> { (xml: NodeSeq) => {
-        var content = ""
-
-        def sendMessage(): JsCmd = {
-          journalServer.foreach(_ ! JournalServerMsg(User.currentUser.open_!, group.open_!, content, tags))
-          tags.set(Nil)
-
-          SetValById("postit", "") &
-            JsCmds.Run("$('#" + inputTextContainerId + "').modal('hide');")
-        }
-
-        SHtml.ajaxForm {
-          ".edit_tags_form_func *" #> {
-            Script(
-              Function("updateTagsCallback", List("tags"),
-                SHtml.ajaxCall(
-                  JsVar("tags"),
-                  (d: String) => updateTags(d, tags))._2.cmd))
-          } &
-            "#tags_input *" #> Text("") &
-            "#postit" #> SHtml.onSubmit((s: String) => content = s.trim) &
-            "type=submit" #> ((xml: NodeSeq) => xml ++ SHtml.hidden(sendMessage)) apply xml
-        }
-      }
-      } &
+      (".new_msg_btn [onclick]") #> SHtml.ajaxInvoke(() => createNewMsg) &
       ("#" + inputCommentContainerid + " *") #> { (xml: NodeSeq) => {
         var content = ""
 
-        def sendComment(): JsCmd = {
-          if(!currentShowingMsg.isEmpty){
-          journalServer.foreach(_ ! JournalServerComment(User.currentUser.open_!, group.open_!, content, commentTags, currentShowingMsg))
+        def sendMsg(): JsCmd = {
+          if (!currentShowingMsg.isEmpty) {
+            journalServer.foreach(_ ! JournalServerComment(User.currentUser.open_!, group.open_!, content, commentTags, currentShowingMsg))
+
+          } else {
+            journalServer.foreach(_ ! JournalServerMsg(User.currentUser.open_!, group.open_!, content, commentTags))
+          }
           commentTags.set(Nil)
 
           SetValById("comment_postit", "") &
             JsCmds.Run("$('#" + inputCommentContainerid + "').modal('hide');")
-          } else {
-            LiftMessages.ajaxWarning("You can`t comment empty message or event.");
-          }
+
         }
 
         SHtml.ajaxForm {
@@ -151,7 +132,7 @@ trait GroupMessagesLog extends CometActor with CometListener {
           } &
             "#comment_tags_input *" #> Text("") &
             "#comment_postit" #> SHtml.onSubmit((s: String) => content = s.trim) &
-            "type=submit" #> ((xml: NodeSeq) => xml ++ SHtml.hidden(sendComment)) apply xml
+            "type=submit" #> ((xml: NodeSeq) => xml ++ SHtml.hidden(sendMsg)) apply xml
         }
       }
       }
@@ -180,7 +161,7 @@ trait GroupMessagesLog extends CometActor with CometListener {
       "name=who *" #> c.author.map(_.shortName) &
       "name=body *" #> toHtml(c.content) &
       ".msg_id [id]" #> ("msg-" + c.uuid.toString) &
-      "i [class]" #>  parent._2 &
+      "i [class]" #> parent._2 &
       ".show-more [onclick]" #> SHtml.ajaxInvoke(() => showAllComments(parent._1)) &
       ".tags *" #> {
         ".tag *" #> c.tags.map { (tag: String) =>
@@ -189,6 +170,26 @@ trait GroupMessagesLog extends CometActor with CometListener {
           </span>
         }
       })(template)
+  }
+
+  private def createNewMsgInfo(template: NodeSeq) = {
+
+    (".msg_id" #> NodeSeq.Empty &
+      "name=who *" #> "" &
+      "name=body *" #> s"Please, enter new message."
+      )(template)
+  }
+
+  private def createNewMsg(): JsCmd = {
+
+    currentShowingMsg = ""
+    infoEntities = Nil
+
+    val updatePostInfo = JqJsCmds.EmptyAfter(ulInfoId, NodeSeq.Empty) ::
+      PrependHtml(ulInfoId, createNewMsgInfo(liInfo)) :: List()
+
+    partialUpdate(updatePostInfo)
+
   }
 
   private def showAllComments(uuid: String): JsCmd = {
