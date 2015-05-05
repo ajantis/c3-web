@@ -19,7 +19,16 @@ trait JournalStorageService {
   def findEventAll(group: Group): Traversable[Event]
 
   @throws(classOf[MessageStorageException])
+  def findCommentsForMessage(group: Group, parentId: String): Traversable[Message]
+
+  @throws(classOf[MessageStorageException])
+  def findAllComments(group: Group): Traversable[Message]
+
+  @throws(classOf[MessageStorageException])
   def findAll(group: Group): Traversable[JournalEntity]
+
+  @throws(classOf[MessageStorageException])
+  def saveComment(msg: Message): Box[Message]
 
   @throws(classOf[MessageStorageException])
   def save(msg: Message): Box[Message]
