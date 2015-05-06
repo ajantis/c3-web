@@ -33,7 +33,8 @@ class AdminTabMenu {
             case "Users"      => "glyphicon glyphicon-comment"
             case _            => "glyphicon glyphicon-heart"
           }
-          val activeClass = if (key == active) "active" else ""
+          //          val activeClass = if (key == active) "active" else ""
+          val activeClass = ""
           "span *" #> tab.name &
             "a [title]" #> tab.name &
             "a [href]" #> tab.path &
@@ -45,6 +46,7 @@ class AdminTabMenu {
 
     val cssSel = for {
       active ← activeTab ?~ "Active tab is undefined!"
+
     } yield tabMenu(active)
 
     lazy val empty = "* *" #> NodeSeq.Empty
