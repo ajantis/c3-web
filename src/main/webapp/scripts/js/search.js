@@ -109,45 +109,45 @@ $(document).ready( function(){
     });
 
     // add metadata
-//    $(".btn_add_metadata").live("click",function(){
-//        var keyExist = true;
-//        var key = $("#key").val();
-//        var value = $("#value").val();
-//        key = $.trim(key);
-//        value = $.trim(value);
-//        $(".metadata_key").each(function(index,el){
-//            if(el.value==key) keyExist = false;
-//        });
-//        if(key!="" && value!="" && keyExist){
-//            $("#key").val("");
-//            $("#value").val("");
-//            $(".metadata_container").append('<tr class="metadata_form">'+
-//                                            '<td><input readonly class="metadata_key" value="'+ key + '"/></td>'+
-//                                            '<td><input type="text" class="metadata_value" value="'+ value + '"/></td>'+
-//                                            '<td><a class="close remove_metadata">&times;</a></td>'+
-//                                       '</tr>');
-//
-//        }
-//        if(!keyExist){
-//            alert("This key is exists");
-//        }
-//
-//    });
+    $(".add_metadata").on("click",".btn_add_metadata", function(){
+        var keyExist = true;
+        var key = $("#key").val();
+        var value = $("#value").val();
+        key = $.trim(key);
+        value = $.trim(value);
+        $(".metadata_key").each(function(index,el){
+            if(el.value==key) keyExist = false;
+        });
+        if(key!="" && value!="" && keyExist){
+            $("#key").val("");
+            $("#value").val("");
+            $(".metadata_container").append('<tr class="metadata_form">'+
+                                            '<td><input readonly class="metadata_key" value="'+ key + '"/></td>'+
+                                            '<td><input type="text" class="metadata_value" value="'+ value + '"/></td>'+
+                                            '<td><a class="close remove_metadata">&times;</a></td>'+
+                                       '</tr>');
+
+        }
+        if(!keyExist){
+            alert("This key is exists");
+        }
+
+    });
 
     //select metadata from table
-//     $(".btn_save_metadata").live("click",function(){
-//        var key = ""
-//        var value = ""
-//        $(".metadata_key").each(function(index,el){
-//            key += el.value +"%"
-//
-//        });
-//        $(".metadata_value").each(function(index,el){
-//                    value += el.value +"%"
-//        });
-//        $("#key_cont").val(key);
-//        $("#value_cont").val(value);
-//     });
+     $(".add_metadata").on("click",".btn_save_metadata", function(){
+        var key = ""
+        var value = ""
+        $(".metadata_key").each(function(index,el){
+            key += el.value +"%"
+
+        });
+        $(".metadata_value").each(function(index,el){
+                    value += el.value +"%"
+        });
+        $("#key_cont").val(key);
+        $("#value_cont").val(value);
+     });
 
     $('#left-panel').on('click','.label',function(){
                                                  var valueTag = $(this).text();

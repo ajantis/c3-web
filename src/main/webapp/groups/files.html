@@ -1,14 +1,9 @@
 <div class="lift:surround?with=default">
-    <head>
-        <!--drag and drop -->
-        <script src="/scripts/js/dragdrop.js"></script>
-        <!-- x-editable (bootstrap) -->
-        <link href="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/css/bootstrap-editable.css" rel="stylesheet"/>
-        <script src="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/js/bootstrap-editable.min.js"></script>
-    </head>
-
     <tail>
-        <script id="template-upload" type="text/x-jquery-tmpl">
+
+    </tail>
+    <div class="lift:bind-at?name=left-panel">
+    <script id="template-upload" type="text/x-jquery-tmpl">
             <li class="template-upload{{if error}} ui-state-error{{/if}}">
                 <table class="table table-striped table_ul">
                     <colgroup>
@@ -64,7 +59,7 @@
             </li>
 
         </script>
-        <script id="template-download" type="text/x-jquery-tmpl">
+    <script id="template-download" type="text/x-jquery-tmpl">
             <li class="template-download{{if error}} ui-state-error{{/if}}">
                 <table class="table table-striped">
                     <tr>
@@ -109,104 +104,7 @@
                     </tr>
                 </table>
             </li>
-
         </script>
-        <script>
-            // <![CDATA[
-            $(".start_upload").live("click",function(){
-            var parent = $(this).parent().parent().parent();
-            var progress_bar = parent.children(".progress_error").children(".progress");
-            progress_bar.show();
-            })
-            $(".description").live("keyup", function(){
-            var parent = $(this).parent().parent().parent();
-            var start_button = parent.children(".tag_start_stop").children(".start_stop").children(".start").children();
-            var description_text = $(this).val();
-            if(description_text.length > 0){
-                start_button.show();
-            }
-            else {start_button.hide();}
-            })
-            $('#file_upload').fileupload( {
-            form: "file_upload",
-            autoUpload: false
-            });
-
-            $('#upload_form').modal({
-            backdrop: true,
-            keyboard: true,
-            show: false
-            }).css({
-            // make width n * 10 % of screen
-            'width': function () {
-            return ($(document).width() * .7) + 'px';
-            },
-            // center model
-            'margin-left': function () {
-            return -($(this).width() / 2);
-            }
-            });
-
-            // ]]>
-
-        </script>
-
-        <script>
-            // <![CDATA[
-            $(':checkbox[name=check_all]').click(function () {
-            $(':checkbox[name=check_file]').prop('checked', this.checked);
-            });
-
-            $.fn.editable.defaults.mode = 'popover';
-            $('#description').editable({
-            url: function(params) {
-            updateDescriptionCallback(params.value);
-            },
-            rows: 2
-            });
-            $('#node_name').editable({
-            url: function(params) {
-            renameNodeCallback(params.value);
-            },
-            placement : 'bottom'
-            });
-            $('#edit_tags_form').editable({
-            inputclass: 'input-large',
-            select2: {
-            tags: [],
-            tokenSeparators: [","]
-            },
-            url: function(params) {
-            updateTagsCallback(params.value);
-            }
-            });
-            // ]]>
-
-        </script>
-        <script>
-                                 $(document).ready(function() {
-                                      $( ".share_btn" ).click(function() {
-                                            $("#sharing").removeClass("disp_none");
-                                     });
-
-                                      $( ".remove_public_link" ).click(function() {
-                                            $("#sharing").addClass("disp_none");
-                                     });
-
-                                     $('#txtHash').focus(function(){
-                                            $(this).attr('data-default', $(this).width());
-                                            $(this).animate({ width: $(this).width() + 150 }, 'slow');
-                                            $(this).select();
-                                        }).blur(function(){
-                                            var w = $(this).attr('data-default');
-                                            $(this).animate({ width: w }, 'slow');
-                                        });
-                                  });
-
-
-        </script>
-    </tail>
-    <div class="lift:bind-at?name=left-panel">
         <div class="col-sm-9 col-md-9">
             <div class="row lift:GroupPage.info">
                 <div id="legend">
@@ -527,43 +425,43 @@
                             </div>
 
                             <div id="upload_form" class="modal">
-                                <div class="modal-content">
-                                    <h4 class="modal-header">Upload files to directory</h4>
-
-                                    <div id="file_upload">
-                                        <form id="file_upload_form" action="/upload/file/path" method="POST" enctype="multipart/form-data">
-                                            <div class="fileupload-buttonbar" style="margin: 10px;">
-                                                <!-- The fileinput-button span is used to style the file input field as button -->
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                                            <h4 class="modal-title">Pагрузка ресурса в систему</h4>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div id="file_upload">
+                                                <form id="file_upload_form" action="/upload/file/path" method="POST" enctype="multipart/form-data">
+                                                    <div class="fileupload-buttonbar" style="margin: 10px;">
+                                                        <!-- The fileinput-button span is used to style the file input field as button -->
                                                                                 <span class="btn btn-success fileinput-button">
                                                                                     <i class="icon-plus icon-white"></i>
                                                                                     <span>Add files...</span>
                                                                                     <input type="file" name="files[]" multiple>
                                                                                 </span>
-                                                <!--<span class="fileinput-button">-->
-                                                <!--<input type="file" name="files" multiple="multiple">-->
-                                                <!--</span>-->
-                                                <button type="reset" id="file_upload_close_btn" data-dismiss="modal" class="btn btn-primary cancel">
-                                                    <i class="glyphicon glyphicon-ban-circle"></i>
-                                                    <span>Finish upload</span>
-                                                </button>
-                                            </div>
+                                                        <!--<span class="fileinput-button">-->
+                                                        <!--<input type="file" name="files" multiple="multiple">-->
+                                                        <!--</span>-->
+                                                        <button type="reset" id="file_upload_close_btn" data-dismiss="modal" class="btn btn-primary cancel">
+                                                            <i class="glyphicon glyphicon-ban-circle"></i>
+                                                            <span>Finish upload</span>
+                                                        </button>
+                                                    </div>
 
-                                            <div style="clear:left;" class="fileupload-content">
-                                                <ul class="files">
+                                                    <div style="clear:left;" class="fileupload-content">
+                                                        <ul class="files">
 
-                                                </ul>
-                                                <div class="fileupload-progressbar"></div>
+                                                        </ul>
+                                                        <div class="fileupload-progressbar"></div>
+                                                    </div>
+                                                </form>
                                             </div>
-                                        </form>
+                                        </div>
                                     </div>
-                                    <!--<div class="modal-footer fileupload-buttonbar">-->
-                                    <!--<button id="file_upload_close_btn" type="button" data-dismiss="modal" class="btn btn-primary cancel">-->
-                                    <!--<span>Finish</span>-->
-                                    <!--</button>-->
-                                    <!--</div>-->
                                 </div>
                             </div>
-
                         </div>
                     </div>
                 </div>

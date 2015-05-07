@@ -1,5 +1,5 @@
  $(document).ready(function(){
-    if ($('.parent_link').attr('href').indexOf('files')==-1)
+    if ($('.parent_link').attr('href') && $('.parent_link').attr('href').indexOf('files')==-1)
     {
         $('.parentfolder').hide()
     }
