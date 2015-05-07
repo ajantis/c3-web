@@ -43,8 +43,6 @@ function switchTileViewOn() {
 
                 $('#comment_tags_input').editable({
                     inputclass: 'input-large',
-                    title: 'Enter tags',
-                    placement: 'right',
                     select2: {
                         tags: [],
                         tokenSeparators: [","]
