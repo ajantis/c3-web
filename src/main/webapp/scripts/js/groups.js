@@ -37,3 +37,20 @@ function switchRowsViewOn() {
 function switchTileViewOn() {
     $('.container_groups').addClass('shadow-z-2').addClass('group-tile');
 }
+ $(document).ready(function ($) {
+                $.fn.editable.defaults.mode = "inline";
+//                $('#postit').markItUp(mySettings);
+
+                $('#comment_tags_input').editable({
+                    inputclass: 'input-large',
+                    title: 'Enter tags',
+                    placement: 'right',
+                    select2: {
+                        tags: [],
+                        tokenSeparators: [","]
+                    },
+                    url: function (params) {
+                        updateCommentTagsCallback(params.value);
+                    }
+                });
+            });

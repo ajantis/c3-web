@@ -153,8 +153,8 @@ trait GroupMessagesLog extends CometActor with CometListener {
   // display a line
   private def line(c: Message, template: NodeSeq) = {
     val parent = c.parent match {
-      case Some(p) => new Tuple2(p, "icon-comment")
-      case _ => new Tuple2(c.uuid, "icon-envelope")
+      case Some(p) => new Tuple2(p, "glyphicon glyphicon-comment")
+      case _ => new Tuple2(c.uuid, "glyphicon glyphicon-envelope")
     }
 
     ("name=when *" #> formatMsgCreationDate(c.creationDate) &

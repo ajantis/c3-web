@@ -1,4 +1,4 @@
-<div class="lift:surround?with=default">
+<div class="lift:surround?with=default;at=content">
     <head>
         <!--<link rel="stylesheet" type="text/css" href="/js/markitup/skins/markitup/style.css"/>-->
         <!--<link rel="stylesheet" type="text/css" href="/js/markitup/sets/default/style.css"/>-->
@@ -13,28 +13,7 @@
         <!--<link href="/bootstrap-editable/css/bootstrap-editable.css" rel="stylesheet">-->
         <!--<script src="/bootstrap-editable/js/bootstrap-editable.js"></script>-->
     </head>
-    <tail>
-        <script type="text/javascript">
-            $(document).ready(function ($) {
-                $.fn.editable.defaults.mode = "inline";
-//                $('#postit').markItUp(mySettings);
-
-                $('#comment_tags_input').editable({
-                    inputclass: 'input-large',
-                    select2: {
-                        tags: [],
-                        tokenSeparators: [","]
-                    },
-                    url: function (params) {
-                        updateCommentTagsCallback(params.value);
-                    }
-                });
-            });
-
-        </script>
-    </tail>
-    <div class="lift:bind-at?name=left-panel"></div>
-    <div class="lift:bind-at?name=content">
+    <div>
         <div class="row lift:GroupPage.info">
             <div id="legend">
                 <h2 class="GroupName">Group name</h2>
@@ -52,12 +31,17 @@
             </div>
             <div class="lift:GroupPageMessages.putCometJournal">
                 <div class="col-sm-4 col-md-4">
-                    <div id="messages_toolbar offset1">
-                        <button class="btn btn-success pull-right new_msg_btn">
-                            <i class="icon-ok icon-white"></i>
-                            <span>New message</span>
-                        </button>
+                    <div class="row" id="messages_toolbar">
+                        <div class="col-sm-offset-3 col-sm-2 text-center">
+                            <div class="btn-group" data-toggle="buttons">
+                                <button class="btn btn-success pull-right new_msg_btn">
+                                    <i class="icon-ok icon-white"></i>
+                                    <span>New message</span>
+                                </button>
+                            </div>
+                        </div>
                     </div>
+
                     <div id="main_ul_id" class="chat">
                         <div id="main_li_id" class="chat-body clearfix">
                             <div class="msg_id primary-font header">
@@ -76,7 +60,7 @@
                             <div>
                                 <div class="tags pull-right">
                                         <span class="tag" style="margin: 3px;">
-                                            <!--<span class="label label-info">{tag}</span>-->
+                                            <span class="label label-info">{tag}</span>
                                         </span>
                                 </div>
                                 <button class="show-more pull-right">show all</button>
@@ -86,7 +70,7 @@
                     </div>
                 </div>
                 <div class="col-sm-4 col-md-4">
-                    <div id="comment_toolbar">
+                    <div class="row" id="comment_toolbar">
                         <div class="offset1" id="comment_input_container">
                             <div class="">
                                 <textarea class="field" style="width: 96%; resize: none;" rows="2"
@@ -122,7 +106,6 @@
                             </div>
                             <div class="offset1">
                                 <strong class="primary-font " name="who">Dmitry Ivanov</strong>
-
                                 <p>
                                     <span name="body">My Message</span>
                                 </p>
@@ -130,7 +113,7 @@
                             <div>
                                 <div class="tags pull-right">
                                         <span class="tag" style="margin: 3px;">
-                                            <!--<span class="label label-info">{tag}</span>-->
+                                            <span class="label label-info">{tag}</span>
                                         </span>
                                 </div>
                             </div>
