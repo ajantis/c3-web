@@ -13,10 +13,12 @@
         }
         else {start_button.hide();}
     })
-    $('#file_upload').fileupload( {
-        form: "file_upload",
-        autoUpload: false
-    })
+    $('#file_upload_form').fileupload(
+//     {
+//        form: "file_upload",
+//        autoUpload: false
+//    }
+    )
 
     $('#upload_form').modal({
         backdrop: true,
