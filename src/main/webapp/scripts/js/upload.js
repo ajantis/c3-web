@@ -22,15 +22,16 @@
         backdrop: true,
         keyboard: true,
         show: false
-    }).css({
-        // make width n * 10 % of screen
-        'width': function () {
-        return ($(document).width() * .7) + 'px';
-        },
-        // center model
-        'margin-left': function () {
-        return -($(this).width() / 2);
-        }
     })
+//    .css({
+//        // make width n * 10 % of screen
+//        'width': function () {
+//        return ($(document).width() * .7) + 'px';
+//        },
+//        // center model
+//        'margin-left': function () {
+//        return -($(this).width() / 2);
+//        }
+//    })
 });
 
