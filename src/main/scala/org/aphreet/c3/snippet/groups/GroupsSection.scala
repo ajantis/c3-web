@@ -9,5 +9,5 @@ import snippet._
  * @author Dmitry Ivanov
  */
 object GroupsSection extends Section {
-  override lazy val menus: List[Menu] = List(Menu(GroupPage, Menu(GroupPageMessages), Menu(GroupPageFiles), Menu(GroupPageMembers), Menu(GroupPageSettings)))
+  override lazy val menus: List[Menu] = List(Menu(GroupPage, Menu(GroupPageMessages), Menu(GroupPageFiles), Menu(GroupPageMembers), Menu(GroupPageSettings), Menu(GroupPageUpload)))
 }
