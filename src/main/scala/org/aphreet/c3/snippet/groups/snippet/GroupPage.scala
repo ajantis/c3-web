@@ -2,14 +2,19 @@ package org.aphreet.c3.snippet.groups.snippet
 
 import com.ifunsoftware.c3.access.C3System
 import net.liftweb.common.{ Box, Full }
+import net.liftweb.http.SHtml
+import net.liftweb.http.js.{JsCmds, JsCmd}
 import net.liftweb.sitemap.Loc.{ Link, LinkText }
 import net.liftweb.util.BindHelpers._
+import org.aphreet.c3.lib.DependencyFactory
 import org.aphreet.c3.lib.DependencyFactory._
-import org.aphreet.c3.model.Group
+import org.aphreet.c3.model.{User, Group}
+import org.aphreet.c3.service.groups.GroupService
+import org.aphreet.c3.snippet.LiftMessages
 import org.aphreet.c3.snippet.groups.{ AbstractGroupPageLoc, GroupPageData }
 import org.aphreet.c3.util.helpers.GroupPageHelper
 
-import scala.xml.Text
+import scala.xml.{NodeSeq, Text}
 
 /**
  * Copyright iFunSoftware 2011
@@ -39,6 +44,7 @@ class GroupPage(data: GroupPageData) extends GroupPageHelper {
   override lazy val group = data.group
   override lazy val activeLocId = "about"
   lazy val c3 = inject[C3System].open_!
+  lazy val groupService = DependencyFactory.inject[GroupService].open_!
 
   def info = {
     val status = if (group.isOpen) "Public" else "Private"
@@ -52,7 +58,20 @@ class GroupPage(data: GroupPageData) extends GroupPageHelper {
       ".GroupName *" #> group.name.is &
       ".GroupAccess *" #> status &
       ".GroupAccess [class+]" #> background &
-      ".GroupDescription *" #> group.getDescription
-  }
+      ".GroupDescription *" #> group.getDescription &
+      ".send_request [onclick]" #> SHtml.ajaxInvoke(() => sendRequest())
 
+  }
+  def sendRequest(): JsCmd = {
+    val user = User.currentUserUnsafe
+    if(group.users.contains(user)){
+      LiftMessages.ajaxNotice(user.niceName + " already in group " + group.name.is) &
+        JsCmds.Replace(group.getId, NodeSeq.Empty)
+    }
+      else{
+      groupService.addUsersToApproveListGroup(group, Iterable(user))
+      LiftMessages.ajaxNotice(user.niceName + " is add to approve list of group " + group.name.is) &
+        JsCmds.Replace(group.getId, NodeSeq.Empty)
+    }
+  }
 }
