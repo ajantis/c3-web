@@ -61,6 +61,8 @@ trait GroupMessagesLog extends CometActor with CometListener {
 
   private var currentShowingMsg = ""
 
+  private val shortMsgSize = Some(75)
+
   // handle an update to the message logs
   // by diffing the lists and then sending a partial update
   // to the browser
@@ -71,7 +73,7 @@ trait GroupMessagesLog extends CometActor with CometListener {
 
       val update = diffUpdate.take(20).reverseMap {
         case e: Event => PrependHtml(ulId, line(e, liChat))
-        case m: Message => PrependHtml(ulId, line(m, liChat))
+        case m: Message => PrependHtml(ulId, line(m, liChat, shortMsgSize))
       }
 
       partialUpdate(update)
@@ -104,7 +106,6 @@ trait GroupMessagesLog extends CometActor with CometListener {
     "name=user_name" #> User.currentUser.map(_.shortName) &
       ("#" + ulId + " *") #> displayList &
       (s"#$ulInfoId *") #> displayListInfo &
-      (".new_msg_btn [onclick]") #> SHtml.ajaxInvoke(() => createNewMsg) &
       ("#" + inputCommentContainerid + " *") #> { (xml: NodeSeq) => {
         var content = ""
 
@@ -130,6 +131,7 @@ trait GroupMessagesLog extends CometActor with CometListener {
                   JsVar("tags"),
                   (d: String) => updateTags(d, commentTags))._2.cmd))
           } &
+            (".new_msg_btn [onclick]") #> SHtml.ajaxInvoke(() => createNewMsg) &
             "#comment_tags_input *" #> Text("") &
             "#comment_postit" #> SHtml.onSubmit((s: String) => content = s.trim) &
             "type=submit" #> ((xml: NodeSeq) => xml ++ SHtml.hidden(sendMsg)) apply xml
@@ -142,7 +144,7 @@ trait GroupMessagesLog extends CometActor with CometListener {
   // display a list of messages
   private def displayList: NodeSeq = entities.take(20).flatMap {
     case e: Event => line(e, liChat)
-    case m: Message => line(m, liChat)
+    case m: Message => line(m, liChat, shortMsgSize)
   }
 
   private def displayListInfo: NodeSeq = infoEntities.flatMap {
@@ -151,17 +153,23 @@ trait GroupMessagesLog extends CometActor with CometListener {
   }
 
   // display a line
-  private def line(c: Message, template: NodeSeq) = {
+  private def line(c: Message, template: NodeSeq, contentSize:Option[Int] = None) = {
     val parent = c.parent match {
       case Some(p) => new Tuple2(p, "glyphicon glyphicon-comment")
       case _ => new Tuple2(c.uuid, "glyphicon glyphicon-envelope")
     }
 
+    val body = contentSize match {
+      case Some(size) =>
+        if(c.content.length < size) c.content else c.content.substring(0, size - 1) + " ..."
+      case _ => c.content
+    }
+
     ("name=when *" #> formatMsgCreationDate(c.creationDate) &
       "name=who *" #> c.author.map(_.shortName) &
-      "name=body *" #> toHtml(c.content) &
+      "name=body *" #> toHtml(body) &
       ".msg_id [id]" #> ("msg-" + c.uuid.toString) &
-      "i [class]" #> parent._2 &
+      ".event_type [class]" #> parent._2 &
       ".show-more [onclick]" #> SHtml.ajaxInvoke(() => showAllComments(parent._1)) &
       ".tags *" #> {
         ".tag *" #> c.tags.map { (tag: String) =>
@@ -176,7 +184,7 @@ trait GroupMessagesLog extends CometActor with CometListener {
 
     (".msg_id" #> NodeSeq.Empty &
       "name=who *" #> "" &
-      "name=body *" #> s"Please, enter new message."
+      "name=body *" #> S.?("group.message.enter")
       )(template)
   }
 
@@ -244,7 +252,7 @@ trait GroupMessagesLog extends CometActor with CometListener {
     ("name=when *" #> formatMsgCreationDate(e.creationDate) &
       "name=who *" #> e.author.map(_.shortName) &
       "name=body *" #> Unparsed(tuple._1) &
-      "i [class]" #> Unparsed(tuple._2) &
+      ".event_type [class]" #> Unparsed(tuple._2) &
       ".show-more [onclick]" #> SHtml.ajaxInvoke(() => showAllComments(e.uuid)) &
       ".msg_id [id]" #> ("msg-" + e.uuid.toString) //      ".tags *" #> {
       //        ".tag *" #> c.tags.map { (tag: String) =>
