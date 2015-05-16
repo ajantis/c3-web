@@ -308,7 +308,7 @@
                             <!-- The main application script -->
                             <script src="/scripts/js/upload.js" type="text/javascript"></script>
                             <!--<script src="/scripts/jQuery-File-Upload-9.9.3/js/main.js"></script>-->
-                            <div id="upload_form" class="modal">
+                            <div id="upload_form" class="modal modal-wide">
                                 <div class="modal-dialog">
                                     <div class="modal-content">
                                         <div class="modal-header">
@@ -336,28 +336,10 @@
                                                                 <i class="glyphicon glyphicon-ban-circle"></i>
                                                                 <span>Cancel upload</span>
                                                             </button>
-                                                            <button type="button" class="btn btn-danger delete">
-                                                                <i class="glyphicon glyphicon-trash"></i>
-                                                                <span>Delete</span>
-                                                            </button>
-                                                            <input type="checkbox" class="toggle">
-                                                            <!-- The global file processing state -->
-                                                            <span class="fileupload-process"></span>
-                                                        </div>
-                                                        <!-- The global progress state -->
-                                                        <div class="col-lg-5 fileupload-progress fade">
-                                                            <!-- The global progress bar -->
-                                                            <div class="progress progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100">
-                                                                <div class="progress-bar progress-bar-success" style="width:0%;"></div>
-                                                            </div>
-                                                            <!-- The extended global progress state -->
-                                                            <div class="progress-extended">&nbsp;</div>
                                                         </div>
                                                     </div>
                                                     <!-- The table listing the files available for upload/download -->
-                                                    <table role="presentation" class="table table-striped">
-                                                        <tbody class="files"></tbody>
-                                                    </table>
+                                                    <table role="presentation" class="table table-striped"><tbody class="files"></tbody></table>
                                                 </form>
                                             </div>
                                         </div>
@@ -367,43 +349,43 @@
 
                             <script id="template-upload" type="text/x-tmpl">
 {% for (var i=0, file; file=o.files[i]; i++) { %}
-    <div class="template-upload fade">
-        <tr>
+    <tr class="template-upload fade">
+        <td>
+            <span class="preview"></span>
+        </td>
+        <td>
+            <p class="name">{%=file.name%}</p>
+            <strong class="error text-danger"></strong>
+        </td>
+        <td>
+            <p class="size">Processing...</p>
+            <div class="progress progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="progress-bar progress-bar-success" style="width:0%;"></div></div>
+        </td>
+        <td>
+            {% if (!i && !o.options.autoUpload) { %}
+                <button class="btn btn-primary start">
+                    <i class="glyphicon glyphicon-upload"></i>
+                    <span>Start</span>
+                </button>
+            {% } %}
+            {% if (!i) { %}
+                <button class="btn btn-warning cancel">
+                    <i class="glyphicon glyphicon-ban-circle"></i>
+                    <span>Cancel</span>
+                </button>
+            {% } %}
+        </td>
+    </tr>
+    <tr>
+            <td><i class="icon-info-sign"></i> Description<i style="color: red">*</i></td>
             <td>
-                <span class="preview"></span>
+               <textarea id="description" class="description input_box no_padding_right" required cols="100" rows="2" type="text" name="description_${name}" placeholder="Description"></textarea>
             </td>
-            <td>
-                <p class="name">{%=file.name%}</p>
-                <strong class="error text-danger"></strong>
-            </td>
-            <td>
-                <input required name="fileName" class="form-control" type="text"  required placeholder="Название файла в системе">
-            </td>
-            <td>
-                <p class="size">Processing...</p>
-                <div class="progress progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="progress-bar progress-bar-success" style="width:0%;"></div></div>
-            </td>
-        </tr>
-        <tr>
-            <td colspan="3">
-                <input required name="fileDescription" class="form-control" type="text"  required placeholder="Описание файла">
-            </td>
-            <td>
-                {% if (!i && !o.options.autoUpload) { %}
-                    <button class="btn btn-primary start" disabled>
-                        <i class="glyphicon glyphicon-upload"></i>
-                        <span>Start</span>
-                    </button>
-                {% } %}
-                {% if (!i) { %}
-                    <button class="btn btn-warning cancel">
-                        <i class="glyphicon glyphicon-ban-circle"></i>
-                        <span>Cancel</span>
-                    </button>
-                {% } %}
-            </td>
-        </tr>
-    </div>
+    </tr>
+    <tr>
+        <td class="tags"><i class="icon-tags"></i> Tags</td>
+        <td class="start_stop"><input class="input_box_tags" type="text" name="tags_${name}" placeholder="docs, main, etc..." ></td>
+    </tr>
 {% } %}
 </script>
                             <!-- The template to display files available for download -->

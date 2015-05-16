@@ -568,3 +568,15 @@ img.circle {
 .group-tile > hr {
     margin: 0;
 }
+
+.modal.modal-wide .modal-dialog {
+	width: 75%;
+}
+
+.modal-body {
+	max-height: 75%;
+}
+
+.modal-wide .modal-body {
+	 overflow-y: auto;
+ }
