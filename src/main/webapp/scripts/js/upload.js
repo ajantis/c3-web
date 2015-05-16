@@ -13,27 +13,24 @@
         }
         else {start_button.hide();}
     })
-    $('#file_upload_form').fileupload(
-//     {
-//        form: "file_upload",
-//        autoUpload: false
-//    }
-    )
+
+     $('#file_upload_form').fileupload({
+         done:function (e, data) {
+             $.each(data.files,function(i,file){
+                 console.log(file.name + " was uploaded")
+             });
+             $('#upload_form').modal("hide");
+             location.reload();
+         },
+         fail: function(e, data) {
+             alert('Error on upload');
+         }
+     });
 
     $('#upload_form').modal({
         backdrop: true,
         keyboard: true,
         show: false
     })
-//    .css({
-//        // make width n * 10 % of screen
-//        'width': function () {
-//        return ($(document).width() * .7) + 'px';
-//        },
-//        // center model
-//        'margin-left': function () {
-//        return -($(this).width() / 2);
-//        }
-//    })
 });
 
