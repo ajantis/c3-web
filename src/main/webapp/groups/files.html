@@ -82,7 +82,45 @@
                                             </thead>
                                             <tbody>
                                             <tr>
+                                                <td><i class="glyphicon glyphicon-calendar"></i> Дата создания:</td>
+                                                <td><span class="data_file">Sept 16th, 2012</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td><i class="glyphicon glyphicon-user"></i> Владалец:</td>
+                                                <td><span class="owner_file">Kobtsev Sergey</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td><i class="glyphicon glyphicon-hdd"></i> Размер:</td>
+                                                <td><span class="size_file">196,8 Мб</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td><i class="glyphicon glyphicon-info-sign"></i> Описание:</td>
                                                 <td>
+                                                    <span class="hide description_submit_func"></span>
+                                                    <a href="#" id="description" data-type="text" data-pk="1"
+                                                       data-placeholder="File description..." data-original-title="Edit description"
+                                                       class="editable editable-click description_box">
+                                                        Engineering Science is a comprehensive textbook suitable for all <br/>
+                                                        vocational and pre-degree courses.
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td><i class="glyphicon glyphicon-tags"></i> Tags:</td>
+                                                <td>
+                                                    <span class="hide edit_tags_form_func"></span>
+                                                    <a href="#" id="edit_tags_form" data-type="select2" data-pk="1"
+                                                       data-original-title="Enter tags">
+                                                        html, javascript
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td><i class="glyphicon glyphicon-tags"></i> Metadata</td>
+                                                <td>
+                                                    <a class="metadata_btn cursor_pointer editable"><i id="icon_meta"
+                                                                                                       class="test glyphicon glyphicon-chevron-up"></i>Metadata</a>
+
                                                     <div id="meta" class="edit_metadata hide">
                                                         <div class="edit_meta">
                                                             <table class="tablesorter table_meta">
@@ -118,59 +156,6 @@
                                             </tbody>
                                         </table>
                                     </div>
-
-                                    <div id="delete_file_form" class="modal hide fade">
-                                        <h4 class="modal-header">Delete file</h4>
-
-                                        <div class="modal-body">
-                                            <p>Are you sure you want to delete this file?</p>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" data-dismiss="modal" class="btn btn-warning cancel">
-                                                <i class="icon-ban-circle icon-white"></i>
-                                                <span>Cancel</span>
-                                            </button>
-                                            <button type="button" class="delete_selected_btn btn btn-danger">
-                                                <i class="icon-white icon-remove"></i>
-                                                <span>Delete</span>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="row-fluid" id="action_btns_row">
-                                    <div class="span6">
-                                        <a type="button" href="#" class="btn btn-primary share_btn" style="margin-right: 10px;">
-                                            <i class="icon-white icon-lock"></i> Share
-                                        </a>
-                                        <a type="button" href="#" class="btn btn-primary view_btn" style="margin-right: 10px;">
-                                            <i class="icon-white icon-eye-open"></i>
-                                            <span>View</span>
-                                        </a>
-                                        <a type="button" href="#" class="btn btn-primary download_btn" style="margin-right: 10px;">
-                                            <i class="icon-white icon-download-alt"></i>
-                                            <span>Download</span>
-                                        </a>
-                                        <a type="button" href="#delete_file_form" data-toggle="modal" title="Delete file"
-                                           class="remove_resource btn btn-danger" style="margin-right: 10px;">
-                                            <i class="icon-white icon-remove"></i>
-                                            <span>Delete</span>
-                                        </a>
-                                    </div>
-                                </div>
-                                <div class="row-fluid" style="margin-top: 10px;" id="sharing">
-                                    <div class="span10">
-                                        <form class="form-inline">
-                                            <input type="text" id="txtHash" class="input-large tag-input" placeholder="Link"
-                                                   contenteditable="false"/>
-                                            <button type="button" class="remove_public_link btn btn-danger" style="margin-left: 10px;">Remove public
-                                                link
-                                            </button>
-                                        </form>
-                                    </div>
-                                </div>
-
-                            </div>
 
                             <div id="acl" class="modal">
                                 <div class="modal-dialog">
