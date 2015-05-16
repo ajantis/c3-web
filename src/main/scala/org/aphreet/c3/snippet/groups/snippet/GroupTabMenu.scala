@@ -27,12 +27,11 @@ class GroupTabMenu {
     (User.currentUser, group) match {
       case (Full(user), Full(g)) => {
         if (user.email.is == g.owner.obj.map(_.email).open_!.is || user.superUser.is)
-          tabs.set(groupId => defaultTabs(groupId) ::: List("settings" -> SettingsTab(groupId), "messages" -> MessagesTab(groupId)))
+          tabs.set(groupId => defaultTabs(groupId) ::: List("settings" -> SettingsTab(groupId), "messages" -> MessagesTab(groupId), "upload" -> UploadTab(groupId)))
         else
-          tabs.set(groupId => defaultTabs(groupId) ::: List("messages" -> MessagesTab(groupId)))
+          tabs.set(groupId => defaultTabs(groupId) ::: List("messages" -> MessagesTab(groupId), "upload" -> UploadTab(groupId)))
       }
       case _ =>
-
     }
     def tabMenu(id: String, active: String) = {
 
@@ -42,6 +41,7 @@ class GroupTabMenu {
             case "Files"    => "glyphicon glyphicon-file"
             case "Messages" => "glyphicon glyphicon-comment"
             case "Settings" => "glyphicon glyphicon-cog"
+            case "Upload"   => "glyphicon glyphicon-upload"
             case _          => "glyphicon glyphicon-star"
           }
           val activeClass = if (key == active) "active" else ""
@@ -73,7 +73,6 @@ class GroupTabMenu {
 // consider to move tab definitions to specific Group Locs -- as paths depend on locs
 sealed abstract class GroupTab(val name: String, val style: String, val path: String)
 case class FilesTab(groupId: String) extends GroupTab(S.?("group.fileMenu"), "Files", "/groups/" + groupId + "/files/")
-
 case class MessagesTab(groupId: String) extends GroupTab(S.?("group.workPlaceMenu"), "Messages", "/groups/" + groupId + "/messages")
-
 case class SettingsTab(groupId: String) extends GroupTab(S.?("group.settingsMenu"), "Settings", "/groups/" + groupId + "/settings")
+case class UploadTab(groupId: String) extends GroupTab(S.?("group.uploadMenu"), "Upload", "/groups/" + groupId + "/upload")
