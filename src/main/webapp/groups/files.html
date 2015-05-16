@@ -363,7 +363,7 @@
         </td>
         <td>
             {% if (!i && !o.options.autoUpload) { %}
-                <button class="btn btn-primary start" disabled>
+                <button class="btn btn-primary start">
                     <i class="glyphicon glyphicon-upload"></i>
                     <span>Start</span>
                 </button>
@@ -375,6 +375,16 @@
                 </button>
             {% } %}
         </td>
+    </tr>
+    <tr>
+            <td><i class="icon-info-sign"></i> Description<i style="color: red">*</i></td>
+            <td>
+               <textarea id="description" class="description input_box no_padding_right" required cols="100" rows="2" type="text" name="description_${name}" placeholder="Description"></textarea>
+            </td>
+    </tr>
+    <tr>
+        <td class="tags"><i class="icon-tags"></i> Tags</td>
+        <td class="start_stop"><input class="input_box_tags" type="text" name="tags_${name}" placeholder="docs, main, etc..." ></td>
     </tr>
 {% } %}
 </script>

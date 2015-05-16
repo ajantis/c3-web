@@ -16,17 +16,20 @@
 
      $('#file_upload_form').fileupload({
          done:function (e, data) {
-             $.each(data.files,function(i,file){
+             $.each(data.files, function (i, file) {
                  console.log(file.name + " was uploaded")
              });
              $('#upload_form').modal("hide");
              location.reload();
-         },
-         fail: function(e, data) {
-             alert('Error on upload');
          }
      });
 
+     $(".description").on("keyup", function(){
+         var description_text = $(this).val();
+         if(description_text.length > 0){
+             alert("changed!");
+         }
+     });
     $('#upload_form').modal({
         backdrop: true,
         keyboard: true,
