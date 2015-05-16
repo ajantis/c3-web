@@ -1,4 +1,4 @@
-c3_host=http://node1.c3.ifunsoftware.com
+c3_host=http://node0.c3.ifunsoftware.com
 c3_domain_name=9a0dc63b-2ab9-4c77-8d2e-08a89e42f5f8
 #c3_domain_name=dev-delarko
 c3_domain_secret=1d02ab56fffb585c201ee68de8485773
