@@ -17,19 +17,9 @@
             </div>
             <div class="lift:GroupPageMessages.putCometJournal">
                 <div class="col-sm-4 col-md-4">
-                    <div class="row" id="messages_toolbar">
-                        <div class="col-sm-offset-3 col-sm-2 text-center">
-                            <div class="btn-group" data-toggle="buttons">
-                                <button class="btn btn-success pull-right new_msg_btn">
-                                    <i class="icon-ok icon-white"></i>
-                                    <span>New message</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
 
                     <div id="main_ul_id" class="chat">
-                        <div id="main_li_id" class="chat-body clearfix">
+                        <div id="main_li_id">
                             <div class="msg_id primary-font header">
                                 <small class="text-muted pull-left">
                                     <i class="event_type"></i>
@@ -38,19 +28,14 @@
                             </div>
                             <div class="col-xs-offset-1">
                                 <strong class="primary-font" name="who" style="margin: 3px;">Dmitry Ivanov</strong>
-                                <span name="body">My Message</span>
                             </div>
-                            <div>
-                                <button class="show-more pull-right">show all</button>
-                                <div class="tags pull-right">
-                                        <span class="tag" style="margin: 3px;">
-                                            <span class="label label-info"></span>
-                                        </span>
-                                </div>
-                            </div>
+                            <i class="mdi-material-info glyphicon glyphicon-share-alt show-more"
+                               style="float: right; cursor: pointer;"></i>
+                            <span class="col-xs-offset-1" name="body">My Message</span>
+                            <hr style="margin-top: 5px; margin-bottom: 5px; ">
                         </div>
-                        <hr/>
                     </div>
+
                 </div>
                 <div class="col-sm-4 col-md-4">
                     <div class="row" id="comment_toolbar">
@@ -60,47 +45,35 @@
                                           id="comment_postit"
                                           placeholder="New message text"></textarea>
 
-                                <div class="">
-                                    <button type="submit" class="btn btn-success pull-right" id="comment_send_btn">
-                                        <i class="icon-ok icon-white"></i>
-                                        <span>Send</span>
-                                    </button>
-                                </div>
-                                <div>
-                                    <span class="hide edit_tags_form_func"></span>
-                                    <i class="glyphicon glyphicon-tags"></i> Tags
-                                    <a href="#" id="comment_tags_input" data-type="text" data-pk="1"
-                                    data-placement="right" data-placeholder="Required" data-title="Enter tags"
-                                    class="editable editable-click editable-open" data-original-title="Enter tags" title="">html, javascript</a>
-                                </div>
-
                             </div>
 
+                            <button type="submit" class="btn btn-success pull-right" id="comment_send_btn">
+                                <i class="icon-ok icon-white"></i>
+                                <span>Отправить</span>
+                            </button>
+
+                            <button class="btn btn-success pull-right new_msg_btn">
+                                <i class="icon-ok icon-white"></i>
+                                <span>Новое сообщение</span>
+                            </button>
                         </div>
                     </div>
                     <div id="ul_info" class="chat">
-                        <div id="li_info" class="chat-body clearfix">
+                        <div id="li_info">
                             <div class="msg_id primary-font header">
                                 <small class="text-muted pull-left">
                                     <i class="event_type"></i>
                                     <span name="when">12 mins ago</span>
                                 </small>
                             </div>
-                            <div class="offset1">
-                                    <strong class="primary-font " name="who">Dmitry Ivanov</strong>
-                                    <span name="body">My Message</span>
+                            <div class="col-xs-offset-1">
+                                <strong class="primary-font" name="who" style="margin: 3px;">Dmitry Ivanov</strong>
+
                             </div>
-                            <div>
-                                <div class="tags pull-right">
-                                        <span class="tag" style="margin: 3px;">
-                                            <span class="label label-info"></span>
-                                        </span>
-                                </div>
-                            </div>
-                            <hr/>
+                            <span class="col-xs-offset-1" name="body">My Message</span>
+                            <hr style="margin-top: 5px; margin-bottom: 5px; ">
                         </div>
                     </div>
-
                 </div>
             </div>
         </div>
