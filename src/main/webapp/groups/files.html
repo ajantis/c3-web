@@ -156,7 +156,8 @@
                                             </tbody>
                                         </table>
                                     </div>
-
+                                </div>
+                            </div>
                             <div id="acl" class="modal">
                                 <div class="modal-dialog">
                                     <div class="modal-content">
@@ -306,7 +307,7 @@
                                                 <form id="file_upload_form" action="path" method="POST" enctype="multipart/form-data">
                                                     <!-- The fileupload-buttonbar contains buttons to add/delete files and start/cancel the upload -->
                                                     <div class="row fileupload-buttonbar">
-                                                        <div class="col-lg-7">
+                                                        <div>
                                                             <!-- The fileinput-button span is used to style the file input field as button -->
                                                             <span class="btn btn-success fileinput-button">
                                                                 <i class="glyphicon glyphicon-plus"></i>
@@ -324,7 +325,11 @@
                                                         </div>
                                                     </div>
                                                     <!-- The table listing the files available for upload/download -->
-                                                    <table role="presentation" class="table table-striped"><tbody class="files"></tbody></table>
+
+                                                    <div role="presentation" class="table table-striped">
+                                                        <ul class="files">
+                                                        </ul>
+                                                    </div>
                                                 </form>
                                             </div>
                                         </div>
@@ -334,43 +339,56 @@
 
                             <script id="template-upload" type="text/x-tmpl">
 {% for (var i=0, file; file=o.files[i]; i++) { %}
-    <tr class="template-upload fade">
-        <td>
-            <span class="preview"></span>
-        </td>
-        <td>
-            <p class="name">{%=file.name%}</p>
-            <strong class="error text-danger"></strong>
-        </td>
-        <td>
-            <p class="size">Processing...</p>
-            <div class="progress progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="progress-bar progress-bar-success" style="width:0%;"></div></div>
-        </td>
-        <td>
-            {% if (!i && !o.options.autoUpload) { %}
-                <button class="btn btn-primary start">
-                    <i class="glyphicon glyphicon-upload"></i>
-                    <span>Start</span>
-                </button>
-            {% } %}
-            {% if (!i) { %}
-                <button class="btn btn-warning cancel">
-                    <i class="glyphicon glyphicon-ban-circle"></i>
-                    <span>Cancel</span>
-                </button>
-            {% } %}
-        </td>
-    </tr>
-    <tr>
-            <td><i class="icon-info-sign"></i> Description<i style="color: red">*</i></td>
-            <td>
-               <textarea id="description" class="description input_box no_padding_right" required cols="100" rows="2" type="text" name="description_${name}" placeholder="Description"></textarea>
-            </td>
-    </tr>
-    <tr>
-        <td class="tags"><i class="icon-tags"></i> Tags</td>
-        <td class="start_stop"><input class="input_box_tags" type="text" name="tags_${name}" placeholder="docs, main, etc..." ></td>
-    </tr>
+    <li class="template-upload fade">
+        <table class="table">
+            <tbody>
+                <tr>
+                    <td rowspan="2">
+                        <span class="preview"></span>
+                    </td>
+                    <td>
+                        <span class="name">{%=file.name%}</span>
+                        <strong class="error text-danger"></strong>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <span class="size">Processing...</span>
+                        <div class="progress progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="progress-bar progress-bar-success" style="width:0%;"></div></div>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="min-width:120px"><i class="glyphicon glyphicon-info-sign"></i> Описание<span style="color: red">*</span></td>
+                    <td class="item-required">
+                       <textarea id="description_{%=file.name%}" class="description form-control no_padding_right" required cols="100" rows="2"
+                            type="text" name="description_{%=file.name%}" placeholder="Описание файла"></textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="tags"><i class="glyphicon glyphicon-tags"></i> Теги</td>
+                    <td class="item-required">
+                        <input class="input_box_tags form-control" required id="tags_{%=file.name%}" type="text" name="tags_{%=file.name%}" placeholder="docs, main, etc..." >
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        {% if (!i && !o.options.autoUpload) { %}
+                            <button class="btn btn-primary start" disabled>
+                                <i class="glyphicon glyphicon-upload"></i>
+                                <span>Start</span>
+                            </button>
+                        {% } %}
+                        {% if (!i) { %}
+                            <button class="btn btn-warning cancel">
+                                <i class="glyphicon glyphicon-ban-circle"></i>
+                                <span>Cancel</span>
+                            </button>
+                        {% } %}
+                    </td>
+                </tr>
+            </tbody>
+        </table
+    </li>
 {% } %}
 </script>
                             <!-- The template to display files available for download -->

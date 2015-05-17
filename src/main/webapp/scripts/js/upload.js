@@ -21,13 +21,16 @@
              });
              $('#upload_form').modal("hide");
              location.reload();
-         }
-     });
+         },
+         send: function (e, data) {
+                  var fields = $(".item-required")
+                         .find("textarea, input").serializeArray();
 
-     $(".description").on("keyup", function(){
-         var description_text = $(this).val();
-         if(description_text.length > 0){
-             alert("changed!");
+                   $.each(fields, function(i, field) {
+                     if (!field.value)
+                       alert(field.name + ' is required');
+                       event.preventDefault();
+                    });
          }
      });
     $('#upload_form').modal({
