@@ -580,3 +580,7 @@ img.circle {
 .modal-wide .modal-body {
 	 overflow-y: auto;
  }
+
+.margin-right-glyphicon{
+	margin-right: 0.5em;
+}

@@ -231,6 +231,7 @@ class GroupListPage extends GroupsAccess {
           "name=password" #> SHtml.onSubmit(newUser.password(_)) &
           "name=repeatePassword" #> SHtml.onSubmit(repeatPassword = _)
     })&
+      ".cancel [onclick]"#> SHtml.ajaxInvoke(()=>redirectBack)&
       "name=groupName" #> SHtml.onSubmit(newGroup.name(_)) &
       "name=description" #> SHtml.onSubmit(newGroup.description(_)) &
       "name=public" #> SHtml.onSubmit(public = _) &
@@ -243,6 +244,10 @@ class GroupListPage extends GroupsAccess {
 //      ".btn_add_user" #> NodeSeq.Empty &
 //        "#add_group" #> NodeSeq.Empty
 //  }
+
+  def redirectBack:JsCmd = {
+    JsCmds.RedirectTo("/")
+  }
 
   def tabs = {
     val tab = getTabParameter()

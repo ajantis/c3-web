@@ -24,25 +24,25 @@
                             </colgroup>
                             <tbody class="add_user">
                             <tr >
-                                <td><i class="glyphicon glyphicon-user"></i>First Name <span style="color: red;">*</span></td>
+                                <td><i class="glyphicon glyphicon-user margin-right-glyphicon"></i>First Name <span style="color: red;">*</span></td>
                                 <td>
                                     <input required maxlength="32" name="firstName" class="form-control" placeholder="First Name" type="text">
                                 </td>
                             </tr>
                             <tr >
-                                <td><i class="glyphicon glyphicon-user"></i>Last Name</td>
+                                <td><i class="glyphicon glyphicon-user margin-right-glyphicon"></i>Last Name</td>
                                 <td>
                                     <input maxlength="32" name="lastName" class="form-control" placeholder="Last Name" type="text">
                                 </td>
                             </tr>
                             <tr >
-                                <td><i class="glyphicon glyphicon-envelope"></i>Email<span style="color: red;">*</span></td>
+                                <td><i class="glyphicon glyphicon-envelope margin-right-glyphicon"></i>Email<span style="color: red;">*</span></td>
                                 <td>
                                     <input required name="email" class="form-control" placeholder="user@email.com" type="text">
                                 </td>
                             </tr>
                             <tr >
-                                <td><i class="glyphicon glyphicon-lock"></i>Password <span style="color: red;">*</span></td>
+                                <td><i class="glyphicon glyphicon-lock margin-right-glyphicon"></i>Password <span style="color: red;">*</span></td>
                                 <td>
                                     <input required name="password" class="form-control" type="password" placeholder="Password">
                                 </td>
@@ -56,13 +56,13 @@
                             </tbody>
                             <tbody class="add_group">
                                 <tr >
-                                    <td><i class="glyphicon glyphicon-font"></i>Название <span style="color: red;">*</span></td>
+                                    <td><i class="glyphicon glyphicon-font margin-right-glyphicon"></i>Название <span style="color: red;">*</span></td>
                                     <td >
                                         <input required name="groupName" class="form-control" type="text"  required placeholder="Название группы">
                                     </td>
                                 </tr>
                                 <tr >
-                                    <td ><i class="glyphicon glyphicon-globe"></i>Тип доступа</td>
+                                    <td ><i class="glyphicon glyphicon-globe margin-right-glyphicon"></i>Тип доступа</td>
                                     <td>
                                         <label>
                                             <input name="public" type="checkbox" value="true"/>
@@ -71,7 +71,7 @@
                                     </td>
                                 </tr>
                                 <tr >
-                                    <td><i class="glyphicon glyphicon-info-sign"></i>Описание <span style="color: red;">*</span></td>
+                                    <td><i class="glyphicon glyphicon-info-sign margin-right-glyphicon"></i>Описание <span style="color: red;">*</span></td>
                                     <td >
                                         <textarea class="description form-control" cols="500" rows="2" type="text"
                                                   name="description" required
@@ -79,7 +79,7 @@
                                     </td>
                                 </tr>
                                 <tr >
-                                    <td class="tags"><i class="glyphicon glyphicon-tags"></i>Теги</td>
+                                    <td class="tags"><i class="glyphicon glyphicon-tags margin-right-glyphicon"></i>Теги</td>
                                     <td><input class="form-control current_tags" type="text" name="tags_edit" required placeholder="docs, main, etc..." ></td>
                                 </tr>
                             </tbody>
@@ -87,7 +87,7 @@
                         </table>
                     </fieldset>
                 </form>
-                <button type="button" data-dismiss="modal" class="btn btn-warning cancel">Отмена</button>
+                <button type="button" class="btn btn-warning cancel">Отмена</button>
                 <button type="submit" class="btn btn-success" form="add_group_form">Создать</button>
             </div>
         </div> <!-- add_group-->
