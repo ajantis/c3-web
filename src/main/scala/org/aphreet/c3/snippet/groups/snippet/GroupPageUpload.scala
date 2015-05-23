@@ -66,7 +66,7 @@ object GroupPageUpload extends AbstractGroupPageLoc[GroupPageFilesData] with Suf
 }
 
 class GroupPageUpload(data: GroupPageFilesData) extends C3ResourceHelpers
-with GroupPageHelper with FSHelper with TagForms with C3AccessHelpers {
+    with GroupPageHelper with FSHelper with TagForms with C3AccessHelpers {
 
   import org.aphreet.c3.lib.DependencyFactory._
 
@@ -109,23 +109,23 @@ with GroupPageHelper with FSHelper with TagForms with C3AccessHelpers {
 
     ".base_files_path *" #> (
       ".link [href]" #> groupFilesLink &
-        ".link *" #> group.name.is) &
+      ".link *" #> group.name.is) &
       ".bcrumb *" #> pathLocs.map {
         (loc: Loc[_]) =>
           (if (isLocCurrent(pathLocs, loc) && (hasSuperAccessResource(currentResource) || hasWriteAccessResource(currentResource))) {
             ".link" #>
               <span class="hide name_submit_func">
                 {
-                Script(
-                  Function("renameNodeCallback", List("name"),
-                    SHtml.ajaxCall(
-                      JsVar("name"),
-                      (name: String) => renameCurrentNode(name))._2.cmd))
+                  Script(
+                    Function("renameNodeCallback", List("name"),
+                      SHtml.ajaxCall(
+                        JsVar("name"),
+                        (name: String) => renameCurrentNode(name))._2.cmd))
                 }
               </span>
-                <a href="#" id="node_name" data-type="text" data-pk="2" data-placeholder="Name..." data-original-title="Rename" class="editable editable-click">
-                  { loc.title }
-                </a>
+              <a href="#" id="node_name" data-type="text" data-pk="2" data-placeholder="Name..." data-original-title="Rename" class="editable editable-click">
+                { loc.title }
+              </a>
           } else {
             ".link [href]" #> loc.createDefaultLink &
               ".link *" #> loc.title
