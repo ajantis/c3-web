@@ -9,20 +9,22 @@
                     <li id="myOwnGroups"><a href="/groups?tab=myOwnGroups">Управление</a></li>
                     <li id="all"><a href="/groups?tab=all">Все группы</a></li>
                 </ul>
-                <form class="nav navbar-left input-group col-lg-6">
-                    <input class="form-control" placeholder="Поиск группы по имени..." type="text">
+                <ul class="nav nav-pills navbar-right">
+                    <li>
+                        <form class="nav navbar-left input-group">
+                            <input class="form-control" placeholder="Поиск группы по имени..." type="text" style="width: 300px">
                     <span class="input-group-btn material-input">
                             <button class="btn btn-default" type="submit">
                                 <span class="glyphicon glyphicon-search"></span>
                             </button>
                         </span>
-                </form>
-                <ul class="nav nav-pills navbar-right">
-                    <li>
-                        <a onclick="switchRowsViewOn()" title="List view" class="btn btn-sm"><i class="glyphicon glyphicon-align-justify"></i></a>
+                        </form>
                     </li>
                     <li>
-                        <a onclick="switchTileViewOn()" title="Grid view" class="btn btn-sm"><i class="glyphicon glyphicon-th-large"></i></a>
+                        <a onclick="toggleTileView()" title="List view" class="btn btn-sm"><i class="glyphicon glyphicon-align-justify"></i></a>
+                    </li>
+                    <li>
+                        <a onclick="toggleTileView()" title="Grid view" class="btn btn-sm"><i class="glyphicon glyphicon-th-large"></i></a>
                     </li>
                 </ul>
             </div>
