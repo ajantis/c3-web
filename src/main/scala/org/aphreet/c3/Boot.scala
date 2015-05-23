@@ -81,7 +81,7 @@ class Boot extends Bootable {
 
       Menu("Faq") / "faq" >> LocGroup("footerMenu"),
 
-      Menu("Groups") / "groups" >> LocGroup("mainmenu") submenus {
+      Menu("Рабочие группы") / "groups" >> LocGroup("mainmenu") submenus {
         GroupsSection.menus: _*
       },
       Menu("AddGroup") / "addgroup",
@@ -99,13 +99,13 @@ class Boot extends Bootable {
       Menu("notifications", "Notifications") / "notifications" >> loggedIn submenus {
         NotificationsSection.menus: _*
       },
-      Menu("Experiments") / "experiments" >> LocGroup("mainmenu"),
+      Menu("Эксперименты") / "experiments" >> LocGroup("mainmenu"),
 
       //      Menu(Loc("virtualization", ExtLink(plabAddress), "Virtualization", LocGroup("mainmenu"))),
 
-      Menu("R service") / "r_suite" >> LocGroup("mainmenu"),
+      Menu("R сервис") / "r_suite" >> LocGroup("mainmenu"),
 
-      Menu("Knowledge base") / "k_base" >> LocGroup("mainmenu"),
+      Menu("Коллекции") / "k_base" >> LocGroup("mainmenu"),
 
       LogLevel.menu, // default log level menu is located at /loglevel/change
 

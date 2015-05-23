@@ -551,8 +551,8 @@
 	overflow:hidden
 }
 .logo-vert {
-    width: 360px;
-    margin: -52px 0px -52px -40px;
+    width: 260px;
+    margin: -29px 0px -40px -40px;
     transition: width 0.3s ease 0s;
 }
 img.circle {
@@ -583,4 +583,10 @@ img.circle {
 
 .margin-right-glyphicon{
 	margin-right: 0.5em;
+}
+.inf_left {
+  float: left;
+  margin-left: 3px;
+  margin-top: 3px;
+  line-height: 14px;
 }

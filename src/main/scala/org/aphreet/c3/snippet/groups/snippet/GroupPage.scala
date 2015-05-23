@@ -3,18 +3,18 @@ package org.aphreet.c3.snippet.groups.snippet
 import com.ifunsoftware.c3.access.C3System
 import net.liftweb.common.{ Box, Full }
 import net.liftweb.http.SHtml
-import net.liftweb.http.js.{JsCmds, JsCmd}
+import net.liftweb.http.js.{ JsCmds, JsCmd }
 import net.liftweb.sitemap.Loc.{ Link, LinkText }
 import net.liftweb.util.BindHelpers._
 import org.aphreet.c3.lib.DependencyFactory
 import org.aphreet.c3.lib.DependencyFactory._
-import org.aphreet.c3.model.{User, Group}
+import org.aphreet.c3.model.{ User, Group }
 import org.aphreet.c3.service.groups.GroupService
 import org.aphreet.c3.snippet.LiftMessages
 import org.aphreet.c3.snippet.groups.{ AbstractGroupPageLoc, GroupPageData }
 import org.aphreet.c3.util.helpers.GroupPageHelper
 
-import scala.xml.{NodeSeq, Text}
+import scala.xml.{ NodeSeq, Text }
 
 /**
  * Copyright iFunSoftware 2011
@@ -64,11 +64,10 @@ class GroupPage(data: GroupPageData) extends GroupPageHelper {
   }
   def sendRequest(): JsCmd = {
     val user = User.currentUserUnsafe
-    if(group.users.contains(user)){
+    if (group.users.contains(user)) {
       LiftMessages.ajaxNotice(user.niceName + " already in group " + group.name.is) &
         JsCmds.Replace(group.getId, NodeSeq.Empty)
-    }
-      else{
+    } else {
       groupService.addUsersToApproveListGroup(group, Iterable(user))
       LiftMessages.ajaxNotice(user.niceName + " is add to approve list of group " + group.name.is) &
         JsCmds.Replace(group.getId, NodeSeq.Empty)
