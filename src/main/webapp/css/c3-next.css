@@ -792,7 +792,14 @@ overflow: hidden;
 .container_groups{
     width:80%;
     min-height: 65px;
+    list-style: none;
+    height: 220px;
 }
+
+.container_groups h4{
+    margin-left: 15px;
+}
+
 .hr_group{
     margin:0!important;
     padding-bottom:10px;
