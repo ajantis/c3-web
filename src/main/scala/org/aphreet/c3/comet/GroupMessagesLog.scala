@@ -232,19 +232,19 @@ trait GroupMessagesLog extends CometActor with CometListener {
     val tuple = e.eventType match {
       case EventType.ApproveUserToGroup =>
         val user = User.findByEmail(e.path).openOrThrowException("User not found")
-        val msgBody = "Approved user <a href=\"" + user.createLink.toString() + "\">" + user.shortName + "</a>"
+        val msgBody = "<a href=\"" + user.createLink.toString() + "\">" + user.shortName + "</a>" + S.?("group.message.approve.user")
         val icon = "glyphicon glyphicon-check"
         (msgBody, icon)
       case EventType.CreateResources =>
-        val msgBody = "Created resource <a href=\"" + fullPath + "\">" + resourceName + "</a>"
+        val msgBody = S.?("group.message.add.resource") + "<a href=\"" + fullPath + "\">" + resourceName + "</a>"
         val icon = "glyphicon glyphicon-download-alt"
         (msgBody, icon)
       case EventType.UpdateResources =>
-        val msgBody = "Updated resource <a href=\"" + fullPath + "\">" + resourceName + "</a>"
+        val msgBody = S.?("group.message.update.resource") + " <a href=\"" + fullPath + "\">" + resourceName + "</a>"
         val icon = "glyphicon glyphicon-refresh"
         (msgBody, icon)
       case EventType.MoveResources =>
-        val msgBody = "Moved resource <a href=\"" + fullPath + "\">" + resourceName + "</a> to " + e.path
+        val msgBody =  S.?("group.message.move.resource") + "<a href=\"" + fullPath + "\">" + resourceName + "</a>  -> " + e.path
         val icon = "glyphicon glyphicon-random"
         (msgBody, icon)
     }
