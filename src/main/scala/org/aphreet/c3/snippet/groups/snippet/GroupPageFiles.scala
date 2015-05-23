@@ -8,11 +8,11 @@ import net.liftweb.http.js.JE.{ JsRaw, JsVar }
 import net.liftweb.http.js.JsCmds.{ Function, Script }
 import net.liftweb.http.js.jquery.JqJsCmds
 import net.liftweb.http.js.{ JsCmd, JsCmds }
-import net.liftweb.http.{ RequestVar, S, SHtml, SessionVar }
+import net.liftweb.http._
 import net.liftweb.sitemap.Loc.{ Hidden, Link, LinkText }
 import net.liftweb.sitemap.{ Loc, Menu, SiteMap }
 import net.liftweb.util.Helpers._
-import net.liftweb.util.{ CssSel, PassThru }
+import net.liftweb.util.{Helpers, CssSel, PassThru}
 import org.aphreet.c3.acl.groups.{ GroupsAccess, UserStatusGroup }
 import org.aphreet.c3.comet.{ JournalServer, JournalServerEvent, MessageServerFactory }
 import org.aphreet.c3.lib.DependencyFactory
@@ -215,7 +215,7 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers
     val metaACL = acl(directory.metadata.get(ACL_META).getOrElse(""))
     def redirectToDirectory: CssSel = {
       ".link [href]" #> (directory.name + "/") &
-        ".child_td [onclick]" #> SHtml.ajaxInvoke(() => JsCmds.RedirectTo(directory.name + "/"))
+        ".child_td [ondblclick]" #> SHtml.ajaxInvoke(() => JsCmds.RedirectTo(directory.name + "/"))
     }
 
     def transferDirectory: CssSel = {
@@ -225,15 +225,15 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers
 
     def accessRestricted: CssSel = {
       ".link [href]" #> "#" &
-        ".child_td [onclick]" #> SHtml.ajaxInvoke(() => LiftMessages.ajaxError(S.?("access.restricted")))
+        ".child_td [ondblclick]" #> SHtml.ajaxInvoke(() => LiftMessages.ajaxError(S.?("access.restricted")))
     }
     (if (hasSuperAccessResource(directory)) {
       ".rules *" #> metaACL &
         ".rules [id]" #> directory.fullname.hashCode &
-        ".rules [onclick]" #> SHtml.ajaxInvoke(() => currentResource(directory.fullname.hashCode.toString, metaACL)) &
+        ".rules [ondblclick]" #> SHtml.ajaxInvoke(() => currentResource(directory.fullname.hashCode.toString, metaACL)) &
         transferDirectory &
-        ".child_td [onclick]" #> SHtml.ajaxInvoke(() => JsCmds.RedirectTo(directory.name + "/")) &
-        ".link [href]" #> (directory.name + "/")
+        ".child_td [ondblclick]" #> SHtml.ajaxInvoke(() => JsCmds.RedirectTo(directory.name + "/")) &
+      ".link [href]" #> (directory.name + "/")
     } else {
       val haveReadRight = checkReadAccessResource(directory)
       val haveWriteRight = hasWriteAccessResource(directory)
@@ -275,6 +275,19 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers
 
   def toCss(file: C3File) = {
 
+    def updateLeftBox(): JsCmd = {
+        JsCmds.SetHtml("description", <span>{ConvertHelper.ShortString(file.metadata.get(DESCRIPTION_META).getOrElse(""))}</span>) &
+          JsCmds.SetHtml("edit_tags_form", <span>{file.metadata.get(TAGS_META).map(_.split(",").mkString(", ")).getOrElse("")}</span>) &
+          JsCmds.Replace("download_btn", <a type="button" href={fileDownloadUrl(file)} id="download_btn" class="btn btn-primary download_btn" style="margin-right: 10px;">
+            <i class="icon-white glyphicon glyphicon-download-alt"></i>
+            <span>Скачать</span>
+          </a> ) &
+          JsCmds.Replace("view_btn", <a type="button" href={fileViewUrl(file)} id="view_btn" class="btn btn-primary view_btn" style="margin-right: 10px;">
+            <i class="icon-white icon-eye-open"></i>
+            <span>Просмотреть</span>
+          </a> )
+    }
+
     def transferFile: CssSel = {
       ".acl_cont [ondrag]" #> SHtml.ajaxInvoke(() => FileTransferHelper.saveDraggableResourceName(file.name)) &
         ".acl_cont [ondrop]" #> ""
@@ -286,17 +299,19 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers
     (if (hasSuperAccessResource(file)) {
       ".rules *" #> metaACL &
         ".rules [id]" #> file.fullname.hashCode &
-        ".rules [onclick]" #> SHtml.ajaxInvoke(() => currentResource(file.fullname.hashCode.toString, metaACL)) &
+        ".rules [ondblclick]" #> SHtml.ajaxInvoke(() => currentResource(file.fullname.hashCode.toString, metaACL)) &
         transferFile &
         ".link [href]" #> file.name &
-        ".child_td [onclick]" #> SHtml.ajaxInvoke(() => JsCmds.RedirectTo(file.name))
+        ".child_td [ondblclick]" #> SHtml.ajaxInvoke(() => JsCmds.RedirectTo(file.name)) &
+        ".child_td [onclick]" #> SHtml.ajaxInvoke(() => updateLeftBox())
     } else {
       (if (checkReadAccessResource(file)) {
         ".link [href]" #> (file.name + "/") &
-          ".child_td [onclick]" #> SHtml.ajaxInvoke(() => JsCmds.RedirectTo(file.name))
+          ".child_td [ondblclick]" #> SHtml.ajaxInvoke(() => JsCmds.RedirectTo(file.name)) &
+          ".child_td [onclick]" #>  SHtml.ajaxInvoke(() => updateLeftBox())
       } else {
         ".link [href]" #> "#" &
-          ".child_td [onclick]" #> SHtml.ajaxInvoke(() => LiftMessages.ajaxError(S.?("access.restricted")))
+          ".child_td [ondblclick]" #> SHtml.ajaxInvoke(() => LiftMessages.ajaxError(S.?("access.restricted")))
       }) &
         (if (hasWriteAccessResource(file)) {
           transferFile
@@ -583,7 +598,7 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers
           commonForms(f)
     }
     if (hasSuperAccess || checkReadAccessResource(f)) doRenderFileLoc(true)
-    else ".child_td [onclick]" #> SHtml.ajaxInvoke(() => (LiftMessages.ajaxError(S.?("access.restricted")))) &
+    else ".child_td [ondblclick]" #> SHtml.ajaxInvoke(() => (LiftMessages.ajaxError(S.?("access.restricted")))) &
       doRenderFileLoc(false)
   }
 

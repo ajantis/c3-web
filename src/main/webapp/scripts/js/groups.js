@@ -95,4 +95,8 @@ function switchTileViewOn() {
             var w = $(this).attr('data-default');
             $(this).animate({ width: w }, 'slow');
         });
+     $( ".file-table tbody tr" ).on( "click", function( event ) {
+         $("tr").removeClass("success");
+         $( this ).addClass("success");
+     });
   });
