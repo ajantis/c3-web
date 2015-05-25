@@ -12,7 +12,7 @@ import net.liftweb.http._
 import net.liftweb.sitemap.Loc.{ Hidden, Link, LinkText }
 import net.liftweb.sitemap.{ Loc, Menu, SiteMap }
 import net.liftweb.util.Helpers._
-import net.liftweb.util.{Helpers, CssSel, PassThru}
+import net.liftweb.util.{ Helpers, CssSel, PassThru }
 import org.aphreet.c3.acl.groups.{ GroupsAccess, UserStatusGroup }
 import org.aphreet.c3.comet.{ JournalServer, JournalServerEvent, MessageServerFactory }
 import org.aphreet.c3.lib.DependencyFactory
@@ -25,6 +25,7 @@ import org.aphreet.c3.service.journal.EventType
 import org.aphreet.c3.snippet.LiftMessages
 import org.aphreet.c3.snippet.groups.{ AbstractGroupPageLoc, GroupPageFilesData }
 import org.aphreet.c3.snippet.groups.snippet.tags.TagForms
+import org.aphreet.c3.util.C3Exception
 import org.aphreet.c3.util.helpers._
 
 import scala.xml.{ NodeSeq, Text }
@@ -233,7 +234,7 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers
         ".rules [ondblclick]" #> SHtml.ajaxInvoke(() => currentResource(directory.fullname.hashCode.toString, metaACL)) &
         transferDirectory &
         ".child_td [ondblclick]" #> SHtml.ajaxInvoke(() => JsCmds.RedirectTo(directory.name + "/")) &
-      ".link [href]" #> (directory.name + "/")
+        ".link [href]" #> (directory.name + "/")
     } else {
       val haveReadRight = checkReadAccessResource(directory)
       val haveWriteRight = hasWriteAccessResource(directory)
@@ -267,7 +268,7 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers
       ".owner *" #> owner.map(_.shortName).getOrElse("Unknown") &
       ".owner [href]" #> owner.map(_.createLink) &
       ".name *" #> directory.name &
-      ".icon [src]" #> "/images/folder_classic.png" &
+      ".icon [src]" #> { if (directory.name == group.trashCanName) "/images/trash.png" else "/images/folder_classic.png" } &
       ".description_box *" #> directory.metadata.get(DESCRIPTION_META).getOrElse("") &
       ".created_date *" #> internetDateFormatter.format(directory.date)
 
@@ -276,16 +277,17 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers
   def toCss(file: C3File) = {
 
     def updateLeftBox(): JsCmd = {
-        JsCmds.SetHtml("description", <span>{ConvertHelper.ShortString(file.metadata.get(DESCRIPTION_META).getOrElse(""))}</span>) &
-          JsCmds.SetHtml("edit_tags_form", <span>{file.metadata.get(TAGS_META).map(_.split(",").mkString(", ")).getOrElse("")}</span>) &
-          JsCmds.Replace("download_btn", <a type="button" href={fileDownloadUrl(file)} id="download_btn" class="btn btn-primary download_btn" style="margin-right: 10px;">
-            <i class="icon-white glyphicon glyphicon-download-alt"></i>
-            <span>Скачать</span>
-          </a> ) &
-          JsCmds.Replace("view_btn", <a type="button" href={fileViewUrl(file)} id="view_btn" class="btn btn-primary view_btn" style="margin-right: 10px;">
-            <i class="icon-white icon-eye-open"></i>
-            <span>Просмотреть</span>
-          </a> )
+      JsCmds.SetHtml("description", <span>{ ConvertHelper.ShortString(file.metadata.get(DESCRIPTION_META).getOrElse("")) }</span>) &
+        JsCmds.SetHtml("edit_tags_form", <span>{ file.metadata.get(TAGS_META).map(_.split(",").mkString(", ")).getOrElse("") }</span>) &
+        JsCmds.Replace("download_btn", <a type="button" href={ fileDownloadUrl(file) } id="download_btn" class="btn btn-primary download_btn" style="margin-right: 10px;">
+                                         <i class="icon-white glyphicon glyphicon-download-alt"></i>
+                                         <span>Скачать</span>
+                                       </a>) &
+        JsCmds.Replace("view_btn", <a type="button" href={ fileViewUrl(file) } id="view_btn" class="btn btn-primary view_btn" style="margin-right: 10px;">
+                                     <i class="icon-white icon-eye-open"></i>
+                                     <span>Просмотреть</span>
+                                   </a>)
+      JsCmds.Replace("replace_file_btn", <div></div>)
     }
 
     def transferFile: CssSel = {
@@ -308,7 +310,7 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers
       (if (checkReadAccessResource(file)) {
         ".link [href]" #> (file.name + "/") &
           ".child_td [ondblclick]" #> SHtml.ajaxInvoke(() => JsCmds.RedirectTo(file.name)) &
-          ".child_td [onclick]" #>  SHtml.ajaxInvoke(() => updateLeftBox())
+          ".child_td [onclick]" #> SHtml.ajaxInvoke(() => updateLeftBox())
       } else {
         ".link [href]" #> "#" &
           ".child_td [ondblclick]" #> SHtml.ajaxInvoke(() => LiftMessages.ajaxError(S.?("access.restricted")))
@@ -488,8 +490,10 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers
                   (d: String) => updateDescription(node, d))._2.cmd))
           } &
           ".delete_file_btn [onclick]" #> SHtml.ajaxInvoke(() => {
-            c3.deleteFile(node.fullname);
-            JsCmds.RedirectTo(parentNodeLink)
+            {
+              moveFileToTrashCan(node.fullname, true);
+              JsCmds.RedirectTo(parentNodeLink)
+            }
           }) &
           ".share_btn [onclick]" #> SHtml.ajaxInvoke(() => FileSharingHelper.shareFile(node)) &
           ".remove_public_link [onclick]" #> SHtml.ajaxInvoke(() => FileSharingHelper.disableSharing(node))
@@ -500,7 +504,9 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers
           "#meta" #> metadataView(node, metadataUser) &
           ".share_btn [disabled]" #> "true" &
           ".remove_public_link [disabled]" #> "true" &
-          "#sharing *" #> NodeSeq.Empty
+          "#sharing *" #> NodeSeq.Empty &
+          ".replace_file_btn" #> NodeSeq.Empty
+
       }) &
       ".file_tags" #> meta.get(TAGS_META).map(_.split(TAGS_SEPARATOR).toList).getOrElse(Nil).map((tag: String) => {
         ".label *" #> tag
@@ -518,7 +524,7 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers
     }
     def superAccessTools(): CssSel = {
       ".delete_selected_btn [onclick]" #> SHtml.ajaxInvoke(() => {
-        selectedResourcePaths.foreach(c3.deleteFile)
+        selectedResourcePaths.foreach(moveFileToTrashCan(_, false))
         JsCmds.RedirectTo(currentPathLink)
       })
     }
@@ -580,6 +586,37 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers
       commonForms(d)
   }
 
+  def moveFileToTrashCan(name: String, IsDeletedFromFilePage: Boolean): JsCmd =
+    {
+      if (!name.contains(group.trashCanDirectory) && !name.endsWith("/" + group.trashCanName)) {
+        if (group.getFile(group.trashCanDirectory).openOr(null) == null) createTrashCan();
+        val resourceName = (name.substring(name.dropRight(1).lastIndexOf("/"), name.length));
+        FileTransferHelper.moveToTrashCan(resourceName, group, data.currentAddress, IsDeletedFromFilePage)
+      } else {
+        JsCmds.Alert("Can't delete trashcan or file in it.")
+      }
+    }
+
+  def createTrashCan(): Unit = {
+    val root = c3.getFile("/").asDirectory
+    root.getChild(group.getId) match {
+      case Some(node) =>
+        val dir = node.asDirectory
+        dir.getChild("files") match {
+          case Some(node) =>
+            val files = node.asDirectory
+            val metadata = Map(OWNER_ID_META -> dir.metadata.get(OWNER_ID_META).getOrElse(User.id.is.toString),
+              GROUP_ID_META -> data.group.getId,
+              TAGS_META -> "Trash",
+              DESCRIPTION_META -> "",
+              ACL_META -> dir.metadata.get(ACL_META).getOrElse(""))
+            files.createDirectory(group.trashCanName, metadata)
+          case None => throw new C3Exception("Failed to create trash can for group " + group.getId)
+        }
+      case None => throw new C3Exception("Can't find group with id " + group.getId)
+    }
+  }
+
   protected def renderFileLoc(f: C3File): CssSel = {
     val owner = nodeOwner(f)
     def doRenderFileLoc(hasAccess: Boolean): CssSel = {
@@ -595,7 +632,10 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers
           ".data_file *" #> internetDateFormatter.format(f.date) &
           ".owner_file *" #> owner.map(_.shortName).getOrElse("Unknown") &
           ".size_file *" #> ByteCalculatorHelper.convert(f.versions.lastOption.fold("None")(_.length.toString)) &
-          commonForms(f)
+          commonForms(f) &
+          "#file_replace_form [action]" #> ("/replace/file/groups/" + group.getId + "/files" + data.currentAddress) &
+          "#file_replace_close_btn [onclick]" #> SHtml.ajaxInvoke(() => JsCmds.Reload)
+
     }
     if (hasSuperAccess || checkReadAccessResource(f)) doRenderFileLoc(true)
     else ".child_td [ondblclick]" #> SHtml.ajaxInvoke(() => (LiftMessages.ajaxError(S.?("access.restricted")))) &

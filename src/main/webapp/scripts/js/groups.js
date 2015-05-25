@@ -1,44 +1,9 @@
-function HideGroupDetails(that)
-{
-    var panel = $(that).parent().parent().children().eq(2);
-    var btn = $(that);
-   // panel.toggle();
-
-    if (panel.css('height')=='10px')
-    {
-        panel.css('height', 'auto');
-        btn.attr("src", "/images/icon-chevron-down.png");
-    }
-    else
-    {
-        panel.css('height', '10px');
-        btn.attr("src", "/images/icon-chevron-up.png");
-    }
-}
-function HideGroupDetails2(that)
-{
-    var panel = $(that).parent().parent().children('.desc_panel');
-    var btn = $(that);
-
-    if ((panel).css('height')=='25px')
-    {
-        (panel).css('height','auto')
-        btn.attr("class", "toggle_switch inf_right icon-chevron-up");
-    } else {
-        (panel).css('height','25px')
-        btn.attr("class", "toggle_switch inf_right icon-chevron-down");
-    }
+function toggleTileView() {
+    $('.container_groups').toggleClass('shadow-z-1').toggleClass('group-tile');
 }
 
-function switchRowsViewOn() {
-    $('.container_groups').removeClass('shadow-z-2').removeClass('group-tile');
-}
-
-function switchTileViewOn() {
-    $('.container_groups').addClass('shadow-z-2').addClass('group-tile');
-}
- $(document).ready(function ($) {
-                $.fn.editable.defaults.mode = "inline";
+$(document).ready(function ($) {
+    $.fn.editable.defaults.mode = "inline";
 //                $('#postit').markItUp(mySettings);
 
     $('#comment_tags_input').editable({
@@ -83,20 +48,21 @@ function switchTileViewOn() {
         $("#sharing").removeClass("disp_none");
     });
 
-      $( ".remove_public_link" ).click(function() {
-            $("#sharing").addClass("disp_none");
-     });
+    $( ".remove_public_link" ).click(function() {
+        $("#sharing").addClass("disp_none");
+    });
 
-     $('#txtHash').focus(function(){
-            $(this).attr('data-default', $(this).width());
-            $(this).animate({ width: $(this).width() + 150 }, 'slow');
-            $(this).select();
-        }).blur(function(){
-            var w = $(this).attr('data-default');
-            $(this).animate({ width: w }, 'slow');
-        });
-     $( ".file-table tbody tr" ).on( "click", function( event ) {
-         $("tr").removeClass("success");
-         $( this ).addClass("success");
-     });
-  });
+    $('#txtHash').focus(function(){
+        $(this).attr('data-default', $(this).width());
+        $(this).animate({ width: $(this).width() + 150 }, 'slow');
+        $(this).select();
+    }).blur(function(){
+        var w = $(this).attr('data-default');
+        $(this).animate({ width: w }, 'slow');
+    });
+    $( ".file-table tbody tr" ).on( "click", function( event ) {
+        $("tr").removeClass("success");
+        $( this ).addClass("success");
+    });
+    $('[data-toggle="tooltip"]').tooltip();
+});

@@ -558,11 +558,31 @@
 img.circle {
     border-radius: 100%;
 }
+
+.container_groups{
+	width:80%;
+	min-height: 65px;
+	list-style: none;
+	height: 220px;
+}
+
+.container_groups > h4{
+	margin-left: 15px;
+}
+
+.container_groups > .desc_panel > .description_group{
+	margin-top: 10px;
+	margin-left: 15px;
+	height: 110px;
+	overflow: hidden;
+}
+
 .group-tile {
     width: 30%;
     list-style: none;
     float: left;
-    margin: 5px
+    margin: 5px;
+	border-radius: 5px;
 }
 
 .group-tile > hr {

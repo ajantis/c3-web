@@ -26,16 +26,18 @@
                                     <li class="bcrumb">
                                         <a class="link" href="#">dir</a> <span class=""></span>
                                     </li>
-                                    <li class="file-table">
-                                            <a type="button" href="#new-directory" data-toggle="modal" class="new_directory_btn">
-                                                <img src="/images/folder_plus.png" title="Создать дирректорию"/>
-                                            </a>
-                                            <a type="button" href="#upload_form" data-toggle="modal" class="upload_files_btn">
-                                                <img src="/images/cloud_upload_2.png" title="Загрузить ресурс"/>
-                                            </a>
-                                            <a type="button" href="#delete_selected_form" data-toggle="modal" class="delete_selected_form_button">
-                                                <img src="/images/remove.png" title="Удалить ресурс"/>
-                                            </a>
+                                    <li class="pull-right">
+                                        <a type="button" href="#new-directory" data-toggle="modal" data-toggle="tooltip" title="Создать новую директорию" class="new_directory_btn">
+                                            <i class="glyphicon glyphicon-folder-open"> </i>
+                                        </a>
+                                        &nbsp;
+                                        <a type="button" href="#upload_form" data-toggle="modal" data-toggle="tooltip" title="Загрузить ресурс" class="upload_files_btn">
+                                            <i class="glyphicon glyphicon-cloud-upload"> </i>
+                                        </a>
+                                        &nbsp;
+                                        <a type="button" href="#delete_selected_form" data-toggle="modal" data-toggle="tooltip" title="Удалить ресурс" class="delete_selected_form_button">
+                                            <i class="glyphicon glyphicon-remove"> </i>
+                                        </a>
                                     </li>
                                 </ul>
                             </div>
@@ -52,8 +54,7 @@
                                     <tbody>
                                         <tr class="parentfolder drop">
                                             <td></td>
-                                            <td class="parentfolder_td file-table-parent-name"><a class="parent_link" href="#"><img class="icon_parent" src="/images/folder_classic.png"/> ..<span class="parent_name"></span></a>
-                                                <span class="description_box last_changed short_description"></span></td>
+                                            <td class="parentfolder_td file-table-parent-name"><a class="parent_link" href="#"><i class="glyphicon glyphicon-arrow-left"></i> ...</a></td>
                                             <td class="parentfolder_td file-table-owner"></td>
                                             <td class="file-table-rules acl_cont"></td>
                                         </tr>
@@ -435,6 +436,137 @@
     </tr>
 {% } %}
 </script>
+
+                            <script id="template-upload-replace" type="text/x-tmpl">
+{%
+
+
+for (var i=0, file; file=o.files[i]; i++) { %}
+    <li class="template-upload fade">
+        <table class="table">
+            <tbody>
+                <tr>
+                    <td rowspan="2">
+                        <span class="preview"></span>
+                    </td>
+                    <td>
+                        <span class="name">{%=file.name%}</span>
+                        <strong class="error text-danger"></strong>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <span class="size">Processing...</span>
+                        <div class="progress progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="progress-bar progress-bar-success" style="width:0%;"></div></div>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        {% if (!i && !o.options.autoUpload) { %}
+                            <button class="btn btn-primary start" disabled>
+                                <i class="glyphicon glyphicon-upload"></i>
+                                <span>Start</span>
+                            </button>
+                        {% } %}
+                        {% if (!i) { %}
+                            <button class="btn btn-warning cancel cancel-replace" onclick="$('.fileinput-button').removeAttr('disabled');">
+                                <i class="glyphicon glyphicon-ban-circle"></i>
+                                <span>Cancel</span>
+                            </button>
+                        {% } %}
+                    </td>
+                </tr>
+            </tbody>
+        </table
+    </li>
+{% } %}
+</script>
+                            <!-- The template to display files available for download -->
+                            <script id="template-download-replace" type="text/x-tmpl">
+{% for (var i=0, file; file=o.files[i]; i++) { %}
+    <tr class="template-download fade">
+        <td>
+            <span class="preview">
+                {% if (file.thumbnailUrl) { %}
+                    <a href="{%=file.url%}" title="{%=file.name%}" download="{%=file.name%}" data-gallery><img src="{%=file.thumbnailUrl%}"></a>
+                {% } %}
+            </span>
+        </td>
+        <td>
+            <p class="name">
+                {% if (file.url) { %}
+                    <a href="{%=file.url%}" title="{%=file.name%}" download="{%=file.name%}" {%=file.thumbnailUrl?'data-gallery':''%}>{%=file.name%}</a>
+                {% } else { %}
+                    <span>{%=file.name%}</span>
+                {% } %}
+            </p>
+            {% if (file.error) { %}
+                <div><span class="label label-danger">Error</span> {%=file.error%}</div>
+            {% } %}
+        </td>
+        <td>
+            <span class="size">{%=o.formatFileSize(file.size)%}</span>
+        </td>
+        <td>
+            {% if (file.deleteUrl) { %}
+                <button class="btn btn-danger delete" data-type="{%=file.deleteType%}" data-url="{%=file.deleteUrl%}"{% if (file.deleteWithCredentials) { %} data-xhr-fields='{"withCredentials":true}'{% } %}>
+                    <i class="glyphicon glyphicon-trash"></i>
+                    <span>Delete</span>
+                </button>
+                <input type="checkbox" name="delete" value="1" class="toggle">
+            {% } else { %}
+                <button class="btn btn-warning cancel">
+                    <i class="glyphicon glyphicon-ban-circle"></i>
+                    <span>Cancel</span>
+                </button>
+            {% } %}
+        </td>
+    </tr>
+{% } %}
+</script>
+
+                            <div id="replace_form" class="modal modal-wide">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                                            <h4 class="modal-title">Замена ресурса</h4>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div id="file_replace">
+                                                <!-- The file upload form used as target for the file upload widget -->
+                                                <form id="file_replace_form" action="path" method="POST" enctype="multipart/form-data">
+                                                    <!-- The fileupload-buttonbar contains buttons to add/delete files and start/cancel the upload -->
+                                                    <div class="row fileupload-buttonbar">
+                                                        <div>
+                                                            <!-- The fileinput-button span is used to style the file input field as button -->
+                                                            <span class="btn btn-success fileinput-button">
+                                                                <i class="glyphicon glyphicon-plus"></i>
+                                                                <span>Add files for replace...</span>
+                                                                <input type="file" name="files[]" class="add-replace-file">
+                                                            </span>
+                                                            <button type="submit" class="btn btn-primary start">
+                                                                <i class="glyphicon glyphicon-upload"></i>
+                                                                <span>Start replace</span>
+                                                            </button>
+                                                            <button type="reset" class="btn btn-warning cancel close-replace" onclick="$('.close').click();">
+                                                                <i class="glyphicon glyphicon-ban-circle"></i>
+                                                                <span>Cancel replace</span>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                    <!-- The table listing the files available for upload/download -->
+
+                                                    <div role="presentation" class="table table-striped">
+                                                        <ul class="files">
+                                                        </ul>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -444,46 +576,49 @@
     <div class="lift:bind-at?name=content">
         <div class="col-sm-3 col-md-3">
             <div class="lift:GroupPageFiles">
-                <table class="table table-striped" style="width: 100%">
-                    <tbody>
-                    <tr>
-                        <td style="width: 15%"><i class="icon-info-sign"></i> Description</td>
-                        <td>
-                            <span class="hide description_submit_func"></span>
-                            <a href="#" id="description" data-type="text" data-pk="1"
-                               data-placeholder="File description..." data-original-title="Edit description"
-                               class="editable editable-click description_box">
-                                Engineering Science is a comprehensive textbook suitable for all <br/>
-                                vocational and pre-degree courses.
-                            </a>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <i class="icon-tags"></i> Tags
-                        </td>
-                        <td>
-                            <span class="hide edit_tags_form_func"></span>
-                            <span class="hide edit_tags_form_func"></span>
-                            <a href="#" id="edit_tags_form" data-type="select2" data-pk="1" data-original-title="Enter tags">
-                                html, javascript
-                            </a>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <a type="button" href="#" id="view_btn" class="btn btn-primary view_btn" style="margin-right: 10px;">
-                                <i class="icon-white icon-eye-open"></i>
-                                <span>Просмотреть</span>
-                            </a>
-                            <a type="button" href="#" id="download_btn" class="btn btn-primary download_btn" style="margin-right: 10px;">
-                                <i class="icon-white glyphicon glyphicon-download-alt"></i>
-                                <span>Скачать</span>
-                            </a>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Resource name</h3>
+                    </div>
+                    <div class="panel-body">
+                        <div class="row-content">
+                            <h4><i class="glyphicon glyphicon-info-sign"></i> Description</h4>
+                            <p class="list-group-item-text">
+                                <span class="hide description_submit_func"></span>
+                                <a href="#" id="description" data-type="text" data-pk="1"
+                                   data-placeholder="File description..." data-original-title="Edit description"
+                                   class="editable editable-click description_box">
+                                    Engineering Science is a comprehensive textbook suitable for all <br/>
+                                    vocational and pre-degree courses.
+                                </a>
+                            </p>
+                        </div>
+                        <hr>
+                        <div class="row-content">
+                            <h4><i class="glyphicon glyphicon-tags"></i> Tags</h4>
+                            <p class="list-group-item-text">
+                                <span class="hide edit_tags_form_func"></span>
+                                <span class="hide edit_tags_form_func"></span>
+                                <a href="#" id="edit_tags_form" data-type="select2" data-pk="1" data-original-title="Enter tags">
+                                    html, javascript
+                                </a>
+                            </p>
+                        </div>
+                        <hr>
+                        <a type="button" href="#" id="view_btn" class="btn btn-primary btn-block view_btn">
+                            <i class="icon-white icon-eye-open"></i>
+                            <span>Просмотреть</span>
+                        </a>
+                        <a type="button" href="#" id="download_btn" class="btn btn-primary btn-block download_btn">
+                            <i class="icon-white glyphicon glyphicon-download-alt"></i>
+                            <span>Скачать</span>
+                        </a>
+                        <a type="button" href="#replace_form" id="replace_file_btn" data-toggle="modal" title="Delete file" class="btn btn-primary btn-block btn-warning replace_file_btn">
+                            <i class="icon-white glyphicon glyphicon-refresh"></i>
+                            <span>Заменить</span>
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

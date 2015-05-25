@@ -48,6 +48,7 @@ import net.liftweb.common.Full
 import net.liftweb.http.BadResponse
 import org.aphreet.c3.comet.{MessageServerFactory, JournalServer, JournalServerEvent}
 import org.aphreet.c3.service.journal.EventType
+import org.aphreet.c3.util.helpers.FileTransferHelper
 
 // for ajax file upload
 object FileUpload extends RestHelper with C3Loggable{
@@ -59,7 +60,6 @@ object FileUpload extends RestHelper with C3Loggable{
   serve {
     case "upload" :: "file" :: currentPath Post req => {
       withCurrentUserAndGroupCtx(req, currentPath){
-        userGroupIds: UserGroupIds => {
 
           val uploads = req.uploadedFiles
           logger.info("Uploaded files: " + uploads)
@@ -67,6 +67,7 @@ object FileUpload extends RestHelper with C3Loggable{
           val filePath = c3FilePath(currentPath)
 
           logger.info("Path to upload: " + filePath)
+          userGroupIds: UserGroupIds => {
 
           try{
             val ojv: List[JObject] = uploads.map { fph =>
@@ -99,6 +100,50 @@ object FileUpload extends RestHelper with C3Loggable{
             }
           }
         }
+      }
+    }
+    case "replace" :: "file" :: currentPath Post req => {
+      withCurrentUserAndGroupCtx(req, currentPath){
+        userGroupIds: UserGroupIds => {
+
+          val uploads = req.uploadedFiles
+          logger.info("Uploaded files: " + uploads)
+
+          val filePath = c3FilePath(currentPath)
+          var oldFilePath = filePath.init ::: reunite(filePath.last, req.path.suffix) :: Nil;
+
+          val oldFile = c3.getFile(oldFilePath.mkString("/", "/", ""))
+          logger.info("Path to upload: " + filePath)
+            try{
+              val ojv: List[JObject] = uploads.map { fph =>
+                val url = removeTrailingIndex(currentPath).mkString("/", "/", "/") + fph.fileName
+                val fileMetadata: Map[String, String] =
+                  Map((OWNER_ID_META -> userGroupIds.userId), (GROUP_ID_META -> userGroupIds.groupId),(DESCRIPTION_META -> oldFile.metadata.get(DESCRIPTION_META).getOrElse("")),
+                    (TAGS_META -> oldFile.metadata.get(TAGS_META).getOrElse("")))
+                val group: Box[Group] = Group.findById(filePath.head)
+                val relativeFilePathString = filePath.drop(2) mkString "/"
+                FileTransferHelper.moveToTrashCan(oldFile.name, group.open_!, "/"+relativeFilePathString, true)
+                uploadToC3(fph, filePath.dropRight(1), fileMetadata)
+                ("name" -> fph.fileName) ~
+                  ("url" -> url) ~
+                  ("sizef" -> fph.length) ~
+                  ("delete_url" -> ("/delete/file" + url)) ~
+                  ("delete_type" -> "DELETE")
+              }
+
+              val jr = JsonResponse(ojv).toResponse.asInstanceOf[InMemoryResponse]
+            InMemoryResponse(jr.data, ("Content-Length", jr.data.length.toString) ::
+              ("Content-Type", "text/plain") :: S.getHeaders(Nil),
+              S.responseCookies, 200)
+          } catch {
+            case e: C3AccessException => {
+              if (e.message.endsWith("already exists")) // that's ugly, need a proper cause from access api
+                errorResponse(uploads, 409, "File already exists")
+              else
+                BadResponse()
+            }
+          }
+      }
       }
     }
     case "delete" :: "file" :: currentPath Delete req => {
