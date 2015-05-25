@@ -30,9 +30,11 @@
                                         <a type="button" href="#new-directory" data-toggle="modal" data-toggle="tooltip" title="Создать новую директорию" class="new_directory_btn">
                                             <i class="glyphicon glyphicon-folder-open"> </i>
                                         </a>
+                                        &nbsp;
                                         <a type="button" href="#upload_form" data-toggle="modal" data-toggle="tooltip" title="Загрузить ресурс" class="upload_files_btn">
                                             <i class="glyphicon glyphicon-cloud-upload"> </i>
                                         </a>
+                                        &nbsp;
                                         <a type="button" href="#delete_selected_form" data-toggle="modal" data-toggle="tooltip" title="Удалить ресурс" class="delete_selected_form_button">
                                             <i class="glyphicon glyphicon-remove"> </i>
                                         </a>
@@ -574,52 +576,49 @@ for (var i=0, file; file=o.files[i]; i++) { %}
     <div class="lift:bind-at?name=content">
         <div class="col-sm-3 col-md-3">
             <div class="lift:GroupPageFiles">
-                <table class="table table-striped" style="width: 100%">
-                    <tbody>
-                    <tr>
-                        <td style="width: 15%"><i class="icon-info-sign"></i> Description</td>
-                        <td>
-                            <span class="hide description_submit_func"></span>
-                            <a href="#" id="description" data-type="text" data-pk="1"
-                               data-placeholder="File description..." data-original-title="Edit description"
-                               class="editable editable-click description_box">
-                                Engineering Science is a comprehensive textbook suitable for all <br/>
-                                vocational and pre-degree courses.
-                            </a>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <i class="icon-tags"></i> Tags
-                        </td>
-                        <td>
-                            <span class="hide edit_tags_form_func"></span>
-                            <span class="hide edit_tags_form_func"></span>
-                            <a href="#" id="edit_tags_form" data-type="select2" data-pk="1" data-original-title="Enter tags">
-                                html, javascript
-                            </a>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <a type="button" href="#" id="view_btn" class="btn btn-primary view_btn" style="margin-right: 10px;">
-                                <i class="icon-white icon-eye-open"></i>
-                                <span>Просмотреть</span>
-                            </a>
-                            <a type="button" href="#" id="download_btn" class="btn btn-primary download_btn" style="margin-right: 10px;">
-                                <i class="icon-white glyphicon glyphicon-download-alt"></i>
-                                <span>Скачать</span>
-                            </a>
-
-                            <a type="button" href="#replace_form" id="replace_file_btn" data-toggle="modal" title="Delete file"
-                               class="replace_file_btn btn btn-warning" style="margin-right: 10px;">
-                                <i class="icon-white glyphicon glyphicon-refresh"></i>
-                                <span>Заменить</span>
-                            </a>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Resource name</h3>
+                    </div>
+                    <div class="panel-body">
+                        <div class="row-content">
+                            <h4><i class="glyphicon glyphicon-info-sign"></i> Description</h4>
+                            <p class="list-group-item-text">
+                                <span class="hide description_submit_func"></span>
+                                <a href="#" id="description" data-type="text" data-pk="1"
+                                   data-placeholder="File description..." data-original-title="Edit description"
+                                   class="editable editable-click description_box">
+                                    Engineering Science is a comprehensive textbook suitable for all <br/>
+                                    vocational and pre-degree courses.
+                                </a>
+                            </p>
+                        </div>
+                        <hr>
+                        <div class="row-content">
+                            <h4><i class="glyphicon glyphicon-tags"></i> Tags</h4>
+                            <p class="list-group-item-text">
+                                <span class="hide edit_tags_form_func"></span>
+                                <span class="hide edit_tags_form_func"></span>
+                                <a href="#" id="edit_tags_form" data-type="select2" data-pk="1" data-original-title="Enter tags">
+                                    html, javascript
+                                </a>
+                            </p>
+                        </div>
+                        <hr>
+                        <a type="button" href="#" id="view_btn" class="btn btn-primary btn-block view_btn">
+                            <i class="icon-white icon-eye-open"></i>
+                            <span>Просмотреть</span>
+                        </a>
+                        <a type="button" href="#" id="download_btn" class="btn btn-primary btn-block download_btn">
+                            <i class="icon-white glyphicon glyphicon-download-alt"></i>
+                            <span>Скачать</span>
+                        </a>
+                        <a type="button" href="#replace_form" id="replace_file_btn" data-toggle="modal" title="Delete file" class="btn btn-primary btn-block btn-warning replace_file_btn">
+                            <i class="icon-white glyphicon glyphicon-refresh"></i>
+                            <span>Заменить</span>
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
