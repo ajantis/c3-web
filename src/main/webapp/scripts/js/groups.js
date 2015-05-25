@@ -64,4 +64,5 @@ $(document).ready(function ($) {
         $("tr").removeClass("success");
         $( this ).addClass("success");
     });
+    $('[data-toggle="tooltip"]').tooltip();
 });
