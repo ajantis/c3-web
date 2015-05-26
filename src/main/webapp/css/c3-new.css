@@ -566,7 +566,7 @@ img.circle {
 	height: 220px;
 }
 
-.container_groups > h4{
+.container_groups > .group-tile-header > h4{
 	margin-left: 15px;
 }
 
@@ -585,8 +585,8 @@ img.circle {
 	border-radius: 5px;
 }
 
-.group-tile > hr {
-    margin: 0;
+.group-tile > .group-tile-header {
+	border-bottom: 1px solid #18BC9C
 }
 
 .modal.modal-wide .modal-dialog {
