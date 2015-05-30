@@ -221,11 +221,11 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers
                                          { file.metadata.get(TAGS_META).map(_.split(",").mkString(", ")).getOrElse("") }
                                        </span>) &
       (if (!file.isDirectory) {
-        JsCmds.Replace("download_btn", <a type="button" href={ fileDownloadUrl(file.asFile) } id="download_btn" class="btn btn-primary btn-block download_btn">
+        JsCmds.Replace("download_btn", <a type="button" href={ fileDownloadUrl(file.asFile) } id="download_btn" class="btn btn-inverse btn-block download_btn">
                                          <i class="icon-white glyphicon glyphicon-download-alt"></i>
                                          <span>Скачать</span>
                                        </a>) &
-          JsCmds.Replace("view_btn", <a type="button" href={ fileViewUrl(file.asFile) } id="view_btn" class="btn btn-primary btn-block view_btn">
+          JsCmds.Replace("view_btn", <a type="button" href={ fileViewUrl(file.asFile) } id="view_btn" class="btn btn-inverse btn-block view_btn">
                                        <i class="icon-white icon-eye-open"></i>
                                        <span>Просмотреть</span>
                                      </a>) &
