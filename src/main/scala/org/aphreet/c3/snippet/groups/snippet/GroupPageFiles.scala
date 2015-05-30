@@ -1,34 +1,34 @@
 package org.aphreet.c3.snippet.groups.snippet
 
 import com.ifunsoftware.c3.access.C3System._
-import com.ifunsoftware.c3.access.fs.{C3Directory, C3File, C3FileSystemNode}
-import com.ifunsoftware.c3.access.{C3System, MetadataRemove, MetadataUpdate, StringMetadataValue}
-import net.liftweb.common.{Full, _}
-import net.liftweb.http.js.JE.{JsRaw, JsVar}
-import net.liftweb.http.js.JsCmds.{Function, Script}
+import com.ifunsoftware.c3.access.fs.{ C3Directory, C3File, C3FileSystemNode }
+import com.ifunsoftware.c3.access.{ C3System, MetadataRemove, MetadataUpdate, StringMetadataValue }
+import net.liftweb.common.{ Full, _ }
+import net.liftweb.http.js.JE.{ JsRaw, JsVar }
+import net.liftweb.http.js.JsCmds.{ Function, Script }
 import net.liftweb.http.js.jquery.JqJsCmds
-import net.liftweb.http.js.{JsCmd, JsCmds}
+import net.liftweb.http.js.{ JsCmd, JsCmds }
 import net.liftweb.http._
-import net.liftweb.sitemap.Loc.{Hidden, Link, LinkText}
-import net.liftweb.sitemap.{Loc, Menu, SiteMap}
+import net.liftweb.sitemap.Loc.{ Hidden, Link, LinkText }
+import net.liftweb.sitemap.{ Loc, Menu, SiteMap }
 import net.liftweb.util.Helpers._
-import net.liftweb.util.{Helpers, CssSel, PassThru}
-import org.aphreet.c3.acl.groups.{GroupsAccess, UserStatusGroup}
-import org.aphreet.c3.comet.{JournalServer, JournalServerEvent, MessageServerFactory}
+import net.liftweb.util.{ Helpers, CssSel, PassThru }
+import org.aphreet.c3.acl.groups.{ GroupsAccess, UserStatusGroup }
+import org.aphreet.c3.comet.{ JournalServer, JournalServerEvent, MessageServerFactory }
 import org.aphreet.c3.lib.DependencyFactory
 import org.aphreet.c3.lib.metadata.Metadata
 import org.aphreet.c3.lib.metadata.Metadata._
 import org.aphreet.c3.loc.SuffixLoc
-import org.aphreet.c3.model.{Group, User}
+import org.aphreet.c3.model.{ Group, User }
 import org.aphreet.c3.service.groups.GroupService
 import org.aphreet.c3.service.journal.EventType
 import org.aphreet.c3.snippet.LiftMessages
-import org.aphreet.c3.snippet.groups.{AbstractGroupPageLoc, GroupPageFilesData}
+import org.aphreet.c3.snippet.groups.{ AbstractGroupPageLoc, GroupPageFilesData }
 import org.aphreet.c3.snippet.groups.snippet.tags.TagForms
 import org.aphreet.c3.util.C3Exception
 import org.aphreet.c3.util.helpers._
 
-import scala.xml.{NodeSeq, Text}
+import scala.xml.{ NodeSeq, Text }
 
 /**
  * @author Dmitry Ivanov (mailto: id.ajantis@gmail.com)
@@ -72,7 +72,7 @@ object GroupPageFiles extends AbstractGroupPageLoc[GroupPageFilesData] with Suff
 }
 
 class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers
-with GroupPageHelper with FSHelper with TagForms with C3AccessHelpers {
+    with GroupPageHelper with FSHelper with TagForms with C3AccessHelpers {
 
   import org.aphreet.c3.lib.DependencyFactory._
 
@@ -93,7 +93,7 @@ with GroupPageHelper with FSHelper with TagForms with C3AccessHelpers {
 
   def parentNodeLink: String = pathLocs.reverse match {
     case Nil => groupFilesLink
-    case xs => xs.tail.headOption.fold(groupFilesLink)((l: Loc[_]) => l.createDefaultLink.get.text)
+    case xs  => xs.tail.headOption.fold(groupFilesLink)((l: Loc[_]) => l.createDefaultLink.get.text)
   }
 
   def render = {
@@ -113,56 +113,58 @@ with GroupPageHelper with FSHelper with TagForms with C3AccessHelpers {
       JsCmds.RedirectTo(redirectPath)
     }
     "#right-box-head *" #> group.name.is &
-    ".base_files_path *" #> (
-      ".link [href]" #> groupFilesLink &
+      ".base_files_path *" #> (
+        ".link [href]" #> groupFilesLink &
         ".link *" #> group.name.is) &
-      ".bcrumb *" #> pathLocs.map {
-        (loc: Loc[_]) =>
-          (if (isLocCurrent(pathLocs, loc) && (hasSuperAccessResource(currentResource) || hasWriteAccessResource(currentResource))) {
-            ".link" #>
-              <span class="hide name_submit_func">
-                {Script(
-                Function("renameNodeCallback", List("name"),
-                  SHtml.ajaxCall(
-                    JsVar("name"),
-                    (name: String) => renameCurrentNode(name))._2.cmd))}
-              </span>
+        ".bcrumb *" #> pathLocs.map {
+          (loc: Loc[_]) =>
+            (if (isLocCurrent(pathLocs, loc) && (hasSuperAccessResource(currentResource) || hasWriteAccessResource(currentResource))) {
+              ".link" #>
+                <span class="hide name_submit_func">
+                  {
+                    Script(
+                      Function("renameNodeCallback", List("name"),
+                        SHtml.ajaxCall(
+                          JsVar("name"),
+                          (name: String) => renameCurrentNode(name))._2.cmd))
+                  }
+                </span>
                 <a href="#" id="node_name" data-type="text" data-pk="2" data-placeholder="Name..." data-original-title="Rename" class="editable editable-click">
-                  {loc.title}
+                  { loc.title }
                 </a>
-          } else {
-            ".link [href]" #> loc.createDefaultLink &
-              ".link *" #> loc.title
-          }) &
-            ".divider" #> (
-              data.isDirectoryLoc match {
-                case false if loc == pathLocs.last => (_: NodeSeq) => NodeSeq.Empty // if it is a file then we want to skip last "/" divider
-                case _ => PassThru
-              })
-      } &
-      ".current_path *" #> Text(data.currentAddress) &
-      ".edit_access *" #> acl() &
-      ".submit_acl [onclick]" #> SHtml.ajaxInvoke(() => updateAclValue()) &
-      (file match {
-        case Empty => S.redirectTo("/404.html"); "* *" #> PassThru
-        case Failure(msg, t, chain) => {
-          logger.error("Error accessing file: " + msg, t)
-          S.redirectTo("/404.html")
-          "* *" #> PassThru
-        }
-        case Full(f) => {
-          //Type matching is not gonna work since in local c3 accesslib implementation all nodes are both files and directories
-          if (!f.isDirectory) {
-            renderFileLoc(f.asFile)
-          } else {
-            if (!S.uri.endsWith("/"))
-              S.redirectTo(S.uri + "/")
-            else
-              renderDirectoryLoc(f.asDirectory)
+            } else {
+              ".link [href]" #> loc.createDefaultLink &
+                ".link *" #> loc.title
+            }) &
+              ".divider" #> (
+                data.isDirectoryLoc match {
+                  case false if loc == pathLocs.last => (_: NodeSeq) => NodeSeq.Empty // if it is a file then we want to skip last "/" divider
+                  case _                             => PassThru
+                })
+        } &
+        ".current_path *" #> Text(data.currentAddress) &
+        ".edit_access *" #> acl() &
+        ".submit_acl [onclick]" #> SHtml.ajaxInvoke(() => updateAclValue()) &
+        (file match {
+          case Empty => S.redirectTo("/404.html"); "* *" #> PassThru
+          case Failure(msg, t, chain) => {
+            logger.error("Error accessing file: " + msg, t)
+            S.redirectTo("/404.html")
+            "* *" #> PassThru
           }
-        }
-        case _ => "* *" #> PassThru
-      })
+          case Full(f) => {
+            //Type matching is not gonna work since in local c3 accesslib implementation all nodes are both files and directories
+            if (!f.isDirectory) {
+              renderFileLoc(f.asFile)
+            } else {
+              if (!S.uri.endsWith("/"))
+                S.redirectTo(S.uri + "/")
+              else
+                renderDirectoryLoc(f.asDirectory)
+            }
+          }
+          case _ => "* *" #> PassThru
+        })
   }
 
   def removeMeta(f: C3FileSystemNode, key: String, value: String): JsCmd = {
@@ -210,23 +212,23 @@ with GroupPageHelper with FSHelper with TagForms with C3AccessHelpers {
 
   def updateRightBox(file: C3FileSystemNode): JsCmd = {
     JsCmds.SetHtml("right-box-head", <span>
-      {file.name}
-    </span>) &
+                                       { file.name }
+                                     </span>) &
       JsCmds.SetHtml("description", <span>
-        {ConvertHelper.ShortString(file.metadata.get(DESCRIPTION_META).getOrElse(""))}
-      </span>) &
+                                      { ConvertHelper.ShortString(file.metadata.get(DESCRIPTION_META).getOrElse("")) }
+                                    </span>) &
       JsCmds.SetHtml("edit_tags_form", <span>
-        {file.metadata.get(TAGS_META).map(_.split(",").mkString(", ")).getOrElse("")}
-      </span>) &
+                                         { file.metadata.get(TAGS_META).map(_.split(",").mkString(", ")).getOrElse("") }
+                                       </span>) &
       (if (!file.isDirectory) {
-        JsCmds.Replace("download_btn", <a type="button" href={fileDownloadUrl(file.asFile)} id="download_btn" class="btn btn-primary btn-block download_btn">
-          <i class="icon-white glyphicon glyphicon-download-alt"></i>
-          <span>Скачать</span>
-        </a>) &
-          JsCmds.Replace("view_btn", <a type="button" href={fileViewUrl(file.asFile)} id="view_btn" class="btn btn-primary btn-block view_btn">
-            <i class="icon-white icon-eye-open"></i>
-            <span>Просмотреть</span>
-          </a>) &
+        JsCmds.Replace("download_btn", <a type="button" href={ fileDownloadUrl(file.asFile) } id="download_btn" class="btn btn-primary btn-block download_btn">
+                                         <i class="icon-white glyphicon glyphicon-download-alt"></i>
+                                         <span>Скачать</span>
+                                       </a>) &
+          JsCmds.Replace("view_btn", <a type="button" href={ fileViewUrl(file.asFile) } id="view_btn" class="btn btn-primary btn-block view_btn">
+                                       <i class="icon-white icon-eye-open"></i>
+                                       <span>Просмотреть</span>
+                                     </a>) &
           JsCmds.Replace("replace_file_btn", <div></div>)
       } else {
         JsCmds.Replace("download_btn", <a type="button" id="download_btn" visible="false"></a>) &
@@ -299,7 +301,7 @@ with GroupPageHelper with FSHelper with TagForms with C3AccessHelpers {
         if (directory.name == group.trashCanName) "/images/trash.png" else "/images/folder_classic.png"
       } &
       ".description_box *" #> directory.metadata.get(DESCRIPTION_META).getOrElse("") &
-      ".created_date *" #> internetDateFormatter.format(directory.date)&
+      ".created_date *" #> internetDateFormatter.format(directory.date) &
       "#right-box-head *" #> directory.name
   }
 
@@ -343,15 +345,15 @@ with GroupPageHelper with FSHelper with TagForms with C3AccessHelpers {
       ".name *" #> ConvertHelper.ShortString(file.name, 40) &
       ".description_box *" #> ConvertHelper.ShortString(file.metadata.get(DESCRIPTION_META).getOrElse(""), if (file.name.length > 40) 60 else (110 - file.name.length)) &
       ".icon [src]" #> (file.metadata.get(CONTENT_TYPE) match {
-        case Some("application/vnd.ms-excel") => "/images/excel_type.png"
-        case Some("image/png") => "/images/png_type.png"
-        case Some("image/gif") => "/images/gif_type.png"
-        case Some("application/pdf") => "/images/pdf_type.png"
-        case Some("application/msword") => "/images/word_type.png"
-        case Some("application/zip") => "/images/zip_type.png"
+        case Some("application/vnd.ms-excel")     => "/images/excel_type.png"
+        case Some("image/png")                    => "/images/png_type.png"
+        case Some("image/gif")                    => "/images/gif_type.png"
+        case Some("application/pdf")              => "/images/pdf_type.png"
+        case Some("application/msword")           => "/images/word_type.png"
+        case Some("application/zip")              => "/images/zip_type.png"
         case Some("application/x-rar-compressed") => "/images/rar_type.png"
         // case Some(s) => if s.contains("text/plain") "/images/document_letter.png"
-        case _ => "/images/unkhown_type.png"
+        case _                                    => "/images/unkhown_type.png"
       }) &
       ".created_date *" #> internetDateFormatter.format(file.date) &
       "#right-box-head *" #> file.name
@@ -582,22 +584,23 @@ with GroupPageHelper with FSHelper with TagForms with C3AccessHelpers {
       (if (parentResourcePath.isEmpty) ".parentfolder *" #> NodeSeq.Empty
       else "invalid-empty-tag" #> NodeSeq.Empty) &
       ".child *" #> group.getChildren(data.currentAddress).sortBy(!_.isDirectory).map {
-        resource => {
-          (resource.isDirectory match {
-            case true => toCss(resource.asDirectory)
-            case _ => toCss(resource.asFile)
-          }) &
-            ".select_resource" #> SHtml.ajaxCheckbox(value = false, (value: Boolean) => {
-              if (value)
-                selectedResourcePaths.set(selectedResourcePaths.get + resource.fullname)
-              else
-                selectedResourcePaths.set(selectedResourcePaths.get - resource.fullname)
-              JsCmds.Noop
-            })
-        }
+        resource =>
+          {
+            (resource.isDirectory match {
+              case true => toCss(resource.asDirectory)
+              case _    => toCss(resource.asFile)
+            }) &
+              ".select_resource" #> SHtml.ajaxCheckbox(value = false, (value: Boolean) => {
+                if (value)
+                  selectedResourcePaths.set(selectedResourcePaths.get + resource.fullname)
+                else
+                  selectedResourcePaths.set(selectedResourcePaths.get - resource.fullname)
+                JsCmds.Noop
+              })
+          }
       } &
       ".file-view" #> NodeSeq.Empty &
-        commonForms(d)
+      commonForms(d)
   }
 
   def moveFileToTrashCan(name: String, IsDeletedFromFilePage: Boolean): JsCmd = {
@@ -641,13 +644,13 @@ with GroupPageHelper with FSHelper with TagForms with C3AccessHelpers {
         ".name_file *" #> f.name &
         (
           ".view_btn [href]" #> fileViewUrl(f) &
-            ".download_btn [href]" #> fileDownloadUrl(f)) &
-        ".data_file *" #> internetDateFormatter.format(f.date) &
-        ".owner_file *" #> owner.map(_.shortName).getOrElse("Unknown") &
-        ".size_file *" #> ByteCalculatorHelper.convert(f.versions.lastOption.fold("None")(_.length.toString)) &
-        commonForms(f) &
-        "#file_replace_form [action]" #> ("/replace/file/groups/" + group.getId + "/files" + data.currentAddress) &
-        "#file_replace_close_btn [onclick]" #> SHtml.ajaxInvoke(() => JsCmds.Reload)
+          ".download_btn [href]" #> fileDownloadUrl(f)) &
+          ".data_file *" #> internetDateFormatter.format(f.date) &
+          ".owner_file *" #> owner.map(_.shortName).getOrElse("Unknown") &
+          ".size_file *" #> ByteCalculatorHelper.convert(f.versions.lastOption.fold("None")(_.length.toString)) &
+          commonForms(f) &
+          "#file_replace_form [action]" #> ("/replace/file/groups/" + group.getId + "/files" + data.currentAddress) &
+          "#file_replace_close_btn [onclick]" #> SHtml.ajaxInvoke(() => JsCmds.Reload)
 
     }
     if (hasSuperAccess || checkReadAccessResource(f)) doRenderFileLoc(true)
@@ -693,15 +696,15 @@ with GroupPageHelper with FSHelper with TagForms with C3AccessHelpers {
         f.update(MetadataUpdate(metadata))
         val idMetadataContainer = "metadata_container"
         JqJsCmds.AppendHtml(idMetadataContainer,
-          <tr class="metadata_form" id={key + value}>
+          <tr class="metadata_form" id={ key + value }>
             <td>
-              <input class="metadata_key" value={key} readonly="readonly"/>
+              <input class="metadata_key" value={ key } readonly="readonly"/>
             </td>
             <td>
-              <input type="text" class="metadata_value" value={value}/>
+              <input type="text" class="metadata_value" value={ value }/>
             </td>
             <td>
-              <button class="close remove_metadata" onclick={SHtml.ajaxInvoke(() => removeMeta(f, key, value))._2.toJsCmd}>
+              <button class="close remove_metadata" onclick={ SHtml.ajaxInvoke(() => removeMeta(f, key, value))._2.toJsCmd }>
                 &times;
               </button>
             </td>

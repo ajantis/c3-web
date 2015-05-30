@@ -61,8 +61,8 @@ $(document).ready(function ($) {
         $(this).animate({ width: w }, 'slow');
     });
     $( ".file-table tbody tr" ).on( "click", function( event ) {
-        $("tr").removeClass("success");
-        $( this ).addClass("success");
+        $("tr").removeClass("info");
+        $( this ).addClass("info");
     });
     $('[data-toggle="tooltip"]').tooltip();
 });

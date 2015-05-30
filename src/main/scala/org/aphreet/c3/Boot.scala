@@ -99,13 +99,13 @@ class Boot extends Bootable {
       Menu("notifications", "Notifications") / "notifications" >> loggedIn submenus {
         NotificationsSection.menus: _*
       },
-      Menu("Эксперименты") / "experiments" >> LocGroup("mainmenu"),
+      Menu("Эксперимент") / "experiments" >> LocGroup("mainmenu"),
 
       //      Menu(Loc("virtualization", ExtLink(plabAddress), "Virtualization", LocGroup("mainmenu"))),
 
-      Menu("R сервис") / "r_suite" >> LocGroup("mainmenu"),
-
       Menu("Коллекции") / "k_base" >> LocGroup("mainmenu"),
+
+      Menu("R статистика") / "r_suite" >> LocGroup("mainmenu"),
 
       LogLevel.menu, // default log level menu is located at /loglevel/change
 
