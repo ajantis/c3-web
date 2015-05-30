@@ -27,7 +27,7 @@ object FileTransferHelper {
 
   def moveToTrashCan(name: String, group: Group, currentAddress: String, IsAddressContainsName: Boolean) = {
     if (name != "") {
-      val fileName = if (IsAddressContainsName) currentAddress else currentAddress + name;
+      val fileName = if (IsAddressContainsName) currentAddress.substring(0, currentAddress.lastIndexOf('/')) + '/' + name else currentAddress + name;
       val movableFile = group.getFile(fileName)
       val customDateFormatter = new SimpleDateFormat("dd_MM_yyyy_HH-mm-SS")
       movableFile.foreach {
