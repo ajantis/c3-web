@@ -1,5 +1,13 @@
 function toggleTileView() {
-    $('.container_groups').toggleClass('shadow-z-1').toggleClass('group-tile');
+    $("a").removeClass("active");
+    $("#view-tiles").addClass("active");
+    $('.container_groups').width('30%');
+}
+
+function toggleListView() {
+    $("a").removeClass("active");
+    $("#view-list").addClass("active");
+    $('.container_groups').width('100%');
 }
 
 $(document).ready(function ($) {
