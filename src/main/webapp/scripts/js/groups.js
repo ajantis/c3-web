@@ -29,13 +29,26 @@ $(document).ready(function ($) {
         $(':checkbox[name=check_file]').prop('checked', this.checked);
     });
 
-    $.fn.editable.defaults.mode = 'popover';
     $('#description').editable({
         url: function(params) {
             updateDescriptionCallback(params.value);
         },
         rows: 2
     });
+
+    $('#description_info').editable({
+        url: function(params) {
+            updateDescriptionCallback(params.value);
+        },
+        rows: 2
+    });
+
+    $('#firstname').editable({
+        validate: function(value) {
+           if($.trim(value) == '') return 'This field is required';
+        }
+    });
+
     $('#node_name').editable({
         url: function(params) {
             renameNodeCallback(params.value);

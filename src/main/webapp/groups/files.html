@@ -5,7 +5,7 @@
                 <div class="lift:GroupPageFiles.embedTabMenu"></div>
                 <ul class="nav nav-pills navbar-right">
                     <li>
-                        <a class="send_request" title="Вступить в группу"><i class="glyphicon glyphicon-plus plus"></i>Вступить в группу</a>
+                        <a href="" class="send_request" title="Вступить в группу"><i class="glyphicon glyphicon-plus plus"></i>Вступить в группу</a>
                     </li>
                 </ul>
             </div>
@@ -18,28 +18,29 @@
                 <div class="tabbable"> <!-- Only required for left/right tabs -->
                     <div class="row-fluid tab-content">
                         <div id="files" class="lift:GroupPageFiles tag-pane">
-                            <div>
-                                <ul class="breadcrumb">
-                                    <li class="base_files_path">
-                                        <a class="link" href="#">Group</a> <span class="divider"></span>
-                                    </li>
-                                    <li class="bcrumb">
-                                        <a class="link" href="#">dir</a> <span class=""></span>
-                                    </li>
-                                    <li class="pull-right">
-                                        <a type="button" href="#new-directory" data-toggle="modal" data-toggle="tooltip" title="Создать новую директорию" class="new_directory_btn">
-                                            <i class="glyphicon glyphicon-folder-open"> </i>
-                                        </a>
-                                        &nbsp;
-                                        <a type="button" href="#upload_form" data-toggle="modal" data-toggle="tooltip" title="Загрузить ресурс" class="upload_files_btn">
-                                            <i class="glyphicon glyphicon-cloud-upload"> </i>
-                                        </a>
-                                        &nbsp;
-                                        <a type="button" href="#delete_selected_form" data-toggle="modal" data-toggle="tooltip" title="Удалить ресурс" class="delete_selected_form_button">
-                                            <i class="glyphicon glyphicon-remove"> </i>
-                                        </a>
-                                    </li>
-                                </ul>
+                            <div class="form-inline">
+                                <div class="form-group">
+                                    <ul class="breadcrumb">
+                                        <li class="base_files_path">
+                                            <a class="link" href="#">Group</a> <span class="divider"></span>
+                                        </li>
+                                        <li class="bcrumb">
+                                            <a class="link" href="#">dir</a> <span class=""></span>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="form-group pull-right">
+                                    <a type="button" href="#new-directory" data-toggle="modal" data-toggle="tooltip" title="Создать новую директорию" class="new_directory_btn btn btn-sm">
+                                        <i class="glyphicon glyphicon-folder-open"> </i>
+                                    </a>
+                                    <a type="button" href="#upload_form" data-toggle="modal" data-toggle="tooltip" title="Загрузить ресурс" class="upload_files_btn btn btn-sm">
+                                        <i class="glyphicon glyphicon-cloud-upload"> </i>
+                                    </a>
+                                    <a type="button" href="#delete_selected_form" data-toggle="modal" data-toggle="tooltip" title="Удалить ресурс" class="delete_selected_form_button btn btn-sm">
+                                        <i class="glyphicon glyphicon-remove"> </i>
+                                    </a>
+
+                                </div>
                             </div>
                             <div class="file-table">
                                <table class="table table-striped table-hover" id="table-sort">
@@ -80,6 +81,13 @@
                                             </thead>
                                             <tbody>
                                             <tr>
+                                                <td><i class="glyphicon glyphicon-calendar"></i> Название:</td>
+                                                <td>
+                                                    <span class="name_file">File</span>
+                                                </td>
+
+                                            </tr>
+                                            <tr>
                                                 <td><i class="glyphicon glyphicon-calendar"></i> Дата создания:</td>
                                                 <td><span class="data_file">Sept 16th, 2012</span></td>
                                             </tr>
@@ -104,11 +112,11 @@
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <td><i class="glyphicon glyphicon-tags"></i> Tags:</td>
+                                                <td><i class="glyphicon glyphicon-tags"></i> Теги:</td>
                                                 <td>
                                                     <span class="hide edit_tags_form_func"></span>
-                                                    <a href="#" id="edit_tags_form" data-type="select2" data-pk="1"
-                                                       data-original-title="Enter tags">
+                                                    <a href="#" id="edit_tags_form" data-type="text" data-pk="1"
+                                                       data-original-title="Enter tags" class="editable editable-click">
                                                         html, javascript
                                                     </a>
                                                 </td>
@@ -310,16 +318,16 @@
                                                             <!-- The fileinput-button span is used to style the file input field as button -->
                                                             <span class="btn btn-success fileinput-button">
                                                                 <i class="glyphicon glyphicon-plus"></i>
-                                                                <span>Add files...</span>
+                                                                <span>Выбрать файл...</span>
                                                                 <input type="file" name="files[]" multiple>
                                                             </span>
                                                             <button type="submit" class="btn btn-primary start">
                                                                 <i class="glyphicon glyphicon-upload"></i>
-                                                                <span>Start upload</span>
+                                                                <span>Начать загрузку</span>
                                                             </button>
                                                             <button type="reset" class="btn btn-warning cancel">
                                                                 <i class="glyphicon glyphicon-ban-circle"></i>
-                                                                <span>Cancel upload</span>
+                                                                <span>Отменить загрузку</span>
                                                             </button>
                                                         </div>
                                                     </div>
@@ -573,40 +581,30 @@ for (var i=0, file; file=o.files[i]; i++) { %}
     <div class="lift:bind-at?name=content">
         <div class="col-sm-3 col-md-3">
             <div class="lift:GroupPageFiles">
-                <div class="panel panel-info">
+                <div class="panel panel-primary">
                     <div class="panel-heading">
                         <h3 id="right-box-head" class="panel-title">Select resource</h3>
                     </div>
                     <div class="panel-body">
                         <div class="row-content">
-                            <h4><i class="glyphicon glyphicon-info-sign"></i> Description</h4>
+                            <h4><i class="glyphicon glyphicon-info-sign"></i> Описание</h4>
                             <p class="list-group-item-text">
-                                <span class="hide description_submit_func"></span>
-                                <a href="#" id="description" data-type="text" data-pk="1"
-                                   data-placeholder="File description..." data-original-title="Edit description"
-                                   class="editable editable-click description_box">
-                                    Engineering Science is a comprehensive textbook suitable for all <br/>
-                                    vocational and pre-degree courses.
-                                </a>
+                                <span class="description_box"></span>
                             </p>
                         </div>
                         <hr>
                         <div class="row-content">
-                            <h4><i class="glyphicon glyphicon-tags"></i> Tags</h4>
+                            <h4><i class="glyphicon glyphicon-tags"></i> Теги</h4>
                             <p class="list-group-item-text">
-                                <span class="hide edit_tags_form_func"></span>
-                                <span class="hide edit_tags_form_func"></span>
-                                <a href="#" id="edit_tags_form" data-type="select2" data-pk="1" data-original-title="Enter tags">
-                                    html, javascript
-                                </a>
+                                <span id="edit_tags_form">html, javascript</span>
                             </p>
                         </div>
                         <hr>
-                        <a type="button" href="#" id="view_btn" class="btn btn-primary btn-block view_btn disabled">
+                        <a type="button" href="#" id="view_btn" class="btn btn-inverse btn-block view_btn">
                             <i class="icon-white icon-eye-open"></i>
                             <span>Просмотреть</span>
                         </a>
-                        <a type="button" href="#" id="download_btn" class="btn btn-primary btn-block download_btn disabled">
+                        <a type="button" href="#" id="download_btn" class="btn btn-inverse btn-block download_btn">
                             <i class="icon-white glyphicon glyphicon-download-alt"></i>
                             <span>Скачать</span>
                         </a>
