@@ -1,39 +1,33 @@
 <div class="lift:surround?with=default" xmlns="http://www.w3.org/1999/html">
-    <div class="lift:bind-at?name=left-panel">
-    </div>
     <div class="lift:bind-at?name=content">
         <div class="lift:GroupListPage.tabs">
             <div class="row">
-                <ul id="tabs" class="nav nav-pills navbar-left" data-tabs="tabs">
-                    <li id="myGroups"><a href="/groups?tab=myGroups">Мои группы</a></li>
-                    <li id="myOwnGroups"><a href="/groups?tab=myOwnGroups">Управление</a></li>
-                    <li id="all"><a href="/groups?tab=all">Все группы</a></li>
-                </ul>
-                <ul class="nav nav-pills navbar-right">
-                    <li>
-                        <form class="nav navbar-left input-group">
-                            <input class="form-control" placeholder="Поиск группы по имени..." type="text" style="width: 300px">
-                    <span class="input-group-btn material-input">
-                            <button class="btn btn-default" type="submit">
-                                <span class="glyphicon glyphicon-search"></span>
-                            </button>
+                <div>
+                    <ul id="tabs" class="nav nav-pills navbar-left" data-tabs="tabs">
+                        <li id="myGroups"><a href="/groups?tab=myGroups">Мои группы</a></li>
+                        <li id="myOwnGroups"><a href="/groups?tab=myOwnGroups">Управление</a></li>
+                        <li id="all"><a href="/groups?tab=all">Все группы</a></li>
+                    </ul>
+                </div>
+                <form class="form-inline">
+                    <div class="form-group">
+                        <div class="input-group">
+                            <input class="form-control" placeholder="Поиск группы по имени..." type="text">
+                        <span class="input-group-btn material-input">
+                                <button class="btn btn-default" type="submit">
+                                    <span class="glyphicon glyphicon-search"></span>
+                                </button>
                         </span>
-                        </form>
-                    </li>
-                    <li>
+                        </div>
+                    </div>
+                    <div class="form-group pull-right">
                         <a onclick="toggleTileView()" title="List view" class="btn btn-sm"><i class="glyphicon glyphicon-align-justify"></i></a>
-                    </li>
-                    <li>
                         <a onclick="toggleTileView()" title="Grid view" class="btn btn-sm"><i class="glyphicon glyphicon-th-large"></i></a>
-                    </li>
-                </ul>
+                    </div>
+                </form>
             </div>
             <div class="row">
-                <div id="my-tab-content" class="tab-content">
-                    <div class="tab-pane active">
-                        <div data-lift="embed?what=/groups/list"></div>
-                    </div>
-                </div>
+                <div data-lift="embed?what=/groups/list"></div>
             </div>
         </div>
     </div>
