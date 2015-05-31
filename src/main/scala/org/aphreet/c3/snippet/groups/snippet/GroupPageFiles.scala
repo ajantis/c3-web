@@ -8,11 +8,11 @@ import net.liftweb.http.js.JE.{ JsRaw, JsVar }
 import net.liftweb.http.js.JsCmds.{ Function, Script }
 import net.liftweb.http.js.jquery.JqJsCmds
 import net.liftweb.http.js.{ JsCmd, JsCmds }
-import net.liftweb.http.{ RequestVar, S, SHtml, SessionVar }
+import net.liftweb.http._
 import net.liftweb.sitemap.Loc.{ Hidden, Link, LinkText }
 import net.liftweb.sitemap.{ Loc, Menu, SiteMap }
 import net.liftweb.util.Helpers._
-import net.liftweb.util.{ CssSel, PassThru }
+import net.liftweb.util.{ Helpers, CssSel, PassThru }
 import org.aphreet.c3.acl.groups.{ GroupsAccess, UserStatusGroup }
 import org.aphreet.c3.comet.{ JournalServer, JournalServerEvent, MessageServerFactory }
 import org.aphreet.c3.lib.DependencyFactory
@@ -20,10 +20,12 @@ import org.aphreet.c3.lib.metadata.Metadata
 import org.aphreet.c3.lib.metadata.Metadata._
 import org.aphreet.c3.loc.SuffixLoc
 import org.aphreet.c3.model.{ Group, User }
+import org.aphreet.c3.service.groups.GroupService
 import org.aphreet.c3.service.journal.EventType
 import org.aphreet.c3.snippet.LiftMessages
 import org.aphreet.c3.snippet.groups.{ AbstractGroupPageLoc, GroupPageFilesData }
 import org.aphreet.c3.snippet.groups.snippet.tags.TagForms
+import org.aphreet.c3.util.C3Exception
 import org.aphreet.c3.util.helpers._
 
 import scala.xml.{ NodeSeq, Text }
@@ -110,59 +112,59 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers
 
       JsCmds.RedirectTo(redirectPath)
     }
-
-    ".base_files_path *" #> (
-      ".link [href]" #> groupFilesLink &
-      ".link *" #> group.name.is) &
-      ".bcrumb *" #> pathLocs.map {
-        (loc: Loc[_]) =>
-          (if (isLocCurrent(pathLocs, loc) && (hasSuperAccessResource(currentResource) || hasWriteAccessResource(currentResource))) {
-            ".link" #>
-              <span class="hide name_submit_func">
-                {
-                  Script(
-                    Function("renameNodeCallback", List("name"),
-                      SHtml.ajaxCall(
-                        JsVar("name"),
-                        (name: String) => renameCurrentNode(name))._2.cmd))
-                }
-              </span>
-              <a href="#" id="node_name" data-type="text" data-pk="2" data-placeholder="Name..." data-original-title="Rename" class="editable editable-click">
-                { loc.title }
-              </a>
-          } else {
-            ".link [href]" #> loc.createDefaultLink &
-              ".link *" #> loc.title
-          }) &
-            ".divider" #> (
-              data.isDirectoryLoc match {
-                case false if loc == pathLocs.last => (_: NodeSeq) => NodeSeq.Empty // if it is a file then we want to skip last "/" divider
-                case _                             => PassThru
-              })
-      } &
-      ".current_path *" #> Text(data.currentAddress) &
-      ".edit_access *" #> acl() &
-      ".submit_acl [onclick]" #> SHtml.ajaxInvoke(() => updateAclValue()) &
-      (file match {
-        case Empty => S.redirectTo("/404.html"); "* *" #> PassThru
-        case Failure(msg, t, chain) => {
-          logger.error("Error accessing file: " + msg, t)
-          S.redirectTo("/404.html")
-          "* *" #> PassThru
-        }
-        case Full(f) => {
-          //Type matching is not gonna work since in local c3 accesslib implementation all nodes are both files and directories
-          if (!f.isDirectory) {
-            renderFileLoc(f.asFile)
-          } else {
-            if (!S.uri.endsWith("/"))
-              S.redirectTo(S.uri + "/")
-            else
-              renderDirectoryLoc(f.asDirectory)
+    "#right-box-head *" #> group.name.is &
+      ".base_files_path *" #> (
+        ".link [href]" #> groupFilesLink &
+        ".link *" #> group.name.is) &
+        ".bcrumb *" #> pathLocs.map {
+          (loc: Loc[_]) =>
+            (if (isLocCurrent(pathLocs, loc) && (hasSuperAccessResource(currentResource) || hasWriteAccessResource(currentResource))) {
+              ".link" #>
+                <span class="hide name_submit_func">
+                  {
+                    Script(
+                      Function("renameNodeCallback", List("name"),
+                        SHtml.ajaxCall(
+                          JsVar("name"),
+                          (name: String) => renameCurrentNode(name))._2.cmd))
+                  }
+                </span>
+                <a href="#" id="node_name" data-type="text" data-pk="2" data-placeholder="Name..." data-original-title="Rename" class="editable editable-click">
+                  { loc.title }
+                </a>
+            } else {
+              ".link [href]" #> loc.createDefaultLink &
+                ".link *" #> loc.title
+            }) &
+              ".divider" #> (
+                data.isDirectoryLoc match {
+                  case false if loc == pathLocs.last => (_: NodeSeq) => NodeSeq.Empty // if it is a file then we want to skip last "/" divider
+                  case _                             => PassThru
+                })
+        } &
+        ".current_path *" #> Text(data.currentAddress) &
+        ".edit_access *" #> acl() &
+        ".submit_acl [onclick]" #> SHtml.ajaxInvoke(() => updateAclValue()) &
+        (file match {
+          case Empty => S.redirectTo("/404.html"); "* *" #> PassThru
+          case Failure(msg, t, chain) => {
+            logger.error("Error accessing file: " + msg, t)
+            S.redirectTo("/404.html")
+            "* *" #> PassThru
           }
-        }
-        case _ => "* *" #> PassThru
-      })
+          case Full(f) => {
+            //Type matching is not gonna work since in local c3 accesslib implementation all nodes are both files and directories
+            if (!f.isDirectory) {
+              renderFileLoc(f.asFile)
+            } else {
+              if (!S.uri.endsWith("/"))
+                S.redirectTo(S.uri + "/")
+              else
+                renderDirectoryLoc(f.asDirectory)
+            }
+          }
+          case _ => "* *" #> PassThru
+        })
   }
 
   def removeMeta(f: C3FileSystemNode, key: String, value: String): JsCmd = {
@@ -208,13 +210,41 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers
     JsCmds.Noop
   }
 
+  def updateRightBox(file: C3FileSystemNode): JsCmd = {
+    JsCmds.SetHtml("right-box-head", <span>
+                                       { file.name }
+                                     </span>) &
+      JsCmds.SetHtml("description", <span>
+                                      { ConvertHelper.ShortString(file.metadata.get(DESCRIPTION_META).getOrElse("")) }
+                                    </span>) &
+      JsCmds.SetHtml("edit_tags_form", <span>
+                                         { file.metadata.get(TAGS_META).map(_.split(",").mkString(", ")).getOrElse("") }
+                                       </span>) &
+      (if (!file.isDirectory) {
+        JsCmds.Replace("download_btn", <a type="button" href={ fileDownloadUrl(file.asFile) } id="download_btn" class="btn btn-inverse btn-block download_btn">
+                                         <i class="icon-white glyphicon glyphicon-download-alt"></i>
+                                         <span>Скачать</span>
+                                       </a>) &
+          JsCmds.Replace("view_btn", <a type="button" href={ fileViewUrl(file.asFile) } id="view_btn" class="btn btn-inverse btn-block view_btn">
+                                       <i class="icon-white icon-eye-open"></i>
+                                       <span>Просмотреть</span>
+                                     </a>) &
+          JsCmds.Replace("replace_file_btn", <div></div>)
+      } else {
+        JsCmds.Replace("download_btn", <a type="button" id="download_btn" visible="false"></a>) &
+          JsCmds.Replace("view_btn", <a type="button" id="view_btn" visible="false"></a>) &
+          JsCmds.Replace("replace_file_btn", <div></div>)
+      })
+  }
+
   def toCss(directory: C3Directory) = {
 
     val owner = nodeOwner(directory)
     val metaACL = acl(directory.metadata.get(ACL_META).getOrElse(""))
     def redirectToDirectory: CssSel = {
       ".link [href]" #> (directory.name + "/") &
-        ".child_td [onclick]" #> SHtml.ajaxInvoke(() => JsCmds.RedirectTo(directory.name + "/"))
+        ".child_td [ondblclick]" #> SHtml.ajaxInvoke(() => JsCmds.RedirectTo(directory.name + "/")) &
+        ".child_td [onclick]" #> SHtml.ajaxInvoke(() => updateRightBox(directory))
     }
 
     def transferDirectory: CssSel = {
@@ -224,15 +254,16 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers
 
     def accessRestricted: CssSel = {
       ".link [href]" #> "#" &
-        ".child_td [onclick]" #> SHtml.ajaxInvoke(() => LiftMessages.ajaxError(S.?("access.restricted")))
+        ".child_td [ondblclick]" #> SHtml.ajaxInvoke(() => LiftMessages.ajaxError(S.?("access.restricted")))
     }
     (if (hasSuperAccessResource(directory)) {
       ".rules *" #> metaACL &
         ".rules [id]" #> directory.fullname.hashCode &
-        ".rules [onclick]" #> SHtml.ajaxInvoke(() => currentResource(directory.fullname.hashCode.toString, metaACL)) &
+        ".rules [ondblclick]" #> SHtml.ajaxInvoke(() => currentResource(directory.fullname.hashCode.toString, metaACL)) &
         transferDirectory &
-        ".child_td [onclick]" #> SHtml.ajaxInvoke(() => JsCmds.RedirectTo(directory.name + "/")) &
-        ".link [href]" #> (directory.name + "/")
+        ".child_td [ondblclick]" #> SHtml.ajaxInvoke(() => JsCmds.RedirectTo(directory.name + "/")) &
+        ".child_td [onclick]" #> SHtml.ajaxInvoke(() => updateRightBox(directory))
+      ".link [href]" #> (directory.name + "/")
     } else {
       val haveReadRight = checkReadAccessResource(directory)
       val haveWriteRight = hasWriteAccessResource(directory)
@@ -266,10 +297,12 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers
       ".owner *" #> owner.map(_.shortName).getOrElse("Unknown") &
       ".owner [href]" #> owner.map(_.createLink) &
       ".name *" #> directory.name &
-      ".icon [src]" #> "/images/folder_classic.png" &
+      ".icon [src]" #> {
+        if (directory.name == group.trashCanName) "/images/trash.png" else "/images/folder_classic.png"
+      } &
       ".description_box *" #> directory.metadata.get(DESCRIPTION_META).getOrElse("") &
-      ".created_date *" #> internetDateFormatter.format(directory.date)
-
+      ".created_date *" #> internetDateFormatter.format(directory.date) &
+      "#right-box-head *" #> directory.name
   }
 
   def toCss(file: C3File) = {
@@ -285,17 +318,19 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers
     (if (hasSuperAccessResource(file)) {
       ".rules *" #> metaACL &
         ".rules [id]" #> file.fullname.hashCode &
-        ".rules [onclick]" #> SHtml.ajaxInvoke(() => currentResource(file.fullname.hashCode.toString, metaACL)) &
+        ".rules [ondblclick]" #> SHtml.ajaxInvoke(() => currentResource(file.fullname.hashCode.toString, metaACL)) &
         transferFile &
         ".link [href]" #> file.name &
-        ".child_td [onclick]" #> SHtml.ajaxInvoke(() => JsCmds.RedirectTo(file.name))
+        ".child_td [ondblclick]" #> SHtml.ajaxInvoke(() => JsCmds.RedirectTo(file.name)) &
+        ".child_td [onclick]" #> SHtml.ajaxInvoke(() => updateRightBox(file))
     } else {
       (if (checkReadAccessResource(file)) {
         ".link [href]" #> (file.name + "/") &
-          ".child_td [onclick]" #> SHtml.ajaxInvoke(() => JsCmds.RedirectTo(file.name))
+          ".child_td [ondblclick]" #> SHtml.ajaxInvoke(() => JsCmds.RedirectTo(file.name)) &
+          ".child_td [onclick]" #> SHtml.ajaxInvoke(() => updateRightBox(file))
       } else {
         ".link [href]" #> "#" &
-          ".child_td [onclick]" #> SHtml.ajaxInvoke(() => LiftMessages.ajaxError(S.?("access.restricted")))
+          ".child_td [ondblclick]" #> SHtml.ajaxInvoke(() => LiftMessages.ajaxError(S.?("access.restricted")))
       }) &
         (if (hasWriteAccessResource(file)) {
           transferFile
@@ -320,7 +355,8 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers
         // case Some(s) => if s.contains("text/plain") "/images/document_letter.png"
         case _                                    => "/images/unkhown_type.png"
       }) &
-      ".created_date *" #> internetDateFormatter.format(file.date)
+      ".created_date *" #> internetDateFormatter.format(file.date) &
+      "#right-box-head *" #> file.name
     //40 - max vizible symbols, when size file name is big
     //110 - count visible symbols in description columns
   }
@@ -472,8 +508,10 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers
                   (d: String) => updateDescription(node, d))._2.cmd))
           } &
           ".delete_file_btn [onclick]" #> SHtml.ajaxInvoke(() => {
-            c3.deleteFile(node.fullname);
-            JsCmds.RedirectTo(parentNodeLink)
+            {
+              moveFileToTrashCan(node.fullname, true);
+              JsCmds.RedirectTo(parentNodeLink)
+            }
           }) &
           ".share_btn [onclick]" #> SHtml.ajaxInvoke(() => FileSharingHelper.shareFile(node)) &
           ".remove_public_link [onclick]" #> SHtml.ajaxInvoke(() => FileSharingHelper.disableSharing(node))
@@ -484,7 +522,9 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers
           "#meta" #> metadataView(node, metadataUser) &
           ".share_btn [disabled]" #> "true" &
           ".remove_public_link [disabled]" #> "true" &
-          "#sharing *" #> NodeSeq.Empty
+          "#sharing *" #> NodeSeq.Empty &
+          ".replace_file_btn" #> NodeSeq.Empty
+
       }) &
       ".file_tags" #> meta.get(TAGS_META).map(_.split(TAGS_SEPARATOR).toList).getOrElse(Nil).map((tag: String) => {
         ".label *" #> tag
@@ -493,7 +533,8 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers
 
   protected def renderDirectoryLoc(d: C3Directory): CssSel = {
     object selectedResourcePaths extends RequestVar[Set[String]](Set())
-    val currentPathLink = data.group.createLink + data.currentAddress
+    val currentAddress = data.currentAddress
+    val currentPathLink = data.group.createLink + currentAddress
     def writeTools(): CssSel = {
       "#file_upload_form [action]" #> ("/upload/file/groups/" + group.getId + "/files" + data.currentAddress) &
         "#file_upload_close_btn [onclick]" #> SHtml.ajaxInvoke(() => JsCmds.Reload) &
@@ -501,17 +542,18 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers
     }
     def superAccessTools(): CssSel = {
       ".delete_selected_btn [onclick]" #> SHtml.ajaxInvoke(() => {
-        selectedResourcePaths.foreach(c3.deleteFile)
+        selectedResourcePaths.foreach(moveFileToTrashCan(_, false))
         JsCmds.RedirectTo(currentPathLink)
       })
     }
     val parentFolderPath = currentPathLink.substring(0, currentPathLink.dropRight(1).lastIndexOf("/"))
-    var parentResourcePath = "";
-    if (data.currentAddress != "/") {
-      parentResourcePath = data.currentAddress.substring(0, data.currentAddress.dropRight(1).lastIndexOf("/")) + "/"
-    }
-    val parentResource = group.getFile(parentResourcePath).openOr(null)
 
+    val parentResourcePath =
+      if (currentAddress != "/")
+        currentAddress.substring(0, currentAddress.dropRight(1).lastIndexOf("/")) + "/"
+      else
+        ""
+    val parentResource = group.getFile(parentResourcePath).openOr(null)
     (if (hasSuperAccess) {
       if (hasWriteAccess(group)) {
         superAccessTools()
@@ -539,6 +581,8 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers
       } else {
         ".parentfolder [ondrop]" #> ""
       }) &
+      (if (parentResourcePath.isEmpty) ".parentfolder *" #> NodeSeq.Empty
+      else "invalid-empty-tag" #> NodeSeq.Empty) &
       ".child *" #> group.getChildren(data.currentAddress).sortBy(!_.isDirectory).map {
         resource =>
           {
@@ -559,6 +603,36 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers
       commonForms(d)
   }
 
+  def moveFileToTrashCan(name: String, IsDeletedFromFilePage: Boolean): JsCmd = {
+    if (!name.contains(group.trashCanDirectory) && !name.endsWith("/" + group.trashCanName)) {
+      if (group.getFile(group.trashCanDirectory).openOr(null) == null) createTrashCan();
+      val resourceName = (name.substring(name.dropRight(1).lastIndexOf("/"), name.length));
+      FileTransferHelper.moveToTrashCan(resourceName, group, data.currentAddress, IsDeletedFromFilePage)
+    } else {
+      JsCmds.Alert("Can't delete trashcan or file in it.")
+    }
+  }
+
+  def createTrashCan(): Unit = {
+    val root = c3.getFile("/").asDirectory
+    root.getChild(group.getId) match {
+      case Some(node) =>
+        val dir = node.asDirectory
+        dir.getChild("files") match {
+          case Some(node) =>
+            val files = node.asDirectory
+            val metadata = Map(OWNER_ID_META -> dir.metadata.get(OWNER_ID_META).getOrElse(User.id.is.toString),
+              GROUP_ID_META -> data.group.getId,
+              TAGS_META -> "Trash",
+              DESCRIPTION_META -> "",
+              ACL_META -> dir.metadata.get(ACL_META).getOrElse(""))
+            files.createDirectory(group.trashCanName, metadata)
+          case None => throw new C3Exception("Failed to create trash can for group " + group.getId)
+        }
+      case None => throw new C3Exception("Can't find group with id " + group.getId)
+    }
+  }
+
   protected def renderFileLoc(f: C3File): CssSel = {
     val owner = nodeOwner(f)
     def doRenderFileLoc(hasAccess: Boolean): CssSel = {
@@ -574,10 +648,13 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers
           ".data_file *" #> internetDateFormatter.format(f.date) &
           ".owner_file *" #> owner.map(_.shortName).getOrElse("Unknown") &
           ".size_file *" #> ByteCalculatorHelper.convert(f.versions.lastOption.fold("None")(_.length.toString)) &
-          commonForms(f)
+          commonForms(f) &
+          "#file_replace_form [action]" #> ("/replace/file/groups/" + group.getId + "/files" + data.currentAddress) &
+          "#file_replace_close_btn [onclick]" #> SHtml.ajaxInvoke(() => JsCmds.Reload)
+
     }
     if (hasSuperAccess || checkReadAccessResource(f)) doRenderFileLoc(true)
-    else ".child_td [onclick]" #> SHtml.ajaxInvoke(() => (LiftMessages.ajaxError(S.?("access.restricted")))) &
+    else ".child_td [ondblclick]" #> SHtml.ajaxInvoke(() => (LiftMessages.ajaxError(S.?("access.restricted")))) &
       doRenderFileLoc(false)
   }
 
@@ -655,6 +732,7 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers
   protected def newDirectoryForm(currentDirectory: C3Directory, currentPath: String): CssSel = {
     var name = ""
     var tags = ""
+    var description = ""
 
     def createDirectory() {
       if (name.trim.isEmpty) {
@@ -663,6 +741,7 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers
         val metadata = Map(OWNER_ID_META -> User.currentUserUnsafe.id.is.toString,
           GROUP_ID_META -> data.group.getId,
           TAGS_META -> tags.trim,
+          DESCRIPTION_META -> description.trim,
           ACL_META -> currentDirectory.metadata.get(ACL_META).getOrElse(""))
         currentDirectory.createDirectory(name.trim, metadata)
         journalServer.foreach(_ ! JournalServerEvent(User.currentUserUnsafe, group, EventType.CreateResources, currentDirectory.fullname + name.trim))
@@ -671,6 +750,7 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers
     }
 
     "name=name" #> SHtml.onSubmit(name = _) &
+      "name=description" #> SHtml.onSubmit(description = _) &
       "name=tags" #> SHtml.onSubmit(tags = _) &
       "type=submit" #> SHtml.onSubmitUnit(createDirectory)
   }
@@ -689,4 +769,5 @@ class GroupPageFiles(data: GroupPageFilesData) extends C3ResourceHelpers
 
   //list keys for metadata
   object keys extends SessionVar[Set[String]](Set())
+
 }

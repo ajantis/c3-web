@@ -1,0 +1,92 @@
+<div class="lift:surround?with=default" xmlns="http://www.w3.org/1999/html">
+    <div class="lift:bind-at?name=left-panel">
+        <div class="col-sm-4 col-md-4">
+            <div class="bs-callout bs-callout-danger">
+                <h4>Учетная запись</h4>
+                <p>Используйте существующий адрес электронной почты как имя пользователя для всех операций на портале Vlab</p>
+            </div>
+        </div>
+    </div>
+    <div class="lift:bind-at?name=content">
+        <div class="col-sm-8 col-md-8 lift:GroupListPage.newGroupAndUser">
+            <h1>Подать заявку на новую группу</h1>
+            <div>
+                <form id="add_group_form">
+                    <fieldset>
+                        <table class="table table-striped table_ul">
+                            <colgroup>
+                                <col style="width: 125px">
+                                <col style="width: 300px">
+                                <col style="width: 10%">
+                            </colgroup>
+                            <tbody class="add_user">
+                            <tr >
+                                <td><i class="glyphicon glyphicon-user margin-right-glyphicon"></i>Имя <span style="color: red;">*</span></td>
+                                <td>
+                                    <input required maxlength="32" name="firstName" class="form-control" placeholder="Имя" type="text">
+                                </td>
+                            </tr>
+                            <tr >
+                                <td><i class="glyphicon glyphicon-user margin-right-glyphicon"></i>Фамилия</td>
+                                <td>
+                                    <input maxlength="32" name="lastName" class="form-control" placeholder="Фамилия" type="text">
+                                </td>
+                            </tr>
+                            <tr >
+                                <td><i class="glyphicon glyphicon-envelope margin-right-glyphicon"></i>E-mail<span style="color: red;">*</span></td>
+                                <td>
+                                    <input required name="email" class="form-control" placeholder="user@email.com" type="text">
+                                </td>
+                            </tr>
+                            <tr >
+                                <td><i class="glyphicon glyphicon-lock margin-right-glyphicon"></i>Пароль <span style="color: red;">*</span></td>
+                                <td>
+                                    <input required name="password" class="form-control" type="password" placeholder="Пароль">
+                                </td>
+                            </tr>
+                            <!--<tr >-->
+                                <!--<td><i class="glyphicon glyphicon-repeat"></i>Repeat password<span style="color: red;">*</span></td>-->
+                                <!--<td>-->
+                                    <!--<input name="repeatePassword" class="form-control" type="password" placeholder="Repeat password">-->
+                                <!--</td>-->
+                            <!--</tr>-->
+                            </tbody>
+                            <tbody class="add_group">
+                                <tr >
+                                    <td><i class="glyphicon glyphicon-font margin-right-glyphicon"></i>Название <span style="color: red;">*</span></td>
+                                    <td >
+                                        <input required name="groupName" class="form-control" type="text"  required placeholder="Название группы">
+                                    </td>
+                                </tr>
+                                <tr >
+                                    <td ><i class="glyphicon glyphicon-globe margin-right-glyphicon"></i>Тип доступа</td>
+                                    <td>
+                                        <label>
+                                            <input name="public" type="checkbox" value="true"/>
+                                            <span class="checkbox-material">Сделать открытой</span>
+                                        </label>
+                                    </td>
+                                </tr>
+                                <tr >
+                                    <td><i class="glyphicon glyphicon-info-sign margin-right-glyphicon"></i>Описание <span style="color: red;">*</span></td>
+                                    <td >
+                                        <textarea class="description form-control" cols="500" rows="2" type="text"
+                                                  name="description" required
+                                                  placeholder="Описание группы"></textarea>
+                                    </td>
+                                </tr>
+                                <tr >
+                                    <td class="tags"><i class="glyphicon glyphicon-tags margin-right-glyphicon"></i>Теги</td>
+                                    <td><input class="form-control current_tags" type="text" name="tags_edit" required placeholder="docs, main, etc..." ></td>
+                                </tr>
+                            </tbody>
+
+                        </table>
+                    </fieldset>
+                </form>
+                <button type="button" class="btn btn-warning cancel">Отмена</button>
+                <button type="submit" class="btn btn-success" form="add_group_form">Создать</button>
+            </div>
+        </div> <!-- add_group-->
+    </div>
+</div>

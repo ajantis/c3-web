@@ -1,31 +1,42 @@
 <div class="lift:surround?with=default">
-
     <div class="lift:Search">
-
         <div class="lift:bind-at?name=left-panel">
-            <ul class="root nav nav-list affix-top">
-                <li class="branch category"><a href="#" class="name">Scala</a>
-                    <ul>
-                        <li class="tag"><a class="label btn-info name">Case classes</a></li>
-                    </ul>
-                </li>
-            </ul>
+            <!--<div class="panel-group col-sm-3 col-md-2" >-->
+                <!--<div class="panel panel-default category">-->
+                    <!--<div class="panel-heading">-->
+                        <!--<a class="collapsed name panel-title" data-toggle="collapse"  data-parent="#left-panel"></a>-->
+                        <!--<ul id="collapseThree" class="collapse list-inline">-->
+                            <!--<li class="tag">-->
+                                <!--<a class="label btn-info name">Case classes</a>-->
+                            <!--</li>-->
+                        <!--</ul>-->
+                    <!--</div>-->
+                <!--</div>-->
+            <!--</div>-->
         </div>
-        <div class="lift:bind-at?name=content" style="margin:10px;">
-            <div class="span7">
-                <div class="search_form form-search">
-                    <div class="input-append">
-                        <input class="span7 search_query" value=""  type="text" placeholder="Enter a search query..."/>
-                        <button class="btn search_btn btn-primary" type="submit"><i class="icon-search icon-white"></i> Go</button>
+        <div class="lift:bind-at?name=content">
+            <div class="col-sm-12 col-md-12">
+            <div class="row search_form" style="">
+                <div id="custom-search-input">
+                    <div class="input-group">
+                        <span class="input-group-addon" id="basic-addon1">
+                            <img src="/images/vLabBT.png" alt="Поиск по порталу">
+                        </span>
+                            <input type="text" class="search-query form-control empty search_query" placeholder="Поиск ресурсов в системе..." />
+                            <span class="input-group-btn material-input">
+                                <button class="btn btn-default" type="submit">
+                                    <span class=" glyphicon glyphicon-search"></span>
+                                </button>
+                            </span>
                     </div>
                 </div>
             </div>
-            <div id="results" class="span8 search_results">
+            <div class="row" id="results">
                 <div class="entry">
                     <div class="row">
-                        <div class="span8">
+                        <div class="col-lg-10">
                             <div class="row">
-                                <div class="span8">
+                                <div class="col-lg-10">
                                     <h4>
                                         <a href="#" class="result_header">Some interesting file</a>
                                     </h4>
@@ -35,12 +46,12 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="span8">
+                                <div class="col-lg-10">
                                     <p class="result_content">Java IDL adds CORBA ...</p>
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="span8">
+                                <div class="col-lg-10">
                                     <div class="container_inf">
                                         <i class="icon-user"></i> <a class="owner" href="#">John</a>
                                         | <i class="icon-calendar"></i> <span class="result_date">Sept 16th, 2012</span>
@@ -51,7 +62,7 @@
                             </div>
                         </div>
                     </div>
-                    <div id="pagination" class="span8 pagination">
+                    <div id="pagination" class="col-lg-10 pagination">
                         <ul>
                             <nav:first></nav:first>
                             <nav:prev></nav:prev>
@@ -62,88 +73,36 @@
                     </div>
                 </div>
                 <div class="no_results">
-                    <p>Your search - <strong><span class="query">Sample query</span></strong> - did not match any documents.</p>
-                    <p>Suggestions:</p>
+                    <p>По запросу <strong><span class="query">Sample query</span></strong> - не найдено ни одного документа</p>
+                    <p>Рекомендации:</p>
                     <ul>
-                        <li>Make sure that all words are spelled correctly.</li>
-                        <li>Try different keywords.</li>
-                        <li>Try more general keywords.</li>
-                        <li>Try fewer tags or keywords.</li>
+                        <li>Убедитесь, что все слова написаны правильно.</li>
+                        <li>Попробуйте другие ключевые слова.</li>
+                        <li>Попробуйте использовать более общие ключевые слова.</li>
+                        <li>Попробуйте уменьшить количество тегов или ключевых слов.</li>
                     </ul>
                 </div>
                 <div class="index">
-                    <div class="well">
-                        <a class="span2" href="http://cs.ifmo.ru/" ><img src="/images/vt_logo.png" style="padding-bottom: 50px"/></a>
-                        <h1>Виртуальная лаборатория кафедры ВТ</h1>
-                    </div>
                     <div class="row">
-                        <div class="span4">
-                            <h2>Групповая работа</h2>
-                            <p>Создание рабочих групп<br/>
-                                Файловые каталоги<br/>
-                                Рабочий журнал<br/>
-                                Поиск<br/>
-                            </p>
+                        <div class="col-lg-3 col-sm-3">
+                            <center>
+                                dfhkshfgshf sdfkshdh sdhf gsdkgfs fsmhd gfsjdh fgsdhfg sdhfgs dfhkshfgshf sdfkshdh sdhf gsdkgfs fsmhd gfsjdh fgsdhfg sdhfgs dfhkshfgshf sdfkshdh sdhf gsdkgfs fsmhd gfsjdh fgsdhfg sdhfgs dfhkshfgshf sdfkshdh sdhf gsdkgfs fsmhd gfsjdh fgsdhfg sdhfgs
+                            </center>
                         </div>
-                        <div class="span4">
-                            <h2>Эксперимент</h2>
-                            <p>
-                                Рабочая группа эксперимента<br/>
-                                Настройка среды эксперимента<br/>
-                                Управление экспериментом   <br/>
-                                Планирование многофакторного эксперимента <br/>
-                            </p>
-                        </div>
+                        <div class="col-lg-3 col-sm-3">
+                            <center>
+                                dfhkshfgshf sdfkshdh sdhf gsdkgfs fsmhd gfsjdh fgsdhfg sdhfgs dfhkshfgshf sdfkshdh sdhf gsdkgfs fsmhd gfsjdh fgsdhfg sdhfgs dfhkshfgshf sdfkshdh sdhf gsdkgfs fsmhd gfsjdh fgsdhfg sdhfgs dfhkshfgshf sdfkshdh sdhf gsdkgfs fsmhd gfsjdh fgsdhfg sdhfgs
+                            </center>
+                        </div><div class="col-lg-3 col-sm-3">
+                        <center>
+                            dfhkshfgshf sdfkshdh sdhf gsdkgfs fsmhd gfsjdh fgsdhfg sdhfgs dfhkshfgshf sdfkshdh sdhf gsdkgfs fsmhd gfsjdh fgsdhfg sdhfgs dfhkshfgshf sdfkshdh sdhf gsdkgfs fsmhd gfsjdh fgsdhfg sdhfgs dfhkshfgshf sdfkshdh sdhf gsdkgfs fsmhd gfsjdh fgsdhfg sdhfgs
+                        </center>
                     </div>
-                    <div class="row">
-                        <div class="span4">
-                            <h2>Коллекции ресурсов</h2>
-                            <p>
-                                Knowledge base
-                            </p>
-                        </div>
-                        <div class="span4">
-                            <h2>Внешние инструменты</h2>
-                            <p>
-                                R-платформа
-                            </p>
-                        </div>
                     </div>
-
-
-                    <!--<p>-->
-                        <!--<i class="icon-info"></i>-->
-                        <!--<center><h5>Коллекции ресурсов</h5></center>-->
-                        <!--Knowledge base-->
-                    <!--</p>-->
-                    <!--<p>-->
-                        <!--<i class="icon-gears"></i>-->
-                    <!--<center><h5>Эксперимент</h5></center>-->
-                    <!--<ul>-->
-                        <!--<li>Рабочая группа эксперимента</li>-->
-                        <!--<li>Настройка среды эксперимента  </li>-->
-                        <!--<li>Управление экспериментом   </li>-->
-                        <!--<li>Планирование многофакторного эксперимента </li>-->
-                    <!--</ul>-->
-                    <!--</p>-->
-                    <!--<p>-->
-                        <!--<i class="icon-dashboard"></i>-->
-                    <!--<center><h5>Внешние инструменты</h5></center>-->
-                    <!--R-платформа-->
-                    <!--</p>-->
-
-                    <!--<p>-->
-                    <!--<b>vLab CSE</b> is a virtual laboratory of CSE department of NRU ITMO. Here you can participate in groups or create you own groups, share you files and documents, and search for knowledge.-->
-
-                    <!--<a class="btn btn-primary btn-large" href="/about.html">-->
-                            <!--Learn more-->
-                        <!--</a>-->
-                    <!--</p>-->
                 </div>
+            </div>
             </div>
         </div>
     </div>
 </div>
-
-
 

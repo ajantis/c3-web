@@ -130,6 +130,8 @@ class Group extends LongKeyedMapper[Group] with IdPK with ManyToMany {
   }
 
   def baseFilePath = "/" + this.getId + "/files"
+  def trashCanName = "trash"
+  def trashCanDirectory = "/" + trashCanName + "/"
 
   def baseGroupDirectory = "/" + this.getId
 

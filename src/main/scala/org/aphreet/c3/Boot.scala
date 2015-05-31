@@ -1,6 +1,6 @@
 package org.aphreet.c3
 
-import javax.mail.{Authenticator, PasswordAuthentication}
+import javax.mail.{ Authenticator, PasswordAuthentication }
 
 import net.liftmodules.widgets.autocomplete.AutoComplete
 import net.liftmodules.widgets.logchanger._
@@ -10,11 +10,11 @@ import net.liftmodules.widgets.uploadprogress._
 import net.liftweb.common.Full
 import net.liftweb.http.js.jquery.JQueryArtifacts
 import net.liftweb.http.provider._
-import net.liftweb.http.{Html5Properties, InMemoryResponse, NotFoundAsTemplate, ParsePath, ServiceUnavailableResponse, _}
+import net.liftweb.http.{ Html5Properties, InMemoryResponse, NotFoundAsTemplate, ParsePath, ServiceUnavailableResponse, _ }
 import net.liftweb.mapper._
-import net.liftweb.sitemap.Loc.{If, LocGroup, _}
+import net.liftweb.sitemap.Loc.{ If, LocGroup, _ }
 import net.liftweb.sitemap._
-import net.liftweb.util.{Props, _}
+import net.liftweb.util.{ Props, _ }
 import org.aphreet.c3.model._
 import org.aphreet.c3.snippet.approve.ApproveSection
 import org.aphreet.c3.snippet.categories.CategoriesSection
@@ -22,8 +22,8 @@ import org.aphreet.c3.snippet.groups.GroupsSection
 import org.aphreet.c3.snippet.logging.LogLevel
 import org.aphreet.c3.snippet.notifications.NotificationsSection
 import org.aphreet.c3.snippet.users.UsersSection
-import org.aphreet.c3.util.helpers.{C3SharingHelper, C3Streamer}
-import org.aphreet.c3.util.{DefaultAuthDataLoader, TextileRenderer}
+import org.aphreet.c3.util.helpers.{ C3SharingHelper, C3Streamer }
+import org.aphreet.c3.util.{ DefaultAuthDataLoader, TextileRenderer }
 
 /**
  * A class that's instantiated early and run.  It allows the application
@@ -81,9 +81,10 @@ class Boot extends Bootable {
 
       Menu("Faq") / "faq" >> LocGroup("footerMenu"),
 
-      Menu("Groups") / "groups" >> LocGroup("mainmenu") submenus {
+      Menu("Рабочие группы") / "groups" >> LocGroup("mainmenu") submenus {
         GroupsSection.menus: _*
       },
+      Menu("AddGroup") / "addgroup",
       Menu("users", "Users") / "users" >> loggedIn submenus {
         UsersSection.menus: _*
       },
@@ -98,13 +99,13 @@ class Boot extends Bootable {
       Menu("notifications", "Notifications") / "notifications" >> loggedIn submenus {
         NotificationsSection.menus: _*
       },
-      Menu("Experiments") / "experiments" >> LocGroup("mainmenu"),
+      Menu("Эксперимент") / "experiments" >> LocGroup("mainmenu"),
 
       //      Menu(Loc("virtualization", ExtLink(plabAddress), "Virtualization", LocGroup("mainmenu"))),
 
-      Menu("R service") / "r_suite" >> LocGroup("mainmenu"),
+      Menu("Коллекции") / "k_base" >> LocGroup("mainmenu"),
 
-      Menu("Knowledge base") / "k_base" >> LocGroup("mainmenu"),
+      Menu("R статистика") / "r_suite" >> LocGroup("mainmenu"),
 
       LogLevel.menu, // default log level menu is located at /loglevel/change
 

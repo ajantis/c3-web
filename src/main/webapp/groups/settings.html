@@ -1,145 +1,11 @@
-<div class="lift:surround?with=default;at=content">
-    <div class="lift:bind-at?name=left-panel">
-        <div><img src="/images/group_default_200x200.png"/></div>
-        <div class="row-fluid lift:GroupPage.info">
-            <hr class="hr_group"/>
-            <div id="legend">
-                <h2 class="GroupName">Group name</h2>
-            </div>
-            <div class="lift:GroupPageSettings.embedTabMenu">
-            </div>
-            <div class="accordion" id="accordion2">
-                <div class="accordion-group">
-                    <div class="accordion-heading">
-                        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2"
-                           href="#collapseOne">
-                            Info
-                        </a>
-                    </div>
-                    <div id="collapseOne" class="accordion-body collapse">
-                        <div class="accordion-inner">
-                            <p class="GroupDescription description_box">Group description</p>
-
-                            <div class="lift:GroupPageSettings.owner">
-                                <span class="lead">Owner: <a class="GroupOwner">User Name</a></span>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-        </div>
-    </div>
-    <div id="group-tab-wrapper">
-        <div class="tabbable"> <!-- Only required for left/right tabs -->
-            <div class="row-fluid">
-                <div class="lift:GroupPageSettings.publicSettings container_groups">
-                    <h2 class="name_group_settings">Settings</h2>
-                    <span class="lead description">Description</span>
-                    <!--<p class="description_group description_group_settings">What is this group about?</p>-->
-                    <span class="hide  description_submit_func"></span>
-                    <a href="#" id="description_group" data-type="text" data-pk="1"
-                       data-placeholder="File description..." data-original-title="Edit description"
-                       class="editable editable-click description_box">
-                        Engineering Science is a comprehensive textbook suitable for all <br/>
-                        vocational and pre-degree courses.
-                    </a>
-
-                    <div class="lift:GroupPageSettings.owner">
-                        <span class="lead">Owner <a class="GroupOwner">User Name</a></span>
-
-                        <p class="description_group description_group_settings">Owner can edit group settings</p>
-                    </div>
-                    <hr class="hr_group"/>
-                    <form class="public_group_from">
-                        <span class="lead">Public</span>
-                        <input class="checkbox_public" type="checkbox">
-                    </form>
-                    <p class="description_group description_group_settings">Make group public</p>
-                    <hr class="hr_group"/>
-                    <span class="lead">Group Members</span>
-
-                    <p class="description_group description_group_settings">Group members can upload content</p>
-
-                    <div>
-                        <table class="table-striped table-condensed lift:GroupPageSettings.listUser">
-                            <thead>
-                            <tr>
-                                <th>First Name</th>
-                                <th>Last Name</th>
-                                <th>E-mail</th>
-                                <th style="width:20px;"></th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr class="ListGroupUser">
-                                <td class="first_name">First</td>
-                                <td class="last_name">Last</td>
-                                <td class="email">mail</td>
-                                <td class="deluser">
-                                    <button type="submit" class="delete_member close">&times;</button>
-                                </td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <hr class="hr_group"/>
-                    <span class="lead">Add new user</span>
-
-                    <div>
-                        <a type="button" href="#add_user_div" class="btn btn_add_user" data-toggle="modal"
-                           title="Add User"><strong>Add User</strong></a>
-
-                        <div id="add_user_div" class="modal hide fade">
-                            <h4 class="modal-header">Add User</h4>
-
-                            <form id="add_user_form" class="lift:GroupPageSettings.addUser" form="post">
-                                <p>Select user <input class="list_users"/></p>
-                            </form>
-                            <div id="add_user" class="modal-footer">
-                                <button type="button" data-dismiss="modal" class="btn">Cancel</button>
-                                <button type="submit" class="btn_add_user btn btn-success" form="add_user_form">Add
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <hr class="hr_group"/>
-                    <span class="lead">Wait list</span>
-
-                    <p class="description_group description_group_settings">Users waiting for approval to group</p>
-
-                    <div>
-                        <table class="table-striped table-condensed lift:GroupPageSettings.listUserApprove">
-                            <thead>
-                            <tr>
-                                <th>First Name</th>
-                                <th>Last Name</th>
-                                <th>E-mail</th>
-                                <th style="width:20px;"></th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr class="ListGroupUser">
-                                <td class="first_name">First</td>
-                                <td class="last_name">Last</td>
-                                <td class="email">mail</td>
-                                <td class="approve">
-                                    <button type="submit" class="btn btn-success approve_member">approve</button>
-                                </td>
-                                <td class="reject">
-                                    <button type="submit" class="btn btn-danger reject_member">reject</button>
-                                </td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                <tail>
-                    <!-- x-editable (bootstrap) -->
-                    <link href="/bootstrap-editable/css/bootstrap-editable.css" rel="stylesheet">
-                    <script src="/bootstrap-editable/js/bootstrap-editable.js"></script>
-                    <script>
+<div class="lift:surround?with=default">
+    <head>
+        <!-- x-editable (bootstrap) -->
+        <link href="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/css/bootstrap-editable.css" rel="stylesheet"/>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/js/bootstrap-editable.min.js"></script>
+    </head>
+    <tail>
+        <script>
                         // <![CDATA[
                             $.fn.editable.defaults.mode = 'popover';
                             $('#description_group').editable({
@@ -152,8 +18,151 @@
                         // ]]>
 
                     </script>
-                </tail>
+    </tail>
+    <div class="lift:bind-at?name=left-panel">
+        <div class="col-sm-9 col-md-9">
+            <div class="row lift:GroupPage.info">
+                <div id="legend">
+                    <h2 class="GroupName">Group name</h2>
+                </div>
+                <div class="lift:GroupPageSettings.embedTabMenu"></div>
+
             </div>
+            <div id="group-tab-wrapper">
+                <div class="tabbable"> <!-- Only required for left/right tabs -->
+                    <div class="lift:GroupPageSettings.publicSettings container_groups">
+                        <hr/>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th style="width: 20%"></th>
+                                    <th style="width: 80%"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td><i class="glyphicon glyphicon-info-sign"></i> Описание:</td>
+                                <td>
+                                    <span class="hide description_submit_func"></span>
+                                    <a href="#" id="description" data-type="text" data-pk="1"
+                                       data-placeholder="File description..." data-original-title="Edit description"
+                                       class="editable editable-click description_box">
+                                        Engineering Science is a comprehensive textbook suitable for all <br/>
+                                        vocational and pre-degree courses.
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr class="lift:GroupPageSettings.owner">
+                                <td><i class="glyphicon glyphicon-user"></i> Владалец:</td>
+                                <td>
+                                    <a class="GroupOwner">User Name</a>
+                                    <p class="description_group description_group_settings">Owner can edit group settings</p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><i class="glyphicon glyphicon-globe"></i>Тип доступа:</td></td>
+                                <td>
+                                    <form class="public_group_from">
+                                        <input class="checkbox_public" type="checkbox">
+                                    </form>
+                                    <p class="description_group description_group_settings">Make group public</p>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+
+                        <hr/>
+                        <span class="lead">Участники групп:</span>
+
+                        <p class="description_group description_group_settings">Участники группы могут загружать ресурсы</p>
+
+                        <div>
+                            <table class="table-striped table-condensed lift:GroupPageSettings.listUser">
+                                <thead>
+                                <tr>
+                                    <th>First Name</th>
+                                    <th>Last Name</th>
+                                    <th>Email</th>
+                                    <th style="width:20px;"></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr class="ListGroupUser">
+                                    <td class="first_name">First</td>
+                                    <td class="last_name">Last</td>
+                                    <td class="email">Email</td>
+                                    <td class="deluser">
+                                        <button type="submit" class="delete_member close">&times;</button>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <hr class="hr_group"/>
+                        <span class="lead">Добавить пользователя в группу</span>
+
+                        <div>
+                            <a type="button" href="#add_user_div" class="btn btn-success btn_add_user" data-toggle="modal"
+                               title="Add User"><strong>Пригласить</strong></a>
+
+                            <div id="add_user_div" class="modal">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                                            <h4 class="modal-title">Добавить пользователя</h4>
+                                        </div>
+                                        <div class="modal-body" id="add_user">
+                                            <form id="add_user_form" class="lift:GroupPageSettings.addUser" form="post">
+                                                <p>Select user <input class="list_users"/></p>
+                                            </form>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" data-dismiss="modal" class="btn btn-warning cancel">Отмена</button>
+                                            <button type="submit" class="btn btn-success" form="add_user_form">Добавить</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr class="hr_group"/>
+                        <span class="lead">Заявки</span>
+
+                        <p class="description_group description_group_settings">Users waiting for approval to group</p>
+
+                        <div>
+                            <table class="table-striped table-condensed lift:GroupPageSettings.listUserApprove">
+                                <thead>
+                                <tr>
+                                    <th>First Name</th>
+                                    <th>Last Name</th>
+                                    <th>E-mail</th>
+                                    <th style="width:20px;"></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr class="ListGroupUser">
+                                    <td class="first_name">First</td>
+                                    <td class="last_name">Last</td>
+                                    <td class="email">mail</td>
+                                    <td class="approve">
+                                        <button type="submit" class="btn btn-success approve_member">Принять в группу</button>
+                                    </td>
+                                    <td class="reject">
+                                        <button type="submit" class="btn btn-danger reject_member">Отклонить заявку</button>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="lift:bind-at?name=content">
+        <div class="col-sm-3 col-md-3">
         </div>
     </div>
 </div>
