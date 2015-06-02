@@ -6,7 +6,7 @@
  * modification, are permitted provided that the following conditions
  * are met:
  *
-
+ *
  * 1. Redistributions of source code must retain the above copyright
  * notice, this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above
@@ -30,22 +30,23 @@
  */
 package org.aphreet.c3.service.groups
 
-import org.aphreet.c3.model.{User, Group}
+import org.aphreet.c3.model.{ User, Group }
 import net.liftweb.common.Box
 
 trait GroupService {
 
   def addUsersToGroup(group: Group, members: Iterable[User]): Iterable[Box[User]]
 
-  def approveUsersToGroup(group: Group, members: Iterable[User]): Iterable[Box[User]]
+  def addUsersToApproveListGroup(group: Group, members: Iterable[User]): Iterable[Box[User]]
 
-  def createGroup(newGroup: Group, tagsAdd:String, description:String): Box[Group]
+  def approveOrRejectUsersInGroup(group: Group, members: Iterable[User], approve: Boolean): Iterable[Box[User]]
 
-  def createGroup(newGroup: Group, members: Iterable[User],tagsAdd:String, description:String): Box[Group]
+  def createGroup(newGroup: Group, tagsAdd: String, description: String): Box[Group]
+
+  def createGroup(newGroup: Group, members: Iterable[User], tagsAdd: String, description: String): Box[Group]
 
   def removeGroup(group: Group): Boolean
 
-  def removeUserFromGroup(group:Group, user:User):Boolean
+  def removeUserFromGroup(group: Group, user: User): Boolean
 }
-
 

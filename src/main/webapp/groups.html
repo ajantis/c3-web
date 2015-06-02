@@ -1,78 +1,33 @@
-<!--<script src="/js/groups.js" type="text/javascript"></script>      -->
 <div class="lift:surround?with=default" xmlns="http://www.w3.org/1999/html">
-    <div class="lift:bind-at?name=left-panel">
-    </div>
     <div class="lift:bind-at?name=content">
-        <div class="lift:GroupListPage.list">
-            <a type="button" href="#add_group" class="btn btn_add_user" data-toggle="modal" title="Add User"><strong>Add Group</strong></a>
-            <div id="add_group" class="modal hide fade lift:GroupListPage.action">
-                <h4 class = "modal-header">Add Group</h4>
-                <form id="add_group_form" class="add_group_form">
-                    <div class="control-group">
-                        <label class="control-label">Group Name</label>
-                        <div class="controls">
-                            <input type="text" name="name" placeholder="" class="input-xlarge"/>
+        <div class="lift:GroupListPage.tabs">
+            <div class="row">
+                <div>
+                    <ul id="tabs" class="nav nav-pills navbar-left" data-tabs="tabs">
+                        <li id="myGroups"><a href="/groups?tab=myGroups">Мои группы</a></li>
+                        <li id="myOwnGroups"><a href="/groups?tab=myOwnGroups">Управление</a></li>
+                        <li id="all"><a href="/groups?tab=all">Все группы</a></li>
+                    </ul>
+                </div>
+                <form class="form-inline">
+                    <div class="form-group">
+                        <div class="input-group">
+                            <input class="form-control" placeholder="Поиск группы по имени..." type="text">
+                        <span class="input-group-btn material-input">
+                                <button class="btn btn-default" type="submit">
+                                    <span class="glyphicon glyphicon-search"></span>
+                                </button>
+                        </span>
                         </div>
                     </div>
-                    <div class="control-group">
-                        <label class="checkbox">
-                            <input name="public" type="checkbox" value="true"/>
-                            Public group
-                        </label>
-                    </div>
-                    <div class="control-group">
-                        <label class="control-label">Tags</label>
-                        <div class="controls">
-                            <input type="text" name="tags_edit" placeholder="docs, main, etc..." class="current_tags input-xlarge">
-                        </div>
-                    </div>
-                    <div class="control-group">
-                        <label class="control-label">Description group</label>
-                        <div class="controls">
-                            <textarea name="description" placeholder="" class="input-xlarge"></textarea>
-                        </div>
+                    <div class="form-group pull-right">
+                        <a onclick="toggleListView()" title="List view" id="view-list" class="btn btn-sm"><i class="glyphicon glyphicon-align-justify"></i></a>
+                        <a onclick="toggleTileView()" title="Grid view" id="view-tiles" class="btn btn-sm active"><i class="glyphicon glyphicon-th-large"></i></a>
                     </div>
                 </form>
-                <div id="add_user" class="modal-footer">
-                    <button type="button" data-dismiss="modal" class="btn">Cancel</button>
-                    <button type="submit" class="btn_add_user btn btn-success" form="add_group_form">Add</button>
-                </div>
             </div>
-            <div class="container_groups">
-                <hr/>
-                <h4>
-                    <script type="text/javascript">
-                        function HideGroupDetails(that)
-                        {
-                            var panel = $(that).parent().parent().children('.desc_panel');
-                            var btn = $(that);
-
-                            if ((panel).css('height')=='25px')
-                            {
-                                (panel).css('height','auto')
-                                btn.attr("class", "toggle_switch inf_right icon-chevron-down");
-                            } else {
-                                (panel).css('height','25px')
-                                btn.attr("class", "toggle_switch inf_right icon-chevron-up");
-                            }
-                        }
-                    </script>
-                    <img class="inf_left_groups" src="/images/glyphicons_203_lock.png"/>
-                    <a href="#" class="name_group"></a>
-                    <span class="toggle_switch inf_right icon-chevron-up" onclick="HideGroupDetails(this);"></span>
-                    <span class="icon-cog inf_right"></span>
-                    <span class="bange unread_count inf_right" style="font-size:14px;">8</span>
-                </h4>
-                <div class="desc_panel">
-                    <p class="description_group">Description....</p>
-                    <div class="info_group ">
-                        <p class="owner_group pull-right">Owner....</p>
-                        <p class="pull-right ">
-                            <img class="inf_left" src="/images/tag.png"/>
-                            <span class="tags_group label label-info inf_left">table</span>
-                        </p>
-                    </div>
-                </div>
+            <div class="row">
+                <div data-lift="embed?what=/groups/list"></div>
             </div>
         </div>
     </div>

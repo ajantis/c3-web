@@ -24,7 +24,7 @@ object RunWebApp extends App {
     server.stop()
     server.join()
   } catch {
-    case exc : Exception => {
+    case exc: Exception => {
       exc.printStackTrace()
       System.exit(100)
     }

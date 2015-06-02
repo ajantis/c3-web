@@ -11,9 +11,9 @@
     <inceptionYear>2010</inceptionYear>
     <properties>
         <scala.version>2.10</scala.version>
-        <scala.version.full>${scala.version}.1</scala.version.full>
+        <scala.version.full>${scala.version}.3</scala.version.full>
         <lift.version>2.5.1</lift.version>
-        <akka.version>2.1.2</akka.version>
+        <akka.version>2.2.3</akka.version>
         <!-- Common plugin settings -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>${project.build.sourceEncoding}</project.reporting.outputEncoding>
@@ -93,7 +93,7 @@
         <dependency>
             <groupId>com.ifunsoftware.c3</groupId>
             <artifactId>accesslib</artifactId>
-            <version>1.0.26</version>
+            <version>1.0.27</version>
             <exclusions>
                 <exclusion>
                     <groupId>commons-codec</groupId>
@@ -105,6 +105,12 @@
             <groupId>net.liftweb</groupId>
             <artifactId>lift-mapper_${scala.version}</artifactId>
             <version>${lift.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.scala-lang</groupId>
+                    <artifactId>scala-library</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>net.liftmodules</groupId>
@@ -202,6 +208,16 @@
             <version>${scala.version.full}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.seleniumhq.selenium</groupId>
+            <artifactId>selenium-firefox-driver</artifactId>
+            <version>2.42.2</version>
+        </dependency>
+        <dependency>
+            <groupId>com.ibm.icu</groupId>
+            <artifactId>icu4j</artifactId>
+            <version>4.8.1.1</version>
+        </dependency>
     </dependencies>
     <build>
         <sourceDirectory>src/main/scala</sourceDirectory>
@@ -271,6 +287,23 @@
                         <exclude>**/file-upload/js/*.js</exclude>
                     </excludes>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.scalariform</groupId>
+                <artifactId>scalariform-maven-plugin</artifactId>
+                <version>0.1.2</version>
+                <executions>
+                    <execution>
+                        <phase>process-sources</phase>
+                        <goals>
+                            <goal>format</goal>
+                        </goals>
+                        <configuration>
+                            <alignParameters>true</alignParameters>
+                            <alignSingleLineCaseStatements>true</alignSingleLineCaseStatements>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

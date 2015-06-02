@@ -1,23 +1,23 @@
 package org.aphreet.c3.service.notifications.impl
 
 import org.aphreet.c3.util.C3Loggable
-import org.aphreet.c3.model.{Notification, User}
-import org.aphreet.c3.service.notifications.{NotificationStats, NotifyMsg, NotificationStorageComponent}
+import org.aphreet.c3.model.{ Notification, User }
+import org.aphreet.c3.service.notifications.{ NotificationManager, NotificationStats, NotifyMsg, NotificationStorageComponent }
 import net.liftweb.util.FieldError
 
 /**
  * Copyright iFunSoftware 2013
  * @author Dmitry Ivanov
  */
-trait NotificationStorageComponentImpl extends NotificationStorageComponent{
+class NotificationStorageComponentImpl extends NotificationStorageComponent with NotificationManager {
 
   override val notificationStorage: NotificationStorage = new NotificationStorageImpl
 
-  private[this] class NotificationStorageImpl extends NotificationStorage with C3Loggable{
-    def saveNotification(notifyMsg: NotifyMsg){
+  private[this] class NotificationStorageImpl extends NotificationStorage with C3Loggable {
+    def saveNotification(notifyMsg: NotifyMsg) {
       val newNotification = Notification.create.notificationType(notifyMsg.notifyType).recipient(notifyMsg.recipientId).title(notifyMsg.title).body(notifyMsg.message.toString())
       newNotification.validate match {
-        case Nil => newNotification.save()
+        case Nil                  => newNotification.save()
         case xs: List[FieldError] => logger.error("Cannot submit a notification. Reason: " + xs)
       }
     }
@@ -25,7 +25,7 @@ trait NotificationStorageComponentImpl extends NotificationStorageComponent{
     def getNotificationsForUser(recipient: User): List[Notification] = Notification.findByRecipient(recipient)
 
     def markAsRead(notification: Notification): Notification = {
-      if (!notification.isRead.is){
+      if (!notification.isRead.is) {
         notification.isRead(true).saveMe()
       } else {
         logger.error("Notification is already marked as read! " + notification)

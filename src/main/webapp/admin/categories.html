@@ -1,63 +1,145 @@
-<div class="lift:surround?with=default" xmlns="http://www.w3.org/1999/html">
-    <div class="lift:bind-at?name=content">
-        <div class="lift:CategoryListPage.list">
-            <div class="cat well table tags_cont tags_cont_all">
-                <!--<div class="lift:CategoryListPage.adm">-->
-                    <a type="button" href="#edit_category" class="btn btn-success edit_cat" data-toggle="modal" title="Edit">Edit</a>
-                    <div id="edit_category" class="modal hide fade">
-                        <h4 class = "modal-header">New category name</h4>
-                        <div class="edit_meta">
-                            <form id="category_new_name">
-                                <input class="input_categoty disp_none" name="category_id"/>
-                                <input name="category_new_name" placeholder="Enter new category name..."/>
-                            </form>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" data-dismiss="modal" class="btn">Cancel</button>
-                            <button type="submit" class="btn btn-success" form="category_new_name">Accept</button>
+<div class="lift:surround?with=default">
+    <div class="lift:bind-at?name=left-panel"></div>
+    <div class="lift:bind-at?name=content" >
+        <div class="col-sm-12 col-md-12">
+            <div class="row">
+                <div class="lift:UserListPage.embedTabMenu"></div>
+            </div>
+            <div class="row">
+                <div class="lift:CategoryListPage.list">
+                    <div class="cat well table tags_cont tags_cont_all">
+                        <div class="lift:CategoryListPage.adm">
+                            <a type="button" href="#edit_category" class="btn btn-success edit_cat" data-toggle="modal" title="Edit">Edit</a>
+
+                            <!--<div id="edit_category" class="modal">-->
+                                <!--<h4 class = "modal-header">New category name</h4>-->
+                                <!--<div class="edit_meta">-->
+                                    <!--<form id="category_new_name">-->
+                                        <!--<input class="input_category disp_none" id="old_name_category" name="old_name"/>-->
+                                        <!--<input name="category_new_name" placeholder="Enter new category name..."/>-->
+                                    <!--</form>-->
+                                <!--</div>-->
+                                <!--<div class="modal-footer">-->
+                                    <!--<button type="button" data-dismiss="modal" class="btn">Cancel</button>-->
+                                    <!--<button type="submit" class="btn btn-success" form="category_new_name">Accept</button>-->
+                                <!--</div>-->
+                            <!--</div>-->
+                            <div id="edit_category" class="modal">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                                            <h4 class="modal-title">New category name</h4>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="edit_meta">
+                                                <form id="category_new_name">
+                                                    <input class="input_category disp_none" id="old_name_category" name="old_name"/>
+                                                    <input name="category_new_name" placeholder="Enter new category name..."/>
+                                                </form>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" data-dismiss="modal" class="btn btn-warning cancel">Отмена</button>
+                                            <button type="submit" class="btn btn-success" form="category_new_name">Подтвердить</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <!--</div>-->
+                            <button type="submit" class="close close_orient"><i class="icon-remove-sign icon-white"></i></button>
+                            <h4 class="muted">Economy</h4>
+                            <hr class="border_none">
+                            <div class="tag label btn-info inf_left">
+                                <span class="tags_orient">Tags1</span>
+                                <button type="submit" class="close close_orient"><i class="icon-remove-sign icon-white"></i></button>
+                            </div>
+                            <div class="lift:AddTag.adm add_tags">
+                                <a data-toggle="modal" href="#new_tags" class="inf_left tagAddButton"><img src="/images/add.png" title="Back"/></a>
+                            </div>
                         </div>
                     </div>
-                <!--</div>-->
-                <button type="submit" class="close close_orient"><i class="icon-remove-sign icon-white"></i></button>
-                <h4 class="muted">Economy</h4>
-                <hr class="border_none">
-                <div class="tag label btn-info inf_left">
-                    <span class="tags_orient">Tags1</span>
-                    <button type="submit" class="close close_orient"><i class="icon-remove-sign icon-white"></i></button>
-                </div>
-                <div class="lift:AddTag.adm add_tags">
-                    <a data-toggle="modal" href="#new_tags" class="inf_left tagAddButton"><img src="/images/add.png" title="Back"/></a>
-                </div>
-            </div>
-            <div class="well table new_category_cont tags_cont_all">
-                <div class="lift:CategoryListPage.adm">
-                    <a type="button" href="#new_category" class="btn btn-success add_cat" data-toggle="modal" title="New Category">New Category</a>
-                    <div id="new_category" class="modal hide fade">
-                        <h4 class = "modal-header">New category</h4>
-                        <div class="edit_meta">
-                            <form id="category_name">
-                                <input name="new_category_name" placeholder="Enter category name..."/>
-                            </form>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" data-dismiss="modal" class="btn">Cancel</button>
-                            <button type="submit" class="btn btn-success" form="category_name">Accept</button>
+                    <div class="well table new_category_cont tags_cont_all">
+                        <div class="lift:CategoryListPage.adm">
+                            <a type="button" href="#new_category" class="btn btn-success add_cat" data-toggle="modal" title="New Category">New Category</a>
+
+                            <div id="new_category" class="modal">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                                            <h4 class="modal-title">New category</h4>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="edit_meta">
+                                                <form id="category_name">
+                                                    <input name="new_category_name" placeholder="Enter category name..."/>
+                                                </form>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" data-dismiss="modal" class="btn btn-warning cancel">Отмена</button>
+                                            <button type="submit" class="btn btn-success" form="category_name">Подтвердить</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!---->
+                            <!--<div id="new_category" class="modal">-->
+                                <!--<h4 class = "modal-header">New category</h4>-->
+                                <!--<div class="edit_meta">-->
+                                    <!--<form id="category_name">-->
+                                        <!--<input name="new_category_name" placeholder="Enter category name..."/>-->
+                                    <!--</form>-->
+                                <!--</div>-->
+                                <!--<div class="modal-footer">-->
+                                    <!--<button type="button" data-dismiss="modal" class="btn">Cancel</button>-->
+                                    <!--<button type="submit" class="btn btn-success" form="category_name">Accept</button>-->
+                                <!--</div>-->
+                            <!--</div>-->
                         </div>
                     </div>
-                </div>
-            </div>
-            <div id="new_tags" class="modal hide fade">
-                <h4 class = "modal-header">New tags</h4>
-                <div class="edit_meta">
-                    <form id="tags_name" class="tagNameForm">
-                        <input class="input_categoty disp_none" name="category_id"/>
-                        <input type="text" name="tags_add" placeholder="docs, main, etc..." class="current_tags input-xlarge">
-                        <p class="help-block">tags must be comma-separated "docs, main, etc..."</p>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" data-dismiss="modal" class="btn">Cancel</button>
-                    <button type="submit" class="btn btn-success" form="tags_name">Accept</button>
+
+                    <div id="new_tags" class="modal">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                                    <h4 class="modal-title">New tags</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="edit_meta">
+                                        <form id="tags_name" class="tagNameForm">
+                                            <input class="input_categoty disp_none" name="category_id"/>
+                                            <input type="text" name="tags_add" placeholder="docs, main, etc..." class="current_tags input-xlarge">
+                                            <p class="help-block">tags must be comma-separated "docs, main, etc..."</p>
+                                        </form>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" data-dismiss="modal" class="btn btn-warning cancel">Отмена</button>
+                                    <button type="submit" class="btn btn-success" form="tags_name">Подтвердить</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!--<div id="new_tags" class="modal">-->
+                        <!--<h4 class = "modal-header">New tags</h4>-->
+                        <!--<div class="edit_meta">-->
+                            <!--<form id="tags_name" class="tagNameForm">-->
+                                <!--<input class="input_categoty disp_none" name="category_id"/>-->
+                                <!--<input type="text" name="tags_add" placeholder="docs, main, etc..." class="current_tags input-xlarge">-->
+                                <!--<p class="help-block">tags must be comma-separated "docs, main, etc..."</p>-->
+                            <!--</form>-->
+                        <!--</div>-->
+                        <!--<div class="modal-footer">-->
+                            <!--<button type="button" data-dismiss="modal" class="btn">Cancel</button>-->
+                            <!--<button type="submit" class="btn btn-success" form="tags_name">Accept</button>-->
+                        <!--</div>-->
+                    <!--</div>-->
                 </div>
             </div>
         </div>

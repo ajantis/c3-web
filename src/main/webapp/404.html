@@ -1,17 +1,14 @@
 <lift:surround with="default">
 
   <lift:bind-at name="content">
-
-      <div class="content-header">
-            <h1>404</h1>
-      </div>
-      <div class="content">
-            Ooops. This resource wasn't found. Try something else, or contact administrators.<br/>
-
-            <br/>
-            -- <br/>
-            Best regards,<br/>
-            C3-system.
+      <div class="error-template">
+          <h1>
+              Oops!</h1>
+          <h2>
+              404 Not Found</h2>
+          <div class="error-details">
+              Sorry, an error has occured, requested page not found!
+          </div>
       </div>
  </lift:bind-at>
 

@@ -6,7 +6,7 @@
  * modification, are permitted provided that the following conditions
  * are met:
  *
-
+ *
  * 1. Redistributions of source code must retain the above copyright
  * notice, this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above
@@ -31,64 +31,61 @@
 
 package org.aphreet.c3.snippet
 
-import org.aphreet.c3.model.{Group, User}
+import org.aphreet.c3.model.{ Group, User }
 import net.liftweb.mapper.MaxRows
-import xml.{Text, NodeSeq}
+import xml.{ Text, NodeSeq }
 import net.liftweb.common.Full
 import net.liftmodules.widgets.autocomplete.AutoComplete
 import net.liftweb.util.Helpers
 import Helpers._
 import net.liftweb.util.PassThru
 
-
-class MainSnippet  {
+class MainSnippet {
   def currentUser = {
     User.currentUser match {
       case Full(user) => {
-        ".username" #> user.shortName &
-        ".user ^*" #> PassThru &
-        ".not_logged_in" #> NodeSeq.Empty &
-        (if (user.superUser.is)
-          ".admin_section" #> PassThru
-        else
-          ".admin_section" #> NodeSeq.Empty)
+        ".user *" #> PassThru &
+          ".user .username" #> user.shortName &
+          ".not_logged_in" #> NodeSeq.Empty &
+          (if (user.superUser.is)
+            ".admin_section" #> PassThru
+          else
+            ".admin_section" #> NodeSeq.Empty)
       }
       case _ =>
         ".user" #> NodeSeq.Empty &
-        ".not_logged_in ^*" #> PassThru
+          ".not_logged_in" #> PassThru
     }
   }
 
-  def myGroupsList(html: NodeSeq) : NodeSeq = {
+  def myGroupsList(html: NodeSeq): NodeSeq = {
 
-    if(User.loggedIn_?) {
+    if (User.loggedIn_?) {
       bind("myGroupsList", html,
         "groups" -> { (ns: NodeSeq) =>
           User.currentUser.open_!.groups.flatMap(group =>
             bind("group", ns,
-              "name" -> group.asInstanceOf[Group].name.is)):NodeSeq
-        }
-
-      )
-    }
-    else {
+              "name" -> group.asInstanceOf[Group].name.is)): NodeSeq
+        })
+    } else {
       Text("Please, log in the system or sign up.")
     }
   }
 
-
-  def featuredGroups(html: NodeSeq) : NodeSeq = {
+  def featuredGroups(html: NodeSeq): NodeSeq = {
 
     val MAX_FEATURED_GROUPS_ON_PAGE = 5
 
-    val featuredGroups : List[Group] = Group.findAll(MaxRows(MAX_FEATURED_GROUPS_ON_PAGE))
+    val featuredGroups: List[Group] = Group.findAll(MaxRows(MAX_FEATURED_GROUPS_ON_PAGE))
 
-    if(!featuredGroups.isEmpty)
+    if (!featuredGroups.isEmpty)
       bind("featuredGroups", html,
-        "groups" -> {(ns: NodeSeq) => featuredGroups.flatMap( group =>
-          bind("group", ns,
-            "name" -> <a href={"/group/"+group.name}>{group.name}</a>)):NodeSeq})
-    else 
+        "groups" -> { (ns: NodeSeq) =>
+          featuredGroups.flatMap(group =>
+            bind("group", ns,
+              "name" -> <a href={ "/group/" + group.name }>{ group.name }</a>)): NodeSeq
+        })
+    else
       Text("There are no groups in db currently.")
 
   }
@@ -154,18 +151,14 @@ class MainSnippet  {
     PassThru
   }
 
-
-
   private val data = List(
-    "Timothy","Derek","Ross","Tyler",
-    "Indrajit","Harry","Greg","Debby")
+    "Timothy", "Derek", "Ross", "Tyler",
+    "Indrajit", "Harry", "Greg", "Debby")
 
   def sample(xhtml: NodeSeq): NodeSeq =
     bind("f", xhtml,
-      "find_name" -> AutoComplete("", (current,limit) =>
+      "find_name" -> AutoComplete("", (current, limit) =>
         data.filter(_.toLowerCase.startsWith(current.toLowerCase)),
-        value => println("Submitted: " + value))
-    )
-
+        value => println("Submitted: " + value)))
 
 }

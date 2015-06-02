@@ -6,7 +6,7 @@
  * modification, are permitted provided that the following conditions
  * are met:
  *
-
+ *
  * 1. Redistributions of source code must retain the above copyright
  * notice, this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above
@@ -29,7 +29,6 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-
 package org.aphreet.c3.snippet
 
 import _root_.net.liftweb._
@@ -49,17 +48,16 @@ import util._
 import Helpers._
 import xml.NodeSeq
 import org.aphreet.c3.apiaccess.C3
-import com.ifunsoftware.c3.access.{C3IncorrectRequestException, C3AccessException}
+import com.ifunsoftware.c3.access.{ C3IncorrectRequestException, C3AccessException }
 import org.aphreet.c3.util.C3Loggable
 import net.liftweb.http.S
 import org.aphreet.c3.model.User
 import org.aphreet.c3.lib.metadata.Metadata._
 import com.ifunsoftware.c3.access.C3System._
 
-
 trait C3ResourceMetadataForms {
 
-  protected object tags extends RequestVar[scala.collection.mutable.Set[String]] (scala.collection.mutable.Set()) {
+  protected object tags extends RequestVar[scala.collection.mutable.Set[String]](scala.collection.mutable.Set()) {
 
     val divTagsName: String = S.attr("id_tags_name") openOr "tags_id"
 
@@ -67,9 +65,7 @@ trait C3ResourceMetadataForms {
       tags.get.toList.sortWith(_ > _).flatMap(
         (tag: String) =>
           bind("tag", xml,
-            "text" -> ( SHtml.text(tag, (str) => { tags.get += str }, "placeholder" -> "e.g. IT","size"-> "8" ) )
-          )
-      ): NodeSeq
+            "text" -> (SHtml.text(tag, (str) => { tags.get += str }, "placeholder" -> "e.g. IT", "size" -> "8")))): NodeSeq
     }
 
     def toForm(xml: NodeSeq): NodeSeq = {
@@ -80,19 +76,15 @@ trait C3ResourceMetadataForms {
         SetHtml(divTagsName, toForm(xml = xml))
       }
       SHtml.ajaxForm(
-        bind("list",xml,
-          "tags_list" -> ( (ns: NodeSeq) => tags.toXML(ns) ),
-          "add_tag" -> ( (ns: NodeSeq) => SHtml.hidden(addTag _) ++
+        bind("list", xml,
+          "tags_list" -> ((ns: NodeSeq) => tags.toXML(ns)),
+          "add_tag" -> ((ns: NodeSeq) => SHtml.hidden(addTag _) ++
             SHtml.submit(ns.text, () => {
-            })
-            )
-        )
-      )
+            }))))
     }
   }
 
-
-  protected object metadata extends RequestVar[scala.collection.mutable.Map[String,String]] (scala.collection.mutable.Map()) {
+  protected object metadata extends RequestVar[scala.collection.mutable.Map[String, String]](scala.collection.mutable.Map()) {
 
     val divMDName: String = S.attr("id_md_name") openOr "md_id"
 
@@ -104,38 +96,34 @@ trait C3ResourceMetadataForms {
           var tmpMDName = mdNode._1
           var tmpMDValue = mdNode._2
 
-          bind("md_node",xml,
-            "name" -> SHtml.text(mdNode._1, tmpMDName = _ , "placeholder" -> "e.g. author","size"-> "8" ),
-            "value" -> SHtml.text(mdNode._2,tmpMDValue = _ , "placeholder" -> "e.g. Jack Jones","size"-> "8" )
-          ) ++ SHtml.hidden( () => {
-            if(tmpMDName != mdNode._1) {
-              metadata -= mdNode._1
-            }
-            metadata+=(tmpMDName -> tmpMDValue)
-          })
-        }
-      ) : NodeSeq
+          bind("md_node", xml,
+            "name" -> SHtml.text(mdNode._1, tmpMDName = _, "placeholder" -> "e.g. author", "size" -> "8"),
+            "value" -> SHtml.text(mdNode._2, tmpMDValue = _, "placeholder" -> "e.g. Jack Jones", "size" -> "8")) ++ SHtml.hidden(() => {
+              if (tmpMDName != mdNode._1) {
+                metadata -= mdNode._1
+              }
+              metadata += (tmpMDName -> tmpMDValue)
+            })
+        }): NodeSeq
 
     }
-
 
     def toForm(xml: NodeSeq): NodeSeq = {
 
       def addMDNode(): JsCmd = {
 
-        metadata += ( ("", "") )
+        metadata += (("", ""))
         //full reload
         SetHtml(divMDName, toForm(xml = xml))
       }
 
       SHtml.ajaxForm(
-        bind("list",xml,
-          "md_list" ->( (ns: NodeSeq) => metadata.toXML(ns) ),
+        bind("list", xml,
+          "md_list" -> ((ns: NodeSeq) => metadata.toXML(ns)),
           "add_md_node" -> ((ns: NodeSeq) => SHtml.hidden(addMDNode _) ++
             SHtml.submit(ns.text, () => {
 
-            }) )
-        ))
+            }))))
     }
 
   }
@@ -146,12 +134,11 @@ trait AbstractFormDialog {
 
   val templateName: String
 
-  protected  object theCurrentPath extends SessionVar[Box[String]](Empty)
+  protected object theCurrentPath extends SessionVar[Box[String]](Empty)
 
   def unblockForm(xhtml: NodeSeq) =
-    bind("form",xhtml,
-      "close" -> ((b: NodeSeq) => <button onclick={Unblock.toJsCmd}>{b}</button>)
-    )
+    bind("form", xhtml,
+      "close" -> ((b: NodeSeq) => <button onclick={ Unblock.toJsCmd }>{ b }</button>))
 
   def button(in: NodeSeq, path: Box[String]) = {
     theCurrentPath.set(path);
@@ -160,7 +147,7 @@ trait AbstractFormDialog {
         theCurrentPath.set(path)
         S.runTemplate(List(templateName)).
           map(ns => ModalDialog(ns)) openOr
-          Alert("Couldn't find "+templateName+" template")
+          Alert("Couldn't find " + templateName + " template")
       })
   }
   def form(xhtml: NodeSeq): NodeSeq
@@ -180,13 +167,12 @@ class FileUploadDialog extends AbstractFormDialog with C3ResourceMetadataForms {
     SHtml.ajaxButton(in,
       () => {
         JsCmds.Run("showDiv('fileupload')")
-      }
-    )
+      })
 
   private def uploadFile(): JsCmd = {
     theFileName.is match {
       case Full(some) => Alert("Stub for file upload!")
-      case _ => Alert("File is empty :(") & Unblock
+      case _          => Alert("File is empty :(") & Unblock
     }
 
   }
@@ -194,23 +180,18 @@ class FileUploadDialog extends AbstractFormDialog with C3ResourceMetadataForms {
   override def form(xhtml: NodeSeq) = {
     SHtml.ajaxForm(
       bind("file", xhtml,
-        "name" -> SHtml. text("", (name: String) => if(name != "") theFileName.set(Full(name)) ),
+        "name" -> SHtml.text("", (name: String) => if (name != "") theFileName.set(Full(name))),
         "file_upload" -> SHtml.fileUpload(ul => theFileUpload.set(Full(ul))),
-        "metadata" -> ( (ns: NodeSeq) =>
-          metadata.toForm(ns)
-          ),
-        "tags" -> ( (ns: NodeSeq) =>
-          tags.toForm(ns)
-          ),
-        "submit" ->((ns: NodeSeq) => SHtml.hidden(uploadFile _) ++ SHtml.submit(ns.text, () => {} ))
-      )
-    )
+        "metadata" -> ((ns: NodeSeq) =>
+          metadata.toForm(ns)),
+        "tags" -> ((ns: NodeSeq) =>
+          tags.toForm(ns)),
+        "submit" -> ((ns: NodeSeq) => SHtml.hidden(uploadFile _) ++ SHtml.submit(ns.text, () => {}))))
   }
-
 
 }
 
-class CreateDirectoryDialog extends AbstractFormDialog with C3ResourceMetadataForms with C3Loggable{
+class CreateDirectoryDialog extends AbstractFormDialog with C3ResourceMetadataForms with C3Loggable {
 
   val templateName = "_jsdialog_createdirectory"
 
@@ -218,15 +199,14 @@ class CreateDirectoryDialog extends AbstractFormDialog with C3ResourceMetadataFo
 
   val currentUser = User.currentUser
 
-
   private def createDirectory(): JsCmd = {
-    if(theCurrentPath.isDefined)
+    if (theCurrentPath.isDefined)
 
       tryo((theDirectoryName.is.open_!, currentUser.map(_.id.is.toString).open_!)) match {
         case Full((name, userId)) => {
           try {
             val metadata = Map((OWNER_ID_META -> User.currentUser.map(_.id.is.toString).open_!))
-                            /*(GROUP_ID_META -> group.id.is.toString)*/  // TODO set group id if we want to use this form
+            /*(GROUP_ID_META -> group.getId)*/ // TODO set group id if we want to use this form
 
             C3().getFile(theCurrentPath.get.open_!).asDirectory.createDirectory(name, metadata)
             S.notice("Directory " + name + " created")
@@ -256,17 +236,15 @@ class CreateDirectoryDialog extends AbstractFormDialog with C3ResourceMetadataFo
 
     SHtml.ajaxForm(
       bind("dir", xhtml,
-        "name" -> SHtml.text("", (name: String) => if(name != "") theDirectoryName.set(Full(name)) ),
-//        "metadata" -> ( (ns: NodeSeq) =>
-//          metadata.toForm(ns)
-//          ),
-//        "tags" -> ( (ns: NodeSeq) =>
-//          tags.toForm(ns)
-//          ),
-        "close" -> ((ns: NodeSeq) => SHtml.ajaxButton(ns, () =>{Unblock})),
-        "submit" ->((ns: NodeSeq) => SHtml.hidden(createDirectory _) ++ SHtml.submit(ns.text, () => {} ))
-      )
-    )
+        "name" -> SHtml.text("", (name: String) => if (name != "") theDirectoryName.set(Full(name))),
+        //        "metadata" -> ( (ns: NodeSeq) =>
+        //          metadata.toForm(ns)
+        //          ),
+        //        "tags" -> ( (ns: NodeSeq) =>
+        //          tags.toForm(ns)
+        //          ),
+        "close" -> ((ns: NodeSeq) => SHtml.ajaxButton(ns, () => { Unblock })),
+        "submit" -> ((ns: NodeSeq) => SHtml.hidden(createDirectory _) ++ SHtml.submit(ns.text, () => {}))))
   }
 }
 

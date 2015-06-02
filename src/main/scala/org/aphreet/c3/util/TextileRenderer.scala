@@ -8,9 +8,10 @@ import net.liftweb.http.S
  * Copyright iFunSoftware 2011
  * @author Dmitry Ivanov
  */
-object TextileRenderer extends RestHelper{
+//todo need refactoring
+object TextileRenderer extends RestHelper {
   serve {
     case "markitup" :: "textile" :: "render" :: _ Post _ =>
-      <span>{TextileParser.toHtml(S.param("data").openOr(""))}</span>
+      <span>{ TextileParser.toHtml(S.param("data").openOr("")) }</span>
   }
 }

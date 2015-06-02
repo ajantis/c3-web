@@ -7,6 +7,6 @@ import org.aphreet.c3.model.User
  * @author Dmitry Ivanov (mailto: id.ajantis@gmail.com)
  *         iFunSoftware
  */
-case class UserPageData(user: User) extends PageData{
+case class UserPageData(user: User) extends PageData {
 
 }

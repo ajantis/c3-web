@@ -2,8 +2,8 @@ package org.aphreet.c3.snippet
 
 import net.liftweb.sitemap.Loc
 import net.liftweb.http.S
-import xml.{NodeSeq, Text}
-import net.liftweb.common.{Box, Empty, Full}
+import xml.{ NodeSeq, Text }
+import net.liftweb.common.{ Box, Empty, Full }
 import net.liftweb.util.Helpers._
 import net.liftweb.util._
 
@@ -18,8 +18,8 @@ class Breadcrumbs {
   def breadcrumb = {
     val allLocs: List[Loc[_]] =
       for {
-        currentLoc <- S.location.toList
-        loc <- currentLoc.breadCrumbs
+        currentLoc ← S.location.toList
+        loc ← currentLoc.breadCrumbs
       } yield loc
 
     breadcrumbsForLocs(allLocs)
@@ -32,27 +32,27 @@ object Breadcrumbs {
     val currentLoc = locs.lastOption
 
     def setActiveClass(loc: Loc[_]) = {
-      if(loc == currentLoc.get)
+      if (loc == currentLoc.get)
         ".link [class+]" #> "active" & // attach class
           ".divider" #> NodeSeq.Empty // remove last divider
       else
         ".link [class!]" #> "active" // remove class
     }
 
-
     "li *" #> locs.map {
-      loc => {
-        val propsBuilder = new LocPropertiesBuilder(loc, locs)
+      loc =>
+        {
+          val propsBuilder = new LocPropertiesBuilder(loc, locs)
 
-        ".link *" #> propsBuilder.buildLocTitle() &
-          ".link [href]" #> propsBuilder.buildLocLink() &
-          setActiveClass(loc)
-      }
+          ".link *" #> propsBuilder.buildLocTitle() &
+            ".link [href]" #> propsBuilder.buildLocLink() &
+            setActiveClass(loc)
+        }
     }
   }
 }
 
-class LocPropertiesBuilder[T](loc: Loc[T], allLocs: List[Loc[_]])(implicit manifest : Manifest[T]){
+class LocPropertiesBuilder[T](loc: Loc[T], allLocs: List[Loc[_]])(implicit manifest: Manifest[T]) {
 
   lazy val valueBox: Box[T] = findContextValueForLoc(loc)
 
@@ -60,13 +60,13 @@ class LocPropertiesBuilder[T](loc: Loc[T], allLocs: List[Loc[_]])(implicit manif
     loc.currentValue.isEmpty match {
       case false => loc.currentValue
       case true => {
-        def compareLocParamTypes[A, B](l1: Loc[A],l2: Loc[B])(implicit m1 : Manifest[A], m2 : Manifest[B]): Boolean = {
+        def compareLocParamTypes[A, B](l1: Loc[A], l2: Loc[B])(implicit m1: Manifest[A], m2: Manifest[B]): Boolean = {
           m1 == m2
         }
 
         allLocs.dropWhile(loc != _) match {
           case Nil => Empty
-          case xs => xs.tail.filter(l => !l.currentValue.isEmpty && compareLocParamTypes(loc, l)).headOption.map(_.currentValue.open_!.asInstanceOf[T])
+          case xs  => xs.tail.filter(l => !l.currentValue.isEmpty && compareLocParamTypes(loc, l)).headOption.map(_.currentValue.open_!.asInstanceOf[T])
         }
       }
     }

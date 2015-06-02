@@ -1,6 +1,6 @@
 package org.aphreet.c3.loc
 
-import net.liftweb.common.{Full, Empty, Box}
+import net.liftweb.common.{ Full, Empty, Box }
 import net.liftweb.sitemap.Loc._
 import net.liftweb.sitemap.Loc
 import net.liftweb.http._
@@ -10,7 +10,6 @@ import net.liftweb.http.ParsePath
 import net.liftweb.sitemap.Loc.TestValueAccess
 import net.liftweb.common.Full
 import xml.NodeSeq
-
 
 /**
  * Copyright iFunSoftware 2011
@@ -39,19 +38,18 @@ trait ItemRewriteLoc[S, T <: PageData] extends Loc[T] {
   def canonicalUrl(data: T): Box[String] = Empty
   override def params: List[LocParam[T]] =
     Hidden ::
-    TestValueAccess[T]{ (page: Box[T]) =>
-      page.flatMap { p: T =>
-        if (isAccessiblePage(p))
-          canonicalUrl(p).filter(v => v != S.uri).map(RedirectResponse(_))
-        else
-          if (User.currentUser.isDefined)
-          Full(RedirectWithState("/index", RedirectState( () => {}, "You don't have access to this group" -> NoticeType.Notice )))
-        else
-          Full(RedirectWithState("/user_mgt/login", RedirectState( () => {}, "Not logged in" -> NoticeType.Notice )))
-      }
-    } :: Nil
+      TestValueAccess[T] { (page: Box[T]) =>
+        page.flatMap { p: T =>
+          if (isAccessiblePage(p))
+            canonicalUrl(p).filter(v => v != S.uri).map(RedirectResponse(_))
+          else if (User.currentUser.isDefined)
+            Full(RedirectWithState("/index", RedirectState(() => {}, "You don't have access to this group" -> NoticeType.Notice)))
+          else
+            Full(RedirectWithState("/user_mgt/login", RedirectState(() => {}, "Not logged in" -> NoticeType.Notice)))
+        }
+      } :: Nil
 
-//      ) :: Nil
+  //      ) :: Nil
 
   /**
    * By default the path must end after the item id.
@@ -92,7 +90,7 @@ trait PageData {
 /**
  * For URLs of the for /foo/[ID]/suffix
  */
-trait SuffixLoc[S, T <: PageData]{
+trait SuffixLoc[S, T <: PageData] {
   self: ItemRewriteLoc[S, T] =>
 
   val pathSuffix: List[String]

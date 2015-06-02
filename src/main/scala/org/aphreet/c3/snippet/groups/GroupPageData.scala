@@ -8,6 +8,6 @@ import org.aphreet.c3.loc.PageData
  * @author Dmitry Ivanov
  */
 
-class GroupPageData(val group: Group) extends PageData{
+class GroupPageData(val group: Group) extends PageData {
   // other group specific stuff
 }

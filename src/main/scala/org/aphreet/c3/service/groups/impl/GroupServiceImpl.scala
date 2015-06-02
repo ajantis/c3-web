@@ -1,20 +1,20 @@
 package org.aphreet.c3
 package service.groups.impl
 
-import net.liftweb.common.{Box, Full, Empty, Failure}
+import net.liftweb.common.{ Box, Full, Empty, Failure }
 import net.liftweb.mapper.By
 
-import com.ifunsoftware.c3.access.fs.{C3File, C3Directory}
+import com.ifunsoftware.c3.access.fs.{ C3File, C3Directory }
 import com.ifunsoftware.c3.access.C3System
 import com.ifunsoftware.c3.access.C3System._
 
 import org.aphreet.c3.lib.metadata.Metadata
 import org.aphreet.c3.lib.metadata.Metadata._
 import org.aphreet.c3.lib.DependencyFactory._
-import org.aphreet.c3.util.{C3Loggable, C3Exception}
-import org.aphreet.c3.model.{UserGroup, Group, User}
+import org.aphreet.c3.util.{ C3Loggable, C3Exception }
+import org.aphreet.c3.model.{ UserGroup, Group, User }
 import org.aphreet.c3.service.groups.GroupService
-import org.aphreet.c3.service.notifications.AddedToGroupMsg
+import org.aphreet.c3.service.notifications.{ RejectedFromGroupMsg, AddedToGroupMsg }
 import org.aphreet.c3.service.notifications.NotificationManagerProtocol.CreateNotification
 import org.aphreet.c3.lib.NotificationManagerRef
 
@@ -24,17 +24,17 @@ class GroupServiceImpl extends GroupService with C3Loggable {
 
   lazy val notificationManager = inject[NotificationManagerRef].open_!.actorRef
 
-  override def createGroup(newGroup: Group, members: Iterable[User], tags:String, description:String): Box[Group] = {
+  override def createGroup(newGroup: Group, members: Iterable[User], tags: String, description: String): Box[Group] = {
     val metadata: Map[String, String] = Map(
-      TAGS_META        -> tags.split(",").map(_.trim).mkString(","),
+      TAGS_META -> tags.split(",").map(_.trim).mkString(","),
       DESCRIPTION_META -> description)
 
     val group = newGroup.saveMe()
 
     try {
-      createGroupMapping(group.id.is.toString, metadata, group.owner)
+      createGroupMapping(group.getId, metadata, group.owner)
       group.owner.foreach(owner => UserGroup.join(owner, group))
-      addUsersToGroup(group,members)
+      addUsersToGroup(group, members)
       Full(group)
     } catch {
       case e: Exception =>
@@ -44,13 +44,13 @@ class GroupServiceImpl extends GroupService with C3Loggable {
     }
   }
 
-  override def createGroup(newGroup: Group, tags:String, description:String): Box[Group] = {
+  override def createGroup(newGroup: Group, tags: String, description: String): Box[Group] = {
     createGroup(newGroup, List(), tags, description)
   }
 
   override def removeGroup(group: Group): Boolean = {
     try {
-      removeGroupMapping(group.id.is.toString)
+      removeGroupMapping(group.getId)
     } catch {
       case e: Exception =>
         logger.error("Error while removing group mapping from C3: " + e.getMessage, e)
@@ -59,9 +59,9 @@ class GroupServiceImpl extends GroupService with C3Loggable {
     group.delete_!
   }
 
-  override def removeUserFromGroup(group:Group, user:User) = {
-    try{
-       UserGroup.findAll(By(UserGroup.user, user),By(UserGroup.group, group)).foreach(_.delete_!)
+  override def removeUserFromGroup(group: Group, user: User) = {
+    try {
+      UserGroup.findAll(By(UserGroup.user, user), By(UserGroup.group, group)).foreach(_.delete_!)
     } catch {
       case e: Exception =>
         logger.error("Error while removing user" + e.getMessage, e)
@@ -70,10 +70,9 @@ class GroupServiceImpl extends GroupService with C3Loggable {
     true
   }
 
-
   override def addUsersToGroup(group: Group, members: Iterable[User]): Iterable[Box[User]] = {
-    members.map{member:User =>
-      if (UserGroup.findAll(By(UserGroup.user, member), By(UserGroup.group, group)).isEmpty){
+    members.map { member: User =>
+      if (UserGroup.findAll(By(UserGroup.user, member), By(UserGroup.group, group)).isEmpty) {
         UserGroup.join(member, group)
         UserGroup.isApproved(true)
         notificationManager ! CreateNotification(AddedToGroupMsg(group = group, recipientId = member.id.is))
@@ -82,18 +81,32 @@ class GroupServiceImpl extends GroupService with C3Loggable {
     }
   }
 
-  override def approveUsersToGroup(group: Group, members: Iterable[User]): Iterable[Box[User]] = {
-    members.map{member:User =>
-      val userGroups = UserGroup.findAll(By(UserGroup.user, member), By(UserGroup.group, group))
-      userGroups.map{ userGroup:UserGroup =>
-        UserGroup.isApproved(true)
-        notificationManager ! CreateNotification(AddedToGroupMsg(group = group, recipientId = member.id.is))
+  override def addUsersToApproveListGroup(group: Group, members: Iterable[User]): Iterable[Box[User]] = {
+    members.map { member: User =>
+      if (UserGroup.findAll(By(UserGroup.user, member), By(UserGroup.group, group)).isEmpty) {
+        UserGroup.join(member, group)
         Full(member)
-      }.head
+      } else Failure("User " + member.email + " is already a member of this group!")
     }
   }
 
-  private def createGroupMapping(groupId: String, metadata: Map[String, String], owner: Box[User]){
+  override def approveOrRejectUsersInGroup(group: Group, members: Iterable[User], approve: Boolean): Iterable[Box[User]] = {
+    members.map { member: User =>
+      val userGroups = UserGroup.findAll(By(UserGroup.user, member), By(UserGroup.group, group))
+      if (!userGroups.isEmpty) {
+        userGroups.map { userGroup: UserGroup =>
+          userGroup.isApproved(approve).save()
+          if (approve)
+            notificationManager ! CreateNotification(AddedToGroupMsg(group = group, recipientId = member.id.is))
+          else
+            notificationManager ! CreateNotification(RejectedFromGroupMsg(group = group, recipientId = member.id.is))
+        }
+        Full(member)
+      } else Failure("User " + member.email + " is not a member of this group!")
+    }
+  }
+
+  private def createGroupMapping(groupId: String, metadata: Map[String, String], owner: Box[User]) {
     val root = c3.getFile("/").asDirectory
 
     val defaultMeta: Map[String, String] = Map(Metadata.GROUP_ID_META -> groupId) ++
@@ -104,18 +117,33 @@ class GroupServiceImpl extends GroupService with C3Loggable {
     root.createDirectory(groupId, metadataGroup)
 
     root.getChild(groupId) match {
-      case Some(node) => val dir = node.asDirectory
-      dir.createDirectory("files", metadataGroup)
-      dir.createDirectory("messages", metadataGroup)
+      case Some(node) =>
+        val dir = node.asDirectory
+        dir.createDirectory("files", metadataGroup)
+        dir.createDirectory("messages", metadataGroup)
+        dir.createDirectory("events", metadataGroup)
+
+        dir.getChild("files") match {
+          case Some(node) =>
+            val files = node.asDirectory
+            val trashCanMetadata = Map(OWNER_ID_META -> metadataGroup.get(OWNER_ID_META).getOrElse(User.id.is.toString),
+              GROUP_ID_META -> groupId,
+              TAGS_META -> "Trash",
+              DESCRIPTION_META -> "",
+              ACL_META -> metadataGroup.get(ACL_META).getOrElse(""))
+            files.createDirectory("trash", trashCanMetadata)
+          case None => throw new C3Exception("Failed to create directory for group " + groupId)
+        }
       case None => throw new C3Exception("Failed to create directory for group " + groupId)
     }
+
   }
 
-  private def removeGroupMapping(name: String){
+  private def removeGroupMapping(name: String) {
     val root = c3.getFile("/").asDirectory
 
     def removeDirectory(dir: C3Directory) {
-      for(child <- dir.children()){
+      for (child ← dir.children()) {
         child match {
           case d: C3Directory =>
             logger.debug("Removing directory " + d.fullname + " from group " + name)
@@ -139,7 +167,7 @@ class GroupServiceImpl extends GroupService with C3Loggable {
   }
 }
 
-object GroupServiceImpl{
+object GroupServiceImpl {
 
   lazy val service = new GroupServiceImpl
 
